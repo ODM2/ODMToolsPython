@@ -3,6 +3,12 @@ ODMToolsPython
 
 ODMTools is a python application for managing observational data using the Observations Data Model. ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database. ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.
 
+Sponsors
+---------
+This project is receiving or has received support from a number of agencies and complementary efforst including:
+
+This material is based on work supported by the National Science Foundation Grant EPS 1208732 awarded to Utah State University and grant EAR 0622374.  Any opinions, findings, and conclusions or recommendations expressed are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+
 Copying and License
 ----------------------------
 
