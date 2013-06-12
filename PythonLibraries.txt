@@ -1,0 +1,10 @@
+
+•	Python-2.7 32 bit(http://www.python.org/download/releases/2.7.3/)
+•	Wxpython-2.9.4(http://www.wxpython.org/download.php)
+•	Sqlalchemy-7.9(http://pypi.python.org/pypi/SQLAlchemy/0.7.9)
+	•	Pyodbc-3.0.6(http://code.google.com/p/pyodbc/downloads/list) 
+•	Matplotlib-1.1.1(https://github.com/matplotlib/matplotlib/downloads)
+	•	Numpy-1.6.2(http://sourceforge.net/projects/numpy/files/)/(http://www.scipy.org/Download)
+	New version of matplotlib released  01/08/13 1.2.0 – allows user to customize boxplots
+•	Object List Viewer-2.6.0(http://sourceforge.net/projects/objectlistview/files/objectlistview/)
+•	PyMySQL (https://github.com/petehunt/PyMySQL/)
