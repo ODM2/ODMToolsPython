@@ -11,6 +11,7 @@ class Site(Base):
 	site_code 		    = Column('SiteCode', String)
 	site_name 		    = Column('SiteName', String)
 	latitude  		    = Column('Latitude', Float)
+	longitude			= Column('Longitude', Float)
 	lat_long_datum_id   = Column('LatLongDatumID', Integer, ForeignKey('SpatialReferences.SpatialReferenceID'))
 	elevation_m 	    = Column('Elevation_m', Float)
 	vertical_datum_id   = Column('VerticalDatum', Integer)
@@ -22,7 +23,7 @@ class Site(Base):
 	county			    = Column('County', String)
 	comments		    = Column('Comments', String)
 
-	# TODO: site_type optional
+	site_type			= Column('SiteType', String)
 
 	# relationships
 	spatial_reference = relationship(SpatialReference, primaryjoin=("SpatialReference.id==Site.lat_long_datum_id"))

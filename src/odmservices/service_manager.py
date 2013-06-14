@@ -3,6 +3,8 @@ from series_service import SeriesService
 from cv_service import CVService
 from edit_service import EditService
 from record_service import RecordService
+from export_service import ExportService
+
 from sqlalchemy.exc import SQLAlchemyError
 
 class ServiceManager():
@@ -85,6 +87,9 @@ class ServiceManager():
 
 	def get_record_service(self, script, series_id, connection):
 		return RecordService(script, self.get_edit_service(series_id, connection), self.__build_connection_string(self.get_current_connection()))
+
+	def get_export_service(self):
+		return ExportService(self.get_series_service())
 
 	# private
 	def __get_file(self, mode):
