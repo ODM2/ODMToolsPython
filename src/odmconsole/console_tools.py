@@ -14,6 +14,7 @@ class ConsoleTools(object):
 
         self._ribbon = ribbon
         self._record_service = record_service
+
     
 
     ################
@@ -149,6 +150,17 @@ class ConsoleTools(object):
         q.description = description
         cv_service.create_qualifer(q)
         return q.id
+
+
+    ###############
+    # Export methods
+    ###############
+    def export_series_data(self, series_id, filename, utc=False, site=False, var=False, offset=False, qual=False, src=False, qcl=False):
+        serv_man = ServiceManager()
+        export_service = serv_man.get_export_service()
+        export_service.export_series_data(series_id, filename, utc=utc, 
+            site=site, var=var, offset=offset, qual=qual, src=src, qcl = qcl)
+
 
     ###############
     # UI methods
