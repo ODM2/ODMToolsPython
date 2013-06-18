@@ -93,7 +93,7 @@ class ServiceManager():
 
 	# private
 	def __get_file(self, mode):
-		fn = os.path.join(os.path.dirname(__file__), 'connection.cfg')
+		fn = os.path.join(os.path.dirname(__file__), 'connection.config')
 		return open(fn, mode)
 
 	def __build_connection_string(self, conn_dict):
