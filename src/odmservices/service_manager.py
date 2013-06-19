@@ -94,7 +94,14 @@ class ServiceManager():
 	# private
 	def __get_file(self, mode):
 		fn = os.path.join(os.path.dirname(__file__), 'connection.config')
-		return open(fn, mode)
+		config_file = None
+		try:
+			config_file = open(fn, mode)
+		except:
+			open(fn, 'w').close()
+			config_file = open(fn, mode)
+
+		return config_file
 
 	def __build_connection_string(self, conn_dict):
 		driver = ""
