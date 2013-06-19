@@ -16,55 +16,62 @@ class ExportService():
 		writer = csv.writer(open(filename, 'wb'))
 		self.write_header(writer, utc, site, var, offset, qual, src, qcl)
 		for dv in series.data_values:
-			self.write_row(writer, dv, utc, site, var, offset, qual, src, qcl)
+			self.write_row(writer, series, dv, utc, site, var, offset, qual, src, qcl)
 
 
-	def write_row(self, writer, dv, utc, site, var, offset, qual, src, qcl):
-		row = []
-		row.append(dv.series.id)
-		row.append(dv.id)
-		row.append(dv.data_value)
-		row.append(dv.value_accuracy)
-		row.append(dv.local_date_time)
+	def write_row(self, writer, series, dv, utc, site, var, offset, qual, src, qcl):
+		data = []
+		data.append(series.id)
+		data.append(dv.id)
+		data.append(dv.data_value)
+		data.append(dv.value_accuracy)
+		data.append(dv.local_date_time)
 		if utc:
-			row.append(utc_offset)
-			row.append(date_time_utc)
-		row.append(dv.site.site_code)
+			data.append(dv.utc_offset)
+			data.append(dv.date_time_utc)
+		data.append(series.site_code)
 		if site:
-			row.append(dv.site.site_name)
-			row.append(dv.site.site_type)
-			row.append(dv.site.latitude)
-			row.append(dv.site.longitude)
-			row.append(dv.site.spatial_reference.srs_name)
-		row.append(dv.variable.code)
+			data.append(series.site_name)
+			data.append(series.site.site_type)
+			data.append(series.site.latitude)
+			data.append(series.site.longitude)
+			data.append(series.site.spatial_reference.srs_name)
+		data.append(series.variable_code)
 		if var:
-			row.append(dv.variable.name)
-			row.append(dv.variable.speciation)
-			row.append(dv.variable.variable_unit.name)
-			row.append(dv.variable.variable_unit.abbreviation)
-			row.append(dv.variable.sample_medium)
-		row.append(dv.offset_value)
-		row.append(dv.offset_type_id)
+			data.append(series.variable_name)
+			data.append(series.speciation)
+			data.append(series.variable_units_name)
+			data.append(series.variable.variable_unit.abbreviation)
+			data.append(series.sample_medium)
+		data.append(dv.offset_value)
+		data.append(dv.offset_type_id)
 		if offset:
-			row.append(dv.offset_type.description)
-			row.append(dv.offset_type.unit.name)
-		row.append(dv.censor_code)
-		row.append(dv.qualifier_id)
+			if dv.offset_type is not None:
+				data.append(dv.offset_type.description)
+				data.append(dv.offset_type.unit.name)
+			else:
+				data.append('')
+				data.append('')
+		data.append(dv.censor_code)
+		data.append(dv.qualifier_id)
 		if qual:
-			row.append(dv.qualifier.code)
-			row.append(dv.qualifier.description)
+			if dv.qualifier is not None:
+				data.append(dv.qualifier.code)
+				data.append(dv.qualifier.description)
+			else:
+				data.append('')
+				data.append('')
 		if src:
-			row.append(dv.source.organization)
-			row.append(dv.source.description)
-			row.append(dv.source.citation)
+			data.append(series.organization)
+			data.append(series.source_description)
+			data.append(series.citation)
 		if qcl:
-			row.append(dv.quality_control_level.code)
-			row.append(dv.quality_control_level.definition)
-			row.append(dv.quality_control_level.explanation)
-		row.append(dv.sample_id)
+			data.append(series.quality_control_level_code)
+			data.append(series.quality_control_level.definition)
+			data.append(series.quality_control_level.explanation)
+		data.append(dv.sample_id)
 
-		writer.writerow(row)
-
+		writer.writerow(data)
 
 
 	def write_header(self, writer, utc, site, var, offset, qual, src, qcl):

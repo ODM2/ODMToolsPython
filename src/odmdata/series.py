@@ -1,15 +1,18 @@
 from sqlalchemy import *
 from sqlalchemy.orm import relationship
 from base import Base
+from site import Site
+from variable import Variable
+from quality_control_level import QualityControlLevel
 
 class Series(Base):
 	__tablename__ = 'SeriesCatalog'
 
 	id 						   = Column('SeriesID', Integer, primary_key=True)
-	site_id 		    	   = Column('SiteID', String)
+	site_id 		    	   = Column('SiteID', String, ForeignKey('Sites.SiteID'))
 	site_code 		    	   = Column('SiteCode', String, nullable=False)
 	site_name 		    	   = Column('SiteName', String)
-	variable_id		    	   = Column('VariableID', Integer)
+	variable_id		    	   = Column('VariableID', Integer, ForeignKey('Variables.VariableID'))
 	variable_code			   = Column('VariableCode', String)
 	variable_name              = Column('VariableName', String)
 	speciation	 	    	   = Column('Speciation', String)
@@ -28,7 +31,7 @@ class Series(Base):
 	source_description  	   = Column('SourceDescription', String)
 	organization	    	   = Column('Organization', String)
 	citation				   = Column('Citation', String)
-	quality_control_level_id   = Column('QualityControlLevelID', Integer)
+	quality_control_level_id   = Column('QualityControlLevelID', Integer, ForeignKey('QualityControlLevels.QualityControlLevelID'))
 	quality_control_level_code = Column('QualityControlLevelCode', String)
 	begin_date_time			   = Column('BeginDateTime', DateTime)
 	end_date_time			   = Column('EndDateTime', DateTime)
@@ -43,8 +46,12 @@ class Series(Base):
 			"DataValue.source_id == Series.source_id, "
 			"DataValue.quality_control_level_id == Series.quality_control_level_id)",
 		foreign_keys="[DataValue.site_id, DataValue.variable_id, DataValue.method_id, DataValue.source_id, DataValue.quality_control_level_id]",
+		order_by="DataValue.local_date_time",
 		backref="series")
 
+	site = relationship(Site)
+	variable = relationship(Variable)
+	quality_control_level = relationship(QualityControlLevel)
 
 	# TODO add all to repr
 	def __repr__(self):
