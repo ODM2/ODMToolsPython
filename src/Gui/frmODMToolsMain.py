@@ -299,9 +299,12 @@ class frmODMToolsMain(wx.Frame):
      #test if there is a perspective to load
         try:
             f= open('ODMTools.config', 'r')
-            self._mgr.LoadPerspective(f.read(), True)
         except:
-            print "error loading docking data"
+            # Create the file if it doesn't exist
+            open('ODMTools.config', 'w').close()
+            f = open('ODMTools.config', 'r')
+
+        self._mgr.LoadPerspective(f.read(), True)
 
     def OnClose(self, event):
         # deinitialize the frame manager
