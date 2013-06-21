@@ -6,5 +6,5 @@
 •	Matplotlib-1.1.1(https://github.com/matplotlib/matplotlib/downloads)
 	•	Numpy-1.6.2(http://sourceforge.net/projects/numpy/files/)/(http://www.scipy.org/Download)
 	New version of matplotlib released  01/08/13 1.2.0 – allows user to customize boxplots
-•	Object List Viewer-2.6.0(http://sourceforge.net/projects/objectlistview/files/objectlistview/)
+•	Object List Viewer-1.2(http://sourceforge.net/projects/objectlistview/files/objectlistview-python/)
 •	PyMySQL (https://github.com/petehunt/PyMySQL/)
