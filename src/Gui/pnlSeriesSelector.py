@@ -12,6 +12,7 @@ import wx.lib.agw.ultimatelistctrl as ULC
 from clsULC import clsULC, TextSearch, Chain
 import frmODMToolsMain
 import frmQueryBuilder
+import frmDataExport
 
 from odmdata import memoryDatabase
 # import memoryDatabase
@@ -328,7 +329,9 @@ class pnlSeriesSelector(wx.Panel):
 
 
     def OnRightExData(self, event):
-        # print "in OnRightExData"
+        data_export = frmDataExport.frmDataExport(self, self.tableSeries.GetColumnText(self.selectedIndex, 1))
+        data_export.ShowModal()
+        data_export.Destroy()
         event.Skip()
 
     def OnRightExMeta(self, event):
