@@ -14,12 +14,12 @@ class ExportService():
 			return False
 
 		writer = csv.writer(open(filename, 'wb'))
-		self.write_header(writer, utc, site, var, offset, qual, src, qcl)
+		self.write_data_header(writer, utc, site, var, offset, qual, src, qcl)
 		for dv in series.data_values:
-			self.write_row(writer, series, dv, utc, site, var, offset, qual, src, qcl)
+			self.write_data_row(writer, series, dv, utc, site, var, offset, qual, src, qcl)
 
 
-	def write_row(self, writer, series, dv, utc, site, var, offset, qual, src, qcl):
+	def write_data_row(self, writer, series, dv, utc, site, var, offset, qual, src, qcl):
 		data = []
 		data.append(series.id)
 		data.append(dv.id)
@@ -74,7 +74,7 @@ class ExportService():
 		writer.writerow(data)
 
 
-	def write_header(self, writer, utc, site, var, offset, qual, src, qcl):
+	def write_data_header(self, writer, utc, site, var, offset, qual, src, qcl):
 		# Build header list
 		header = []
 		header.append("SeriesId")
@@ -120,3 +120,7 @@ class ExportService():
 		header.append("SampleID")
 
 		writer.writerow(header)
+
+	def export_series_metadata(self, series_ids, filename):
+		if len(series_ids) == 0:
+			return
