@@ -147,4 +147,6 @@ class ExportService():
 			source = series.source
 			qcl = series.quality_control_level
 			offsets = self._series_service.get_offset_types_by_series_id(series.id)
-			
+			qualifiers = self._series_service.get_qualifiers_by_series_id(series.id)
+			samples = self._series_service.get_samples_by_series_id(series.id)
+

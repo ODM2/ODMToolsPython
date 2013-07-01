@@ -7,6 +7,7 @@ from odmdata import DataValue
 from odmdata import QualityControlLevel
 from odmdata import Qualifier
 from odmdata import OffsetType
+from odmdata import Sample
 from odmdata import ODMVersion
 
 from sqlalchemy import distinct
@@ -69,6 +70,11 @@ class SeriesService():
 		subquery = self._edit_session.query(DataValue.qualifier_id).outerjoin(
 			Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
 		return self._edit_session.query(Qualifier).join(subquery).distinct().all()
+
+	def get_samples_by_series_id(self, series_id):
+		subquery = self._edit_session.query(DataValue.sample_id).outerjoin(
+			Series.data_values).filter(Series.id == series_id, DataValue.sample_id != None).distinct().subquery()
+		return self._edit_session.query(Sample).join(subquery).distinct().all()
 
 	def get_unit_abbrev_by_name(self, unit_name):
 		try:
