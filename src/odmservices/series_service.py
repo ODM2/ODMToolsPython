@@ -6,6 +6,7 @@ from odmdata import Series
 from odmdata import DataValue
 from odmdata import QualityControlLevel
 from odmdata import Qualifier
+from odmdata import OffsetType
 from odmdata import ODMVersion
 
 from sqlalchemy import distinct
@@ -58,6 +59,16 @@ class SeriesService():
 
 	def get_unit_by_id(self, unit_id):
 		return self._edit_session.query(Unit).filter_by(id=unit_id).one()
+
+	def get_offset_types_by_series_id(self, series_id):
+		subquery = self._edit_session.query(DataValue.offset_type_id).outerjoin(
+			Series.data_values).filter(Series.id == series_id, DataValue.offset_type_id != None).distinct().subquery()
+		return self._edit_session.query(OffsetType).join(subquery).distinct().all()
+
+	def get_qualifiers_by_series_id(self, series_id):
+		subquery = self._edit_session.query(DataValue.qualifier_id).outerjoin(
+			Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
+		return self._edit_session.query(Qualifier).join(subquery).distinct().all()
 
 	def get_unit_abbrev_by_name(self, unit_name):
 		try:

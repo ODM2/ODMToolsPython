@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 from base import Base
 from site import Site
 from variable import Variable
+from method import Method
+from source import Source
 from quality_control_level import QualityControlLevel
 
 class Series(Base):
@@ -25,9 +27,9 @@ class Series(Base):
 	time_units_name	    	   = Column('TimeUnitsName', String)
 	data_type		    	   = Column('DataType', String)
 	general_category 		   = Column('GeneralCategory', String)
-	method_id		    	   = Column('MethodID', Integer)
+	method_id		    	   = Column('MethodID', Integer, ForeignKey('Methods.MethodID'))
 	method_description  	   = Column('MethodDescription', String)
-	source_id		    	   = Column('SourceID', Integer)
+	source_id		    	   = Column('SourceID', Integer, ForeignKey('Sources.SourceID'))
 	source_description  	   = Column('SourceDescription', String)
 	organization	    	   = Column('Organization', String)
 	citation				   = Column('Citation', String)
@@ -51,6 +53,8 @@ class Series(Base):
 
 	site = relationship(Site)
 	variable = relationship(Variable)
+	method = relationship(Method)
+	source = relationship(Source)
 	quality_control_level = relationship(QualityControlLevel)
 
 	# TODO add all to repr

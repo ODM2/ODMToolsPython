@@ -1,4 +1,5 @@
 import csv
+import xml.etree.cElementTree as ET
 
 class ExportService():
 
@@ -124,3 +125,26 @@ class ExportService():
 	def export_series_metadata(self, series_ids, filename):
 		if len(series_ids) == 0:
 			return
+
+		root = ET.Element("Metadata")
+		list_root = ET.SubElement(root, "DataSeriesList")
+		list_root.set("Total", len(series_ids))
+
+		try:
+			with open(filename): file_exists = True
+		except IOError:
+			file_exists = False
+
+		if file_exists:
+			# Read the file into the XML tree
+			pass
+		
+		for series_id in series_ids:
+			series = self._series_service.get_series_by_id(series_id)
+			site = series.site
+			variable = series.variable
+			method = series.method
+			source = series.source
+			qcl = series.quality_control_level
+			offsets = self._series_service.get_offset_types_by_series_id(series.id)
+			
