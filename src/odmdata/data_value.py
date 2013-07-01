@@ -9,6 +9,7 @@ from method import Method
 from source import Source
 from quality_control_level import QualityControlLevel
 from offset_type import OffsetType
+from sample import Sample
 
 class DataValue(Base):
 	__tablename__ = 'DataValues'
@@ -27,7 +28,7 @@ class DataValue(Base):
 	qualifier_id	    	 = Column('QualifierID', Integer, ForeignKey('Qualifiers.QualifierID'))
 	method_id		    	 = Column('MethodID', Integer, ForeignKey('Methods.MethodID'), nullable=False)
 	source_id		    	 = Column('SourceID', Integer, ForeignKey('Sources.SourceID'), nullable=False)
-	sample_id			  	 = Column('SampleID', Integer)
+	sample_id			  	 = Column('SampleID', Integer, ForeignKey('Samples.SampleID'))
 	derived_from_id	    	 = Column('DerivedFromID', Integer)
 	quality_control_level_id = Column('QualityControlLevelID', Integer, ForeignKey('QualityControlLevels.QualityControlLevelID'))
 
@@ -39,6 +40,7 @@ class DataValue(Base):
 	source 				  = relationship(Source)
 	quality_control_level = relationship(QualityControlLevel)
 	offset_type			  = relationship(OffsetType)
+	sample 				  = relationship(Sample)
 
 
 	def __repr__(self):
