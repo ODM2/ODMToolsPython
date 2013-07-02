@@ -1,5 +1,6 @@
 import csv
 import xml.etree.cElementTree as ET
+import datetime
 
 class ExportService():
 
@@ -8,6 +9,7 @@ class ExportService():
 	'''
 	def __init__(self, series_service):
 		self._series_service = series_service
+		self.dt_format_str = "%m/%d/%Y %I:%M:%S %p"
 
 	def export_series_data(self, series_id, filename, utc=False, site=False, var=False, offset=False, qual=False, src=False, qcl=False):
 		series = self._series_service.get_series_by_id(series_id)
@@ -152,6 +154,8 @@ class ExportService():
 		self.append_general_info(series, series_node)
 		self.append_site_info(series, series_node)
 		self.append_var_info(series, series_node)
+		self.append_method_source_info(series, series_node)
+		self.append_misc_info(series, series_node)
 
 		return series_node
 		
@@ -170,8 +174,7 @@ class ExportService():
 		metadata_link.text = meta.metadata_link
 		date = ET.SubElement(general_node, "MetadataCreationDate")
 		# 7/1/2013 12:17:16 PM
-		import datetime
-		date.text = datetime.datetime.now().strftime("%m/%d/%Y %I:%M:%S %p")
+		date.text = datetime.datetime.now().strftime(self.dt_format_str)
 
 	def append_site_info(self, series, parent):
 		site = series.site
@@ -266,4 +269,127 @@ class ExportService():
 		gen_cat.text = variable.general_category
 		no_dv = ET.SubElement(var_node, "NoDataValue")
 		no_dv.text = str(variable.no_data_value)
-		 
+		
+		period = ET.SubElement(var_node, "PeriodOfRecord")
+		begin_dt = ET.SubElement(period, "BeginDateTime")
+		begin_dt.text = series.begin_date_time.strftime(self.dt_format_str)
+		end_dt = ET.SubElement(period, "EndDateTime")
+		end_dt.text = series.end_date_time.strftime(self.dt_format_str)
+		begin_dt_utc = ET.SubElement(period, "BeginDateTimeUTC")
+		begin_dt_utc.text = series.begin_date_time_utc.strftime(self.dt_format_str)
+		end_dt_utc = ET.SubElement(period, "EndDateTimeUTC")
+		end_dt_utc.text = series.end_date_time_utc.strftime(self.dt_format_str)
+		value_count = ET.SubElement(period, "ValueCount")
+		value_count.text = str(series.value_count)
+
+	def append_method_source_info(self, series, parent):
+		method = series.method
+		method_node = ET.SubElement(parent, "MethodInformation")
+		method_desc = ET.SubElement(method_node, "MethodDescription")
+		method_desc.text = method.description
+		method_link = ET.SubElement(method_node, "MethodLink")
+		method_link.text = method.link
+
+		source = series.source
+		source_node = ET.SubElement(parent, "SourceInformation")
+		org = ET.SubElement(source_node, "Organization")
+		org.text = source.organization
+		source_desc = ET.SubElement(source_node, "SourceDescription")
+		source_desc.text = source.description
+		source_link = ET.SubElement(source_node, "SourceLink")
+		source_link.text = source.link
+
+		contact = ET.SubElement(source_node, "Contact")
+		contact_name = ET.SubElement(contact, "ContactName")
+		contact_name.text = source.contact_name
+		phone = ET.SubElement(contact, "Phone")
+		phone.text = source.phone
+		email = ET.SubElement(contact, "Email")
+		email.text = source.email
+		address = ET.SubElement(contact, "Address")
+		address.text = source.address
+		city = ET.SubElement(contact, "City")
+		city.text = source.city
+		state = ET.SubElement(contact, "State")
+		state.text = source.state
+		zip_code = ET.SubElement(contact, "ZipCode")
+		zip_code.text = source.zip_code
+
+		citation = ET.SubElement(source_node, "Citation")
+		citation.text = source.citation
+
+	def append_misc_info(self, series, parent):
+		qcl = series.quality_control_level
+
+		qcl_node = ET.SubElement(parent, "QualityControlLevelInformation")
+		qcl_code = ET.SubElement(qcl_node, "QualityControlLevelCode")
+		qcl_code.text = qcl.code
+		qcl_def  = ET.SubElement(qcl_node, "Definition")
+		qcl_def.text = qcl.definition
+		qcl_expl = ET.SubElement(qcl_node, "Explanation")
+		qcl_expl.text = qcl.explanation
+
+		offsets_node = ET.SubElement(parent, "OffsetInformation")
+		offsets = self._series_service.get_offset_types_by_series_id(series.id)
+		for offset in offsets:
+			offset_id = ET.SubElement(offsets_node, "Offset")
+			if offset: 
+				offset_id.set("ID", str(offset.id)) 
+			else: 
+				offset_id.set("ID", "")
+			offset_desc = ET.SubElement(offsets_node, "OffsetDescription")
+			if offset: offset_desc.text = offset.description
+			offset_units = ET.SubElement(offsets_node, "OffsetUnits")
+			units_name = ET.SubElement(offset_units, "UnitsName")
+			if offset: units_name.text = offset.unit.name
+			units_type = ET.SubElement(offset_units, "UnitsType")
+			if offset: units_type.text = offset.unit.type
+			units_abbrev = ET.SubElement(offset_units, "UnitsAbbreviation")
+			if offset: units_abbrev.text = offset.unit.abbreviation
+
+		qualifiers_node = ET.SubElement(parent, "QualifierInformation")
+		qualifiers = self._series_service.get_qualifiers_by_series_id(series.id)
+		for qual in qualifiers:
+			qual_id = ET.SubElement(qualifiers_node, "Qualifier")
+			if qual: 
+				qual_id.set("ID", str(qual.id)) 
+			else: 
+				qual_id.set("ID", "")
+			qual_code = ET.SubElement(qual_id, "QualiferCode")
+			if qual: qual_code.text = qual.code
+			qual_desc = ET.SubElement(qual_id, "QualifierDescription")
+			if qual: qual_desc.text = qual.description
+
+		samples_node = ET.SubElement(parent, "SampleInformation")
+		samples = self._series_service.get_samples_by_series_id(series.id)
+		for sample in samples:
+			sample_id = ET.SubElement(samples_node, "Sample")
+			if sample: 
+				sample_id.set("ID", str(sample.id)) 
+			else: 
+				sample_id.set("ID", "")
+			sample_type = ET.SubElement(sample_id, "SampleType")
+			if sample: sample_type.text = sample.type
+			lab_code = ET.SubElement(sample_id, "LabSampleCode")
+			if sample: lab_code.text = sample.lab_sample_code
+			lab_method_id = ET.SubElement(sample_id, "LabMethodID")
+			if sample: lab_method_id = sample.lab_method_id
+
+		lab_method_node = ET.SubElement(parent, "LabMethodInformation")
+		for sample in samples:
+			if sample: lab_method = sample.lab_method
+			lab_method_id = ET.SubElement(lab_method_node, "LabMethod")
+			if lab_method: 
+				lab_method_id.set("ID", str(lab_method.id)) 
+			else: 
+				lab_method_id.set("ID", "")
+			lab_name = ET.SubElement(lab_method_id, "LabName")
+			if lab_method: lab_name.text = lab_method.name
+			lab_org = ET.SubElement(lab_method_id, "LabOrganization")
+			if lab_method: lab_org.text = lab_method.organization
+			method_name = ET.SubElement(lab_method_id, "LabMethodName")
+			if lab_method: method_name.text = lab_method.method_name
+			method_desc = ET.SubElement(lab_method_id, "LabMethodDescription")
+			if lab_method: method_desc.text = lab_method.method_description
+			method_link = ET.SubElement(lab_method_id, "LabMethodLink")
+			if lab_method: method_link.text = lab_method.link
