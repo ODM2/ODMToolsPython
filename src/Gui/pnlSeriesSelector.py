@@ -1,5 +1,5 @@
 #Boa:FramePanel:pnlSeriesSelector
-
+import os
 import wx
 # import wx.lib.agw.ultimatelistctrl as ULC
 # from ObjectListView import ObjectListView, ColumnDefn, Filter
@@ -15,6 +15,7 @@ import frmQueryBuilder
 import frmDataExport
 
 from odmdata import memoryDatabase
+from odmservices import ServiceManager
 # import memoryDatabase
 
 # import wx.lib.agw.ultimatelistctrl as ULC
@@ -221,6 +222,9 @@ class pnlSeriesSelector(wx.Panel):
         self.initTableSeries()
         self.initSVBoxes()
 
+        sm = ServiceManager()
+        self.export_service = sm.get_export_service()
+
 
     def resetDB(self, dbservice):
 
@@ -329,13 +333,29 @@ class pnlSeriesSelector(wx.Panel):
 
 
     def OnRightExData(self, event):
-        data_export = frmDataExport.frmDataExport(self, self.tableSeries.GetColumnText(self.selectedIndex, 1))
-        data_export.ShowModal()
-        data_export.Destroy()
+        dlg = wx.FileDialog(self, "Choose a save location", '', "", "*.csv", wx.SAVE | wx.OVERWRITE_PROMPT)
+        if dlg.ShowModal() == wx.ID_OK:
+            full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
+
+            series_id = self.tableSeries.GetColumnText(self.selectedIndex, 1)
+            self.export_service.export_series_data(series_id, full_path, True, True, True, True, True, True, True)
+            self.Close()
+
+        dlg.Destroy()
+
         event.Skip()
 
     def OnRightExMeta(self, event):
-        # print "in OnRightExMeta"
+        dlg = wx.FileDialog(self, "Choose a save location", '', "", "*.xml", wx.SAVE | wx.OVERWRITE_PROMPT)
+        if dlg.ShowModal() == wx.ID_OK:
+            full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
+
+            series_id = self.tableSeries.GetColumnText(self.selectedIndex, 1)
+            self.export_service.export_series_metadata(series_id, full_path)
+            self.Close()
+
+        dlg.Destroy()
+
         event.Skip()
 
 
