@@ -34,4 +34,4 @@ class Site(Base):
 		self.site_name = site_name
 
 	def __repr__(self):
-		return "<Site('%s', '%s')>" % (self.site_code, self.site_name)
+		return "<Site('%s', '%s')>" % (self.code, self.name)
