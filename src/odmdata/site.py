@@ -23,7 +23,7 @@ class Site(Base):
 	county			    = Column('County', String)
 	comments		    = Column('Comments', String)
 
-	type			= Column('SiteType', String)
+	type				= Column('SiteType', String)
 
 	# relationships
 	spatial_ref = relationship(SpatialReference, primaryjoin=("SpatialReference.id==Site.lat_long_datum_id"))

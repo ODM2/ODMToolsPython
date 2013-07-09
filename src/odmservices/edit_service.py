@@ -8,8 +8,10 @@ from odmdata import QualityControlLevel
 from odmdata import Qualifier
 
 from series_service import SeriesService
+from odmdata import series as series_module
 
 import sqlite3
+import copy
 
 class EditService():
     # Mutual exclusion: cursor, or connection_string
@@ -360,7 +362,7 @@ class EditService():
         self._connection.rollback()
         self._populate_series()
 
-    def save(self, var_id=None, method_id=None, qcl_id=None):
+    def save(self, var=None, method=None, qcl=None):
         # These can change when saving a series
         # VariableID
         # MethodID
@@ -376,22 +378,36 @@ class EditService():
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         self._cursor.executemany(query, results)
 
-        if var_id:
-            self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var_id))
-        if method_id:
-            self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method_id))
-        if qcl_id:
-            # get qcl and check that the code is not zero
-            qcl = self._series_service.get_qcl(qcl_id)
+        if var:
+            self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
+        if method:
+            self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
+        if qcl:
+            # check that the code is not zero        
             if qcl.code > 0:
-                self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl_id))
+                self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
             else:
                 raise ValueError("Quality Control Level cannot be zero")
 
         self._connection.commit()
 
-    def write_to_db(self, var_id=None, method_id=None, qcl_id=None):
+    def write_to_db(self, var=None, method=None, qcl=None):
         dvs = []
+        is_new_series = False
+
+        if var:
+            self._cursor.execute("UPDATE DataValuesEdit SET VariableID = %s" % (var.id))
+            is_new_series = True
+        if method:
+            self._cursor.execute("UPDATE DataValuesEdit SET MethodID = %s" % (method.id))
+            is_new_series = True
+        # check that the code is not zero
+        if qcl and qcl.code > 0:
+            self._cursor.execute("UPDATE DataValuesEdit SET QualityControlLevelID = %s" % (qcl.id))
+            is_new_series = True
+        else:
+            raise ValueError("Quality Control Level cannot be zero")
+
         self._cursor.execute("SELECT * FROM DataValuesEdit ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
 
@@ -400,42 +416,60 @@ class EditService():
         for row in results:
             dv = DataValue()
 
-            if row[0]:
-                dv.id = row[0]
+            if is_new_series:
+                dv.id = None
+            else:
+                dv.id                   = row[0]
             dv.data_value               = row[1]
             dv.value_accuracy           = row[2]
             dv.local_date_time          = row[3]
             dv.utc_offset               = row[4]
             dv.date_time_utc            = row[5]
             dv.site_id                  = row[6]
-            if var_id == None:
-                dv.variable_id = row[7]
-            else:
-                dv.variable_id = var_id
+            dv.variable_id              = row[7]
             dv.offset_value             = row[8]
             dv.offset_type_id           = row[9]
             dv.censor_code              = row[10]
             dv.qualifier_id             = row[11]
-            if method_id == None:
-                dv.method_id = row[12]
-            else:
-                dv.method_id = method_id
+            dv.method_id                = row[12]
             dv.source_id                = row[13]
             dv.sample_id                = row[14]
             dv.derived_from_id          = row[15]
-            if qcl_id == None:
-                dv.quality_control_level_id = row[16]
-            else:
-                dv.quality_control_level_id = qcl_id
-
-            # make sure the qcl is not zero
-            qcl = self._series_service.get_qcl(dv.quality_control_level_id)
-            if qcl.code <= 0:
-                raise ValueError("Quality Control Level cannot be zero")
+            dv.quality_control_level_id = row[16]
 
             dvs.add(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
+
+        if is_new_series:
+            series = series_module.copy(series)
+            if var:
+                series.variable_id = var.id
+                series.variable_code = var.code
+                series.variable_name = var.name
+                series.speciation = var.speciation
+                series.variable_units_id = var.variable_unit.id
+                series.variable_units_name = var.variable_unit.name
+                series.sample_medium = var.sample_medium
+                series.value_type = var.value_type
+                series.time_support = var.time_support
+                series.time_units_id = var.time_unit.id
+                series.time_units_name = var.time_unit.name
+                series.data_type = var.data_type
+                series.general_category = var.general_category
+            if method:
+                series.method_id = method.id
+                series.method_description = method.description
+            if qcl:
+                series.quality_control_level_id = qcl.id
+                series.quality_control_level_code = qcl.code
+
+            series.begin_date_time = dvs[0].local_date_time
+            series.end_date_time = dvs[-1].local_date_time
+            series.begin_date_time_utc = dvs[0].date_time_utc
+            series.end_date_time_utc = dvs[-1].date_time_utc
+            series.value_count = len(dvs)
+
         series.data_values = dvs
 
     def reconcile_dates(self, parent_series_id):
@@ -462,6 +496,6 @@ class EditService():
                 DerivedFromID INTEGER,
                 QualityControlLevelID INTEGER NOT NULL,
 
-                PRIMARY KEY (ValueID),
+                PRIMARY KEY (ValueID)
                 UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID))
                """)
