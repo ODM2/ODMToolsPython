@@ -87,6 +87,7 @@ class plotTimeSeries(wx.Panel):
       self.curveindex = -1
       self.editseriesID = -1
       self.editCurve =None
+      self.cid=None
 
       self.canvas.draw()
       self._init_sizers()
@@ -101,8 +102,8 @@ class plotTimeSeries(wx.Panel):
   #     sellist = self.selFormat(sellist)
   #     self.changeSelection(sellist)
   #     print sellist
-      
-      
+
+
   # def selFormat(self, pairs):
   #   #convert selectionlist from datetimes to true false
   #     print len(pairs)
@@ -120,7 +121,7 @@ class plotTimeSeries(wx.Panel):
       self.editPoint.set_color(['k' if x==0 else 'r' for x in sellist])
       self.parent.record_service.select_points_tf(sellist)
       Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
-      
+
       self.canvas.draw()
 
   def onDateChanged(self, date, time):
@@ -166,8 +167,8 @@ class plotTimeSeries(wx.Panel):
     # print plt.setp(self.lines)
     # print(len(self.lines))
     format = ls+m
-    for line, i in zip(self.lines, range(len(self.lines))):   
-      if not (i == self.curveindex):   
+    for line, i in zip(self.lines, range(len(self.lines))):
+      if not (i == self.curveindex):
         plt.setp(line, linestyle = ls, marker =  m)
 
     self.canvas.draw()
@@ -186,15 +187,15 @@ class plotTimeSeries(wx.Panel):
       self.lman= None
       self.canvas.mpl_disconnect(self.cid)
       self.cid=None
-      self.xys = None     
-      
+      self.xys = None
+
       self.curveindex = -1
       self.editCurve =None
       # self.RefreshPlot()
       if self.seriesPlotInfo and self.seriesPlotInfo.IsPlotted(self.editseriesID):
-        self.updatePlot()    
-      self.editseriesID = -1  
-      
+        self.updatePlot()
+      self.editseriesID = -1
+
 
 
 
@@ -250,12 +251,12 @@ class plotTimeSeries(wx.Panel):
     for l in curraxis.lines:
       if l.get_label() == self.editCurve.plotTitle:
         curraxis.lines.remove(l)
-    self.editPoint.remove()         
+    self.editPoint.remove()
 
 
-    #redraw editpoints and curve    
+    #redraw editpoints and curve
     self.seriesPlotInfo.UpdateEditSeries()
-    self.editCurve= self.seriesPlotInfo.GetEditSeriesInfo() 
+    self.editCurve= self.seriesPlotInfo.GetEditSeriesInfo()
     self.drawEditPlot(self.editCurve)
     Publisher.sendMessage(("refreshTable"), e=None)
     # self.parent.parent.dataTable.Refresh()
@@ -276,7 +277,7 @@ class plotTimeSeries(wx.Panel):
 
 
 
-  def drawEditPlot(self, oneSeries):      
+  def drawEditPlot(self, oneSeries):
       curraxis= self.axislist[oneSeries.axisTitle]
       self.lines[self.curveindex]=curraxis.plot_date([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable], "-", color=oneSeries.color, xdate = True, tz = None, label = oneSeries.plotTitle )
 
@@ -324,9 +325,9 @@ class plotTimeSeries(wx.Panel):
 
 
       for oneSeries in self.seriesPlotInfo.GetSeriesInfo():
-       
+
         if oneSeries.seriesID == self.seriesPlotInfo.GetEditSeriesID():
-          
+
           self.curveindex = len(self.lines)
           self.lines.append("")
           self.editCurve= oneSeries
@@ -366,7 +367,7 @@ class plotTimeSeries(wx.Panel):
         self.editCurve = self.seriesPlotInfo.GetSeries(self.editseriesID)
         self.updatePlot()
         # print self.editCurve
- 
+
 
 
   def setUpYAxis(self):
@@ -424,7 +425,7 @@ class plotTimeSeries(wx.Panel):
       self.canvas.draw_idle()
       self.canvas.widgetlock.release(self.lasso)
       del self.lasso
-        
+
 
 
   def onpress(self, event):

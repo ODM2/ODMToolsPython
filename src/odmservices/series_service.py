@@ -8,6 +8,8 @@ from odmdata import QualityControlLevel
 from odmdata import Qualifier
 from odmdata import OffsetType
 from odmdata import Sample
+from odmdata import Method
+from odmdata import QualityControlLevel
 from odmdata import ODMVersion
 
 from sqlalchemy import distinct
@@ -44,13 +46,19 @@ class SeriesService():
 				distinct(Series.variable_id), Series.variable_code, Series.variable_name).filter_by(site_code=site_code).order_by(Series.variable_code
 			).all()
 		else:
-			result = self._edit_session.query(distinct(Variable.variable_id), Series.variable_code, Series.variable_name).order_by(Series.variable_code).all()
+			result = self._edit_session.query(distinct(Variable.id), Series.variable_code, Series.variable_name).order_by(Series.variable_code).all()
 
+		return result
+	def get_vars(self):
+		try:
+			result = self._edit_session.query(Variable).all()
+		except:
+			result = None
 		return result
 
 	def get_variable_by_id(self, variable_id):
 		return self._edit_session.query(Variable).filter_by(id=variable_id).one()
-		
+
 	def get_no_data_value(self, variable_id):
 		return self._edit_session.query(Variable.no_data_value).filter_by(id = variable_id).one()
 
@@ -95,7 +103,7 @@ class SeriesService():
 		else:
 			result = self._edit_session.query(Series).order_by(Series.id).all()
 		return result
-	
+
 	def get_series_by_id(self, series_id):
 		try:
 			result = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()
@@ -103,7 +111,7 @@ class SeriesService():
 			result = None
 		return result
 
-	def get_all_series(self):       
+	def get_all_series(self):
 		return self._edit_session.query(Series).all()
 
 	def get_all_series_tuples(self):
@@ -112,7 +120,7 @@ class SeriesService():
 			Series.variable_name, Series.speciation, Series.variable_units_id, Series.variable_units_name, Series.sample_medium,
 			Series.value_type, Series.time_support, Series.time_units_id, Series.time_units_name, Series.data_type, Series.general_category,
 			Series.method_id, Series.method_description, Series.source_id, Series.organization, Series.source_description,
-			Series.citation, Series.quality_control_level_id, Series.quality_control_level_code, Series.begin_date_time, 
+			Series.citation, Series.quality_control_level_id, Series.quality_control_level_code, Series.begin_date_time,
 			Series.end_date_time, Series.begin_date_time_utc, Series.end_date_time_utc, Series.value_count
 		).order_by(Series.id).all()
 
@@ -149,6 +157,27 @@ class SeriesService():
 			result = None
 		return result
 
+	def get_qcls(self):
+		try:
+			result = self._edit_session.query(QualityControlLevel).all()
+		except:
+			result = None
+		return result
+
+	# Method methods
+	def get_method_by_id(self, method_id):
+		try:
+			result = self._edit_session.query(Method).filter_by(id=method_id).one()
+		except:
+			result = None
+		return result
+
+	def get_methods(self):
+		try:
+			result = self._edit_session.query(Method).all()
+		except:
+			result = None
+		return result
 
 	# Edit/delete methods
 	def delete_dvs(self, dv_list):
@@ -189,7 +218,7 @@ class SeriesService():
 		self._edit_session.add(qualifier)
 		self._edit_session.commit()
 
-	def create_variable(self, code, name, speciation, variable_unit, sample_medium, 
+	def create_variable(self, code, name, speciation, variable_unit, sample_medium,
 		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value):
 		var = Variable()
 		var.code = code

@@ -30,8 +30,8 @@ class Site(Base):
 	local_spatial_ref = relationship(SpatialReference, primaryjoin=("SpatialReference.id==Site.local_projection_id"))
 
 	def __init__(self, site_code, site_name):
-		self.site_code = site_code
-		self.site_name = site_name
+		self.code = site_code
+		self.name = site_name
 
 	def __repr__(self):
-		return "<Site('%s', '%s')>" % (self.site_code, self.site_name)
+		return "<Site('%s', '%s')>" % (self.code, self.name)

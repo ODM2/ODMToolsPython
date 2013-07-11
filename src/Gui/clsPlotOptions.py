@@ -113,7 +113,7 @@ class SeriesPlotInfo(object):
 
     def UpdateEditSeries(self):
         if self.editID in self._seriesInfos:
-            self._seriesInfos[self.editID].dataTable= self.dbConn.getEditDataValuesforGraph()          
+            self._seriesInfos[self.editID].dataTable= self.dbConn.getEditDataValuesforGraph()
 
 
     def IsPlotted(self, sid ):
