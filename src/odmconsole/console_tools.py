@@ -155,11 +155,15 @@ class ConsoleTools(object):
     ###############
     # Export methods
     ###############
-    def export_series_data(self, series_id, filename, utc=False, site=False, var=False, offset=False, qual=False, src=False, qcl=False):
+    def export_series_data(self, series_id, filename):
         serv_man = ServiceManager()
         export_service = serv_man.get_export_service()
-        export_service.export_series_data(series_id, filename, utc=utc, 
-            site=site, var=var, offset=offset, qual=qual, src=src, qcl = qcl)
+        export_service.export_series_data(series_id, filename, True,True,True,True,True,True,True)
+
+    def export_series_metadata(self, series_id, filename):
+        serv_man = ServiceManager()
+        export_service = serv_man.get_export_service()
+        export_service.export_series_metadata(series_id, filename)
 
 
     ###############

@@ -111,6 +111,13 @@ class SeriesService():
 			result = None
 		return result
 
+	def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
+		try:
+			result = self._edit_session.query(Series).filter_by(site_id=site_id, var_id=var_id, method_id=method_id, source_id=source_id, qcl_id=qcl_id)
+		except:
+			result = None
+		return result
+
 	def get_all_series(self):
 		return self._edit_session.query(Series).all()
 
