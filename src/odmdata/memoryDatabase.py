@@ -4,6 +4,7 @@ import sqlite3
 class memoryDatabase(object):
 
 
+    # dbservice is a SeriesService
     def __init__(self, dbservice):
         self.dbservice = dbservice        
         self.conn = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
@@ -96,10 +97,10 @@ class memoryDatabase(object):
         self.DataValuesEdit= None
         self.SeriesCatalog = None
 
-    def commit():
+    def commit(self):
         self.conn.commit()
 
-    def rollback():
+    def rollback(self):
         self.conn.rollback()
 
     def stopEdit(self):       

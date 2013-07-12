@@ -156,8 +156,7 @@ class SeriesService():
 			result = None
 		return result
 
-	# Quality Control Level methods
-	def get_qcl(self, qcl_id):
+	def get_qcl_by_id(self, qcl_id):
 		try:
 			result = self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).one()
 		except:
@@ -198,11 +197,6 @@ class SeriesService():
 		self._edit_session.add_all(merged_dv_list)
 		self._edit_session.commit()
 
-	def create_method(self, method):
-		new_method = self._edit_session.merge(method)
-		self._edit_session.add(new_method)
-		self._edit_session.commit()
-
 	def create_new_series(self, data_values, variable_id, site_id, method_id, source_id, qcl_id):
 		self.update_dvs(data_values)
 		series = Series()
@@ -215,8 +209,6 @@ class SeriesService():
 		self._edit_session.add(series)
 		self._edit_session.commit()
 
-	# This is a change
-
 	def create_qualifier(self, code, description):
 		qualifier = Qualifier()
 		qualifier.code = code
@@ -225,7 +217,17 @@ class SeriesService():
 		self._edit_session.add(qualifier)
 		self._edit_session.commit()
 
-	def create_variable(self, code, name, speciation, variable_unit, sample_medium,
+	def update_series_catalog(self, series):
+		merged_series = self._edit_session.merge(series)
+		self._edit_session.add(merged_series)
+		self._edit_session.commit()
+
+	def create_method(self, method):
+		new_method = self._edit_session.merge(method)
+		self._edit_session.add(new_method)
+		self._edit_session.commit()
+
+	def create_variable(self, code, name, speciation, variable_unit, sample_medium, 
 		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value):
 		var = Variable()
 		var.code = code
@@ -244,11 +246,6 @@ class SeriesService():
 		self._edit_session.add(var)
 		self._edit_session.commit()
 
-	def update_series_catalog(self, series):
-		merged_series = self._edit_session.merge(series)
-		self._edit_session.add(merged_series)
-		self._edit_session.commit()
-
 	def create_qcl(self, code, definition, explanation):
 		qcl = QualityControlLevel()
 		qcl.code = code
@@ -257,6 +254,7 @@ class SeriesService():
 
 		self._edit_session.add(qcl)
 		self._edit_session.commit()
+		return qcl
 
 	def delete_series(self, series):
 		self.delete_dvs(series.data_values)
