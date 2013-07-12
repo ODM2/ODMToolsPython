@@ -365,7 +365,7 @@ class EditService():
         self._connection.rollback()
         self._populate_series()
 
-    def write_to_db(self, var=None, method=None, qcl=None):
+    def save(self, var=None, method=None, qcl=None):
         dvs = []
         is_new_series = False
 
@@ -428,7 +428,7 @@ class EditService():
 
         series.data_values = dvs
 
-        print series
+        self._series_service.save_series(series, dvs)
 
     def create_qcl(self, code, definition, explanation):
         return self._series_service.create_qcl(code, definition, explanation)
