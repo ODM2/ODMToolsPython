@@ -96,11 +96,6 @@ class RecordService():
         if self._record:
             self._script("edit_service.save()\n", 'black')
 
-    def write_to_db(self):
-        self._edit_service.write_to_db()       
-        if self._record:
-            self._script("edit_service.write_to_db()\n", 'black')
-
     ###################
     # Gets
     ###################
