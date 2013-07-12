@@ -136,21 +136,20 @@ class SeriesService():
 		pass
 
 	def save_series(self, series, data_values):
-		if series_exists(series.site_id, series.variable_id, series.source_id, series.quality_control_level_id):
-			pass
+		if self.series_exists(series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id):
+			print "series exists"
 		else:
 			self._edit_session.add(series)
 			self._edit_session.add_all(data_values)
 		self._edit_session.commit()
 
-
 	def series_exists(self, site_id, var_id, method_id, source_id, qcl_id):
 		try:
 			result = self._edit_session.query(Series).filter_by(site_id=site_id, variable_id=var_id, method_id=method_id, source_id=source_id, quality_control_level_id=qcl_id).one()
+			print result.id
 			return True
 		except:
 			return False
-
 
 	def get_data_value_by_id(self, id):
 		try:
