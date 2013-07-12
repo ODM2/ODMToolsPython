@@ -125,6 +125,16 @@ class RecordService():
         else:
             self._record = True
 
+    ###################
+    # Creates
+    ###################
+    def create_qcl(self, code, definition, explanation):
+        qcl = self._edit_service.create_qcl(code, definition, explanation)
+        if self._record:
+            self._script('new_qcl = series_service.get_qcl_by_id(%s)\n' % (qcl.id))
+
     def write_header(self):
         self._script("from odmservices import EditService\n", 'black')
-        self._script("edit_service = EditService(series_id=%s, connection_string='%s')\n" % (self._edit_service._series_id, self._connection_string), 'black')
+        self._script("from odmservices import SeriesService\n", 'black')
+        self._script("edit_service   = EditService(series_id=%s, connection_string='%s')\n" % (self._edit_service._series_id, self._connection_string), 'black')
+        self._script("series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')

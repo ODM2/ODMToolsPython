@@ -214,6 +214,9 @@ class EditService():
     def get_filter_list(self):
         return self._filter_list
 
+    def get_qcl(self, qcl_id):
+        return self._series_service.get_qcl_by_id(qcl_id)
+
     
     #################
     # Edits
@@ -426,6 +429,9 @@ class EditService():
         series.data_values = dvs
 
         print series
+
+    def create_qcl(self, code, definition, explanation):
+        return self._series_service.create_qcl(code, definition, explanation)
 
     def reconcile_dates(self, parent_series_id):
         # append new data to this series
