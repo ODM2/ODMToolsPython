@@ -362,35 +362,6 @@ class EditService():
         self._connection.rollback()
         self._populate_series()
 
-    def save(self, var=None, method=None, qcl=None):
-        # These can change when saving a series
-        # VariableID
-        # MethodID
-        # QualityControlLevelID     (cannot be saved as a zero)
-
-        dvs = []
-        self._cursor.execute("DELETE FROM DataValues")
-        self._cursor.execute("SELECT * FROM DataValuesEdit ORDER BY LocalDateTime")
-        results = self._cursor.fetchall()
-
-        query = "INSERT INTO DataValues (ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID, "
-        query += "OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID) "
-        query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-        self._cursor.executemany(query, results)
-
-        if var:
-            self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
-        if method:
-            self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
-        if qcl:
-            # check that the code is not zero        
-            if qcl.code > 0:
-                self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
-            else:
-                raise ValueError("Quality Control Level cannot be zero")
-
-        self._connection.commit()
-
     def write_to_db(self, var=None, method=None, qcl=None):
         dvs = []
         is_new_series = False
@@ -414,29 +385,11 @@ class EditService():
         # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID, 
         # OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID
         for row in results:
-            dv = DataValue()
+            dv = _build_dv_from_tuple(row)
 
             if is_new_series:
                 dv.id = None
-            else:
-                dv.id                   = row[0]
-            dv.data_value               = row[1]
-            dv.value_accuracy           = row[2]
-            dv.local_date_time          = row[3]
-            dv.utc_offset               = row[4]
-            dv.date_time_utc            = row[5]
-            dv.site_id                  = row[6]
-            dv.variable_id              = row[7]
-            dv.offset_value             = row[8]
-            dv.offset_type_id           = row[9]
-            dv.censor_code              = row[10]
-            dv.qualifier_id             = row[11]
-            dv.method_id                = row[12]
-            dv.source_id                = row[13]
-            dv.sample_id                = row[14]
-            dv.derived_from_id          = row[15]
-            dv.quality_control_level_id = row[16]
-
+            
             dvs.add(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
@@ -464,17 +417,42 @@ class EditService():
                 series.quality_control_level_id = qcl.id
                 series.quality_control_level_code = qcl.code
 
-            series.begin_date_time = dvs[0].local_date_time
-            series.end_date_time = dvs[-1].local_date_time
-            series.begin_date_time_utc = dvs[0].date_time_utc
-            series.end_date_time_utc = dvs[-1].date_time_utc
-            series.value_count = len(dvs)
+        series.begin_date_time = dvs[0].local_date_time
+        series.end_date_time = dvs[-1].local_date_time
+        series.begin_date_time_utc = dvs[0].date_time_utc
+        series.end_date_time_utc = dvs[-1].date_time_utc
+        series.value_count = len(dvs)
 
         series.data_values = dvs
+
+        print series
 
     def reconcile_dates(self, parent_series_id):
         # append new data to this series
         pass
+
+    def _build_dv_from_tuple(self, dv_tuple):
+        dv = DataValue()
+            
+        dv.id_list                  = dv_tuple[0]
+        dv.data_value               = dv_tuple[1]
+        dv.value_accuracy           = dv_tuple[2]
+        dv.local_date_time          = dv_tuple[3]
+        dv.utc_offset               = dv_tuple[4]
+        dv.date_time_utc            = dv_tuple[5]
+        dv.site_id                  = dv_tuple[6]
+        dv.variable_id              = dv_tuple[7]
+        dv.offset_value             = dv_tuple[8]
+        dv.offset_type_id           = dv_tuple[9]
+        dv.censor_code              = dv_tuple[10]
+        dv.qualifier_id             = dv_tuple[11]
+        dv.method_id                = dv_tuple[12]
+        dv.source_id                = dv_tuple[13]
+        dv.sample_id                = dv_tuple[14]
+        dv.derived_from_id          = dv_tuple[15]
+        dv.quality_control_level_id = dv_tuple[16]
+
+        return dv
 
     def init_table(self, cursor):
         cursor.execute("""CREATE TABLE DataValuesEdit
