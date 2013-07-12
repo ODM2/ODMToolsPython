@@ -155,9 +155,11 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltBox.Clear()
         self.pltTS.Clear()
         self._seriesPlotInfo= None
+##    def get_edit_metadata(self)
 
 
 
-    def __init__(self, parent, id, pos, size, style, name):
+
+    def __init__(self, parent, id,  size, style, name, pos= None):
         self._init_ctrls(parent)
         self.parent = parent

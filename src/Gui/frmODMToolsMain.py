@@ -1,3 +1,4 @@
+#!/usr/bin/env
 #Boa:Frame:ODMTools
 
 import sys
@@ -81,7 +82,7 @@ class frmODMToolsMain(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=prnt,
-              pos=wx.Point(150, 150), size=wx.Size(1190, 812),
+               size=wx.Size(900, 700),
               style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
               False, u'Tahoma'))
@@ -106,7 +107,7 @@ class frmODMToolsMain(wx.Frame):
 
 ################ Docking Tools##############
         self.pnlDocking = wx.Panel(id=wxID_ODMTOOLSPANEL1, name='pnlDocking',
-              parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
+              parent=self, size=wx.Size(605, 458),
               style=wx.TAB_TRAVERSAL)
 
 
@@ -114,26 +115,25 @@ class frmODMToolsMain(wx.Frame):
 
 ################ Series Selection Panel ##################
         self.pnlSelector = pnlSeriesSelector.pnlSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
-               parent=self.pnlDocking, pos=wx.Point(0, 0), size=wx.Size(770, 388),
+               parent=self.pnlDocking, size=wx.Size(770, 388),
                style=wx.TAB_TRAVERSAL, dbservice= self.sc)
 
 
 ####################grid##################
         self.dataTable = pnlDataTable.pnlDataTable(id=wxID_ODMTOOLSGRID1, name='dataTable',
-              parent=self.pnlDocking, pos=wx.Point(64, 160), size=wx.Size(376, 280),
+              parent=self.pnlDocking, size=wx.Size(376, 280),
               style=0)
 
 
 ############# Graph ###############
         self.pnlPlot= pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
-              parent=self.pnlDocking, pos=wx.Point(0, 0), size=wx.Size(605, 458),
+              parent=self.pnlDocking, size=wx.Size(605, 458),
                style=wx.TAB_TRAVERSAL)
 
 
 ############# Script & Console ###############
 
         self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE,
-                name=u'txtPython', parent=self, rootObject=self, rootLabel="Main Window", pos=wx.Point(72, 24),
                 size=wx.Size(500,800), style=0)
 
         # Console tools object for usability
@@ -141,7 +141,7 @@ class frmODMToolsMain(wx.Frame):
         self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
 
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT,
-              name=u'txtPython', parent=self, pos=wx.Point(72, 24),
+              name=u'txtPython', parent=self,
               size=wx.Size(200,200))
 
 
@@ -243,14 +243,20 @@ class frmODMToolsMain(wx.Frame):
 
 
     def addEdit(self, seriesID, memDB):
-        
+
         self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID, connection=memDB.conn)
         self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+        self.editID= seriesID
         self.dataTable.Init(memDB, self.record_service)
         self._ribbon.toggleEditButtons(True)
 
         # set record service for console
         self.console_tools.set_record_service(self.record_service)
+
+    def get_edit_metadata(self):
+##        pnlplot.get_edit_metadata()
+        print self.sc.get_series_by_id(self.editID)
+        return self.sc.get_series_by_id(self.editID)
 
     def stopEdit(self):
         self.pnlPlot.stopEdit()

@@ -3,10 +3,11 @@
 import wx
 import wx.grid
 import wx.richtext
+from odmdata import Method
 
-[wxID_PNLMETHOD, wxID_PNLMETHODSLISTCTRL1, wxID_PNLMETHODSRBCREATENEW, 
- wxID_PNLMETHODSRBGENERATE, wxID_PNLMETHODSRBSELECT, 
- wxID_PNLMETHODSRICHTEXTCTRL1, 
+[wxID_PNLMETHOD, wxID_PNLMETHODSLISTCTRL1, wxID_PNLMETHODSRBCREATENEW,
+ wxID_PNLMETHODSRBGENERATE, wxID_PNLMETHODSRBSELECT,
+ wxID_PNLMETHODSRICHTEXTCTRL1,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
 class pnlMethod(wx.Panel):
@@ -43,37 +44,69 @@ class pnlMethod(wx.Panel):
               style=wx.richtext.RE_MULTILINE, value=u'Method Description')
         self.txtMethodDescrip.Enable(False)
         self.txtMethodDescrip.Bind(wx.EVT_SET_FOCUS, self.OnTxtMethodDescripSetFocus)
-        self.txtMethodDescrip.Bind(wx.EVT_KILL_FOCUS, self.OnTxtMethodDescripKillFocus)  
+        self.txtMethodDescrip.Bind(wx.EVT_KILL_FOCUS, self.OnTxtMethodDescripKillFocus)
 
         self.lstMethods = wx.ListCtrl(id=wxID_PNLMETHODSLISTCTRL1,
               name='lstMethods', parent=self, pos=wx.Point(16, 48),
-              size=wx.Size(392, 152), style=wx.LC_REPORT)
-        self.lstMethods.Disable()
+              size=wx.Size(392, 152), style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
+
+        self.lstMethods.InsertColumn(0, 'Description')
+        self.lstMethods.InsertColumn(1, 'Link')
+        self.lstMethods.InsertColumn(2, 'id')
+        self.lstMethods.SetColumnWidth(0, 200)
+        self.lstMethods.SetColumnWidth(1, 153)
+        self.lstMethods.SetColumnWidth(2,0)
+        self.lstMethods.Enable(False)
 
 
-    def __init__(self, parent, id, pos, size, style, name):
+    def __init__(self, parent, id, pos, size, style, name, sm):
+        self.series_service = sm.get_series_service()
         self._init_ctrls(parent)
 
     def OnRbGenerateRadiobutton(self, event):
-        self.txtMethodDescrip.Enable(False)
         self.lstMethods.Enable(False)
+        self.txtMethodDescrip.Enable(False)
+
         event.Skip()
 
     def OnRbSelectRadiobutton(self, event):
+        self.lstMethods.Enable(True)
         self.txtMethodDescrip.Enable(False)
-        self.lstMethods.Enable()
-        
+
         event.Skip()
 
     def OnRbCreateNewRadiobutton(self, event):
-        self.txtMethodDescrip.Enable()   
-        self.lstMethods.Enable(False)     
+        self.lstMethods.Enable(False)
+        self.txtMethodDescrip.Enable(True)
+
         event.Skip()
-    
-    def OnTxtMethodDescripSetFocus(self, event):               
+
+    def OnTxtMethodDescripSetFocus(self, event):
         if self.txtMethodDescrip.GetValue() =="Method Description":
             self.txtMethodDescrip.SetValue("")
+
         event.Skip()
+
     def OnTxtMethodDescripKillFocus(self, event):
         if self.txtMethodDescrip.GetValue() =="":
             self.txtMethodDescrip.SetValue("Method Description")
+
+        event.Skip()
+
+    def getMethod(self):
+
+        m =  Method()
+        if self.rbGenerate.Value:
+            m.description = "Values derived from ODM Tools Python"
+        elif self.rbSelect.Value:
+            index = self.lstMethods.GetFocusedItem().GetText()
+            print self.lstMethods.GetItem(index,-1).GetText()
+            m= self.series_service.get_method_by_id(self.lstMethods.GetItem(index,-1).GetText())
+
+##            index = self.lstMethods.GetFocusedItem().GetText()
+##            m.id = self.lstMethods.GetItem(index,2).GetText()
+##            m.description = self.lstMethods.GetItem(index,0).GetText()
+##            m.link = self.lstMethods.GetItem(index,1).GetText()
+        elif self.rbCreateNew.Value:
+            m.description = self.txtMethodDescrip.Value()
+        return m
