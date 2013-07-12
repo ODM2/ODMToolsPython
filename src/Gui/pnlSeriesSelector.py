@@ -100,7 +100,7 @@ class pnlSeriesSelector(wx.Panel):
         # generated method, don't edit
 
         wx.Panel.__init__(self, id=wxID_PNLSERIESSELECTOR,
-              name=u'pnlSeriesSelector', parent=prnt, pos=wx.Point(511, 413),
+              name=u'pnlSeriesSelector', parent=prnt,
               size=wx.Size(935, 270), style=wx.TAB_TRAVERSAL)
         self.SetClientSize(wx.Size(919, 232))
         self.Enable(True)
@@ -214,7 +214,7 @@ class pnlSeriesSelector(wx.Panel):
 
 
 
-    def __init__(self, parent, id, pos, size, style, name, dbservice):
+    def __init__(self, parent, id,  size, style, name, dbservice,pos=None,):
         self.parent= parent
         self._init_ctrls(parent)
 
@@ -288,7 +288,7 @@ class pnlSeriesSelector(wx.Panel):
     def OnRbAdvancedRadiobutton(self, event):
         #open filter window and hide top Panel
         # self.splitter.SetSashPosition(1)
-        if self.splitter.IsSplit():            
+        if self.splitter.IsSplit():
             self.splitter.Unsplit(self.pnlSimple)
         series_filter = frmQueryBuilder.frmQueryBuilder(self)
         self.filterlist = series_filter.ShowModal()

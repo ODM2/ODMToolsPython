@@ -91,8 +91,8 @@ class RecordService():
         if self._record:
             self._script("edit_service.restore()\n", 'black')
 
-    def save(self):
-        self._edit_service.save()
+    def save(self, var=None, method=None, qcl=None):
+        self._edit_service.save(var=var, method=method, qcl=qcl)
         if self._record:
             self._script("edit_service.save()\n", 'black')
 
