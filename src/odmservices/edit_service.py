@@ -437,7 +437,7 @@ class EditService():
     def create_qcl(self, code, definition, explanation):
         return self._series_service.create_qcl(code, definition, explanation)
 
-    def create_method(self, description, link = None):
+    def create_method(self, description, link):
         return self._series_service.create_method(description, link)
 
     def create_variable(self,code, name, speciation, variable_unit, sample_medium,

@@ -151,6 +151,18 @@ class ConsoleTools(object):
         cv_service.create_qualifer(q)
         return q.id
 
+    def create_qcl(self, code, definition, explanation):
+        qcl = self._record_service.create_qcl(code, definition, explanation)
+        return qcl
+
+    def create_method(self, method):
+        method = self._record_service.create_method(method)
+        return method
+
+    def create_variable(self, var):
+        var = self._record_service.create_variable(var)
+        return var
+
 
     ###############
     # Export methods
