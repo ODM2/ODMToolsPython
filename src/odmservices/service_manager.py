@@ -92,8 +92,16 @@ class ServiceManager():
 		return ExportService(self.get_series_service())
 
 	# private
+	def __resource_path(self, relative):
+		file_dir = os.path.dirname(__file__)
+		if os.path.basename(file_dir) == "odmservices":
+			basedir = os.path.dirname(file_dir)
+		else:
+			basedir = file_dir
+		return os.path.join(basedir, relative)
+
 	def __get_file(self, mode):
-		fn = os.path.join(os.path.dirname(__file__), 'connection.config')
+		fn = self.__resource_path('connection.config')
 		config_file = None
 		try:
 			config_file = open(fn, mode)
