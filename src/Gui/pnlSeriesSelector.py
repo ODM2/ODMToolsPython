@@ -128,7 +128,7 @@ class pnlSeriesSelector(wx.Panel):
               pos=wx.Point(193, 0), size=wx.Size(104, 20), style=0)
         self.rbAdvanced.Bind(wx.EVT_RADIOBUTTON, self.OnRbAdvancedRadiobutton,
               id=wxID_FRAME1RBADVANCED)
-        # self.rbAdvanced.Enable(False)
+        self.rbAdvanced.Enable(False)
 
         ## Splitter panel
         self.pnlSplitter = wx.Panel(id=wxID_PNLSPLITTER, name='pnlSplitter',

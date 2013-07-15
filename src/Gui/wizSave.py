@@ -253,6 +253,7 @@ class wizSave(wx.wizard.Wizard):
 
     def get_metadata(self):
 
+
         if self.is_changing_series:
             method = self.page2.panel.getMethod()
             qcl = self.page3.panel.getQCL()
@@ -265,16 +266,18 @@ class wizSave(wx.wizard.Wizard):
         source = self.currSeries.source
         return site, variable, method, source, qcl
 
-    def __init__(self, parent, service_man, series):
+    def __init__(self, parent, service_man, record_service):
         self._init_ctrls(parent)
+        self.series_service = service_man.get_series_service()
+        self.record_service = record_service
         self.is_changing_series = False
-        self.sc = service_man.get_series_service()
-        self.currSeries = series
+        self.currSeries = record_service.get_series()
+
         self.page1 = IntroPage(self, "Intro")
 
         self.page2 = MethodPage(self, "Method", service_man)
         self.page3 = QCLPage(self, "Quality Control Level", service_man)
-        self.page4 = VariablePage(self, "Variable", service_man, series.variable)
+        self.page4 = VariablePage(self, "Variable", service_man, self.currSeries.variable)
         self.page5 = SummaryPage(self, "Summary", service_man)
 
         self.FitToPage(self.page1)
@@ -312,6 +315,26 @@ class wizSave(wx.wizard.Wizard):
 
 
     def on_wizard_finished(self, event):
+        Site, Variable, Method, Source, QCL= self.get_metadata()
+        #if qcl exits use its its
+
+        if self.series_service.qcl_exists(QCL):
+            QCL=None
+        else:
+            self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
+
+        #if variable exists use its id
+        if self.series_service.variable_exists(Variable):
+            Variable= None
+        else:
+            self.record_service.create_variable(Variable)
+        #if method exists use its id
+        if self.series_service.method_exists(Method):
+            Method=None
+        else:
+            self.record_service.create_method(Method)
+
+        self.record_service.save(Variable, Method, QCL)
         #t actual object from session. if it doesnt exist in the database use the created one.
         event.Skip()
 

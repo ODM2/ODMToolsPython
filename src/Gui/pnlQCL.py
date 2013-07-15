@@ -110,10 +110,8 @@ class pnlQCL(wx.Panel):
 
         elif self.rbSelect.Value:
             index = self.GetLstSelection()
-            print index
             print self.lstQCL.GetItem(index,-1).GetText()
-
-            q= self.series_service.get_qcl(self.lstQCL.GetItem(index,-1).GetText())
+            q= self.series_service.get_qcl_by_id(self.lstQCL.GetItem(index,-1).GetText())
 
 
 ##            q.id = self.lstQCL.GetItem(index,3).GetText()

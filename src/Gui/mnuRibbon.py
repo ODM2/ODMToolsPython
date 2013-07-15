@@ -121,7 +121,7 @@ class mnuRibbon(RB.RibbonBar):
 
         # dateTime_buttonbar.AddHybridButton( wxID_RIBBONPLOTDATESTART, "Start" ,CreateBitmap("images\\Calendar.png"), "") #,wx.Size(100, 21))
         # dateTime_buttonbar.AddHybridButton( wxID_RIBBONPLOTDATEEND, "End" ,CreateBitmap("images\\Calendar.png"), "") #,wx.Size(100, 21))
-         # dateTime_buttonbar.AddTool(wxID_RIBBONPLOTDATESTART,  CreateBitmap("images\\Calendar.png"), kind=pnlDatePicker.pnlDatePicker, client_data=[wxID_RIBBONPLOTDATESTART, "startDate", "Start Date", wx.DateTimeFromDMY(30, 10, 2010, 0, 0, 0)])
+        # dateTime_buttonbar.AddTool(wxID_RIBBONPLOTDATESTART,  CreateBitmap("images\\Calendar.png"), kind=pnlDatePicker.pnlDatePicker, client_data=[wxID_RIBBONPLOTDATESTART, "startDate", "Start Date", wx.DateTimeFromDMY(30, 10, 2010, 0, 0, 0)])
 
 
          ###Filler buttons to allow enough room for start and end date drop down menus
@@ -340,7 +340,7 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection inof to wizard
         # get site, Variable and Source from current dataset
 
-        savewiz =wizSave.wizSave(self, self.parent.GetDBService(), self.parent.get_edit_metadata())
+        savewiz =wizSave.wizSave(self, self.parent.GetDBService(), self.parent.getRecordService())
         event.Skip()
 
     def OnEditFilter(self, event):

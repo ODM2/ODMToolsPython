@@ -33,7 +33,7 @@ class EditService():
             # One or the other must be set
             print "Must have either a connection string or session factory"
             # TODO throw an exception
-        
+
         self._edit_session = self._session_factory.get_session()
 
         if self._connection == None:
@@ -129,7 +129,7 @@ class EditService():
         tmp = {}
 
         for i in xrange(length):
-            if (self._filter_from_selection and 
+            if (self._filter_from_selection and
                 not self._filter_list[i]):
                 continue
 
@@ -142,7 +142,7 @@ class EditService():
                 if interval_total_sec >= value_sec:
                     tmp[i] = True
                     tmp[i+1] = True
-        
+
         self.reset_filter()
         for key in tmp.keys():
             self._filter_list[key] = True
@@ -152,7 +152,7 @@ class EditService():
         length = len(self._series_points)
         tmp = {}
         for i in xrange(length):
-            if (self._filter_from_selection and 
+            if (self._filter_from_selection and
                 not self._filter_list[i]):
                 continue
 
@@ -217,7 +217,7 @@ class EditService():
     def get_qcl(self, qcl_id):
         return self._series_service.get_qcl_by_id(qcl_id)
 
-    
+
     #################
     # Edits
     #################
@@ -268,7 +268,7 @@ class EditService():
             self._cursor.execute(query)
 
             self._populate_series()
-    
+
     def interpolate(self):
         tmp_filter_list = self._filter_list
         groups = self.get_selection_groups()
@@ -326,7 +326,7 @@ class EditService():
 
             self._populate_series()
             self._filter_list = tmp_filter_list
-            
+
             return True
         else:
             return False
@@ -349,7 +349,7 @@ class EditService():
                 cur_group = []
             else:
                 continue
-        
+
         return groups
 
     def flag(self, qualifier_id):
@@ -369,14 +369,14 @@ class EditService():
         dvs = []
         is_new_series = False
 
-        if var:
+        if var is not None:
             self._cursor.execute("UPDATE DataValuesEdit SET VariableID = %s" % (var.id))
             is_new_series = True
-        if method:
+        if method is not None:
             self._cursor.execute("UPDATE DataValuesEdit SET MethodID = %s" % (method.id))
             is_new_series = True
         # check that the code is not zero
-        if qcl and qcl.code > 0:
+        if qcl is not None and qcl.code > 0:
             self._cursor.execute("UPDATE DataValuesEdit SET QualityControlLevelID = %s" % (qcl.id))
             is_new_series = True
         else:
@@ -385,14 +385,14 @@ class EditService():
         self._cursor.execute("SELECT * FROM DataValuesEdit ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
 
-        # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID, 
+        # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID,
         # OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID
         for row in results:
             dv = _build_dv_from_tuple(row)
 
             if is_new_series:
                 dv.id = None
-            
+
             dvs.add(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
@@ -433,13 +433,21 @@ class EditService():
     def create_qcl(self, code, definition, explanation):
         return self._series_service.create_qcl(code, definition, explanation)
 
+    def create_method(self, description, link = None):
+        return self._series_service.create_method(description, link)
+
+    def create_variable(self,code, name, speciation, variable_unit, sample_medium,
+		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value):
+        return self._series_service.create_variable(code, name, speciation, variable_unit, sample_medium,
+		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value)
+
     def reconcile_dates(self, parent_series_id):
         # append new data to this series
         pass
 
     def _build_dv_from_tuple(self, dv_tuple):
         dv = DataValue()
-            
+
         dv.id_list                  = dv_tuple[0]
         dv.data_value               = dv_tuple[1]
         dv.value_accuracy           = dv_tuple[2]

@@ -15,6 +15,8 @@ from odmdata.offset_type import OffsetType
 # from odmdata.lab_method import LabMethod
 from odmdata.sample import Sample
 from odmdata.qualifier import Qualifier
+from odmdata.unit import Unit
+
 
 class CVService():
 	# Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
@@ -104,8 +106,28 @@ class CVService():
 		session.close()
 		return result
 
-	def get_sample_type_cvs(self):		
+	def get_sample_type_cvs(self):
 		session = self._session_factory.get_session()
 		result = session.query(SampleTypeCV).order_by(SampleTypeCV.term).all()
 		session.close()
 		return result
+
+ 	def get_unit_by_name(self, unit_name):
+		session = self._session_factory.get_session()
+		result =  self._edit_session.query(Unit).filter_by(name=unit_name).one()
+		session.close()
+		return result
+
+	def get_unit_by_id(self, unit_id):
+		session = self._session_factory.get_session()
+		result =  self._edit_session.query(Unit).filter_by(id=unit_id).one()
+		session.close()
+		return result
+
+	def get_units(self):
+		session = self._session_factory.get_session()
+		result =  self._edit_session.query(Unit).all()
+		session.close()
+		return result
+
+

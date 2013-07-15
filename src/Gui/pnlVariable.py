@@ -88,7 +88,7 @@ class pnlVariable(wx.Panel):
     def OnRbCreateRadiobutton(self, event):
         self.lstVariable.Enable(False)
 
-        create_Var = frmCreateVariable.frmCreateVariable(self, self.service_man)
+        create_Var = frmCreateVariable.frmCreateVariable(self, self.service_man, self.prev_var)
         create_Var.ShowModal()
         # if cancelled return to previous radio button
         # else enable text box and enter the text info.
@@ -104,7 +104,7 @@ class pnlVariable(wx.Panel):
         if self.rbCurrent.Value:
             v= self.prev_var
         elif self.rbSelect.Value:
-            index = self.lstVariable.GetFocusedItem()
+            index = self.lstVariable.GetFirstSelected()
             print self.lstVariable.GetItem(index,-1).GetText()
             v= self.series_service.get_variable_by_id(self.lstVariable.GetItem(index,-1).GetText())
 ##            index = self.lstVariable.GetFocusedItem()

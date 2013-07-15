@@ -97,7 +97,7 @@ class RecordService():
             self._script("edit_service.save()\n", 'black')
 
     def write_to_db(self):
-        self._edit_service.write_to_db()       
+        self._edit_service.write_to_db()
         if self._record:
             self._script("edit_service.write_to_db()\n", 'black')
 
@@ -132,6 +132,18 @@ class RecordService():
         qcl = self._edit_service.create_qcl(code, definition, explanation)
         if self._record:
             self._script('new_qcl = series_service.get_qcl_by_id(%s)\n' % (qcl.id))
+
+    def create_method(self, m):
+        meth = self._edit_service.create_method(m.description, m.link)
+        if self._record:
+            self._script('new_method = series_service.get_method_by_id(%s)\n' % (meth.id))
+
+    def create_variable(self, v):
+        var = self._edit_service.create_variable(v.code,v. name, v.speciation, v.variable_unit, v.sample_medium,
+		v.value_type, v.is_regular, v.time_support, v.time_unit, v.data_type, v.general_category, v.no_data_value)
+        if self._record:
+            self._script('new_variable = series_service.get_variable_by_id(%s)\n' % (var.id))
+
 
     def write_header(self):
         self._script("from odmservices import EditService\n", 'black')

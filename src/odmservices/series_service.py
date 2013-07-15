@@ -69,6 +69,10 @@ class SeriesService():
 	def get_unit_by_id(self, unit_id):
 		return self._edit_session.query(Unit).filter_by(id=unit_id).one()
 
+	def get_units(self):
+		return self._edit_session.query(Unit).all()
+
+
 	def get_offset_types_by_series_id(self, series_id):
 		subquery = self._edit_session.query(DataValue.offset_type_id).outerjoin(
 			Series.data_values).filter(Series.id == series_id, DataValue.offset_type_id != None).distinct().subquery()
@@ -222,12 +226,17 @@ class SeriesService():
 		self._edit_session.add(merged_series)
 		self._edit_session.commit()
 
-	def create_method(self, method):
-		new_method = self._edit_session.merge(method)
-		self._edit_session.add(new_method)
-		self._edit_session.commit()
+	def create_method(self, definition, link):
+		meth= Method()
+		print definition, " ", link
+		meth.definition= definition
+		meth.link= link
 
-	def create_variable(self, code, name, speciation, variable_unit, sample_medium, 
+		self._edit_session.add(meth)
+		self._edit_session.commit()
+		return meth
+
+	def create_variable(self, code, name, speciation, variable_unit, sample_medium,
 		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value):
 		var = Variable()
 		var.code = code
@@ -245,6 +254,7 @@ class SeriesService():
 
 		self._edit_session.add(var)
 		self._edit_session.commit()
+		return var
 
 	def create_qcl(self, code, definition, explanation):
 		qcl = QualityControlLevel()
@@ -262,3 +272,25 @@ class SeriesService():
 		delete_series = self._edit_session.merge(series)
 		self._edit_session.delete(delete_series)
 		self._edit_session.commit()
+
+
+	def qcl_exists(self,q):
+		try:
+			result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition = q.definition).one()
+			return True
+		except:
+			return False
+
+	def method_exists(self, m):
+		try:
+			result = self._edit_session.query(Method).filter_by(description= m.description).one()
+			return True
+		except:
+			return False
+
+ 	def variable_exists(self, v):
+		try:
+			result = self._edit_session.query(Variable).filter_by(code = v.code, name = v.name, speciation = v.speciation, variable_unit_id = v.variable_unit_id, sample_medium= v.sample_medium, value_type= v.value_type, is_regular= v.is_regular,time_support= v.time_support, time_unit_id=v.time_unit_id , data_type = v.data_type, general_category=v.general_category, no_data_value = v.no_data_value).one()
+			return True
+		except:
+			return False
