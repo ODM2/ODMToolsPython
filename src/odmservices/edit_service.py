@@ -365,7 +365,7 @@ class EditService():
         self._connection.rollback()
         self._populate_series()
 
-    def write_to_db(self, var=None, method=None, qcl=None):
+    def save(self, var=None, method=None, qcl=None):
         dvs = []
         is_new_series = False
 
@@ -388,12 +388,11 @@ class EditService():
         # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID,
         # OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID
         for row in results:
-            dv = _build_dv_from_tuple(row)
+            dv = self._build_dv_from_tuple(row)
 
             if is_new_series:
-                dv.id = None
-
-            dvs.add(dv)
+                dv.id = None            
+            dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
 
@@ -428,7 +427,7 @@ class EditService():
 
         series.data_values = dvs
 
-        print series
+        self._series_service.save_series(series, dvs)
 
     def create_qcl(self, code, definition, explanation):
         return self._series_service.create_qcl(code, definition, explanation)
