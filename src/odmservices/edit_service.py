@@ -420,20 +420,25 @@ class EditService():
                 series.quality_control_level_id = qcl.id
                 series.quality_control_level_code = qcl.code
 
+
         series.begin_date_time = dvs[0].local_date_time
         series.end_date_time = dvs[-1].local_date_time
         series.begin_date_time_utc = dvs[0].date_time_utc
         series.end_date_time_utc = dvs[-1].date_time_utc
         series.value_count = len(dvs)
 
-        series.data_values = dvs
+        if not is_new_series:
+            # delete old dvs
+            old_dvs = series.data_values
+            self._series_service.delete_dvs(old_dvs)
 
+        series.data_values = dvs
         self._series_service.save_series(series, dvs)
 
     def create_qcl(self, code, definition, explanation):
         return self._series_service.create_qcl(code, definition, explanation)
 
-    def create_method(self, description, link = None):
+    def create_method(self, description, link):
         return self._series_service.create_method(description, link)
 
     def create_variable(self,code, name, speciation, variable_unit, sample_medium,

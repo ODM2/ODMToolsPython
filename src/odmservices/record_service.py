@@ -130,10 +130,10 @@ class RecordService():
         return qcl
 
     def create_method(self, m):
-        meth = self._edit_service.create_method(m.description, m.link)
+        method = self._edit_service.create_method(m.description, m.link)
         if self._record:
-            self._script('new_method = series_service.get_method_by_id(%s)\n' % (meth.id))
-        return meth
+            self._script('new_method = series_service.get_method_by_id(%s)\n' % (method.id))
+        return method
 
     def create_variable(self, v):
         var = self._edit_service.create_variable(v.code,v. name, v.speciation, v.variable_unit, v.sample_medium,
