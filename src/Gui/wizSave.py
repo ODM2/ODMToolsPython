@@ -15,9 +15,6 @@ wxID_PNLSUMMARY, wxID_WIZSAVE,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
 
-def CreateBitmap(xpm):
-    bmp = wx.Image(xpm, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-    return bmp
 
 
 ########################################################################
@@ -171,6 +168,8 @@ class SummaryPage(wiz.WizardPageSimple):
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: '+ str(QCL.definition))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qe, 'Explanation: '+ str(QCL.explanation))
 
+        self.panel.treeSummary.ExpandAll()
+
 
 
 ########################################################################
@@ -243,7 +242,7 @@ def create(parent):
 class wizSave(wx.wizard.Wizard):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
-        wiz.Wizard.__init__(self, bitmap=CreateBitmap("images\\wizardsave.png"), id=wxID_WIZSAVE,
+        wiz.Wizard.__init__(self, id=wxID_WIZSAVE,
               parent=prnt, title=u'Save...')
         self.SetToolTipString(u'Save Wizard')
         self.SetName(u'wizSave')
@@ -319,20 +318,23 @@ class wizSave(wx.wizard.Wizard):
         #if qcl exits use its its
 
         if self.series_service.qcl_exists(QCL):
-            QCL=None
+            if QCL==self.currSeries.quality_control_level:
+                QCL=None
         else:
-            self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
+            QCL=self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
 
         #if variable exists use its id
         if self.series_service.variable_exists(Variable):
-            Variable= None
+            if Variable==self.currSeries.variable:
+                Variable= None
         else:
-            self.record_service.create_variable(Variable)
+            Variable=self.record_service.create_variable(Variable)
         #if method exists use its id
         if self.series_service.method_exists(Method):
-            Method=None
+            if Method==self.currSeries.method:
+                Method=None
         else:
-            self.record_service.create_method(Method)
+            Method=self.record_service.create_method(Method)
 
         self.record_service.save(Variable, Method, QCL)
         #t actual object from session. if it doesnt exist in the database use the created one.

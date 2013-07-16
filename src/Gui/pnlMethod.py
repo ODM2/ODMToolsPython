@@ -93,24 +93,18 @@ class pnlMethod(wx.Panel):
 
         event.Skip()
 
-    def GetLstSelection(self):
-        return self.lstMethods.GetFirstSelected()
 
     def getMethod(self):
 
         m =  Method()
         if self.rbGenerate.Value:
             m.description = "Values derived from ODM Tools Python"
+
         elif self.rbSelect.Value:
-            index = self.GetLstSelection()
+            index = self.lstMethods.GetFirstSelected()
             print self.lstMethods.GetItem(index,-1).GetText()
             m= self.series_service.get_method_by_id(self.lstMethods.GetItem(index,-1).GetText())
 
-
-##            index = self.lstMethods.GetFocusedItem().GetText()
-##            m.id = self.lstMethods.GetItem(index,2).GetText()
-##            m.description = self.lstMethods.GetItem(index,0).GetText()
-##            m.link = self.lstMethods.GetItem(index,1).GetText()
         elif self.rbCreateNew.Value:
             m.description = self.txtMethodDescrip.Value()
         return m

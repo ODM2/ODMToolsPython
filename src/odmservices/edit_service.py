@@ -373,6 +373,7 @@ class EditService():
             self._cursor.execute("UPDATE DataValuesEdit SET VariableID = %s" % (var.id))
             is_new_series = True
         if method is not None:
+            print method.id
             self._cursor.execute("UPDATE DataValuesEdit SET MethodID = %s" % (method.id))
             is_new_series = True
         # check that the code is not zero
@@ -391,7 +392,7 @@ class EditService():
             dv = self._build_dv_from_tuple(row)
 
             if is_new_series:
-                dv.id = None            
+                dv.id = None
             dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)

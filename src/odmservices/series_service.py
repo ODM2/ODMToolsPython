@@ -228,11 +228,12 @@ class SeriesService():
 		self._edit_session.add(merged_series)
 		self._edit_session.commit()
 
-	def create_method(self, definition, link):
+	def create_method(self, description, link):
 		meth= Method()
-		print definition, " ", link
-		meth.definition= definition
-		meth.link= link
+		print description, " ", link
+		meth.description= description
+		if link is not None:
+		  meth.link= link
 
 		self._edit_session.add(meth)
 		self._edit_session.commit()
