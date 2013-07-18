@@ -30,10 +30,10 @@ class MyCustomToolbar(NavigationToolbar):
         #     wx.EVT_TOOL(self, self.ON_CUSTOM_SEL, self._on_custom_sel_point)
         #     self.selectbutton.Enable(False)
             
-        self.AddSimpleTool(self.ON_CUSTOM_LEFT, CreateBitmap("images\\scroll left.png"),
+        self.AddSimpleTool(self.ON_CUSTOM_LEFT, CreateBitmap("images\\scroll_left.png"),
                            'Pan to the left', 'Pan graph to the left')
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
-        self.AddSimpleTool(self.ON_CUSTOM_RIGHT, CreateBitmap("images\\scroll right.png"),
+        self.AddSimpleTool(self.ON_CUSTOM_RIGHT, CreateBitmap("images\\scroll_right.png"),
                            'Pan to the right', 'Pan graph to the right')
         wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
         
