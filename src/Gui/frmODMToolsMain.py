@@ -62,6 +62,15 @@ class frmODMToolsMain(wx.Frame):
         self._init_ctrls(parent)
         self.Refresh()
 
+#############File Utility for PyInstaller#############3
+    def __resource_path(self, relative):
+        file_dir = os.path.dirname(__file__)
+        if os.path.basename(file_dir) == "odmservices":
+            basedir = os.path.dirname(file_dir)
+        else:
+            basedir = file_dir
+        return os.path.join(basedir, relative)
+
 #############Entire Form Sizers##########
     def _init_sizers(self):
         # generated method, don't edit
@@ -296,11 +305,11 @@ class frmODMToolsMain(wx.Frame):
     def loadDockingSettings(self):
      #test if there is a perspective to load
         try:
-            f= open('ODMTools.config', 'r')
+            f= open(self.__resource_path('../ODMTools.config'), 'r')
         except:
             # Create the file if it doesn't exist
-            open('ODMTools.config', 'w').close()
-            f = open('ODMTools.config', 'r')
+            open(self.__resource_path('../ODMTools.config'), 'w').close()
+            f = open(self.__resource_path('../ODMTools.config'), 'r')
 
         self._mgr.LoadPerspective(f.read(), True)
 
@@ -308,7 +317,7 @@ class frmODMToolsMain(wx.Frame):
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
-            f= open('ODMTools.config', 'w')
+            f= open(self.__resource_path('../ODMTools.config'), 'w')
             f.write(self._mgr.SavePerspective())
         except:
             print "error saving docking data"
