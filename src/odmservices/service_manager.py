@@ -1,4 +1,4 @@
-import os
+import os, sys
 from series_service import SeriesService
 from cv_service import CVService
 from edit_service import EditService
@@ -93,11 +93,12 @@ class ServiceManager():
 
 	# private
 	def __resource_path(self, relative):
-		file_dir = os.path.dirname(__file__)
-		if os.path.basename(file_dir) == "odmservices":
-			basedir = os.path.dirname(file_dir)
+		if getattr(sys, 'frozen', None):
+			basedir = sys._MEIPASS
 		else:
-			basedir = file_dir
+			basedir = os.path.dirname(os.path.dirname(__file__))
+
+		print os.path.join(basedir, relative)
 		return os.path.join(basedir, relative)
 
 	def __get_file(self, mode):
