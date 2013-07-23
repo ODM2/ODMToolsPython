@@ -38,12 +38,12 @@ class RecordService():
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         if self._record:
-            self._script("#Lasso selection")        # TODO: write dv datetimes to script
+            self._script("#Lasso selection\n")        # TODO: write dv datetimes to script
 
     def select_points(self, id_list=[], datetime_list=[]):
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
-            self._script("#Lasso selection")
+            self._script("#Lasso selection\n")
 
 
     ###################
@@ -52,7 +52,7 @@ class RecordService():
     def add_points(self, points):
         self._edit_service.add_points(points)
         if self._record:
-            self._script("# add points")
+            self._script("# add points\n")
 
     def delete_points(self):
         self._edit_service.delete_points()
@@ -67,12 +67,12 @@ class RecordService():
     def interpolate(self):
         self._edit_service.interpolate()
         if self._record:
-            self._script("edit_service.interpolate()", 'black')
+            self._script("edit_service.interpolate()\n", 'black')
 
     def drift_correction(self, gap_width):
         ret = self._edit_service.drift_correction(gap_width)
         if self._record:
-            self._script("edit_service.drift_correction(%s)" % (gap_width), 'black')
+            self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
 
         return ret
 
@@ -114,6 +114,25 @@ class RecordService():
     def get_selection_groups(self):
         return self._edit_service.get_selection_groups()
 
+    def get_qcl(self, q):
+        qcl = self._edit_service.get_qcl(q.id)
+        if self._record:
+            self._script('new_qcl = series_service.get_qcl_by_id(%s)\n' % (qcl.id))
+        return qcl
+
+    def get_method(self, m):
+        method = self._edit_service.get_method(m.id)
+        if self._record:
+            self._script('new_method = series_service.get_method_by_id(%s)\n' % (method.id))
+        return method
+
+    def get_variable(self, v):
+        var =  self._edit_service.get_variable(v.id)
+        if self._record:
+            self._script('new_variable = series_service.get_variable_by_id(%s)\n' % (var.id))
+        return var
+
+
     def toggle_record(self):
         if self._record:
             self._record = False
@@ -141,7 +160,6 @@ class RecordService():
         if self._record:
             self._script('new_variable = series_service.get_variable_by_id(%s)\n' % (var.id))
         return var
-
 
     def write_header(self):
         self._script("from odmservices import EditService\n", 'black')

@@ -57,7 +57,7 @@ class SeriesService():
 		return result
 
 	def get_variable_by_id(self, variable_id):
-		return self._edit_session.query(Variable).filter_by(id=variable_id).one()
+		return self._edit_session.query(Variable).filter_by(id=variable_id)
 
 	def get_no_data_value(self, variable_id):
 		return self._edit_session.query(Variable.no_data_value).filter_by(id = variable_id).one()
@@ -291,7 +291,7 @@ class SeriesService():
 		except:
 			return False
 
- 	def variable_exists(self, v):
+	def variable_exists(self, v):
 		try:
 			result = self._edit_session.query(Variable).filter_by(code = v.code, name = v.name, speciation = v.speciation, variable_unit_id = v.variable_unit_id, sample_medium= v.sample_medium, value_type= v.value_type, is_regular= v.is_regular,time_support= v.time_support, time_unit_id=v.time_unit_id , data_type = v.data_type, general_category=v.general_category, no_data_value = v.no_data_value).one()
 			return True

@@ -297,26 +297,3 @@ class highlightSTC(stc.StyledTextCtrl):
                 line = line + 1
 
         return line
-
-if __name__ == '__main__':
-    class MyFrame(wx.Frame):
-        def __init__(self, parent, mytitle, mysize):
-            wx.Frame.__init__(self, parent, wx.ID_ANY, mytitle, size=mysize)
-
-            stc_edit = MySTC(self)
-
-            # open a Python code file you have
-            py_file = "filetest.py"
-            stc_edit.SetText(open(py_file).read())
-            stc_edit.EmptyUndoBuffer()
-
-            # line numbers in the margin
-            stc_edit.SetMarginType(1, stc.STC_MARGIN_NUMBER)
-            stc_edit.SetMarginWidth(1, 25)
-
-
-    app = wx.App(0)
-    # create a MyFrame instance and show interface
-    mytitle = 'wx.StyledTextCtrl (right click for menu)'
-    MyFrame(None, mytitle, (800, 500)).Show()
-    app.MainLoop()

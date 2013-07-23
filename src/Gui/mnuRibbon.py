@@ -421,6 +421,11 @@ class mnuRibbon(RB.RibbonBar):
         # print event.Date
         Publisher.sendMessage(("onDateChanged"), date=event.Date, time="start")
         event.Skip()
+    def resetDateRange(self, startDate, endDate):
+        dpEndDate.SetRange(startDate, endDate)
+        dpStartDate.SetRange(startDate, endDate)
+        dpEndDate.SetValue(endDate)
+        dpStartDate.SetValue(startDate)
 
     # def OnFileMenutest(self, event):
     #     print dir(event)
@@ -466,19 +471,19 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def OnBoxMonthly(self, event):
-        Publisher.sendMessage(("box.Monthly"), event=event)
+        Publisher.sendMessage(("box.Monthly"), str=event)
         event.Skip()
 
     def OnBoxYearly(self, event):
-        Publisher.sendMessage(("box.Yearly"), event=event)
+        Publisher.sendMessage(("box.Yearly"), str=event)
         event.Skip()
 
     def OnBoxSeasonal(self, event):
-        Publisher.sendMessage(("box.Seasonal"), event=event)
+        Publisher.sendMessage(("box.Seasonal"), str=event)
         event.Skip()
 
     def OnBoxOverall(self, event):
-        Publisher.sendMessage(("box.Overall"), event=event)
+        Publisher.sendMessage(("box.Overall"), str=event)
         event.Skip()
 
     def OnPlotTypeDropdown(self, event):
