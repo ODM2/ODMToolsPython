@@ -62,6 +62,15 @@ class frmODMToolsMain(wx.Frame):
         self._init_ctrls(parent)
         self.Refresh()
 
+#############File Utility for PyInstaller#############3
+    def __resource_path(self, relative):
+        file_dir = os.path.dirname(__file__)
+        if os.path.basename(file_dir) == "odmservices":
+            basedir = os.path.dirname(file_dir)
+        else:
+            basedir = file_dir
+        return os.path.join(basedir, relative)
+
 #############Entire Form Sizers##########
     def _init_sizers(self):
         # generated method, don't edit
@@ -145,31 +154,19 @@ class frmODMToolsMain(wx.Frame):
               size=wx.Size(200,200))
 
 
-        # print self.txtPythonConsole.fileMenu.MenuItems
-        # for menu in self.txtPythonConsole.fileMenu.MenuItems:
-        #     print menu.Label, menu.Kind
-        # print self.txtPythonConsole.fileMenu.MenuItems[11].IsEnabled()
-        # self.txtPythonConsole.fileMenu.MenuItems[11].Enable=False
-        # print self.txtPythonConsole.fileMenu.MenuItems[11].IsEnabled()
-
-
 ############ Docking ###################
 
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
                 Show(show=False).Caption('Table View').MinSize(wx.Size( 200, 200)))
-        # DestroyOnClose(b=False)
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector").
                 Layer(0).Caption('Series Selector').MinSize(wx.Size(100, 200)) )
         self._mgr.AddPane(self.txtPythonScript,  aui.AuiPaneInfo().Caption('Script').
                 Name("Script").Show(show=False).Layer(0).Float().MinSize(wx.Size(200,200)))
-        # self._mgr.CreateFloatingFrame(self.txtPythonScript,  aui.AuiPaneInfo().Caption('Script').
-        #         Name("Script").MinSize(wx.Size(500,800)))
         self._mgr.AddPane(self.txtPythonConsole,  aui.AuiPaneInfo().Caption('Python Console').
                 Name("Console").Layer(1).Show(show=False).Float())
-        # self.txtPythonConsole.ToggleTools()
-
+      
         self._mgr.AddPane(self.pnlPlot,  aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot"))
 
         self.loadDockingSettings()
@@ -181,11 +178,7 @@ class frmODMToolsMain(wx.Frame):
         self._init_sizers()
         self._ribbon.Realize()
 
-
-
-
     def onDocking(self, value):
-
         panedet=self._mgr.GetPane(self.pnlPlot)
         if value == "Table":
             panedet=self._mgr.GetPane(self.dataTable)
@@ -194,53 +187,27 @@ class frmODMToolsMain(wx.Frame):
         elif value == "Script":
             panedet=self._mgr.GetPane(self.txtPythonScript)
         elif value == "Console":
-
-        # self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE,
-        #     name=u'txtPython', parent=self,  pos=wx.Point(72, 24),
-        #     size=wx.Size(500,800), style=0)
-        # self._mgr.AddPane(self.txtPythonConsole,  aui.AuiPaneInfo().Caption('Python Console').
-        #     Name("Console").Layer(1).Show(show=False).Float())
-
             panedet=self._mgr.GetPane(self.txtPythonConsole)
-        # print self.txtPythonConsole.fileMenu.MenuItems[11].IsEnabled()
 
-        # self._mgr.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
-        #       False, u'Tahoma'))
         if panedet.IsShown():
             panedet.Show(show=False)
         else:
             panedet.Show(show=True)
         self._mgr.Update()
 
-        # for p in self._mgr.GetAllPanes():
-        #     print p.caption
-        # print "\n"
-
-
     def onPlotSelection(self, value):
         self.pnlPlot.selectPlot(value)
 
-
-
     def addPlot(self, dataRep, seriesID):
-
         self.pnlPlot.addPlot(dataRep, seriesID)
-
         self._ribbon.enableButtons(self.pnlPlot.getActivePlotID() )
-
-
 
     def onSetScriptTitle(self, title):
         scriptPane = self._mgr.GetPane(self.txtPythonScript)
         scriptPane.Caption(title)
         if scriptPane.IsFloating():
-            # print "script is floating"
             scriptPane.Restore()
         self._mgr.Update()
-
-
-
-
 
     def addEdit(self, seriesID, memDB):
 
@@ -251,7 +218,6 @@ class frmODMToolsMain(wx.Frame):
 
         # set record service for console
         self.console_tools.set_record_service(self.record_service)
-
 
     def stopEdit(self):
         self.pnlPlot.stopEdit()
@@ -275,32 +241,27 @@ class frmODMToolsMain(wx.Frame):
             #clear table
             self.dataTable.Clear()
 
-
     def createService(self):
         self.sc = self.service_manager.get_series_service()
 
     def GetDBService(self):
         return self.service_manager
 
-
     def toggleConsoleTools(self):
         self.txtPythonConsole.ToggleTools()
 
-
     def onExecuteScript(self, value):
-        # print "testing file execution with test.py"
         for i in ('red', 'blue', 'green', 'magenta', 'gold', 'cyan', 'brown', 'lime','purple', 'navy'):
             self.txtPythonScript('This is a test\n', i)
-
 
     def loadDockingSettings(self):
      #test if there is a perspective to load
         try:
-            f= open('ODMTools.config', 'r')
+            f= open(self.__resource_path('../ODMTools.config'), 'r')
         except:
             # Create the file if it doesn't exist
-            open('ODMTools.config', 'w').close()
-            f = open('ODMTools.config', 'r')
+            open(self.__resource_path('../ODMTools.config'), 'w').close()
+            f = open(self.__resource_path('../ODMTools.config'), 'r')
 
         self._mgr.LoadPerspective(f.read(), True)
 
@@ -308,7 +269,7 @@ class frmODMToolsMain(wx.Frame):
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
-            f= open('ODMTools.config', 'w')
+            f= open(self.__resource_path('../ODMTools.config'), 'w')
             f.write(self._mgr.SavePerspective())
         except:
             print "error saving docking data"

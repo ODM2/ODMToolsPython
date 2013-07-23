@@ -1,10 +1,7 @@
 import wx
+import sys
+import gui_utils
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
-
-def CreateBitmap(xpm):
-    bmp = wx.Image(xpm, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-    return bmp  
-
 
 class MyCustomToolbar(NavigationToolbar): 
 
@@ -23,17 +20,11 @@ class MyCustomToolbar(NavigationToolbar):
             CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 7
             self.DeleteToolByPos(CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION)
             
-        # add the new toolbar buttons that we do want
-        # if allowselect:
-        #     self.selectbutton= self.AddSimpleTool(self.ON_CUSTOM_SEL, CreateBitmap("images\\select.png"),
-        #                    'Select Points', 'Select Points')
-        #     wx.EVT_TOOL(self, self.ON_CUSTOM_SEL, self._on_custom_sel_point)
-        #     self.selectbutton.Enable(False)
-            
-        self.AddSimpleTool(self.ON_CUSTOM_LEFT, CreateBitmap("images\\scroll left.png"),
+
+        self.AddSimpleTool(self.ON_CUSTOM_LEFT, gui_utils.create_bitmap(gui_utils.get_base_dir() + "\\scroll_left.png"),
                            'Pan to the left', 'Pan graph to the left')
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
-        self.AddSimpleTool(self.ON_CUSTOM_RIGHT, CreateBitmap("images\\scroll right.png"),
+        self.AddSimpleTool(self.ON_CUSTOM_RIGHT, gui_utils.create_bitmap(gui_utils.get_base_dir() + "\\scroll_right.png"),
                            'Pan to the right', 'Pan graph to the right')
         wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
         

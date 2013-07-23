@@ -1,4 +1,4 @@
-import os
+import os, sys
 from series_service import SeriesService
 from cv_service import CVService
 from edit_service import EditService
@@ -62,7 +62,6 @@ class ServiceManager():
 		try:
 			service = SeriesService(conn_string, True)
 			site = service.get_test_data()
-			# print site
 		except SQLAlchemyError:
 			return False
 
@@ -93,11 +92,11 @@ class ServiceManager():
 
 	# private
 	def __resource_path(self, relative):
-		file_dir = os.path.dirname(__file__)
-		if os.path.basename(file_dir) == "odmservices":
-			basedir = os.path.dirname(file_dir)
+		if getattr(sys, 'frozen', None):
+			basedir = sys._MEIPASS
 		else:
-			basedir = file_dir
+			basedir = os.path.dirname(os.path.dirname(__file__))
+
 		return os.path.join(basedir, relative)
 
 	def __get_file(self, mode):
@@ -113,13 +112,13 @@ class ServiceManager():
 
 	def __build_connection_string(self, conn_dict):
 		driver = ""
+		print conn_dict
 		if conn_dict['engine'] == 'mssql':
 			driver = "pyodbc"
 		if conn_dict['engine'] == 'mysql':
 			driver = "pymysql"
 
 		conn_string = self._connection_format % (conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'], conn_dict['db'])
-		# print conn_string
 		return conn_string
 
 	def __save_connections(self):
