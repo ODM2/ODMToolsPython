@@ -97,6 +97,7 @@ class pnlPlot(fnb.FlatNotebook):
       self.pltHist.ChangeNumOfBins(numBins)
 
     def onDateChanged(self, date, time):
+      print date , time
       self.pltTS.onDateChanged(date, time)
 
     def OnPlotType(self, event, ptype):
@@ -137,6 +138,8 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltProb.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)
         self.pltTS.Plot(self._seriesPlotInfo)
+
+
 
     #     self.PlotGraph()
     def selectPlot(self, value):

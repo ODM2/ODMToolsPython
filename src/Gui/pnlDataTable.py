@@ -33,9 +33,10 @@ class pnlDataTable(wx.Panel):
 
         self.myOlv._highlightBrush=wx.Brush("red")
         self.myOlv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected )
-        # self.myOlv.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.OnItemDeSelected )
-        self.myOlv.Bind(wx.EVT_LEFT_UP, self.OnLUp, id=wxID_PNLDATATABLE )
-        self.myOlv.Bind(wx.EVT_LEFT_DOWN, self.OnLDown, id=wxID_PNLDATATABLE)
+##        self.myOlv.Bind(wx.EVT_LIST_COL_END_DRAG , self.OnLUp,id=wxID_PNLDATATABLE )
+##        self.myOlv.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.OnItemDeSelected )
+##        self.myOlv.Bind(wx.EVT_LEFT_UP, self.OnLUp, id=wxID_PNLDATATABLE )
+##        self.myOlv.Bind(wx.EVT_LEFT_DOWN, self.OnLDown, id=wxID_PNLDATATABLE)
         Publisher.subscribe(self.OnChangeSelection, ("changeTableSelection"))
         Publisher.subscribe(self.OnRefresh, ("refreshTable"))
 

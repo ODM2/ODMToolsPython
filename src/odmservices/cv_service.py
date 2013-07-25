@@ -112,7 +112,7 @@ class CVService():
 		session.close()
 		return result
 
- 	def get_unit_by_name(self, unit_name):
+	def get_unit_by_name(self, unit_name):
 		session = self._session_factory.get_session()
 		result =  self._edit_session.query(Unit).filter_by(name=unit_name).one()
 		session.close()

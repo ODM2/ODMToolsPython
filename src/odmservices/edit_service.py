@@ -217,6 +217,17 @@ class EditService():
     def get_qcl(self, qcl_id):
         return self._series_service.get_qcl_by_id(qcl_id)
 
+    def get_qcl(self, qcl_id):
+        return self._series_service.get_qcl_by_id(qcl_id)
+
+    def get_method(self, method_id):
+        return self._series_service.get_method_by_id(method_id)
+
+    def get_variable(self, variable_id):
+        print variable_id
+        return self._series_service.get_variable_by_id(variable_id)
+
+
 
     #################
     # Edits

@@ -12,7 +12,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-# from matplotlib.widgets import Lasso
+
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 from mpl_toolkits.axes_grid1 import host_subplot
 import mpl_toolkits.axisartist as AA
@@ -133,10 +133,15 @@ class plotTimeSeries(wx.Panel):
       else:
         self.endDate = date
 
-      self.plot.set_xbound(self.startDate,self.endDate)
+      self.timeSeries.axis.axes.set_xbound(self.startDate, self.endDate)
       self.canvas.draw()
 
+  def set_date_bound(self, start, end):
+        if start < self.overallStart:
+            self.overallStart = start
 
+        if end > self.currEnd:
+            self.currEnd = end
 
   def OnShowLegend(self, isVisible):
     # print self.timeSeries.show_legend
@@ -197,52 +202,6 @@ class plotTimeSeries(wx.Panel):
       self.editseriesID = -1
 
 
-
-
-  # def addEdit(self, cursor, series, Filter):
-
-  #     print "in edit series"
-  #     self.timeSeries.clear()
-
-  #     self.editDataFilter = Filter
-  #     self.editCursor = cursor
-  #     self.editSeries= series
-  #     self.toolbar.editSeries()
-  #     #####include NoDV in plot
-  #     # remove from regular 'lines'
-  #     self.removePlot(self.editSeries.id)
-
-
-  #     self.editCursor.execute("SELECT  DataValue, LocalDateTime FROM DataValuesEdit "+self.editDataFilter + " ORDER BY LocalDateTime")
-  #     results = self.editCursor.fetchall()
-
-  #     self.editData = plotData(self.editSeries.id, [x[0] for x in results], [x[1] for x in results],
-  #             "\n".join(textwrap.wrap(self.editSeries.variable_name+ "("+self.editSeries.variable_units_name+")",50)),
-  #             "\n".join(textwrap.wrap(self.editSeries.site_name+" "+self.editSeries.variable_name,55)), 'k')
-
-  #     #add plot with line only in black
-  #     self.timeSeries.set_title(self.editData.title)
-  #     self.timeSeries.set_ylabel(self.editData.ylabel, color =self.editData.color )
-  #     self.editline= self.timeSeries.plot_date(self.editData.DateTimes, self.editData.DataValues, '-'+self.editData.color, xdate = True, tz = None, label = self.editData.title )
-
-  #     # add scatterplot with colorlist as colorchart
-  #     self.selectedlist = [False] * len(self.editData.DataValues)
-
-
-  #     self.editPoint = self.timeSeries.scatter(self.editData.DateTimes, self.editData.DataValues, s= 20, c=['k' if x==0 else 'r' for x in self.selectedlist])
-  #     self.xys = [(matplotlib.dates.date2num(x), y) for x, y in zip(self.editData.DateTimes, self.editData.DataValues) ]
-
-
-  #     self.cid = self.canvas.mpl_connect('button_press_event', self.onpress)
-  #     # self.editPoint.set_picker(True)
-  #     # self.lman = LassoManager(self.timeSeries, self.editData.DateTimes, self.editData.DataValues, self.selectedlist)
-
-
-  #     self.timeSeries.set_xlabel("Date Time")
-
-  #     self.canvas.draw()
-
-
   def updateValues(self):
     # self.addEdit(self.editCursor, self.editSeries, self.editDataFilter)
 
@@ -263,20 +222,6 @@ class plotTimeSeries(wx.Panel):
     self.canvas.draw()
 
 
-
-
-  # def on_pick(self, event):
-  #     selectedlist = [False] * len(self.editData.DataValues)
-  #     print len(selectedlist)
-  #     for ind in event.ind:
-  #       self.selectedlist[ind]=True
-  #     #change slecteion on plot
-  #     self.changeSelection(selectedlist)
-  #     #change selection in table
-  #     Publisher.sendMessage(("changeTableSelection"), selectedlist)
-
-
-
   def drawEditPlot(self, oneSeries):
       curraxis= self.axislist[oneSeries.axisTitle]
       self.lines[self.curveindex]=curraxis.plot_date([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable], "-", color=oneSeries.color, xdate = True, tz = None, label = oneSeries.plotTitle )
@@ -294,21 +239,6 @@ class plotTimeSeries(wx.Panel):
 
   def Close(self):
     plt.close()
-
-  # def onclick(self, event):
-  #     print 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f'%(event.button, event.x, event.y, event.xdata, event.ydata)
-
-  # def BuildPopup(self):
-  #     # build pop-up menu for right-click display
-  #     self.popup_unzoom_all = wx.NewId()
-  #     self.popup_unzoom_one = wx.NewId()
-  #     self.popup_config     = wx.NewId()
-  #     self.popup_save   = wx.NewId()
-  #     self.popup_menu = wx.Menu()
-  #     self.popup_menu.Append(self.popup_unzoom_one, 'Zoom out')
-  #     self.popup_menu.Append(self.popup_unzoom_all, 'Zoom all the way out')
-  #     self.popup_menu.AppendSeparator()
-
 
 
   def Plot(self, seriesPlotInfo):

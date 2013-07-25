@@ -26,7 +26,7 @@ class pnlScript(wx.Frame):
         # The & character indicates the shortcut key
         filemenu.Append(ID_NEW, "&New", "New file")
         filemenu.Append(ID_OPEN, "&Open", " Open file")
-        filemenu.AppendSeparator()        
+        filemenu.AppendSeparator()
         filemenu.Append(ID_SAVE, "&Save", " Save current file")
         filemenu.Append(ID_SAVE_AS, "Save &As...", " Save to specific file")
 
@@ -54,7 +54,7 @@ class pnlScript(wx.Frame):
         self.executeLineButton.Bind(wx.EVT_BUTTON, self.OnExecuteLine)
         self.sizer2.Add(self.executeLineButton, 1, wx.ALIGN_LEFT)
 
-        self.sizer = wx.BoxSizer(wx.VERTICAL)        
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.sizer2, 0, wx.EXPAND)
         self.sizer.Add(self.control, 1, wx.EXPAND)
 
@@ -135,7 +135,7 @@ class pnlScript(wx.Frame):
         text = self.control.GetSelectedTextRaw()
         if text == "":
             text = self.control.GetLine(self.control.GetCurrentLine())
-        
+
         for line in text.split("\n"):
             self.console.shell.run(line)
 
@@ -151,7 +151,7 @@ class pnlScript(wx.Frame):
         """
         Returns a style for a given colour if one exists.  If no style
         exists for the colour, make a new style.
-        
+
         If we run out of styles, (only 32 allowed here) we go to the top
         of the list and reuse previous styles.
 
@@ -187,7 +187,9 @@ class pnlScript(wx.Frame):
         style = self.getStyle(c)
         lenText = len(text.encode('utf8'))
         end = self.control.GetLength()
-        self.control.AddText(text)
+##        self.control.DocumentEnd()
+        self.control.AppendTextRaw(text)
+##        self.control.AddStyledText(text)
         self.control.StartStyling(end, 31)
         self.control.SetStyling(lenText, style)
         self.control.EnsureCaretVisible()

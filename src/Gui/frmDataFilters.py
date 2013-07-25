@@ -8,24 +8,24 @@ from wx.lib.pubsub import pub as Publisher
 def create(parent):
     return frmDataFilter(parent)
 
-[wxID_FRMDATAFILTER, wxID_FRMDATAFILTERBTNAPPLY, wxID_FRMDATAFILTERBTNCANCEL, 
- wxID_FRMDATAFILTERBTNCLEAR, wxID_FRMDATAFILTERBTNOK, 
- wxID_FRMDATAFILTERCBGAPTIME, wxID_FRMDATAFILTERDBAFTER, 
- wxID_FRMDATAFILTERDPBEFORE, wxID_FRMDATAFILTERLBLDATEAFTER, 
- wxID_FRMDATAFILTERLBLDATEBEFORE, wxID_FRMDATAFILTERLBLGAPSTIME, 
- wxID_FRMDATAFILTERLBLGAPVALUE, wxID_FRMDATAFILTERLBLTHRESHVALGT, 
- wxID_FRMDATAFILTERLBLTHRESHVALLT, wxID_FRMDATAFILTERPANEL1, 
- wxID_FRMDATAFILTERRBDATAGAPS, wxID_FRMDATAFILTERRBDATE, 
- wxID_FRMDATAFILTERRBTHRESHOLD, wxID_FRMDATAFILTERRBVCHANGETHRESH, 
- wxID_FRMDATAFILTERSBDATE, wxID_FRMDATAFILTERSBGAPS, 
- wxID_FRMDATAFILTERSBTHRESHOLD, wxID_FRMDATAFILTERTXTGAPSVAL, 
- wxID_FRMDATAFILTERTXTTHRESHVALGT, wxID_FRMDATAFILTERTXTTHRESVALLT, 
+[wxID_FRMDATAFILTER, wxID_FRMDATAFILTERBTNAPPLY, wxID_FRMDATAFILTERBTNCANCEL,
+ wxID_FRMDATAFILTERBTNCLEAR, wxID_FRMDATAFILTERBTNOK,
+ wxID_FRMDATAFILTERCBGAPTIME, wxID_FRMDATAFILTERDBAFTER,
+ wxID_FRMDATAFILTERDPBEFORE, wxID_FRMDATAFILTERLBLDATEAFTER,
+ wxID_FRMDATAFILTERLBLDATEBEFORE, wxID_FRMDATAFILTERLBLGAPSTIME,
+ wxID_FRMDATAFILTERLBLGAPVALUE, wxID_FRMDATAFILTERLBLTHRESHVALGT,
+ wxID_FRMDATAFILTERLBLTHRESHVALLT, wxID_FRMDATAFILTERPANEL1,
+ wxID_FRMDATAFILTERRBDATAGAPS, wxID_FRMDATAFILTERRBDATE,
+ wxID_FRMDATAFILTERRBTHRESHOLD, wxID_FRMDATAFILTERRBVCHANGETHRESH,
+ wxID_FRMDATAFILTERSBDATE, wxID_FRMDATAFILTERSBGAPS,
+ wxID_FRMDATAFILTERSBTHRESHOLD, wxID_FRMDATAFILTERTXTGAPSVAL,
+ wxID_FRMDATAFILTERTXTTHRESHVALGT, wxID_FRMDATAFILTERTXTTHRESVALLT,
  wxID_FRMDATAFILTERTXTVCHANGETHRESH, wxID_FRMDATAFILTERCHKFILTER,
 ] = [wx.NewId() for _init_ctrls in range(27)]
 
 class frmDataFilter(wx.Dialog):
     def _init_ctrls(self, prnt):
-
+        self.is_applied = False
         # generated method, don't edit
         wx.Dialog.__init__(self, id=wxID_FRMDATAFILTER, name=u'frmDataFilter',
               parent=prnt, pos=wx.Point(599, 384), size=wx.Size(313, 400),
@@ -130,12 +130,12 @@ class frmDataFilter(wx.Dialog):
               size=wx.Size(100, 21), style=0, value='')
 
         self.chkToggleFilterSelection = wx.CheckBox(id=wxID_FRMDATAFILTERCHKFILTER,
-              name=u'checkbox', label=u'Filter from previous filter', 
+              name=u'checkbox', label=u'Filter from previous filter',
               parent=self.panel1, pos=wx.Point(8, 306),
               size=wx.Size(232,25), style=0)
         self.chkToggleFilterSelection.Bind(wx.EVT_CHECKBOX, self.OnCheckbox,
               id=wxID_FRMDATAFILTERCHKFILTER)
-        
+
         self.btnClear = wx.Button(id=wxID_FRMDATAFILTERBTNCLEAR,
               label=u'Clear Filter', name=u'btnClear', parent=self.panel1,
               pos=wx.Point(8, 335), size=wx.Size(64, 23), style=0)
@@ -182,13 +182,15 @@ class frmDataFilter(wx.Dialog):
         Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
 
     def OnBtnOKButton(self, event):
-        self.OnBtnApplyButton(event)
+        if not self.is_applied:
+            self.OnBtnApplyButton(event)
         self.Close()
 
     def OnBtnCancelButton(self, event):
         self.Close()
 
     def OnBtnApplyButton(self, event):
+        self.is_applied = True
         if self.rbThreshold.GetValue():
           if self.txtThreshValGT.GetValue():
             self.recordService.filter_value(float(self.txtThreshValGT.GetValue()), '>')
@@ -213,7 +215,7 @@ class frmDataFilter(wx.Dialog):
 
         Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
 
-    
+
     def setDates(self):
       dateAfter = self.recordService.get_series_points()[0][2]
       dateBefore = self.recordService.get_series_points()[-1][2]

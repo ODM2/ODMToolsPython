@@ -136,10 +136,10 @@ class clsULC(ULC.UltimateListCtrl):
 	def GetFilter(self):
 		return self.filter
 
- 	def GetFilteredObjects(self):
+	def GetFilteredObjects(self):
 		return self.innerList
 
- 	def SetFilter(self, filter):
+	def SetFilter(self, filter):
 		self.filter = filter
 
 	def ClearFilter(self):
@@ -239,7 +239,7 @@ class clsULC(ULC.UltimateListCtrl):
 
 
 
- # 	def _BuildInnerList(self):
+	# 	def _BuildInnerList(self):
 	# 	# """
 	# 	# Build the list that will actually populate the control
 	# 	# """
