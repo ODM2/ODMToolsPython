@@ -117,7 +117,7 @@ class frmDBConfig(wx.Dialog):
               64), size=wx.Size(248, 21), style=0, value=u'')
 
         self.lblUser = wx.StaticText(id=wxID_FRAME1LBLUSER,
-              label=u'Server User ID:', name=u'lblUser',
+              label=u'User ID:', name=u'lblUser',
               parent=self.pnlConnection, pos=wx.Point(64, 104), size=wx.Size(76,
               13), style=0)
 
@@ -127,7 +127,7 @@ class frmDBConfig(wx.Dialog):
         self._init_sizers()
         
         self.lblPass = wx.StaticText(id=wxID_FRMDBCONFIGLBLPASS,
-              label=u'Server Password:', name=u'lblPass',
+              label=u'Password:', name=u'lblPass',
               parent=self.pnlConnection, pos=wx.Point(56, 136), size=wx.Size(86,
               13), style=0)        
 
@@ -179,17 +179,19 @@ class frmDBConfig(wx.Dialog):
     def _GetFieldValues(self):
       conn_dict = {}
 
-      if self.comboBox1.GetValue() == 'Microsoft SQL Server':
+
+      if self.comboBox1.GetValue() == u'Microsoft SQL Server':
         conn_dict['engine'] = 'mssql'
-      if self.comboBox1.GetValue() == 'MySQL':
+      elif self.comboBox1.GetValue() == u'MySQL':
         conn_dict['engine'] = 'mysql'
+      else:
+        conn_dict['engine'] = self.comboBox1.GetValue()
 
       conn_dict['user']     = self.txtUser.GetValue()
       conn_dict['password'] = self.txtPass.GetValue()
       conn_dict['address']  = self.txtServer.GetValue()
       conn_dict['db']       = self.txtDBName.GetValue()
 
-      print conn_dict
       return conn_dict
 
 

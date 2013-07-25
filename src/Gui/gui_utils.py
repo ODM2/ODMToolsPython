@@ -7,7 +7,7 @@ def create_bitmap(xpm):
 
 def get_base_dir():
 	if getattr(sys, 'frozen', None):
-	    basedir = sys._MEIPASS
+	    basedir = sys._MEIPASS + '\images'
 	else:
 	    basedir = "images"
 	return basedir
