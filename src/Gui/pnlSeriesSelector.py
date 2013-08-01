@@ -9,6 +9,10 @@ from wx.lib.pubsub import pub as Publisher
 import sqlite3
 # from ObjectListView import Filter
 import wx.lib.agw.ultimatelistctrl as ULC
+try:
+    from agw import pycollapsiblepane as PCP
+except ImportError: # if it's not there locally, try the wxPython lib.
+    import wx.lib.agw.pycollapsiblepane as PCP
 from clsULC import clsULC, TextSearch, Chain
 import frmODMToolsMain
 import frmQueryBuilder
@@ -17,8 +21,30 @@ import frmDataExport
 from odmdata import memoryDatabase
 from odmservices import ServiceManager
 # import memoryDatabase
-
 # import wx.lib.agw.ultimatelistctrl as ULC
+
+
+##########only use this section when testing series selector #############
+from odmservices import ServiceManager
+
+def create(parent):
+    return test_ss(parent)
+
+class test_ss(wx.Frame):
+    def __init__(self, parent):
+        wx.Frame.__init__(self, id=2, name=u'test_ss', parent=parent,
+              size=wx.Size(900, 700),
+              style=wx.DEFAULT_FRAME_STYLE, title=u'test_ss')
+        id=1
+        size=wx.Size(900, 700)
+        pos = (0,0)
+        style="wx.TAB_TRAVERSAL"
+        name=u'pnlSelector'
+        service_manager = ServiceManager()
+        dbservice= service_manager.get_series_service()
+        pnl= pnlSeriesSelector(parent= self, id=id, size=size, style=style, name=name, dbservice = dbservice,pos = pos)
+
+##################################################################
 
 [wxID_PNLSERIESSELECTOR, wxID_PNLSERIESSELECTORCBSITES, wxID_PNLSERIESSELECTORCBVARIABLES,
  wxID_PNLSERIESSELECTORCHECKSITE, wxID_PNLSERIESSELECTORCHECKVARIABLE,
@@ -32,43 +58,44 @@ from odmservices import ServiceManager
 class pnlSeriesSelector(wx.Panel):
 
     ## Radio Sizer
-    def _init_coll_boxSizer5_Items(self, parent):
-        # generated method, don't edit
-
-        parent.AddWindow(self.rbAll, 0, border=1, flag=wx.ALL)
-        parent.AddWindow(self.rbSimple, 0, border=1, flag=wx.ALL)
-        parent.AddWindow(self.rbAdvanced, 0, border=1, flag=wx.ALL)
+##    def _init_coll_boxSizer5_Items(self, parent):
+##        # generated method, don't edit
+##
+##        parent.AddWindow(self.rbAll, 0, border=1, flag=wx.ALL)
+##        parent.AddWindow(self.rbSimple, 0, border=1, flag=wx.ALL)
+##        parent.AddWindow(self.rbAdvanced, 0, border=1, flag=wx.ALL)
 
 
     ## Splitter Sizer
     def _init_coll_boxSizer3_Items(self, parent):
         # generated method, don't edit
-        parent.AddWindow(self.splitter, 100, border=0, flag=wx.EXPAND)
+        parent.AddWindow(self.cpnlSimple, 0, flag=wx.RIGHT|wx.LEFT|wx.EXPAND)
+        parent.AddWindow(self.tableSeries, 100, flag=wx.EXPAND)
 
     ## Panel Sizer
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
-        parent.AddSizer(self.boxSizer5, 7, border=5, flag=wx.EXPAND)
-        parent.AddWindow(self.pnlSplitter, 93, border=3, flag=wx.ALL | wx.EXPAND)
+        parent.AddSizer(self.pnlRadio, 0, border=7, flag=wx.LEFT|wx.RIGHT |wx.TOP)
+        parent.AddWindow(self.pnlData, 100, border=3, flag=wx.LEFT|wx.RIGHT  | wx.EXPAND)
 
     ## Site Sizer
     def _init_coll_boxSizer4_Items(self, parent):
         # generated method, don't edit
-        parent.AddWindow(self.checkSite, 3, border=3, flag=wx.ALL)
-        parent.AddWindow(self.lblSite, 10, border=3, flag=wx.ALL)
-        parent.AddWindow(self.cbSites, 85, border=3, flag=wx.ALL | wx.EXPAND)
+        parent.AddWindow(self.checkSite, 0, border=3, flag=wx.LEFT|wx.RIGHT)
+        parent.AddWindow(self.lblSite, 0, border=3, flag=wx.LEFT|wx.RIGHT )
+        parent.AddWindow(self.cbSites, 90, border=3, flag=wx.LEFT|wx.RIGHT | wx.EXPAND)
 
     ## Variable Sizer
     def _init_coll_boxSizer2_Items(self, parent):
         # generated method, don't edit
-        parent.AddWindow(self.checkVariable, 3, border=3, flag=wx.ALL)
-        parent.AddWindow(self.lblVariable, 10, border=3, flag=wx.ALL)
-        parent.AddWindow(self.cbVariables, 85, border=3, flag=wx.ALL | wx.EXPAND)
+        parent.AddWindow(self.checkVariable, 0, border=3, flag=wx.LEFT|wx.RIGHT )
+        parent.AddWindow(self.lblVariable, 0, border=3, flag=wx.LEFT|wx.RIGHT )
+        parent.AddWindow(self.cbVariables, 90, border=3, flag=wx.LEFT|wx.RIGHT | wx.EXPAND)
 
     ##  Simple Filter Sizer
     def _init_coll_boxSizer6_Items(self, parent):
-        parent.AddWindow(self.panel1, 0, border=3, flag=wx.ALL | wx.EXPAND)
-        parent.AddWindow(self.panel2, 0, border=3, flag=wx.ALL | wx.EXPAND)
+        parent.AddWindow(self.pnlSite, 50,  flag=wx.EXPAND)
+        parent.AddWindow(self.pnlVar, 50,  flag=wx.EXPAND)
         # parent.AddSizer(self.boxSizer4, 0, border=5, flag=wx.EXPAND)
         # parent.AddSizer(self.boxSizer2, 0, border=5, flag=wx.EXPAND)
 
@@ -79,21 +106,22 @@ class pnlSeriesSelector(wx.Panel):
         self.boxSizer2 = wx.BoxSizer(orient=wx.HORIZONTAL)
         self.boxSizer3 = wx.BoxSizer(orient=wx.VERTICAL)
         self.boxSizer4 = wx.BoxSizer(orient=wx.HORIZONTAL)
-        self.boxSizer5 = wx.BoxSizer(orient=wx.HORIZONTAL)
+##        self.boxSizer5 = wx.BoxSizer(orient=wx.HORIZONTAL)
         self.boxSizer6 = wx.BoxSizer(orient=wx.VERTICAL)
 
         self._init_coll_boxSizer1_Items(self.boxSizer1)
         self._init_coll_boxSizer2_Items(self.boxSizer2)
         self._init_coll_boxSizer3_Items(self.boxSizer3)
         self._init_coll_boxSizer4_Items(self.boxSizer4)
-        self._init_coll_boxSizer5_Items(self.boxSizer5)
+##        self._init_coll_boxSizer5_Items(self.boxSizer5)
         self._init_coll_boxSizer6_Items(self.boxSizer6)
 
         self.SetSizer(self.boxSizer1)
-        self.panel1.SetSizer(self.boxSizer4)
-        self.panel2.SetSizer(self.boxSizer2)
-        self.pnlSimple.SetSizer(self.boxSizer6)
-        self.pnlSplitter.SetSizer(self.boxSizer3)
+##        self.pnlRadio.SetSizer(self.boxSizer5)
+##        self.pnlSite.SetSizer(self.boxSizer4)
+##        self.pnlVar.SetSizer(self.boxSizer2)
+        self.cpnlSimple.SetSizer(self.boxSizer6)
+        self.pnlData.SetSizer(self.boxSizer3)
         # self.pnlRadio.SetSizer(self.boxSizer5)
 
     def _init_ctrls(self, prnt):
@@ -131,62 +159,67 @@ class pnlSeriesSelector(wx.Panel):
         self.rbAdvanced.Enable(False)
 
         ## Splitter panel
-        self.pnlSplitter = wx.Panel(id=wxID_PNLSPLITTER, name='pnlSplitter',
-              parent=self, pos=wx.Point(3, 3), size=wx.Size(919, 349),
+        self.pnlData = wx.Panel(id=wxID_PNLSPLITTER, name='pnlData',
+              parent=self, pos=wx.Point(0, -10), size=wx.Size(900, 349),
               style=wx.TAB_TRAVERSAL)
 
-        self.splitter = wx.SplitterWindow(id=wxID_FRAME1SPLITTER,
-              name=u'splitter', parent=self.pnlSplitter, pos=wx.Point(0, 0),
-              size=wx.Size(604, 137), style=wx.NO_BORDER)
-        self.splitter.SetMinSize(wx.Size(-1, -1))
+##        self.splitter = wx.SplitterWindow(id=wxID_FRAME1SPLITTER,
+##              name=u'splitter', parent=self.pnlData, pos=wx.Point(0, 0),
+##              size=wx.Size(604, 137), style=wx.NO_BORDER)
+##        self.splitter.SetMinSize(wx.Size(-1, -1))
+
+        self.cpnlSimple =PCP.PyCollapsiblePane( parent=self.pnlData, label="",
+                                             agwStyle=wx.CP_NO_TLW_RESIZE | wx.CP_GTK_EXPANDER | wx.CP_USE_STATICBOX,
+                                             size = wx.Size(300,20), pos =wx.Point(0,-20))
+        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnPaneChanged, self.cpnlSimple)
 
         ## panel for simple filter(top of splitter)
-        self.pnlSimple = wx.Panel(id=wxID_PNLSIMPLE, name='panel3',
-              parent=self.splitter, pos=wx.Point(0, 0), size=wx.Size(919, 300),
-              style=wx.TAB_TRAVERSAL)
+##        self.pnlSimple = wx.Panel(id=wxID_PNLSIMPLE, name='panel3',
+##              parent=self.splitter, pos=wx.Point(0, 0), size=wx.Size(919, 300),
+##              style=wx.TAB_TRAVERSAL)
 
         ## Site Panel
-        self.panel1 = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL1, name='panel1',
-              parent=self.pnlSimple, pos=wx.Point(3, 3), size=wx.Size(919, 30),
+        self.pnlSite = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL1, name='pnlSite',
+              parent=self.cpnlSimple.GetPane(), pos=wx.Point(3, 0), size=wx.Size(800, 25),
               style=wx.TAB_TRAVERSAL)
 
         self.cbSites = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBSITES,
-              name=u'cbSites', parent=self.panel1, pos=wx.Point(123, 3),
-              size=wx.Size(787, 21), style=0, value=u'')
+              name=u'cbSites', parent=self.pnlSite, pos=wx.Point(100, 0),
+              size=wx.Size(700, 23), style=0, value=u'')
         self.cbSites.SetLabel(u'')
         self.cbSites.Bind(wx.EVT_COMBOBOX, self.OnCbSitesCombobox,
               id=wxID_PNLSERIESSELECTORCBSITES)
 
         self.checkSite = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKSITE,
-              label=u'', name=u'checkSite', parent=self.panel1, pos=wx.Point(3,
-              3), size=wx.Size(21, 21), style=0)
+              label=u'', name=u'checkSite', parent=self.pnlSite, pos=wx.Point(3,
+              0), size=wx.Size(21, 21), style=0)
         self.checkSite.SetValue(True)
         self.checkSite.Bind(wx.EVT_CHECKBOX, self.OnCheck,
               id=wxID_PNLSERIESSELECTORCHECKSITE)
 
         self.lblSite = wx.StaticText(id=wxID_PNLSERIESSELECTORLBLSITE,
-              label=u'Site', name=u'lblSite', parent=self.panel1,
-              pos=wx.Point(30, 3), size=wx.Size(87, 13), style=0)
+              label=u'Site', name=u'lblSite', parent=self.pnlSite,
+              pos=wx.Point(30, 0), size=wx.Size(60, 21), style=0)
         self.lblSite.SetToolTipString(u'staticText1')
 
         ### Variable Panel
-        self.panel2 = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL2, name='panel2',
-              parent=self.pnlSimple, pos=wx.Point(3, 39), size=wx.Size(919, 30),
+        self.pnlVar = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL2, name='pnlVar',
+              parent=self.cpnlSimple.GetPane(), pos=wx.Point(3, 26), size=wx.Size(800, 25),
               style=wx.TAB_TRAVERSAL)
 
         self.lblVariable = wx.StaticText(id=wxID_PNLSERIESSELECTORLBLVARIABLE,
-              label=u'Variable', name=u'lblVariable', parent=self.panel2,
-              pos=wx.Point(30, 3), size=wx.Size(87, 13), style=0)
+              label=u'Variable', name=u'lblVariable', parent=self.pnlVar,
+              pos=wx.Point(30, 0), size=wx.Size(60, 21), style=0)
 
         self.checkVariable = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKVARIABLE,
-              label=u'', name=u'checkVariable', parent=self.panel2,
-              pos=wx.Point(3, 3), size=wx.Size(21, 21), style=0)
+              label=u'', name=u'checkVariable', parent=self.pnlVar,
+              pos=wx.Point(3, 0), size=wx.Size(21, 21), style=0)
         self.checkVariable.Bind(wx.EVT_CHECKBOX, self.OnCheck,
               id=wxID_PNLSERIESSELECTORCHECKVARIABLE)
 
         self.cbVariables = wx.ComboBox(choices=[],
               id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
-              parent=self.panel2, pos=wx.Point(123, 3), size=wx.Size(123, 3),
+              parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25),
               style=0, value='comboBox4')
         self.cbVariables.SetLabel(u'')
         self.cbVariables.Enable(False)
@@ -194,11 +227,11 @@ class pnlSeriesSelector(wx.Panel):
               id=wxID_PNLSERIESSELECTORCBVARIABLES)
 
         self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeries,
-              name=u'tableSeries', parent=self.splitter, pos=wx.Point(5, 5),
+              name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),
               size=wx.Size(903, 108),
               agwStyle= ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT |ULC.ULC_SINGLE_SEL)
-        self.splitter.Initialize(self.tableSeries)
-        self.pnlSimple.Show(False)
+##        self.splitter.Initialize(self.tableSeries)
+        self.cpnlSimple.Collapse(True)
         # self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 1)
 
         self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED,
@@ -231,16 +264,18 @@ class pnlSeriesSelector(wx.Panel):
         #####INIT DB Connection
         self.dbservice = dbservice
         self.tableSeries.Clear()
+        self.cbVariables.Clear()
+        self.cbSites.Clear()
         self.siteList = None
-        self.varList   =None
+        self.varList =None
 
         self.initTableSeries()
         self.initSVBoxes()
 
+        self.Layout()
 
     def initTableSeries(self):
         self.dataRep=memoryDatabase(self.dbservice)
-
 
         self.tableSeries.SetColumns(self.dataRep.getSeriesColumns())
         self.tableSeries.SetObjects(self.dataRep.getSeriesCatalog())
@@ -285,11 +320,18 @@ class pnlSeriesSelector(wx.Panel):
         self.tableSeries.PopupMenu(popup_menu)
         event.Skip()
 
+
+    def OnPaneChanged(self, event = None):
+        if event:
+            print 'wx.EVT_COLLAPSIBLEPANE_CHANGED: %s\n' % event.Collapsed
+        self.Layout()
     def OnRbAdvancedRadiobutton(self, event):
         #open filter window and hide top Panel
         # self.splitter.SetSashPosition(1)
-        if self.splitter.IsSplit():
-            self.splitter.Unsplit(self.pnlSimple)
+##        if self.splitter.IsSplit():
+##            self.splitter.Unsplit(self.pnlSimple)
+        self.cpnlSimple.Collapse(True)
+        self.Layout()
         series_filter = frmQueryBuilder.frmQueryBuilder(self)
         self.filterlist = series_filter.ShowModal()
         # print self.filterlist
@@ -297,8 +339,10 @@ class pnlSeriesSelector(wx.Panel):
 
     def OnRbAllRadiobutton(self, event):
         #Hide top panel
-        if self.splitter.IsSplit():
-            self.splitter.Unsplit(self.pnlSimple)
+##        if self.splitter.IsSplit():
+##            self.splitter.Unsplit(self.pnlSimple)
+        self.cpnlSimple.Collapse(True)
+        self.Layout()
         # self.splitter.SetSashPosition(1)
         self.SetFilter()
         event.Skip()
@@ -306,9 +350,11 @@ class pnlSeriesSelector(wx.Panel):
 
     def OnRbSimpleRadiobutton(self, event):
         #show top Panel
-        if not self.splitter.IsSplit():
-            self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 30)
+##        if not self.splitter.IsSplit():
+##            self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 30)
         # self.splitter.SetSashPosition(70)
+        self.cpnlSimple.Expand()
+        self.Layout()
         self.SetFilter(self.site_code, self.variable_code)
         event.Skip()
 
@@ -316,7 +362,10 @@ class pnlSeriesSelector(wx.Panel):
     def OnRightPlot(self, event):
         # print self.tableSeries.IsItemChecked(self.selectedIndex)
         # self.tableSeries.GetItem(self.selectedID, 0).Check = True
-        # print "in OnRightPlot"
+##        self.tableSeries.GetColumnText(self.selectedIndex, 1).Check = True
+        self.tableSeries.CheckItem(self.selectedIndex)
+        self.SelectForPlot(self.selectedIndex)
+        print "click Plot"
         event.Skip()
 
     def OnRightEdit(self, event):
@@ -479,18 +528,22 @@ class pnlSeriesSelector(wx.Panel):
     def OntableSeriesListItemSelected(self, event):
         # print"in item selected", event.m_itemIndex, self.tableSeries.IsItemChecked(event.m_itemIndex)
         # print dir(event)
-        sid= self.tableSeries.innerList[event.m_itemIndex][0]
-        if not self.tableSeries.IsItemChecked(event.m_itemIndex):
+        self.SelectForPlot( event.m_itemIndex)
+
+        event.Skip()
+
+    def SelectForPlot(self, selIndex ):
+        sid= self.tableSeries.innerList[selIndex][0]
+        if not self.tableSeries.IsItemChecked(selIndex):
             Publisher.sendMessage(("removePlot"), seriesID=sid)
-            self.tableSeries.innerList[event.m_itemIndex][-1]= False
+            self.tableSeries.innerList[selIndex][-1]= False
 
         else:
             #set isselected value to True
-            self.tableSeries.innerList[event.m_itemIndex][-1]= True
+            self.tableSeries.innerList[selIndex][-1]= True
             self.parent.Parent.addPlot(self.dataRep ,sid)
 
         self.Refresh()
-        event.Skip()
 
     def SelectForEdit(self, seriesID):
         self.dataRep.initEditValues(seriesID)
@@ -500,4 +553,13 @@ class pnlSeriesSelector(wx.Panel):
     def stopEdit(self):
         self.dataRep.stopEdit()
 
+
+##########only use this section when testing series selector #############
+if __name__ == '__main__':
+    app = wx.App(False)
+    frame = create(None)
+    frame.Show()
+
+    app.MainLoop()
+##################################################################
 

@@ -45,7 +45,12 @@ class mnuRibbon(RB.RibbonBar):
         home = RB.RibbonPage(self, wx.ID_ANY, "Plot", gui_utils.create_bitmap(gui_utils.get_base_dir() + "\\3d_graph.png"))
 
   #------Plot Type ---------------------------------------------------------------------------
-
+        bmp=gui_utils.create_bitmap(gui_utils.get_base_dir() + "\\tsa_icon.png")
+        print bmp.Ok()
+        print bmp.GetSize()
+        bmp=wx.Bitmap(gui_utils.get_base_dir() + "\\tsa_icon.png")
+        print bmp.Ok()
+        print bmp.GetSize()
         plot_panel = RB.RibbonPanel(home, wx.ID_ANY, "Plots", wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)

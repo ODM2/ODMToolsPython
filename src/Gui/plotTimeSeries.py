@@ -127,7 +127,8 @@ class plotTimeSeries(wx.Panel):
   def onDateChanged(self, date, time):
       # print date
       # self.timeSeries.clear()
-      date = datetime.datetime(date.Year, date.Month, date.Day, 0, 0, 0)
+      date = datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0)
+##      print date
       if time == "start":
         self.startDate = date
       else:

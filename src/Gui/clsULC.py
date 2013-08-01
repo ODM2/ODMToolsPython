@@ -112,7 +112,9 @@ class clsULC(ULC.UltimateListCtrl):
 		#returns a list of the checked ids
 		return [x[0] for x in modelObjects if x[-1]]
 
-
+	def CheckItem(self, index):
+		self.innerList[index][-1] = 1
+		self._mainWin.CheckItem(self.GetItem(index, 0), True, False)
 
 
 	def GetColumnText(self, index, colid):

@@ -46,7 +46,7 @@ class SeriesService():
 				distinct(Series.variable_id), Series.variable_code, Series.variable_name).filter_by(site_code=site_code).order_by(Series.variable_code
 			).all()
 		else:
-			result = self._edit_session.query(distinct(Variable.id), Series.variable_code, Series.variable_name).order_by(Series.variable_code).all()
+			result = self._edit_session.query(distinct(Series.variable_id), Series.variable_code, Series.variable_name).order_by(Series.variable_code).all()
 
 		return result
 	def get_vars(self):
