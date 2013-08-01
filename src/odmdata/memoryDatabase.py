@@ -1,7 +1,7 @@
 
 import sqlite3
 
-class memoryDatabase(object):
+class MemoryDatabase(object):
 
 
     # dbservice is a SeriesService

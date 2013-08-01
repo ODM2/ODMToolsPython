@@ -18,10 +18,9 @@ import frmODMToolsMain
 import frmQueryBuilder
 import frmDataExport
 
-from odmdata import memoryDatabase
+from odmdata import MemoryDatabase
 from odmservices import ServiceManager
-# import memoryDatabase
-# import wx.lib.agw.ultimatelistctrl as ULC
+
 
 
 ##########only use this section when testing series selector #############
@@ -275,7 +274,7 @@ class pnlSeriesSelector(wx.Panel):
         self.Layout()
 
     def initTableSeries(self):
-        self.dataRep=memoryDatabase(self.dbservice)
+        self.dataRep=MemoryDatabase(self.dbservice)
 
         self.tableSeries.SetColumns(self.dataRep.getSeriesColumns())
         self.tableSeries.SetObjects(self.dataRep.getSeriesCatalog())

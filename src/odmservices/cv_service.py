@@ -1,21 +1,21 @@
 # CV imports
-from odmdata.session_factory import SessionFactory
-from odmdata.vertical_datum_cv import VerticalDatumCV
-from odmdata.site_type_cv import SiteTypeCV
-from odmdata.variable_name_cv import VariableNameCV
-from odmdata.speciation_cv import SpeciationCV
-from odmdata.sample_medium_cv import SampleMediumCV
-from odmdata.value_type_cv import ValueTypeCV
-from odmdata.data_type_cv import DataTypeCV
-from odmdata.general_category_cv import GeneralCategoryCV
-from odmdata.censor_code_cv import CensorCodeCV
-from odmdata.topic_category_cv import TopicCategoryCV
-from odmdata.sample_type_cv import SampleTypeCV
-from odmdata.offset_type import OffsetType
+from odmdata import SessionFactory
+from odmdata import VerticalDatumCV
+from odmdata import SiteTypeCV
+from odmdata import VariableNameCV
+from odmdata import SpeciationCV
+from odmdata import SampleMediumCV
+from odmdata import ValueTypeCV
+from odmdata import DataTypeCV
+from odmdata import GeneralCategoryCV
+from odmdata import CensorCodeCV
+from odmdata import TopicCategoryCV
+from odmdata import SampleTypeCV
+from odmdata import OffsetType
 # from odmdata.lab_method import LabMethod
-from odmdata.sample import Sample
-from odmdata.qualifier import Qualifier
-from odmdata.unit import Unit
+from odmdata import Sample
+from odmdata import Qualifier
+from odmdata import Unit
 
 
 class CVService():
@@ -25,8 +25,6 @@ class CVService():
 		self._edit_session = self._session_factory.get_session()
 		self._debug = debug
 
-		# getverdcv
-
 	# Controlled Vocabulary get methods
 	def get_vertical_datum_cvs(self):
 		session = self._session_factory.get_session()
@@ -34,7 +32,7 @@ class CVService():
 		session.close()
 		return result
 
-	def get_lab_methods(self):
+	def get_samples(self):
 		session = self._session_factory.get_session()
 		result = session.query(Sample).order_by(Sample.lab_sample_code).all()
 		session.close()
@@ -112,6 +110,12 @@ class CVService():
 		session.close()
 		return result
 
+	def get_units(self):
+		session = self._session_factory.get_session()
+		result =  self._edit_session.query(Unit).all()
+		session.close()
+		return result
+
 	def get_unit_by_name(self, unit_name):
 		session = self._session_factory.get_session()
 		result =  self._edit_session.query(Unit).filter_by(name=unit_name).one()
@@ -123,11 +127,3 @@ class CVService():
 		result =  self._edit_session.query(Unit).filter_by(id=unit_id).one()
 		session.close()
 		return result
-
-	def get_units(self):
-		session = self._session_factory.get_session()
-		result =  self._edit_session.query(Unit).all()
-		session.close()
-		return result
-
-
