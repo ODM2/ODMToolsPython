@@ -1,3 +1,4 @@
+•	pip (Windows: http://docs.python-guide.org/en/latest/starting/install/win.html)(not needed for distribution just for testing)
 
 •	Python-2.7 32 bit(http://www.python.org/download/releases/2.7.3/)
 •	Wxpython-2.9.4(http://www.wxpython.org/download.php)

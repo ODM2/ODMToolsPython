@@ -26,7 +26,7 @@ from value_type_cv import ValueTypeCV
 from variable import Variable
 from variable_name_cv import VariableNameCV
 from vertical_datum_cv import VerticalDatumCV
-from memoryDatabase import MemoryDatabase
+from memory_database import MemoryDatabase
 
 __all__ = [
     'Base',

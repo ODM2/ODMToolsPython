@@ -4,35 +4,29 @@ import sqlite3
 class MemoryDatabase(object):
 
 
-    # dbservice is a SeriesService
-    def __init__(self, dbservice):
-        self.dbservice = dbservice        
+    # series_service is a SeriesService
+    def __init__(self, series_service):
+        self.series_service = series_service        
         self.conn = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
         self.editLoaded= False
         self.initDB()
         self.initSC()
 
-    ###########
-    #getters
-    ###########
-    def getCursor(self):
-        return self.cursor
-
-    def getConnection(self):
-        return self.conn
-
-
      ############
      #DB Queries
      ###########   
-    def deletePoints(self, filter):
-        pass
-    def addPoints(self, filter):
-        pass
-    def updatePoints(self, filter, values):
-        pass
+    def delete_points(self, filter):
+        raise NotImplementedError
 
+    def add_points(self, filter):
+        raise NotImplementedError
+
+    def update_points(self, filter, values):
+        raise NotImplementedError
+
+    def get_data_values(self):
+        return []
 
     def getDataValuesforEdit(self):  
         # query = "SELECT ValueID, SeriesID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, QualifierCode, OffsetValue, OffsetTypeID, CensorCode, SampleID FROM DataValuesEdit AS d LEFT JOIN Qualifiers AS q ON (d.QualifierID = q.QualifierID) "
@@ -58,7 +52,7 @@ class MemoryDatabase(object):
         return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]
 
     def getDataValuesforGraph(self, seriesID, strNoDataValue, strStartDate, strEndDate):
-        series = self.dbservice.get_series_by_id(seriesID)
+        series = self.series_service.get_series_by_id(seriesID)
         DataValues = series.get_data_values_tuples()
 
         #clear any previous queries from table
@@ -87,8 +81,8 @@ class MemoryDatabase(object):
 
 
 
-    def resetDB(self, dbservice):
-        self.dbservice = dbservice
+    def resetDB(self, series_service):
+        self.series_service = series_service
 
         self.conn = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
@@ -113,7 +107,7 @@ class MemoryDatabase(object):
 
     def initEditValues(self, seriesID):
         if not self.editLoaded:
-            series = self.dbservice.get_series_by_id(seriesID)
+            series = self.series_service.get_series_by_id(seriesID)
             self.DataValuesEdit = series.get_data_values_tuples()
 
             self.cursor.executemany("INSERT INTO DataValuesEdit VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", self.DataValuesEdit)
@@ -123,7 +117,7 @@ class MemoryDatabase(object):
 
 
     def initSC(self):
-        self.SeriesCatalog =self.dbservice.get_all_series_tuples()
+        self.SeriesCatalog =self.series_service.get_all_series_tuples()
         self.cursor.executemany("INSERT INTO SeriesCatalog VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", self.SeriesCatalog)
         self.cursor.execute("ALTER TABLE SeriesCatalog ADD COLUMN isSelected INTEGER ")
         

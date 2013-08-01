@@ -92,7 +92,6 @@ class Series(Base):
 	def __repr__(self):
 		return "<Series('%s')>" % (self.id)
 
-		
 	def getCols(self):
 		return ['SeriesID','SiteID', 'SiteCode', 'SiteName','VariableID', 'VariableCode', 'VariableName',
 			'Speciation', 'VariableUnitsID', 'VariableUnitsName', 'SampleMedium', 'ValueType', 'TimeSupport',
