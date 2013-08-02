@@ -53,7 +53,10 @@ class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
         self.service_manager = ServiceManager()
         self.record_service = None
-        if self.service_manager.get_current_connection() == None:
+##        print self.service_manager.test_connection(self.service_manager.get_current_connection())
+##        if self.service_manager.get_current_connection() != None and self.service_manager.test_connection(self.service_manager.get_current_connection()):
+#there is a connection but it is unsuccessful
+        if self.service_manager.get_current_connection() == None or (self.service_manager.get_current_connection() != None and not self.service_manager.test_connection(self.service_manager.get_current_connection())):
             # Create a DB form which will set a connection for the service manager
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
@@ -166,7 +169,7 @@ class frmODMToolsMain(wx.Frame):
                 Name("Script").Show(show=False).Layer(0).Float().MinSize(wx.Size(200,200)))
         self._mgr.AddPane(self.txtPythonConsole,  aui.AuiPaneInfo().Caption('Python Console').
                 Name("Console").Layer(1).Show(show=False).Float())
-      
+
         self._mgr.AddPane(self.pnlPlot,  aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot"))
 
         self.loadDockingSettings()
@@ -232,7 +235,8 @@ class frmODMToolsMain(wx.Frame):
     def onChangeDBConn(self, event):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
-        if value == wx.ID_OK:
+        print value
+        if value == 5101:
             #reset Series Selector
             self.pnlSelector.resetDB(self.sc)
             #clear editseries

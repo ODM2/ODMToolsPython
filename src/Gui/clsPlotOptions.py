@@ -186,7 +186,7 @@ class SeriesPlotInfo(object):
 
 
                 seriesID = key
-                series =  self.dbConn.dbservice.get_series_by_id(seriesID)# get from db
+                series =  self.dbConn.series_service.get_series_by_id(seriesID)# get from db
                 # variable =self.dbservice.get_variable_by_id(series.variable_id)
 
                 strStartDate= series.begin_date_time#self._plotOptions._startDateTime
@@ -195,7 +195,7 @@ class SeriesPlotInfo(object):
                 unitsName = series.variable_units_name
                 siteName = series.site_name
                 dataType = series.data_type
-                noDataValue = self.dbConn.dbservice.get_no_data_value(series.variable_id)[0]#variable.no_data_value
+                noDataValue = self.dbConn.series_service.get_no_data_value(series.variable_id)[0]#variable.no_data_value
                 if self.editID == seriesID:
                     data = self.dbConn.getEditDataValuesforGraph()
                 else:

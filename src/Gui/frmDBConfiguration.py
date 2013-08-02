@@ -7,14 +7,14 @@ from odmservices.service_manager import ServiceManager
 def create(parent, service_manager, is_main):
     return frmDBConfig(parent, service_manager, is_main = is_main)
 
-[wxID_FRMDBCONFIG, wxID_FRMDBCONFIGBOXCONNECTION, wxID_FRMDBCONFIGBTNCANCEL, 
- wxID_FRMDBCONFIGBTNSAVE, wxID_FRMDBCONFIGBTNTEST, wxID_FRMDBCONFIGCOMBOBOX1, 
- wxID_FRMDBCONFIGLBLDBNAME, wxID_FRMDBCONFIGLBLDBTYPE, 
- wxID_FRMDBCONFIGLBLPASS, wxID_FRMDBCONFIGLBLSERVER, wxID_FRMDBCONFIGLBLUSER, 
- wxID_FRMDBCONFIGPNLCONNECTION, wxID_FRMDBCONFIGPNLMAIN, 
- wxID_FRMDBCONFIGTXTDBNAME, wxID_FRMDBCONFIGTXTPASS, 
- wxID_FRMDBCONFIGTXTSERVER, wxID_FRMDBCONFIGTXTUSER, wxID_FRAME1BOXCONNECTION, 
- wxID_FRAME1LBLUSER, wxID_FRAME1TXTPASS, wxID_FRMDBCONFIGTXTDBNAME, 
+[wxID_FRMDBCONFIG, wxID_FRMDBCONFIGBOXCONNECTION, wxID_FRMDBCONFIGBTNCANCEL,
+ wxID_FRMDBCONFIGBTNSAVE, wxID_FRMDBCONFIGBTNTEST, wxID_FRMDBCONFIGCOMBOBOX1,
+ wxID_FRMDBCONFIGLBLDBNAME, wxID_FRMDBCONFIGLBLDBTYPE,
+ wxID_FRMDBCONFIGLBLPASS, wxID_FRMDBCONFIGLBLSERVER, wxID_FRMDBCONFIGLBLUSER,
+ wxID_FRMDBCONFIGPNLCONNECTION, wxID_FRMDBCONFIGPNLMAIN,
+ wxID_FRMDBCONFIGTXTDBNAME, wxID_FRMDBCONFIGTXTPASS,
+ wxID_FRMDBCONFIGTXTSERVER, wxID_FRMDBCONFIGTXTUSER, wxID_FRAME1BOXCONNECTION,
+ wxID_FRAME1LBLUSER, wxID_FRAME1TXTPASS, wxID_FRMDBCONFIGTXTDBNAME,
  wxID_FRAME1LBLDBNAME, wxID_FRAME1TXTSERVER, wxID_FRMDBCONFIGLBLSERVER,
 ] = [wx.NewId() for _init_ctrls in range(24)]
 
@@ -69,7 +69,7 @@ class frmDBConfig(wx.Dialog):
               label=u'Connection Type:', name=u'lblDbType', parent=self.pnlMain,
               pos=wx.Point(10, 10), size=wx.Size(101, 25), style=0)
 
-        self.comboBox1 = wx.ComboBox(choices=["Microsoft Sql Server", "MySQL"], id=wxID_FRMDBCONFIGCOMBOBOX1,
+        self.comboBox1 = wx.ComboBox(choices=["Microsoft SQL Server", "MySQL"], id=wxID_FRMDBCONFIGCOMBOBOX1,
               name='comboBox1', parent=self.pnlMain, pos=wx.Point(121, 10),
               size=wx.Size(326, 21), style=0,
               value=u'Microsoft SQL Server')
@@ -125,11 +125,11 @@ class frmDBConfig(wx.Dialog):
               parent=self.pnlConnection, pos=wx.Point(160, 96),
               size=wx.Size(248, 21), style=0, value=u'')
         self._init_sizers()
-        
+
         self.lblPass = wx.StaticText(id=wxID_FRMDBCONFIGLBLPASS,
               label=u'Password:', name=u'lblPass',
               parent=self.pnlConnection, pos=wx.Point(56, 136), size=wx.Size(86,
-              13), style=0)        
+              13), style=0)
 
         self.txtPass = wx.TextCtrl(id=wxID_FRAME1TXTPASS, name=u'txtPass',
               parent=self.pnlConnection, pos=wx.Point(160, 128),
@@ -162,7 +162,7 @@ class frmDBConfig(wx.Dialog):
         message = "This connection is invalid"
 
       wx.MessageBox(message, 'Test Connection', wx.OK)
-              
+
     def OnBtnSave(self, event):
       conn_dict = self._GetFieldValues()
 
