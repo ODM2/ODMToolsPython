@@ -7,7 +7,7 @@ from method import Method
 from source import Source
 from quality_control_level import QualityControlLevel
 
-def copy(from_series):
+def copy_series(from_series):
 	new = Series()
 	new.site_id = from_series.site_id
 	new.site_code = from_series.site_code
