@@ -112,7 +112,6 @@ class ServiceManager():
 
 	def __build_connection_string(self, conn_dict):
 		driver = ""
-		print conn_dict
 		if conn_dict['engine'] == 'mssql':
 			driver = "pyodbc"
 		if conn_dict['engine'] == 'mysql':

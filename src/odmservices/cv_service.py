@@ -39,16 +39,14 @@ class CVService():
 		return result
 
 	def get_qualifiers(self):
-		session = self._session_factory.get_session()
-		result = session.query(Qualifier).order_by(Qualifier.code).all()
-		session.close()
+		result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
 		return result
 
 	def create_qualifier(self, qualifier):
 		session = self._session_factory.get_session()
-		session.add(qualifier)
+		self._edit_session.add(qualifier)
 
-		session.commit()
+		self._edit_session.commit()
 
 	def get_site_type_cvs(self):
 		session = self._session_factory.get_session()
