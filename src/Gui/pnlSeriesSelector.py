@@ -285,12 +285,12 @@ class pnlSeriesSelector(wx.Panel):
         self.site_code = None
         self.variable_code = None
         #####INIT drop down boxes for Simple Filter
-        self.siteList=self.dbservice.get_sites()
+        self.siteList = [(s.id, s.code, s.name) for s in self.dbservice.get_all_sites() ]
 
         for site in self.siteList:
-            self.cbSites.Append(site.site_code+'-'+site.site_name)
+            self.cbSites.Append(site[1]+'-'+site[2])
         self.cbSites.SetSelection(0)
-        self.site_code = self.siteList[0].site_code
+        self.site_code = self.siteList[0][1]
 
         self.varList= self.dbservice.get_variables(self.site_code)
         for var in self.varList:
