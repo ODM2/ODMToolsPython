@@ -431,8 +431,6 @@ class pnlSeriesSelector(wx.Panel):
 
     def OnCbVariablesCombobox(self, event):
         self.variable_code = self.varList[event.GetSelection()].variable_code
-        # if (self.checkSite.GetValue() and self.checkVariable.GetValue()):
-        #     self.seriesList = self.dbservice.get_series(site_code = self.site_code, var_code= self.variable_code)
         if (not self.checkSite.GetValue() and self.checkVariable.GetValue()):
             self.site_code = None
         self.SetFilter(site_code = self.site_code, var_code = self.variable_code)
