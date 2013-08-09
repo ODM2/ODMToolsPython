@@ -184,28 +184,27 @@ class SeriesService():
 		self._edit_session.commit()
 
 	def create_method(self, description, link):
-		meth= Method()
-		print description, " ", link
-		meth.description= description
+		meth = Method()
+		meth.description = description
 		if link is not None:
-		  meth.link= link
+		  meth.link = link
 
 		self._edit_session.add(meth)
 		self._edit_session.commit()
 		return meth
 
-	def create_variable(self, code, name, speciation, variable_unit, sample_medium,
-		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value):
+	def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
+		value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
 		var = Variable()
 		var.code = code
 		var.name = name
 		var.speciation = speciation
-		var.variable_unit = variable_unit
+		var.variable_unit_id = variable_unit_id
 		var.sample_medium = sample_medium
 		var.value_type =  value_type
 		var.is_regular = is_regular
 		var.time_support = time_support
-		var.time_unit = time_unit
+		var.time_unit_id = time_unit_id
 		var.data_type = data_type
 		var.general_category = general_category
 		var.no_data_value = no_data_value
@@ -231,10 +230,9 @@ class SeriesService():
 		self._edit_session.delete(delete_series)
 		self._edit_session.commit()
 
-
 	def qcl_exists(self,q):
 		try:
-			result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition = q.definition).one()
+			result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
 			return True
 		except:
 			return False

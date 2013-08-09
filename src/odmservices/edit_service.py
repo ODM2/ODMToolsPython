@@ -455,10 +455,11 @@ class EditService():
     def create_method(self, description, link):
         return self._series_service.create_method(description, link)
 
-    def create_variable(self,code, name, speciation, variable_unit, sample_medium,
-		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value):
-        return self._series_service.create_variable(code, name, speciation, variable_unit, sample_medium,
-		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value)
+    def create_variable(self,code, name, speciation, variable_unit_id, sample_medium,
+		value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
+
+        return self._series_service.create_variable(code, name, speciation, variable_unit_id, sample_medium,
+		value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value)
 
     def reconcile_dates(self, parent_series_id):
         # append new data to this series

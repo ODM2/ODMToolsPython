@@ -155,8 +155,8 @@ class RecordService():
         return method
 
     def create_variable(self, v):
-        var = self._edit_service.create_variable(v.code,v. name, v.speciation, v.variable_unit, v.sample_medium,
-		v.value_type, v.is_regular, v.time_support, v.time_unit, v.data_type, v.general_category, v.no_data_value)
+        var = self._edit_service.create_variable(v.code,v. name, v.speciation, v.variable_unit_id, v.sample_medium,
+		v.value_type, v.is_regular, v.time_support, v.time_unit_id, v.data_type, v.general_category, v.no_data_value)
         if self._record:
             self._script('new_variable = series_service.get_variable_by_id(%s)\n' % (var.id))
         return var

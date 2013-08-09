@@ -262,3 +262,40 @@ class TestSeriesService:
 		series = self.series_service.get_series_by_id(series.id)
 		assert series.site_code == "NEW"
 		assert series.variable_code == "NEW"
+
+	def test_create_method(self):
+		description = "This tests creating a method"
+		link = "http://www.example.com"
+		method = self.series_service.create_method(description, link)
+
+		assert method.id != None
+		assert method.description == description
+		assert method.link == link
+
+	def test_create_variable(self):
+		unit = test_util.add_unit(self.session)
+		variable = self.series_service.create_variable(
+			"Code",	"Name","Speciation", unit.id, "SampleMedium", "ValueType", 
+			True, # is_regular
+			5.0, # time_support
+			unit.id, # time_unit_id
+			"DataType",	"GeneralCategory",-999.0)  # no_data_value
+
+		assert variable.id != None
+		assert variable.code == "Code"
+		assert variable.variable_unit_id == unit.id
+
+	def test_create_qcl(self):
+		qcl = self.series_service.create_qcl("Code", "Definition", "Explanation")
+
+		assert qcl.id != None
+		assert qcl.code == "Code"
+
+	def test_delete_series(self):
+		series = test_util.add_series(self.session)		
+		assert self.series_service.get_series_by_id(series.id) != None
+
+		self.series_service.delete_series(series)
+		assert self.series_service.get_series_by_id(series.id) == None
+
+	
