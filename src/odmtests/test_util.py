@@ -254,3 +254,10 @@ def add_sample_type_cv(session):
 	session.add(sample_type)
 	session.commit()
 	return sample_type
+
+def add_version(session):
+	version = ODMVersion()
+	version.version_number = "1.0.0.0.1alpha"
+	session.add(version)
+	session.commit()
+	return version

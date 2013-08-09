@@ -29,6 +29,21 @@ def test_numbers_3_4():
 def test_strings_a_3():
 	assert multiply('a',3) == 'aaa'
 
+############
+# Funcargs #
+############
+def pytest_funcarg__myfuncarg(request):
+    return 42
+
+def test_function(myfuncarg):
+    assert myfuncarg == 42
+
+def pytest_generate_tests(metafunc):
+	if "numiter" in metafunc.funcargnames:
+		metafunc.parametrize("numiter", range(10))
+
+def test_func(numiter):
+	assert numiter < 10
 
 ##############
 # Test Class #

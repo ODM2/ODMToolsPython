@@ -39,7 +39,10 @@ class EditService():
         if self._connection == None:
             series_service = SeriesService(connection_string, False)
             series = series_service.get_series_by_id(series_id)
-            DataValues = series.get_data_values_tuples()
+            DataValues = [(dv.id, dv.data_value, dv.value_accuracy, dv.local_date_time, dv.utc_offset, dv.date_time_utc,
+                dv.site_id, dv.variable_id, dv.offset_value, dv.offset_type_id, dv.censor_code,
+                dv.qualifier_id, dv.method_id, dv.source_id, dv.sample_id, dv.derived_from_id,
+                dv.quality_control_level_id) for dv in series.data_values]
             self._connection = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
             tmpCursor = self._connection.cursor()
             self.init_table(tmpCursor)

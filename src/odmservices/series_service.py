@@ -25,21 +25,19 @@ class SeriesService():
 	def get_test_data(self):
 		return self._edit_session.query(ODMVersion).first()
 
-	# Sites methods
-	def get_sites(self, site_code = ""):
-		result = None
-		if (site_code):
-			result = self._edit_session.query(distinct(Series.site_id), Series.site_code, Series.site_name).filter_by(site_code=site_code).one()
-		else:
-			result = self._edit_session.query(distinct(Series.site_id), Series.site_code, Series.site_name).order_by(Series.site_code).all()
-
+	# Site methods
+	def get_all_sites(self):
+		try:
+			result = self._edit_session.query(Site).order_by(Site.code).all()
+		except:
+			result = None
 		return result
 
-	def get_site(self, site_id):
+	def get_site_by_id(self, site_id):
 		return self._edit_session.query(Site).filter_by(id=site_id).one()
 
 	# Variables methods
-	def get_variables(self, site_code = ""):	# covers NoDV, VarUnits, TimeUnits
+	def get_variables(self, site_code=""):	# covers NoDV, VarUnits, TimeUnits
 		result = None
 		if (site_code):
 			result = self._edit_session.query(
@@ -49,7 +47,8 @@ class SeriesService():
 			result = self._edit_session.query(distinct(Series.variable_id), Series.variable_code, Series.variable_name).order_by(Series.variable_code).all()
 
 		return result
-	def get_vars(self):
+
+	def get_all_variables(self):
 		try:
 			result = self._edit_session.query(Variable).all()
 		except:

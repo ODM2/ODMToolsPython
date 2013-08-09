@@ -187,7 +187,10 @@ class SeriesPlotInfo(object):
 
                 seriesID = key
                 series =  self.dbConn.series_service.get_series_by_id(seriesID)# get from db
+<<<<<<< HEAD
                 # variable =self.dbservice.get_variable_by_id(series.variable_id)
+=======
+>>>>>>> a1594b03333619ead4c89e87526f44bcfe563733
 
                 strStartDate= series.begin_date_time#self._plotOptions._startDateTime
                 strEndDate = series.end_date_time#self._plotOptions._endDateTime#+1 day - 1 millisecond
