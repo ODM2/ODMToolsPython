@@ -320,3 +320,27 @@ class TestSeriesService:
 		variable.code = "00000"
 		variable.name = "A new name"
 		assert self.series_service.variable_exists(variable) == False
+
+	def test_qcl_exists(self):
+		qcl = test_util.add_qcl(self.session)
+		assert self.series_service.qcl_exists(qcl) == True
+
+		qcl.code = "00000"
+		qcl.definition = "A new definition"
+		assert self.series_service.qcl_exists(qcl) == False
+
+	def test_method_exists(self):
+		method = test_util.add_method(self.session)
+		assert self.series_service.method_exists(method) == True
+
+		method.description = "A new description"
+		assert self.series_service.method_exists(method) == False
+
+	def test_variable_exists(self):
+		variable = test_util.add_variable(self.session)
+		assert self.series_service.variable_exists(variable) == True
+
+		variable.code = "00000"
+		variable.name = "A new name"
+		assert self.series_service.variable_exists(variable) == False
+
