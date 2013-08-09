@@ -12,7 +12,6 @@ from odmdata import CensorCodeCV
 from odmdata import TopicCategoryCV
 from odmdata import SampleTypeCV
 from odmdata import OffsetType
-# from odmdata.lab_method import LabMethod
 from odmdata import Sample
 from odmdata import Qualifier
 from odmdata import Unit

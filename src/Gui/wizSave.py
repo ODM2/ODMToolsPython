@@ -39,7 +39,7 @@ class QCLPage(wiz.WizardPageSimple):
         self._init_data(series_service)
 
     def _init_data(self, series):
-        qcl=series.get_qcls()
+        qcl=series.get_all_qcls()
         for q in qcl:
             num_items = self.panel.lstQCL.GetItemCount()
             self.panel.lstQCL.InsertStringItem(num_items, str(q.code))
@@ -110,7 +110,7 @@ class MethodPage(wiz.WizardPageSimple):
         self._init_data(series_service)
 
     def _init_data(self, series):
-        meth=series.get_methods()
+        meth=series.get_all_methods()
         for m in meth:
             num_items = self.panel.lstMethods.GetItemCount()
             self.panel.lstMethods.InsertStringItem(num_items, str(m.description))

@@ -143,9 +143,7 @@ class TestSeriesService:
 		qcl = test_util.add_qcl(self.session)
 
 		series.site_id = site.id
-		series.site_code = site.code
 		series.variable_id = variable.id
-		series.variable_code = variable.code
 		series.method_id = method.id
 		series.source_id = source.id
 		series.quality_control_level_id = qcl.id
@@ -165,3 +163,102 @@ class TestSeriesService:
 		assert self.series_service.save_series(series, dvs) == True
 		assert self.series_service.series_exists(site.id, variable.id, method.id, source.id, qcl.id) == True
 		assert self.series_service.save_series(series, dvs) == False
+
+	def test_get_data_value_by_id(self):
+		assert self.series_service.get_data_value_by_id(10) == None
+
+		data_values = test_util.add_series(self.session).data_values
+		dv = data_values[0]
+		db_dv = self.series_service.get_data_value_by_id(dv.id)
+
+		assert dv.data_value == db_dv.data_value
+
+	def test_get_qcl_by_id(self):
+		assert self.series_service.get_qcl_by_id(10) == None
+
+		qcl = test_util.add_qcl(self.session)
+		db_qcl = self.series_service.get_qcl_by_id(qcl.id)
+		assert qcl.code == db_qcl.code
+
+	def test_get_all_qcls(self):
+		assert self.series_service.get_all_qcls() == []
+
+		qcl = test_util.add_qcl(self.session)
+		all_qcls = self.series_service.get_all_qcls()
+
+		assert len(all_qcls) == 1
+		assert qcl.id == all_qcls[0].id
+
+	def test_get_all_methods(self):
+		assert self.series_service.get_all_methods() == []
+
+		method = test_util.add_method(self.session)
+		all_methods = self.series_service.get_all_methods()
+
+		assert len(all_methods) == 1
+		assert method.id == all_methods[0].id
+
+	def test_get_method_by_id(self):
+		assert self.series_service.get_method_by_id(10) == None
+
+		method = test_util.add_method(self.session)
+		db_method = self.series_service.get_method_by_id(method.id)
+
+		assert method.description == db_method.description
+
+	def test_delete_dvs(self):
+		series = test_util.add_series(self.session)
+		dvs = series.data_values
+
+		subset = dvs[:5]
+		self.series_service.delete_dvs(subset)
+		assert self.series_service.get_data_value_by_id(subset[0].id) == None
+		series = self.series_service.get_series_by_id(series.id)  # Reload
+		assert len(series.data_values) == 5
+
+	def test_update_dvs(self):
+		series = test_util.add_series(self.session)
+		dvs = series.data_values
+
+		subset = dvs[:5]
+		for i in range(len(subset)):
+			subset[i].data_value = 100
+
+		self.series_service.update_dvs(subset)
+		series = self.series_service.get_series_by_id(series.id)
+		assert series.data_values[0].data_value == 100
+
+	def test_create_new_series(self):
+		site = test_util.add_site(self.session)
+		variable = test_util.add_variable(self.session)
+		method = test_util.add_method(self.session)
+		source = test_util.add_source(self.session)
+		qcl = test_util.add_qcl(self.session)
+
+		dvs = []
+		for val in range(10):
+			dv = DataValue()
+			dv.data_value = val
+			dv.site_id = site.id
+			dv.variable_id = variable.id
+			dv.method_id = method.id
+			dv.source_id = source.id
+			dv.quality_control_level_id = qcl.id
+			dvs.append(dv)
+
+		series = self.series_service.create_new_series(dvs, site.id, variable.id, method.id, source.id, qcl.id)
+		assert series != None
+		assert len(series.data_values) == 10
+		assert series.site_id == site.id
+		assert series.variable_id == variable.id
+
+	def test_update_series(self):
+		series = test_util.add_series(self.session)
+		series.site_code = "NEW"
+		series.variable_code = "NEW"
+
+		self.series_service.update_series(series)
+
+		series = self.series_service.get_series_by_id(series.id)
+		assert series.site_code == "NEW"
+		assert series.variable_code == "NEW"

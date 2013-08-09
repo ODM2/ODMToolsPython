@@ -129,36 +129,26 @@ class SeriesService():
 
 	def get_data_value_by_id(self, id):
 		try:
-			result = self._edit_session.query(DataValue).filter_by(id=id).one()
+			return self._edit_session.query(DataValue).filter_by(id=id).one()
 		except:
-			result = None
-		return result
+			return None
+
+	def get_all_qcls(self):
+			return self._edit_session.query(QualityControlLevel).all()
 
 	def get_qcl_by_id(self, qcl_id):
 		try:
-			result = self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).one()
+			return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).one()
 		except:
-			result = None
-		return result
-
-	def get_qcls(self):
-		try:
-			result = self._edit_session.query(QualityControlLevel).all()
-		except:
-			result = None
-		return result
+			return None
 
 	# Method methods
+	def get_all_methods(self):
+		return self._edit_session.query(Method).all()
+
 	def get_method_by_id(self, method_id):
 		try:
 			result = self._edit_session.query(Method).filter_by(id=method_id).one()
-		except:
-			result = None
-		return result
-
-	def get_methods(self):
-		try:
-			result = self._edit_session.query(Method).all()
 		except:
 			result = None
 		return result
@@ -175,27 +165,20 @@ class SeriesService():
 		self._edit_session.add_all(merged_dv_list)
 		self._edit_session.commit()
 
-	def create_new_series(self, data_values, variable_id, site_id, method_id, source_id, qcl_id):
+	def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
 		self.update_dvs(data_values)
 		series = Series()
-		series.variable_id = variable_id
 		series.site_id = site_id
+		series.variable_id = variable_id
 		series.method_id = method_id
 		series.source_id = source_id
 		series.quality_control_level_id = qcl_id
 
 		self._edit_session.add(series)
 		self._edit_session.commit()
+		return series
 
-	def create_qualifier(self, code, description):
-		qualifier = Qualifier()
-		qualifier.code = code
-		qualifier.description = description
-
-		self._edit_session.add(qualifier)
-		self._edit_session.commit()
-
-	def update_series_catalog(self, series):
+	def update_series(self, series):
 		merged_series = self._edit_session.merge(series)
 		self._edit_session.add(merged_series)
 		self._edit_session.commit()
