@@ -123,7 +123,12 @@ class MemoryDatabase(object):
 
 
     def initSC(self):
-        self.SeriesCatalog =self.series_service.get_all_series_tuples()
+        self.SeriesCatalog = [(s.id, s.site_id, s.site_code, s.site_name, s.variable_id, s.variable_code,
+            s.variable_name, s.speciation, s.variable_units_id, s.variable_units_name, s.sample_medium,
+            s.value_type, s.time_support, s.time_units_id, s.time_units_name, s.data_type, s.general_category,
+            s.method_id, s.method_description, s.source_id, s.organization, s.source_description,
+            s.citation, s.quality_control_level_id, s.quality_control_level_code, s.begin_date_time,
+            s.end_date_time, s.begin_date_time_utc, s.end_date_time_utc, s.value_count) for s in self.series_service.get_all_series() ]
         self.cursor.executemany("INSERT INTO SeriesCatalog VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", self.SeriesCatalog)
         self.cursor.execute("ALTER TABLE SeriesCatalog ADD COLUMN isSelected INTEGER ")
         

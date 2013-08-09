@@ -198,7 +198,7 @@ class SeriesPlotInfo(object):
                 unitsName = series.variable_units_name
                 siteName = series.site_name
                 dataType = series.data_type
-                noDataValue = self.dbConn.series_service.get_no_data_value(series.variable_id)[0]#variable.no_data_value
+                noDataValue = self.dbConn.series_service.get_variable_by_id(variable_id).no_data_value
                 if self.editID == seriesID:
                     data = self.dbConn.getEditDataValuesforGraph()
                 else:
