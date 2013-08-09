@@ -121,3 +121,47 @@ class TestSeriesService:
 			series.source_id, series.quality_control_level_id)
 
 		assert series.id == db_series.id
+
+	def test_series_exists(self):
+		assert self.series_service.series_exists(10,10,10,10,10) == False
+
+		series = test_util.add_series(self.session)
+		site_id = series.site_id
+		var_id = series.variable_id
+		method_id = series.method_id
+		source_id = series.source_id
+		qcl_id = series.quality_control_level_id
+
+		assert self.series_service.series_exists(site_id,var_id,method_id,source_id,qcl_id) == True
+
+	def test_save_series(self):
+		series = Series()
+		site = test_util.add_site(self.session)
+		variable = test_util.add_variable(self.session)
+		method = test_util.add_method(self.session)
+		source = test_util.add_source(self.session)
+		qcl = test_util.add_qcl(self.session)
+
+		series.site_id = site.id
+		series.site_code = site.code
+		series.variable_id = variable.id
+		series.variable_code = variable.code
+		series.method_id = method.id
+		series.source_id = source.id
+		series.quality_control_level_id = qcl.id
+
+		dvs = []
+		for val in range(10):
+			dv = DataValue()
+			dv.data_value = val
+			dv.site_id = site.id
+			dv.variable_id = variable.id
+			dv.method_id = method.id
+			dv.source_id = source.id
+			dv.quality_control_level_id = qcl.id
+			dvs.append(dv)
+
+		print series.variable_code
+		assert self.series_service.save_series(series, dvs) == True
+		assert self.series_service.series_exists(site.id, variable.id, method.id, source.id, qcl.id) == True
+		assert self.series_service.save_series(series, dvs) == False

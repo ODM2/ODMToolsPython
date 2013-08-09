@@ -111,14 +111,14 @@ class SeriesService():
 		# Pass in probably a Series object, match it against the database
 		pass
 
-#### START OF TESTS ####
 	def save_series(self, series, data_values):
 		if self.series_exists(series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id):
-			print "series exists"
+			return False
 		else:
 			self._edit_session.add(series)
 			self._edit_session.add_all(data_values)
 		self._edit_session.commit()
+		return True
 
 	def series_exists(self, site_id, var_id, method_id, source_id, qcl_id):
 		try:

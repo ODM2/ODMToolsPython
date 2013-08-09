@@ -20,6 +20,7 @@ def add_series(session):
 	series.site = site
 	series.site_code = site.code
 	series.variable = var
+	series.variable_code = var.code
 	series.method = method
 	series.source = source
 	series.quality_control_level_id = qcl.id

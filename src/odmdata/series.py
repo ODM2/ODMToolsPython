@@ -46,7 +46,7 @@ class Series(Base):
 	site_code 		    	   = Column('SiteCode', String, nullable=False)
 	site_name 		    	   = Column('SiteName', String)
 	variable_id		    	   = Column('VariableID', Integer, ForeignKey('Variables.VariableID'))
-	variable_code			   = Column('VariableCode', String)
+	variable_code			   = Column('VariableCode', String, nullable=False)
 	variable_name              = Column('VariableName', String)
 	speciation	 	    	   = Column('Speciation', String)
 	variable_units_id   	   = Column('VariableUnitsID', Integer)

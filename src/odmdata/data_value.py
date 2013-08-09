@@ -50,7 +50,7 @@ class DataValue(Base):
 	source_id		    	 = Column('SourceID', Integer, ForeignKey('Sources.SourceID'), nullable=False)
 	sample_id			  	 = Column('SampleID', Integer, ForeignKey('Samples.SampleID'))
 	derived_from_id	    	 = Column('DerivedFromID', Integer)
-	quality_control_level_id = Column('QualityControlLevelID', Integer, ForeignKey('QualityControlLevels.QualityControlLevelID'))
+	quality_control_level_id = Column('QualityControlLevelID', Integer, ForeignKey('QualityControlLevels.QualityControlLevelID'), nullable=False)
 
 	# relationships
 	site 				  = relationship(Site)
