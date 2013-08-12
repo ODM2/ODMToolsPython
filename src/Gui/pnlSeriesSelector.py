@@ -24,7 +24,7 @@ from odmservices import ServiceManager
 
 
 ##########only use this section when testing series selector #############
-from odmservices import ServiceManager
+
 
 def create(parent):
     return test_ss(parent)
@@ -285,12 +285,12 @@ class pnlSeriesSelector(wx.Panel):
         self.site_code = None
         self.variable_code = None
         #####INIT drop down boxes for Simple Filter
-        self.siteList = [(s.id, s.code, s.name) for s in self.dbservice.get_all_sites() ]
+        self.siteList=self.dbservice.get_sites()
 
         for site in self.siteList:
-            self.cbSites.Append(site[1]+'-'+site[2])
+            self.cbSites.Append(site.site_code+'-'+site.site_name)
         self.cbSites.SetSelection(0)
-        self.site_code = self.siteList[0][1]
+        self.site_code = self.siteList[0].site_code
 
         self.varList= self.dbservice.get_variables(self.site_code)
         for var in self.varList:
@@ -431,6 +431,8 @@ class pnlSeriesSelector(wx.Panel):
 
     def OnCbVariablesCombobox(self, event):
         self.variable_code = self.varList[event.GetSelection()].variable_code
+        # if (self.checkSite.GetValue() and self.checkVariable.GetValue()):
+        #     self.seriesList = self.dbservice.get_series(site_code = self.site_code, var_code= self.variable_code)
         if (not self.checkSite.GetValue() and self.checkVariable.GetValue()):
             self.site_code = None
         self.SetFilter(site_code = self.site_code, var_code = self.variable_code)

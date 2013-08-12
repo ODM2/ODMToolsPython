@@ -2,7 +2,7 @@
 
 import wx
 import wx.grid
-from ObjectListView import ObjectListView, ColumnDefn, FastObjectListView
+from ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
 import odmdata
 import sqlite3

@@ -45,78 +45,45 @@ class plotTimeSeries(wx.Panel):
 
 
   def _init_ctrls(self, parent):
-      #matplotlib.figure.Figure.__init__(self)
       wx.Panel.__init__(self, parent, -1)
       self.parent = parent
 
-      # self.figure = Figure()#matplotlib.figure.Figure()
 
       #init Plot
-      # self.timeSeries=self.figure.add_subplot(111)
       self.timeSeries = host_subplot(111, axes_class=AA.Axes)
-
-      # self.timeSeries.axis([0, 1, 0, 1])#
       self.timeSeries.plot([],[])
       self.timeSeries.set_title("No Data To Plot")
-
       self.canvas = FigCanvas(self, -1, plt.gcf())
-      # self.canvas = FigCanvas(self, -1, self.figure)
-
       self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
             False, u'Tahoma'))
-      # self.canvas.mpl_connect('pick_event', self.on_pick)
-
 
       # Create the navigation toolbar, tied to the canvas
       self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
       self.toolbar.Realize()
       self.seriesPlotInfo= None
 
-
+        #set properties
       self.fontP = FontProperties()
       self.fontP.set_size('small')
 
       self.format = '-o'
       self.SetColor("WHITE")
-      #self.canvas.gca().xaxis.set_major_locator()
 
       #init lists
-
       self.lines=[]
       self.axislist={}
       self.curveindex = -1
       self.editseriesID = -1
       self.editCurve =None
       self.cid=None
+      self.maxStart =datetime.datetime(1800, 01, 01, 0, 0, 0)
+      self.maxEnd= datetime.datetime.now()
 
       self.canvas.draw()
       self._init_sizers()
 
-
-
-  # def changeSelectionDT(self, sellist):
-  #     #list of DateTimes
-
-  #     print sellist
-  #     self.parent.record_service.select_points(datetime_list= sellist)
-  #     sellist = self.selFormat(sellist)
-  #     self.changeSelection(sellist)
-  #     print sellist
-
-
-  # def selFormat(self, pairs):
-  #   #convert selectionlist from datetimes to true false
-  #     print len(pairs)
-  #     if len(pairs) ==0:
-  #       return [False] * len(self.editData.DataValues)
-  #     verts =[ (matplotlib.dates.date2num(x), y) for x,y  in pairs]
-  #     p = path.Path(verts)
-
-  #     ind = p.contains_points(self.xys)
-  #     return ind
-
-
   def changeSelection(self, sellist ):
+
     #list of True False
       self.editPoint.set_color(['k' if x==0 else 'r' for x in sellist])
       self.parent.record_service.select_points_tf(sellist)
@@ -127,22 +94,25 @@ class plotTimeSeries(wx.Panel):
   def onDateChanged(self, date, time):
       # print date
       # self.timeSeries.clear()
-      date = datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0)
+##      date = datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0)
 ##      print date
       if time == "start":
         self.startDate = date
-      else:
+      elif time=="end":
         self.endDate = date
-
+      else:
+        self.startDate = self.maxStart
+        self.endDate==self.maxEnd
       self.timeSeries.axis.axes.set_xbound(self.startDate, self.endDate)
       self.canvas.draw()
 
   def set_date_bound(self, start, end):
-        if start < self.overallStart:
-            self.overallStart = start
-
-        if end > self.currEnd:
-            self.currEnd = end
+        print "start:", start, end
+        if start > self.maxStart:
+            self.maxStart = start
+        if end < self.maxEnd:
+            self.maxEnd = end
+        Publisher.sendMessage(("resetdate"), startDate=self.maxStart, endDate=self.maxEnd)
 
   def OnShowLegend(self, isVisible):
     # print self.timeSeries.show_legend
@@ -170,8 +140,7 @@ class plotTimeSeries(wx.Panel):
     else:
       ls = '-'
       m='o'
-    # print plt.setp(self.lines)
-    # print(len(self.lines))
+
     format = ls+m
     for line, i in zip(self.lines, range(len(self.lines))):
       if not (i == self.curveindex):
@@ -254,9 +223,8 @@ class plotTimeSeries(wx.Panel):
       # self.timeSeries=self.canvas.add_subplot(111)
       self.setUpYAxis()
 
-
       for oneSeries in self.seriesPlotInfo.GetSeriesInfo():
-
+        #is this the series to be edited
         if oneSeries.seriesID == self.seriesPlotInfo.GetEditSeriesID():
 
           self.curveindex = len(self.lines)
@@ -268,7 +236,7 @@ class plotTimeSeries(wx.Panel):
           curraxis= self.axislist[oneSeries.axisTitle]
           self.lines.append(curraxis.plot_date([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable], self.format, color=oneSeries.color, xdate = True, tz = None, label = oneSeries.plotTitle ))
 
-
+        self.set_date_bound(oneSeries.dataTable[1][1], oneSeries.dataTable[-1][1])
       if count >1:
         # self.timeSeries.set_title("Multiple Series plotted")
         self.timeSeries.set_title("")

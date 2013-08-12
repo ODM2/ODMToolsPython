@@ -25,54 +25,54 @@ class SeriesService():
 	def get_test_data(self):
 		return self._edit_session.query(ODMVersion).first()
 
-	# Site methods
-	def get_all_sites(self):
-		return self._edit_session.query(Site).order_by(Site.code).all()
+	# Sites methods
+	def get_sites(self, site_code = ""):
+		result = None
+		if (site_code):
+			result = self._edit_session.query(distinct(Series.site_id), Series.site_code, Series.site_name).filter_by(site_code=site_code).one()
+		else:
+			result = self._edit_session.query(distinct(Series.site_id), Series.site_code, Series.site_name).order_by(Series.site_code).all()
 
-	def get_site_by_id(self, site_id):
-		try:
-			return self._edit_session.query(Site).filter_by(id=site_id).one()
-		except:
-			return None
+		return result
+
+	def get_site(self, site_id):
+		return self._edit_session.query(Site).filter_by(id=site_id).one()
 
 	# Variables methods
-	def get_all_variables(self):
-		return self._edit_session.query(Variable).all()
+	def get_variables(self, site_code = ""):	# covers NoDV, VarUnits, TimeUnits
+		result = None
+		if (site_code):
+			result = self._edit_session.query(
+				distinct(Series.variable_id), Series.variable_code, Series.variable_name).filter_by(site_code=site_code).order_by(Series.variable_code
+			).all()
+		else:
+			result = self._edit_session.query(distinct(Series.variable_id), Series.variable_code, Series.variable_name).order_by(Series.variable_code).all()
+
+		return result
+
+	def get_vars(self):
+		try:
+			result = self._edit_session.query(Variable).all()
+		except:
+			result = None
+		return result
 
 	def get_variable_by_id(self, variable_id):
-		try:
-			return self._edit_session.query(Variable).filter_by(id=variable_id).one()
-		except:
-			return None
+		return self._edit_session.query(Variable).filter_by(id=variable_id)
 
-	def get_variables_by_site_code(self, site_code):	# covers NoDV, VarUnits, TimeUnits
-		try:
-			var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).filter_by(
-				site_code=site_code).all() ]
-		except:
-			var_ids = None
-		
-		variables = []
-		for var_id in var_ids:
-			variables.append(self._edit_session.query(Variable).filter_by(id=var_id).one())
-		
-		return variables
+	def get_no_data_value(self, variable_id):
+		return self._edit_session.query(Variable.no_data_value).filter_by(id = variable_id).one()
 
 	# Unit methods
-	def get_all_units(self):
-		return self._edit_session.query(Unit).all()
-
 	def get_unit_by_name(self, unit_name):
-		try:
-			return self._edit_session.query(Unit).filter_by(name=unit_name).one()
-		except:
-			return None
+		return self._edit_session.query(Unit).filter_by(name=unit_name).one()
 
 	def get_unit_by_id(self, unit_id):
-		try:
-			return self._edit_session.query(Unit).filter_by(id=unit_id).one()
-		except:
-			return None
+		return self._edit_session.query(Unit).filter_by(id=unit_id).one()
+
+	def get_units(self):
+		return self._edit_session.query(Unit).all()
+
 
 	def get_offset_types_by_series_id(self, series_id):
 		subquery = self._edit_session.query(DataValue.offset_type_id).outerjoin(
@@ -89,23 +89,52 @@ class SeriesService():
 			Series.data_values).filter(Series.id == series_id, DataValue.sample_id != None).distinct().subquery()
 		return self._edit_session.query(Sample).join(subquery).distinct().all()
 
+	def get_unit_abbrev_by_name(self, unit_name):
+		try:
+			result = self._edit_session.query(Unit.abbreviation).filter_by(name=unit_name).one()[0]
+		except:
+			result = None
+		return result
+
 	# Series Catalog methods
-	def get_all_series(self):
-		return self._edit_session.query(Series).order_by(Series.id).all()
+	def get_series(self, site_code="", var_code=""):
+		result = None
+		if (site_code and var_code):
+			result = self._edit_session.query(Series).filter_by(site_code=site_code, variable_code=var_code).order_by(Series.id).all()
+		elif (site_code):
+			result = self._edit_session.query(Series).filter_by(site_code=site_code).order_by(Series.id).all()
+		elif (var_code):
+			result = self._edit_session.query(Series).filter_by(variable_code=var_code).order_by(Series.id).all()
+		else:
+			result = self._edit_session.query(Series).order_by(Series.id).all()
+		return result
 
 	def get_series_by_id(self, series_id):
 		try:
-			return self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()
+			result = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()
 		except:
-			return None
+			result = None
+		return result
 
 	def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
 		try:
-			return self._edit_session.query(Series).filter_by(
-				site_id=site_id, variable_id=var_id, method_id=method_id, 
-				source_id=source_id, quality_control_level_id=qcl_id).one()
+			result = self._edit_session.query(Series).filter_by(site_id=site_id, var_id=var_id, method_id=method_id, source_id=source_id, qcl_id=qcl_id)
 		except:
-			return None
+			result = None
+		return result
+
+	def get_all_series(self):
+		return self._edit_session.query(Series).all()
+
+	def get_all_series_tuples(self):
+		return self._edit_session.query(
+			Series.id, Series.site_id, Series.site_code, Series.site_name, Series.variable_id, Series.variable_code,
+			Series.variable_name, Series.speciation, Series.variable_units_id, Series.variable_units_name, Series.sample_medium,
+			Series.value_type, Series.time_support, Series.time_units_id, Series.time_units_name, Series.data_type, Series.general_category,
+			Series.method_id, Series.method_description, Series.source_id, Series.organization, Series.source_description,
+			Series.citation, Series.quality_control_level_id, Series.quality_control_level_code, Series.begin_date_time,
+			Series.end_date_time, Series.begin_date_time_utc, Series.end_date_time_utc, Series.value_count
+		).order_by(Series.id).all()
 
 	def get_series_from_filter(self):
 		# Pass in probably a Series object, match it against the database
@@ -113,42 +142,52 @@ class SeriesService():
 
 	def save_series(self, series, data_values):
 		if self.series_exists(series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id):
-			return False
+			print "series exists"
 		else:
 			self._edit_session.add(series)
 			self._edit_session.add_all(data_values)
 		self._edit_session.commit()
-		return True
 
 	def series_exists(self, site_id, var_id, method_id, source_id, qcl_id):
 		try:
 			result = self._edit_session.query(Series).filter_by(site_id=site_id, variable_id=var_id, method_id=method_id, source_id=source_id, quality_control_level_id=qcl_id).one()
+			print result.id
 			return True
 		except:
 			return False
 
 	def get_data_value_by_id(self, id):
 		try:
-			return self._edit_session.query(DataValue).filter_by(id=id).one()
+			result = self._edit_session.query(DataValue).filter_by(id=id).one()
 		except:
-			return None
-
-	def get_all_qcls(self):
-			return self._edit_session.query(QualityControlLevel).all()
+			result = None
+		return result
 
 	def get_qcl_by_id(self, qcl_id):
 		try:
-			return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).one()
+			result = self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).one()
 		except:
-			return None
+			result = None
+		return result
+
+	def get_qcls(self):
+		try:
+			result = self._edit_session.query(QualityControlLevel).all()
+		except:
+			result = None
+		return result
 
 	# Method methods
-	def get_all_methods(self):
-		return self._edit_session.query(Method).all()
-
 	def get_method_by_id(self, method_id):
 		try:
 			result = self._edit_session.query(Method).filter_by(id=method_id).one()
+		except:
+			result = None
+		return result
+
+	def get_methods(self):
+		try:
+			result = self._edit_session.query(Method).all()
 		except:
 			result = None
 		return result
@@ -165,46 +204,54 @@ class SeriesService():
 		self._edit_session.add_all(merged_dv_list)
 		self._edit_session.commit()
 
-	def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
+	def create_new_series(self, data_values, variable_id, site_id, method_id, source_id, qcl_id):
 		self.update_dvs(data_values)
 		series = Series()
-		series.site_id = site_id
 		series.variable_id = variable_id
+		series.site_id = site_id
 		series.method_id = method_id
 		series.source_id = source_id
 		series.quality_control_level_id = qcl_id
 
 		self._edit_session.add(series)
 		self._edit_session.commit()
-		return series
 
-	def update_series(self, series):
+	def create_qualifier(self, code, description):
+		qualifier = Qualifier()
+		qualifier.code = code
+		qualifier.description = description
+
+		self._edit_session.add(qualifier)
+		self._edit_session.commit()
+
+	def update_series_catalog(self, series):
 		merged_series = self._edit_session.merge(series)
 		self._edit_session.add(merged_series)
 		self._edit_session.commit()
 
 	def create_method(self, description, link):
-		meth = Method()
-		meth.description = description
+		meth= Method()
+		print description, " ", link
+		meth.description= description
 		if link is not None:
-		  meth.link = link
+		  meth.link= link
 
 		self._edit_session.add(meth)
 		self._edit_session.commit()
 		return meth
 
-	def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
-		value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
+	def create_variable(self, code, name, speciation, variable_unit, sample_medium,
+		value_type, is_regular, time_support, time_unit, data_type, general_category, no_data_value):
 		var = Variable()
 		var.code = code
 		var.name = name
 		var.speciation = speciation
-		var.variable_unit_id = variable_unit_id
+		var.variable_unit = variable_unit
 		var.sample_medium = sample_medium
 		var.value_type =  value_type
 		var.is_regular = is_regular
 		var.time_support = time_support
-		var.time_unit_id = time_unit_id
+		var.time_unit = time_unit
 		var.data_type = data_type
 		var.general_category = general_category
 		var.no_data_value = no_data_value
@@ -230,27 +277,24 @@ class SeriesService():
 		self._edit_session.delete(delete_series)
 		self._edit_session.commit()
 
+
 	def qcl_exists(self,q):
 		try:
-			result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
+			result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition = q.definition).one()
 			return True
 		except:
 			return False
 
 	def method_exists(self, m):
 		try:
-			result = self._edit_session.query(Method).filter_by(description=m.description).one()
+			result = self._edit_session.query(Method).filter_by(description= m.description).one()
 			return True
 		except:
 			return False
 
 	def variable_exists(self, v):
 		try:
-			result = self._edit_session.query(Variable).filter_by(code=v.code, 
-				name=v.name, speciation=v.speciation, variable_unit_id=v.variable_unit_id, 
-				sample_medium=v.sample_medium, value_type=v.value_type, is_regular=v.is_regular,
-				time_support=v.time_support, time_unit_id=v.time_unit_id, data_type=v.data_type, 
-				general_category=v.general_category, no_data_value=v.no_data_value).one()
+			result = self._edit_session.query(Variable).filter_by(code = v.code, name = v.name, speciation = v.speciation, variable_unit_id = v.variable_unit_id, sample_medium= v.sample_medium, value_type= v.value_type, is_regular= v.is_regular,time_support= v.time_support, time_unit_id=v.time_unit_id , data_type = v.data_type, general_category=v.general_category, no_data_value = v.no_data_value).one()
 			return True
 		except:
 			return False
