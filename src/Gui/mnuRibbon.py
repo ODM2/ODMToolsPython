@@ -12,6 +12,7 @@ import frmAddPoint
 import frmFlagValues
 import frmLinearDrift
 import wizSave
+from clsPlatform import clsPlatform as plt
 
 import gui_utils
 
@@ -40,26 +41,29 @@ class mnuRibbon(RB.RibbonBar):
         self.SetArtProvider(RB.RibbonAUIArtProvider())
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
               False, u'Tahoma'))
-        fileMenu = RB.RibbonPage(self, wxID_FileMenu, "File", wx.Bitmap(gui_utils.get_base_dir() + "\\3d_graph.png"))
+
+        fileMenu = RB.RibbonPage(self, wxID_FileMenu, "File", wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash()+"3d_graph.png"))
 
 #----PlotMenu-------------
-        home = RB.RibbonPage(self, wx.ID_ANY, "Plot", wx.Bitmap(gui_utils.get_base_dir() + "\\3d_graph.png"))
+        home = RB.RibbonPage(self, wx.ID_ANY, "Plot", wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"3d_graph.png"))
 
-  #------Plot Type ---------------------------------------------------------------------------
 
+#------Plot Type ---------------------------------------------------------------------------
+        
         plot_panel = RB.RibbonPanel(home, wx.ID_ANY, "Plots", wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)
         plots_bar.AddSimpleButton(wxID_RIBBONPLOTTIMESERIES, "Time Series",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\tsa_icon.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"tsa_icon.png"), "")
         plots_bar.AddSimpleButton(wxID_RIBBONPLOTPROB, "Probablity",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\probability.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"probability.png"), "")
         plots_bar.AddSimpleButton(wxID_RIBBONPLOTHIST, "Histogram",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\histogram.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"histogram.png"), "")
         plots_bar.AddSimpleButton(wxID_RIBBONPLOTBOX, "Box/Whisker",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\box_whisker.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"box_whisker.png"), "")
         plots_bar.AddSimpleButton(wxID_RIBBONPLOTSUMMARY, "Summary",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\summary.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"summary.png"), "")
+
 
 #-- PLOT OPTIONS-----------------------------------------------------------------------------
         PlotOptions_panel = RB.RibbonPanel(home, wx.ID_ANY, "Plot Options", wx.NullBitmap, wx.DefaultPosition,
@@ -67,13 +71,18 @@ class mnuRibbon(RB.RibbonBar):
         self.PlotsOptions_bar = RB.RibbonButtonBar(PlotOptions_panel, wx.ID_ANY)
 
         self.PlotsOptions_bar.AddDropdownButton(wxID_RIBBONPLOTTSTYPE, "Plot Type",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\plot_type.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"plot_type.png"), "")
 
         self.PlotsOptions_bar.AddSimpleButton(wxID_RIBBONPLOTTSLEGEND, "Show Legend",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\legend.png"), help_string="show legend on plot", kind = 0x4)
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"legend.png"), help_string="show legend on plot", kind = 0x4)
+
+
+        self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "# Hist Bins" ,
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"blank.png"), "")
 
 
         self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "# Hist Bins", wx.Bitmap(gui_utils.get_base_dir() + "\\blank.png"), "")
+
         self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTDATESTART, False)
 
         self.spnBins = wx.SpinCtrl(id=wxID_FRAME1SPINCTRL1, initial=50,
@@ -84,7 +93,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
         self.PlotsOptions_bar.AddDropdownButton(wxID_RIBBONPLOTBOXTYPE, "Box Whisker Type",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\box_whisker_type.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"box_whisker_type.png"), "")
 
         self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
         self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
@@ -98,10 +107,15 @@ class mnuRibbon(RB.RibbonBar):
 
         self.dateTime_buttonbar = RB.RibbonButtonBar(dateTime_panel)
 
-        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,wx.Bitmap(gui_utils.get_base_dir() + "\\blank.png"), "")
-        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,wx.Bitmap(gui_utils.get_base_dir() + "\\blank.png"), "")
-        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,wx.Bitmap(gui_utils.get_base_dir() + "\\blank.png"), "")
+
+        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,
+                                            wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"Blank.png"), "")
+        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,
+                                            wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"Blank.png"), "")
+        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,
+                                            wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"Blank.png"), "")
         self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATESTART, False)
+
 
         self.dpStartDate = wx.DatePickerCtrl(id=wxID_STARTDPDATE, name=u'dpStartDate',
               parent=self.dateTime_buttonbar, pos=wx.Point(5, 8), size=wx.Size(120, 24),
@@ -118,57 +132,57 @@ class mnuRibbon(RB.RibbonBar):
         self.dpEndDate.SetToolTipString(u'End Date')
 
 
-##        dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEREFRESH, "Refresh",
-##                                wx.Bitmap(gui_utils.get_base_dir() + "\\date_setting.png"), "")
+
+#         self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEREFRESH, "Refresh",
+#                                 wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"date_setting.png"), "")
         self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEFULL, "Full Date Range",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\full_date_range.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"full_date_range.png"), "")
+
         self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
         self.dpEndDate.Enabled = False
         self.dpStartDate.Enabled= False
 
 
 
-
-
-
 #-------------------------------------------------------------------------------
-        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit", wx.Bitmap(gui_utils.get_base_dir() + "\\blank.png"))
+        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit", wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"blank.png"))
 
         main_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Main", wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         self.main_bar = RB.RibbonButtonBar(main_panel)
         self.main_bar.AddSimpleButton(wxID_RIBBONEDITSERIES, "Edit Series",
-                                bitmap=wx.Bitmap(gui_utils.get_base_dir() + "\\edit.png"), help_string="", kind = 0x4)
+                                bitmap=wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"edit.png"), help_string="", kind = 0x4)
 
         self.main_bar.AddSimpleButton(wxID_RIBBONEDITRESTORE, "Restore",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\restore.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"restore.png"), "")
         self.main_bar.AddSimpleButton(wxID_RIBBONEDITSAVE, "Save",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\save_data.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"save_data.png"), "")
+
 
 
         self.main_bar.EnableButton(wxID_RIBBONEDITRESTORE, False)
         self.main_bar.EnableButton(wxID_RIBBONEDITSAVE, False)
 
- #------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
         edit_panel = RB.RibbonPanel( editPage, wx.ID_ANY, "Edit Functions" , wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         self.edit_bar= RB.RibbonButtonBar(edit_panel)
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITFILTER, "Filter Points",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\filter_list.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"filter_list.png"), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITCHGVALUE, "Change Value",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\edit_view.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"edit_view.png"), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITINTEROPOLATE, "Interpolate",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\interpolate.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"interpolate.png"), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITLINFILTER, "Linear Drift",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\lin_drift.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"lin_drift.png"), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITFLAG, "Flag",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\flag.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"flag.png"), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITADDPOINT, "Add Point",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\add.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"add.png"), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITDELPOINT, "Delete Point",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\delete.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"delete.png"), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRECORD, "Record",
-                                bitmap= wx.Bitmap(gui_utils.get_base_dir() + "\\record.png"), help_string="", kind = 0x4)
+                                bitmap= wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"record.png"), help_string="", kind = 0x4)
 
         self.edit_bar.EnableButton(wxID_RIBBONEDITFILTER, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITCHGVALUE, False)
@@ -180,20 +194,24 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
 
 #-------------------------------------------------------------------------------
-        viewPage = RB.RibbonPage(self, wx.ID_ANY, "View", wx.Bitmap("images\\blank.png"))
+
+        viewPage = RB.RibbonPage(self, wx.ID_ANY, "View", 
+                                 wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"blank.png"))
+
         view_panel = RB.RibbonPanel( viewPage, wx.ID_ANY, "Tools" , wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         view_bar= RB.RibbonButtonBar(view_panel)
         view_bar.AddSimpleButton(wxID_RIBBONVIEWPLOT, "Plot",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\line_chart.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"line_chart.png"), "")
         view_bar.AddSimpleButton(wxID_RIBBONVIEWTABLE, "Table",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\table.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"table.png"), "")
         view_bar.AddSimpleButton(wxID_RIBBONVIEWSERIES, "Series Selector",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\bitmap_editor.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"bitmap_editor.png"), "")
         view_bar.AddSimpleButton(wxID_RIBBONVIEWCONSOLE, "Python Console",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\window_command_line.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"window_command_line.png"), "")
         view_bar.AddSimpleButton(wxID_RIBBONVIEWSCRIPT, "PythonScript",
-                                wx.Bitmap(gui_utils.get_base_dir() + "\\script.png"), "")
+                                wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"script.png"), "")
+
         self.CurrPage = 1
         self.SetActivePageByIndex(self.CurrPage)
 
@@ -378,6 +396,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
 
+
     def OnFileMenu(self, event):
 
         if not self.GetActivePage()==0:
@@ -493,6 +512,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, True)
+            self.spnBins.Enabled = False
             self.dpEndDate.Enabled = True
             self.dpStartDate.Enabled= True
 
@@ -514,7 +534,8 @@ class mnuRibbon(RB.RibbonBar):
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
             self.dpEndDate.Enabled = False
             self.dpStartDate.Enabled= False
-         #Summary
+            
+        #Summary
         elif plot == 4:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
