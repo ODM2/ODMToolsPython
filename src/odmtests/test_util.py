@@ -26,6 +26,10 @@ def add_series(session):
 	series.quality_control_level_id = qcl.id
 
 	dvs = add_data_values(session, series)
+	series.begin_date_time = dvs[0].local_date_time
+	series.end_date_time   = dvs[-1].local_date_time
+	series.begin_date_time_utc = dvs[0].date_time_utc
+	series.end_date_time_utc   = dvs[-1].date_time_utc
 
 	session.add(series)
 	session.commit()
@@ -39,7 +43,7 @@ def add_data_values(session, series):
 		dv.data_value = i
 		dv.local_date_time = datetime.datetime.now() - datetime.timedelta(days=i)
 		dv.utc_offset = 0
-		dv.datetime_utc = dv.local_date_time
+		dv.date_time_utc = dv.local_date_time
 		dv.site_id = series.site_id
 		dv.variable_id = series.variable_id
 		dv.censor_code = "NC"
@@ -59,6 +63,7 @@ def add_site(session):
 	site.latitude = 10.0
 	site.longitude = 10.0
 	site.lat_long_datum_id = spatial_ref.id
+	site.local_projection_id = spatial_ref.id
 	site.elevation_m = 1000
 	site.local_x = 10.0
 	site.local_y = 10.0
