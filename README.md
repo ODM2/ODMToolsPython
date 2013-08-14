@@ -11,6 +11,25 @@ This project is receiving or has received support from a number of agencies and 
 
 This material is based on work supported by the National Science Foundation Grant EPS 1208732 awarded to Utah State University.  Additional support was previously provided by National Science Foundation grant EAR 0622374.  Any opinions, findings, and conclusions or recommendations expressed are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
 
+Running From Source on Windows
+-------------------
+Install the following software/libraries. Unfortunately this is currently a manual process. 
+
++	[Python-2.7 32 bit](http://www.python.org/download/releases/2.7.3/)
++	[Wxpython-2.9.4](http://www.wxpython.org/download.php)
++	[Sqlalchemy-7.9](http://pypi.python.org/pypi/SQLAlchemy/0.7.9)
++   [Pyodbc-3.0.6](http://code.google.com/p/pyodbc/downloads/list) 
++	[PyMySQL](https://github.com/petehunt/PyMySQL/)
++	[Matplotlib-1.1.1](https://github.com/matplotlib/matplotlib/downloads)
++	[Numpy-1.6.2](http://www.scipy.org/Download)
++	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/)
+
+Once you have all the dependencies installed, run the main application by doing 
+    
+    python src/Gui/frmODMToolsMain.py
+
+Please let us know if you have any problems!
+
 Copying and License
 ----------------------------
 
