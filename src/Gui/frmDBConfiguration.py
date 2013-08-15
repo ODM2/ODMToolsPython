@@ -8,7 +8,7 @@ def create(parent, service_manager, is_main):
     return frmDBConfig(parent, service_manager, is_main = is_main)
 
 [wxID_FRMDBCONFIG, wxID_FRMDBCONFIGBOXCONNECTION, wxID_FRMDBCONFIGBTNCANCEL,
- wxID_FRMDBCONFIGBTNSAVE, wxID_FRMDBCONFIGBTNTEST, wxID_FRMDBCONFIGCOMBOBOX1,
+ wxID_FRMDBCONFIGBTNSAVE, wxID_FRMDBCONFIGBTNTEST, wxID_FRMDBCONFIGdbComboBox,
  wxID_FRMDBCONFIGLBLDBNAME, wxID_FRMDBCONFIGLBLDBTYPE,
  wxID_FRMDBCONFIGLBLPASS, wxID_FRMDBCONFIGLBLSERVER, wxID_FRMDBCONFIGLBLUSER,
  wxID_FRMDBCONFIGPNLCONNECTION, wxID_FRMDBCONFIGPNLMAIN,
@@ -23,7 +23,7 @@ class frmDBConfig(wx.Dialog):
         # generated method, don't edit
 
         parent.AddWindow(self.lblDbType, 25, border=5, flag=wx.ALL | wx.GROW)
-        parent.AddWindow(self.comboBox1, 75, border=5, flag=wx.GROW | wx.ALL)
+        parent.AddWindow(self.dbComboBox, 75, border=5, flag=wx.GROW | wx.ALL)
 
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
@@ -69,11 +69,11 @@ class frmDBConfig(wx.Dialog):
               label=u'Connection Type:', name=u'lblDbType', parent=self.pnlMain,
               pos=wx.Point(10, 10), size=wx.Size(101, 25), style=0)
 
-        self.comboBox1 = wx.ComboBox(choices=["Microsoft SQL Server", "MySQL"], id=wxID_FRMDBCONFIGCOMBOBOX1,
-              name='comboBox1', parent=self.pnlMain, pos=wx.Point(121, 10),
+        self.dbComboBox = wx.ComboBox(choices=["Microsoft SQL Server", "MySQL"], id=wxID_FRMDBCONFIGdbComboBox,
+              name='dbComboBox', parent=self.pnlMain, pos=wx.Point(121, 10),
               size=wx.Size(326, 21), style=0,
               value=u'Microsoft SQL Server')
-        # self.comboBox1.SetLabel(u'Microsoft SQL Server')
+        # self.dbComboBox.SetLabel(u'Microsoft SQL Server')
 
         self.btnTest = wx.Button(id=wxID_FRMDBCONFIGBTNTEST,
               label=u'Test Connection', name=u'btnTest', parent=self.pnlMain,
@@ -135,6 +135,7 @@ class frmDBConfig(wx.Dialog):
               parent=self.pnlConnection, pos=wx.Point(160, 128),
               size=wx.Size(248, 21), style=wx.PASSWORD, value=u'')
 
+        self.set_field_values()
         self.BindActions()
 
 
@@ -142,6 +143,13 @@ class frmDBConfig(wx.Dialog):
         self.service_manager = service_manager
         self.is_main = is_main
         self._init_ctrls(parent)
+
+    def set_field_values(self):
+      conn = self.service_manager.get_current_connection()
+      if conn != None:
+        self.txtServer.SetValue(conn['address'])
+        self.txtDBName.SetValue(conn['db'])
+        self.txtUser.SetValue(conn['user'])
 
     def BindActions(self):
         self.btnSave.Bind(wx.EVT_BUTTON, self.OnBtnSave,
@@ -180,12 +188,12 @@ class frmDBConfig(wx.Dialog):
       conn_dict = {}
 
 
-      if self.comboBox1.GetValue() == u'Microsoft SQL Server':
+      if self.dbComboBox.GetValue() == u'Microsoft SQL Server':
         conn_dict['engine'] = 'mssql'
-      elif self.comboBox1.GetValue() == u'MySQL':
+      elif self.dbComboBox.GetValue() == u'MySQL':
         conn_dict['engine'] = 'mysql'
       else:
-        conn_dict['engine'] = self.comboBox1.GetValue()
+        conn_dict['engine'] = self.dbComboBox.GetValue()
 
       conn_dict['user']     = self.txtUser.GetValue()
       conn_dict['password'] = self.txtPass.GetValue()
