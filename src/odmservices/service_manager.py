@@ -92,12 +92,16 @@ class ServiceManager():
 
 	# private
 	def __resource_path(self, relative):
-		if getattr(sys, 'frozen', None):
-			basedir = sys._MEIPASS
+		APPNAME "ODMTools"
+		if sys.platform == 'darwin':
+			# TODO mac stuff
+			pass
+		elif 'win' in sys.platform:
+			appdata = path.join(environ['APPDATA'], APPNAME)
 		else:
-			basedir = os.path.dirname(os.path.dirname(__file__))
+			appdata = path.expanduser(path.join("~", "." + APPNAME))
 
-		return os.path.join(basedir, relative)
+		return os.path.join(appdata, relative)
 
 	def __get_file(self, mode):
 		fn = self.__resource_path('connection.config')

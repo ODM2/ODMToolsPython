@@ -25,4 +25,4 @@ class clsPlatform(object):
             return '\\'
         
 
-        
+    

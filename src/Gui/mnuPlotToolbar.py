@@ -1,6 +1,6 @@
 import wx
 import sys
-import gui_utils
+import gui_utils as g_util
 from clsPlatform import clsPlatform as plt
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 
@@ -23,11 +23,11 @@ class MyCustomToolbar(NavigationToolbar):
             
 
         self.AddSimpleTool(self.ON_CUSTOM_LEFT, 
-                           wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"scroll_left.png"),
+                           wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "scroll_left.png")),
                            'Pan to the left', 'Pan graph to the left')
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
         self.AddSimpleTool(self.ON_CUSTOM_RIGHT, 
-                           wx.Bitmap(gui_utils.get_base_dir() + plt.get_slash() +"scroll_right.png"),
+                           wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "scroll_right.png")),
                            'Pan to the right', 'Pan graph to the right')
         wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
         

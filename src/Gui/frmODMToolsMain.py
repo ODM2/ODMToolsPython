@@ -3,8 +3,10 @@
 
 import sys
 import os
-working_directory = os.path.dirname(os.getcwd())
-sys.path.append(working_directory)
+this_file = os.path.realpath(__file__)
+directory = os.path.dirname(os.path.dirname(this_file))
+print directory
+sys.path.append(directory)
 
 import wx
 import wx.grid
