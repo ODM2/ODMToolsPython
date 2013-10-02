@@ -3,7 +3,7 @@
 ; http://www.jrsoftware.org/isinfo.php 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
-#define MyAppName "ODM Tools"
+#define MyAppName "ODMTools"
 #define MyAppVersion "1.0"
 #define MyAppURL "https://github.com/UCHIC/ODMToolsPython"
 
@@ -32,6 +32,8 @@ Source: "D:\ODMToolsPythonBuild\*"; DestDir: "{app}"; Flags: ignoreversion recur
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\ODMTools"; Filename: "{app}\WinPython-32bit-2.7.5.3\python-2.7.5\pythonw.exe"; WorkingDir: "{app}"; Parameters: """{app}\ODMToolsPython\src\Gui\frmODMToolsMain.py""";
+Name: "{group}\{#MyAppName}"; Filename: "{app}\WinPython-32bit-2.7.5.3\python-2.7.5\pythonw.exe"; WorkingDir: "{app}"; Parameters: """{app}\ODMToolsPython\src\Gui\frmODMToolsMain.py""";
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
+[Dirs]
+Name: "{userappdata}\{#MyAppName}"

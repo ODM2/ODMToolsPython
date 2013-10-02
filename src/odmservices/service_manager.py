@@ -1,4 +1,5 @@
 import os, sys
+import utilities as util
 from series_service import SeriesService
 from cv_service import CVService
 from edit_service import EditService
@@ -91,20 +92,9 @@ class ServiceManager():
 		return ExportService(self.get_series_service())
 
 	# private
-	def __resource_path(self, relative):
-		APPNAME "ODMTools"
-		if sys.platform == 'darwin':
-			# TODO mac stuff
-			pass
-		elif 'win' in sys.platform:
-			appdata = path.join(environ['APPDATA'], APPNAME)
-		else:
-			appdata = path.expanduser(path.join("~", "." + APPNAME))
-
-		return os.path.join(appdata, relative)
 
 	def __get_file(self, mode):
-		fn = self.__resource_path('connection.config')
+		fn = util.resource_path('connection.config')
 		config_file = None
 		try:
 			config_file = open(fn, mode)

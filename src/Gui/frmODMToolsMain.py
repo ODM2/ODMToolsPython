@@ -1,11 +1,9 @@
 #!/usr/bin/env
 #Boa:Frame:ODMTools
-
 import sys
 import os
 this_file = os.path.realpath(__file__)
 directory = os.path.dirname(os.path.dirname(this_file))
-print directory
 sys.path.append(directory)
 
 import wx
@@ -29,6 +27,7 @@ import frmDBConfiguration
 
 from odmservices import ServiceManager
 from odmservices import RecordService
+from odmservices import utilities as util
 from pnlScript import pnlScript
 import pnlSeriesSelector
 import pnlPlot
@@ -64,15 +63,6 @@ class frmODMToolsMain(wx.Frame):
         self.createService()
         self._init_ctrls(parent)
         self.Refresh()
-
-#############File Utility for PyInstaller#############3
-    def __resource_path(self, relative):
-        file_dir = os.path.dirname(__file__)
-        if os.path.basename(file_dir) == "odmservices":
-            basedir = os.path.dirname(file_dir)
-        else:
-            basedir = file_dir
-        return os.path.join(basedir, relative)
 
 #############Entire Form Sizers##########
     def _init_sizers(self):
@@ -261,11 +251,11 @@ class frmODMToolsMain(wx.Frame):
     def loadDockingSettings(self):
      #test if there is a perspective to load
         try:
-            f= open(self.__resource_path('../ODMTools.config'), 'r')
+            f= open(util.resource_path('ODMTools.config'), 'r')
         except:
             # Create the file if it doesn't exist
-            open(self.__resource_path('../ODMTools.config'), 'w').close()
-            f = open(self.__resource_path('../ODMTools.config'), 'r')
+            open(util.resource_path('ODMTools.config'), 'w').close()
+            f = open(util.resource_path('ODMTools.config'), 'r')
 
         self._mgr.LoadPerspective(f.read(), True)
 
@@ -273,7 +263,7 @@ class frmODMToolsMain(wx.Frame):
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
-            f= open(self.__resource_path('../ODMTools.config'), 'w')
+            f= open(util.resource_path('ODMTools.config'), 'w')
             f.write(self._mgr.SavePerspective())
         except:
             print "error saving docking data"
