@@ -4,7 +4,7 @@ import sys
 import os
 this_file = os.path.realpath(__file__)
 directory = os.path.dirname(os.path.dirname(this_file))
-sys.path.append(directory)
+sys.path.insert(0, directory)
 
 import wx
 import wx.grid
