@@ -4,7 +4,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODMTools"
-#define MyAppVersion "1.0"
+#define MyAppVersion "0.1"
 #define MyAppURL "https://github.com/UCHIC/ODMToolsPython"
 
 [Setup]
