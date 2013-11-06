@@ -33,10 +33,6 @@ class ConsoleTools(object):
         if self._record_service:
             self._record_service.toggle_filter_previous()
 
-    def restore(self):
-        if self._record_service:
-            self._record_service.restore()
-
     ################
     # Filter methods
     ################
