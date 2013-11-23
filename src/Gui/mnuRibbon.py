@@ -97,9 +97,6 @@ class mnuRibbon(RB.RibbonBar):
 
         self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
         self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
-        self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
-
-
 
 
         dateTime_panel = RB.RibbonPanel(home, wx.ID_ANY, "Date Time", wx.NullBitmap, wx.DefaultPosition,
@@ -498,7 +495,7 @@ class mnuRibbon(RB.RibbonBar):
         if plot == 0 or plot == 1:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, True)
-            self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
+            self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, True)
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, True)
             self.spnBins.Enabled = False
             self.dpEndDate.Enabled = True

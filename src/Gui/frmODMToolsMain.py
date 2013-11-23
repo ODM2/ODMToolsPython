@@ -55,7 +55,9 @@ class frmODMToolsMain(wx.Frame):
         self.service_manager = ServiceManager()
         self.record_service = None
         #there is a connection but it is unsuccessful
-        if self.service_manager.get_current_connection() == None or (self.service_manager.get_current_connection() != None and not self.service_manager.test_connection(self.service_manager.get_current_connection())):
+        if (self.service_manager.get_current_connection() == None 
+            or (self.service_manager.get_current_connection() != None 
+                and not self.service_manager.test_connection(self.service_manager.get_current_connection()))):
             # Create a DB form which will set a connection for the service manager
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
