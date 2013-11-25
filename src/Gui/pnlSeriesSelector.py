@@ -284,17 +284,17 @@ class pnlSeriesSelector(wx.Panel):
 
         self.site_code = None
         self.variable_code = None
+
         #####INIT drop down boxes for Simple Filter
-        self.siteList = [(s.id, s.code, s.name) for s in self.dbservice.get_all_sites() ]
-
+        self.siteList = self.dbservice.get_all_sites()
         for site in self.siteList:
-            self.cbSites.Append(site[1] + '-' + site[2])
+            self.cbSites.Append(site.code + '-' + site.name)
         self.cbSites.SetSelection(0)
-        self.site_code = self.siteList[0][1]
+        self.site_code = self.siteList[0].code
 
-        self.varList = [(v.id, v.code, v.name) for v in self.dbservice.get_all_variables() ]
+        self.varList = self.dbservice.get_all_variables()
         for var in self.varList:
-            self.cbVariables.Append(var[1] + '-' + var[2])
+            self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)
 
     def OnTableRightDown(self, event):
@@ -409,17 +409,14 @@ class pnlSeriesSelector(wx.Panel):
 
 
     def OnCbSitesCombobox(self, event):
-        self.site_code = self.siteList[event.GetSelection()].site_code
+        self.site_code = self.siteList[event.GetSelection()].code        
+        self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
 
-
-        self.varList =[]
-        self.varList= self.dbservice.get_variables(self.site_code)
 
         self.cbVariables.Clear()
         for var in self.varList:
-            self.cbVariables.Append(var.variable_code+'-'+var.variable_name)
+            self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)
-        #if (not self.checkVariable):
 
         if (self.checkSite.GetValue() and not self.checkVariable.GetValue()):
             self.variable_code = None
@@ -430,66 +427,51 @@ class pnlSeriesSelector(wx.Panel):
 
 
     def OnCbVariablesCombobox(self, event):
-        self.variable_code = self.varList[event.GetSelection()].variable_code
-        # if (self.checkSite.GetValue() and self.checkVariable.GetValue()):
-        #     self.seriesList = self.dbservice.get_series(site_code = self.site_code, var_code= self.variable_code)
+        self.variable_code = self.varList[event.GetSelection()].code
         if (not self.checkSite.GetValue() and self.checkVariable.GetValue()):
             self.site_code = None
         self.SetFilter(site_code = self.site_code, var_code = self.variable_code)
         event.Skip()
 
 
-
-
-
     def siteAndVariables(self):
+        self.site_code = self.siteList[self.cbSites.Selection].code
+        
         self.cbVariables.Clear()
-        self.varList= self.dbservice.get_variables(self.site_code)
+        self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
         for var in self.varList:
-            self.cbVariables.Append(var.variable_code+'-'+var.variable_name)
+            self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)
 
-
-
-        self.variable_code=self.varList[self.cbVariables.Selection].variable_code
-        self.site_code = self.siteList[self.cbSites.Selection].site_code
+        self.variable_code = self.varList[self.cbVariables.Selection].code
 
         self.SetFilter(site_code = self.site_code, var_code = self.variable_code)
 
         self.cbVariables.Enabled =True
         self.cbSites.Enabled = True
 
-
-
-
     def siteOnly(self):
         self.cbVariables.Enabled = False
         self.cbSites.Enabled = True
         self.variable_code = None
 
-
-        self.site_code =  self.siteList[self.cbSites.Selection].site_code
+        self.site_code =  self.siteList[self.cbSites.Selection].code
         self.SetFilter(site_code = self.site_code)
-
-
-
 
     def variableOnly(self):
         self.site_code = None
         self.cbVariables.Clear()
-        self.varList= self.dbservice.get_variables()
+        self.varList = self.dbservice.get_all_variables()
         for var in self.varList:
-            self.cbVariables.Append(var.variable_code+'-'+var.variable_name)
+            self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)
         self.cbSites.Enabled = False
         self.cbVariables.Enabled = True
 
 
-        self.variable_code=self.varList[0].variable_code
+        self.variable_code=self.varList[0].code
 
         self.SetFilter( var_code = self.variable_code)
-
-
 
     def OnCheck(self, event):
         # self.tableSeries.DeleteAllItems()
@@ -521,14 +503,10 @@ class pnlSeriesSelector(wx.Panel):
             self.tableSeries.ClearFilter()
 
         self.tableSeries.RepopulateList()
-        # print self.tableSeries.GetItemCount()
 
 
     def OntableSeriesListItemSelected(self, event):
-        # print"in item selected", event.m_itemIndex, self.tableSeries.IsItemChecked(event.m_itemIndex)
-        # print dir(event)
         self.SelectForPlot( event.m_itemIndex)
-
         event.Skip()
 
     def SelectForPlot(self, selIndex ):
