@@ -20,7 +20,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputBaseFilename=setup
+OutputBaseFilename={#MyAppName}_{#MyAppVersion}_setup
 Compression=lzma
 SolidCompression=yes
 

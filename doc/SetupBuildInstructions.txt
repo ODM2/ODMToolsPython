@@ -1,0 +1,20 @@
+InnoSetup build instructions for ODM Tools
+-------
+FIRST TIME SETUP
+-------
+1) Create an ODM Tools build directory wherever you like (C:\ODMToolsBuild) 
+2) Add the ODMToolsPython root project directory to the build directory (C:\ODMToolsBuild\ODMToolsPython)
+3) Add the WinPython library directory (C:\ODMToolsBuild\WinPython-32bit-2.7.5.3)
+4) Install InnoSetup from http://www.jrsoftware.org/isdl.php
+
+--------
+BUILD INSTRUCTIONS 
+--------
+0) Copy your changes from <ODM dev directory> into <build directory>\ODMToolsPython
+1) Run InnoSetup
+2) Open <ODM dev directory>\setup\odmtools_setup_build.iss
+3) Change/confirm line 31 Source points to your build directory created above.
+4) Click Build>Compile
+5) When finished click Build>Open Output Folder
+
+InnoSetup Documentation http://www.jrsoftware.org/ishelp/
