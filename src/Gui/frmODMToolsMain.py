@@ -54,11 +54,17 @@ class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
         self.service_manager = ServiceManager()
         self.record_service = None
+        
+        conn_dict = self.service_manager.get_current_connection()
         #there is a connection but it is unsuccessful
-        if (self.service_manager.get_current_connection() == None 
-            or (self.service_manager.get_current_connection() != None 
-                and not self.service_manager.test_connection(self.service_manager.get_current_connection()))):
+        if (conn_dict == None 
+            or (conn_dict != None and not self.service_manager.test_connection(conn_dict))):
             # Create a DB form which will set a connection for the service manager
+            db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
+            db_config.ShowModal()
+
+        if (conn_dict != None and self.service_manager.get_db_version(conn_dict) != u'1.1.1'):
+            wx.MessageBox('The ODM database must be version 1.1.1 to use ODMToolsPython', 'Database Version Incompatible', wx.OK)
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
 

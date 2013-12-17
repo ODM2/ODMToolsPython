@@ -22,8 +22,8 @@ class SeriesService():
 		self._edit_session = self._session_factory.get_session()
 		self._debug = debug
 
-	def get_test_data(self):
-		return self._edit_session.query(ODMVersion).first()
+	def get_db_version(self):
+		return self._edit_session.query(ODMVersion).first().version_number
 
 	# Site methods
 	def get_all_sites(self):

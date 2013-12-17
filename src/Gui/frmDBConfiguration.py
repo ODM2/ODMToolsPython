@@ -164,7 +164,8 @@ class frmDBConfig(wx.Dialog):
     def OnBtnTest(self, event):
       conn_dict = self._GetFieldValues()
       message = ""
-      if self.service_manager.test_connection(conn_dict):
+      if (self.service_manager.test_connection(conn_dict) and 
+          self.service_manager.get_db_version() == '1.1.1'):
         message = "This connection is valid"
       else:
         message = "This connection is invalid"

@@ -59,19 +59,22 @@ class ServiceManager():
 		self.__save_connections()
 
 	def test_connection(self, conn_dict):
-		conn_string = self.__build_connection_string(conn_dict)
 		try:
-			service = SeriesService(conn_string, True)
-			site = service.get_test_data()
+			version = self.get_db_version(conn_dict)
 		except SQLAlchemyError:
 			return False
-
 		return True
 
 	def delete_connection(self, conn_dict):
 		self._connections[:] = [x for x in self._connections if x != conn_dict]
 
 	# Create and return services based on the currently active connection
+	def get_db_version(self, conn_dict):		
+		conn_string = self.__build_connection_string(conn_dict)
+		service = SeriesService(conn_string)
+		version = service.get_db_version()
+		return version
+
 	def get_series_service(self):
 		conn_string = self.__build_connection_string(self._current_connection)
 		return SeriesService(conn_string, self.debug)
@@ -79,7 +82,6 @@ class ServiceManager():
 	def get_cv_service(self):
 		conn_string = self.__build_connection_string(self._current_connection)
 		return CVService(conn_string, self.debug)
-
 
 	def get_edit_service(self, series_id, connection):
 		conn_string = self.__build_connection_string(self._current_connection)
