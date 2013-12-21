@@ -16,7 +16,6 @@ import copy
 class EditService():
     # Mutual exclusion: cursor, or connection_string
     def __init__(self, series_id, connection=None, connection_string="",  debug=False):
-        # print "Series id: ", series_id
         self._connection = connection
         self._series_id = series_id
         self._filter_from_selection = False

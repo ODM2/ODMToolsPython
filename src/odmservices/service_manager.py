@@ -15,7 +15,7 @@ class ServiceManager():
 		self._connections = []
 		self._connection_format = "%s+%s://%s:%s@%s/%s"
 
-		# Read all lines (connections) in the file 
+		# Read all lines (connections) in the connection.cfg file 
 		while True:
 			line = f.readline()
 			if not line: 
