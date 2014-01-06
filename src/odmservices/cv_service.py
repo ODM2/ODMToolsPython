@@ -25,6 +25,10 @@ class CVService():
 		self._debug = debug
 
 	# Controlled Vocabulary get methods
+
+
+
+	#return a list of all terms in the cv
 	def get_vertical_datum_cvs(self):
 		session = self._session_factory.get_session()
 		result = session.query(VerticalDatumCV).order_by(VerticalDatumCV.term).all()
@@ -112,6 +116,11 @@ class CVService():
 		result =  self._edit_session.query(Unit).all()
 		session.close()
 		return result
+
+
+
+	# return a single cv
+
 
 	def get_unit_by_name(self, unit_name):
 		session = self._session_factory.get_session()
