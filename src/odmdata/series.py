@@ -96,10 +96,10 @@ class Series(Base):
 		return self.__table__.columns.keys()
 
 	def list_repr(self):
-		return [self.id, self.site_id, self.site_code, self.site_name, self.variable_id, self.variable_code, 
-				self.variable_name, self.speciation, self.variable_units_id, self.variable_units_name, 
-				self.sample_medium, self.value_type, self.time_support, self.time_units_id, self.time_units_name, 
+		return [self.id, self.site_id, self.site_code, self.site_name, self.variable_id, self.variable_code,
+				self.variable_name, self.speciation, self.variable_units_id, self.variable_units_name,
+				self.sample_medium, self.value_type, self.time_support, self.time_units_id, self.time_units_name,
 				self.data_type, self.general_category, self.method_id, self.method_description,
-				self.source_id, self.source_description, self.organization, self.citation, 
-				self.quality_control_level_id, self.quality_control_level_code, self.begin_date_time, 
+				self.source_id, self.source_description, self.organization, self.citation,
+				self.quality_control_level_id, self.quality_control_level_code, self.begin_date_time,
 				self.end_date_time, self.begin_date_time_utc, self.end_date_time_utc, self.value_count	]

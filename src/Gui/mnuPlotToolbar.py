@@ -61,6 +61,7 @@ class MyCustomToolbar(NavigationToolbar):
         axes.set_xlim(x1 - ONE_SCREEN, x2 - ONE_SCREEN)
         self.canvas.draw()
 
+
     # pan the graph to the right
     def _on_custom_pan_right(self, evt):
         ONE_SCREEN = 7   # we default to 1 week

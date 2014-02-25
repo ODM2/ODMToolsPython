@@ -1,3 +1,6 @@
+import sqlite3
+import copy
+
 from odmdata import SessionFactory
 from odmdata import Site
 from odmdata import Variable
@@ -6,16 +9,13 @@ from odmdata import Series
 from odmdata import DataValue
 from odmdata import QualityControlLevel
 from odmdata import Qualifier
-
 from series_service import SeriesService
 from odmdata import series as series_module
 
-import sqlite3
-import copy
 
 class EditService():
     # Mutual exclusion: cursor, or connection_string
-    def __init__(self, series_id, connection=None, connection_string="",  debug=False):
+    def __init__(self, series_id, connection=None, connection_string="", debug=False):
         self._connection = connection
         self._series_id = series_id
         self._filter_from_selection = False
@@ -39,10 +39,10 @@ class EditService():
             series_service = SeriesService(connection_string, False)
             series = series_service.get_series_by_id(series_id)
             DataValues = [(dv.id, dv.data_value, dv.value_accuracy, dv.local_date_time, dv.utc_offset, dv.date_time_utc,
-                dv.site_id, dv.variable_id, dv.offset_value, dv.offset_type_id, dv.censor_code,
-                dv.qualifier_id, dv.method_id, dv.source_id, dv.sample_id, dv.derived_from_id,
-                dv.quality_control_level_id) for dv in series.data_values]
-            self._connection = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
+                           dv.site_id, dv.variable_id, dv.offset_value, dv.offset_type_id, dv.censor_code,
+                           dv.qualifier_id, dv.method_id, dv.source_id, dv.sample_id, dv.derived_from_id,
+                           dv.quality_control_level_id) for dv in series.data_values]
+            self._connection = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
             tmpCursor = self._connection.cursor()
             self.init_table(tmpCursor)
             tmpCursor.executemany("INSERT INTO DataValuesEdit VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", DataValues)
@@ -71,7 +71,7 @@ class EditService():
     def filter_value(self, value, operator):
         self._test_filter_previous()
 
-        if operator == '<': # less than
+        if operator == '<':  # less than
             for i in range(len(self._series_points)):
                 # If it's not already in the selection, skip it
                 if (self._filter_from_selection and not self._filter_list[i]):
@@ -80,7 +80,7 @@ class EditService():
                     self._filter_list[i] = True
                 else:
                     self._filter_list[i] = False
-        if operator == '>': # greater than
+        if operator == '>':  # greater than
             for i in range(len(self._series_points)):
                 if (self._filter_from_selection and not self._filter_list[i]):
                     continue
@@ -102,11 +102,11 @@ class EditService():
                     self._filter_list[i] = True
                 else:
                     self._filter_list[i] = False
-            previous_date_filter = True        # We've done a previous date filter
+            previous_date_filter = True  # We've done a previous date filter
         if after != None:
             for i in range(len(self._series_points)):
                 if ((previous_date_filter or self._filter_from_selection)
-                     and not self._filter_list[i]):
+                    and not self._filter_list[i]):
                     continue
                 if self._series_points[i][2] > after:
                     self._filter_list[i] = True
@@ -132,18 +132,18 @@ class EditService():
 
         for i in xrange(length):
             if (self._filter_from_selection and
-                not self._filter_list[i]):
+                    not self._filter_list[i]):
                 continue
 
-            if i + 1 < length:      # make sure we stay in bounds
+            if i + 1 < length:  # make sure we stay in bounds
                 point1 = self._series_points[i]
-                point2 = self._series_points[i+1]
+                point2 = self._series_points[i + 1]
                 interval = point2[2] - point1[2]
                 interval_total_sec = interval.total_seconds()
 
                 if interval_total_sec >= value_sec:
                     tmp[i] = True
-                    tmp[i+1] = True
+                    tmp[i + 1] = True
 
         self.reset_filter()
         for key in tmp.keys():
@@ -155,12 +155,12 @@ class EditService():
         tmp = {}
         for i in xrange(length):
             if (self._filter_from_selection and
-                not self._filter_list[i]):
+                    not self._filter_list[i]):
                 continue
 
-            if i + 1 < length:         # make sure we stay in bounds
+            if i + 1 < length:  # make sure we stay in bounds
                 point1 = self._series_points[i]
-                point2 = self._series_points[i+1]
+                point2 = self._series_points[i + 1]
                 if abs(point1[1] - point2[1]) >= value:
                     tmp[i] = True
                     tmp[i + 1] = True
@@ -230,7 +230,6 @@ class EditService():
         return self._series_service.get_variable_by_id(variable_id)
 
 
-
     #################
     # Edits
     #################
@@ -273,8 +272,8 @@ class EditService():
         filtered_points = self.get_filtered_points()
         num_filtered_points = len(filtered_points)
         if num_filtered_points > 0:
-            for i in range(num_filtered_points-1):        # loop through the second-to-last active point
-                query += "%s," % (filtered_points[i][0])   # append its ID
+            for i in range(num_filtered_points - 1):  # loop through the second-to-last active point
+                query += "%s," % (filtered_points[i][0])  # append its ID
             query += "%s)" % (filtered_points[-1][0])  # append the final point's ID and close the set
 
             # Delete the points from the cursor
@@ -289,14 +288,14 @@ class EditService():
         for group in groups:
             # determine first and last point for the interpolation
             first_index = group[0] - 1
-            last_index  = group[-1] + 1
+            last_index = group[-1] + 1
             # ignore this group (which is actually the whole set)
             # if it includes the first or last point of the series
             if first_index <= 0 or last_index == len(self._series_points):
                 continue
 
             first_point = self._series_points[first_index]
-            last_point  = self._series_points[last_index]
+            last_point = self._series_points[last_index]
             a = 0
             c = (last_point[2] - first_point[2]).total_seconds()
             f_a = first_point[1]
@@ -305,7 +304,7 @@ class EditService():
             for i in group:
                 b = (self._series_points[i][2] - first_point[2]).total_seconds()
                 # linear interpolation formula: f(b) = f(a) + ((b-a)/(c-a))*(f(c) - f(a))
-                new_val = f_a + ((b - a)/(c-a))*(f_c - f_a)
+                new_val = f_a + ((b - a) / (c - a)) * (f_c - f_a)
                 point_id = self._series_points[i][0]
                 update_list.append((new_val, point_id))
             query = "UPDATE DataValuesEdit SET DataValue = ? WHERE ValueID = ?"
@@ -322,7 +321,7 @@ class EditService():
         if len(groups) == 1:
             group = groups[0]
             first_index = group[0]
-            last_index  = group[-1]
+            last_index = group[-1]
             first_point = self._series_points[first_index]
             last_point = self._series_points[last_index]
             x_l = (last_point[2] - first_point[2]).total_seconds()
@@ -353,7 +352,7 @@ class EditService():
             if self._filter_list[i]:
                 if not found_group:
                     found_group = True
-                cur_group.append(i)         # Append the actual index to the point
+                cur_group.append(i)  # Append the actual index to the point
                 if i == length - 1:
                     groups.append(cur_group)
             elif not self._filter_list[i] and found_group:
@@ -433,7 +432,6 @@ class EditService():
                 series.quality_control_level_id = qcl.id
                 series.quality_control_level_code = qcl.code
 
-
         series.begin_date_time = dvs[0].local_date_time
         series.end_date_time = dvs[-1].local_date_time
         series.begin_date_time_utc = dvs[0].date_time_utc
@@ -454,11 +452,12 @@ class EditService():
     def create_method(self, description, link):
         return self._series_service.create_method(description, link)
 
-    def create_variable(self,code, name, speciation, variable_unit_id, sample_medium,
-		value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
+    def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
+                        value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
 
         return self._series_service.create_variable(code, name, speciation, variable_unit_id, sample_medium,
-		value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value)
+                                                    value_type, is_regular, time_support, time_unit_id, data_type,
+                                                    general_category, no_data_value)
 
     def reconcile_dates(self, parent_series_id):
         # FUTURE FEATURE: pull in new field data from another series and add to this series
@@ -468,22 +467,22 @@ class EditService():
     def _build_dv_from_tuple(self, dv_tuple):
         dv = DataValue()
 
-        dv.id_list                  = dv_tuple[0]
-        dv.data_value               = dv_tuple[1]
-        dv.value_accuracy           = dv_tuple[2]
-        dv.local_date_time          = dv_tuple[3]
-        dv.utc_offset               = dv_tuple[4]
-        dv.date_time_utc            = dv_tuple[5]
-        dv.site_id                  = dv_tuple[6]
-        dv.variable_id              = dv_tuple[7]
-        dv.offset_value             = dv_tuple[8]
-        dv.offset_type_id           = dv_tuple[9]
-        dv.censor_code              = dv_tuple[10]
-        dv.qualifier_id             = dv_tuple[11]
-        dv.method_id                = dv_tuple[12]
-        dv.source_id                = dv_tuple[13]
-        dv.sample_id                = dv_tuple[14]
-        dv.derived_from_id          = dv_tuple[15]
+        dv.id_list = dv_tuple[0]
+        dv.data_value = dv_tuple[1]
+        dv.value_accuracy = dv_tuple[2]
+        dv.local_date_time = dv_tuple[3]
+        dv.utc_offset = dv_tuple[4]
+        dv.date_time_utc = dv_tuple[5]
+        dv.site_id = dv_tuple[6]
+        dv.variable_id = dv_tuple[7]
+        dv.offset_value = dv_tuple[8]
+        dv.offset_type_id = dv_tuple[9]
+        dv.censor_code = dv_tuple[10]
+        dv.qualifier_id = dv_tuple[11]
+        dv.method_id = dv_tuple[12]
+        dv.source_id = dv_tuple[13]
+        dv.sample_id = dv_tuple[14]
+        dv.derived_from_id = dv_tuple[15]
         dv.quality_control_level_id = dv_tuple[16]
 
         return dv

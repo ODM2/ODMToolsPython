@@ -82,8 +82,6 @@ class MemoryDatabase(object):
         self.cursor.execute(sql)  
         return (x[0] for (i,x) in enumerate(self.cursor.description))
 
-
-
     def resetDB(self, series_service):
         self.series_service = series_service
 
@@ -106,7 +104,6 @@ class MemoryDatabase(object):
         self.cursor.execute("DROP TABLE DataValuesEdit")
         self.conn.commit()
         self.createEditTable()
-
 
     def initEditValues(self, seriesID):
         if not self.editLoaded:

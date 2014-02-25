@@ -56,8 +56,6 @@ class pnlPlot(fnb.FlatNotebook):
               style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltSum, 'Summary')
 
-
-
         Publisher.subscribe(self.onDateChanged, ("onDateChanged"))
         Publisher.subscribe(self.OnPlotType, ("onPlotType"))
         Publisher.subscribe(self.OnShowLegend, ("OnShowLegend"))
@@ -97,7 +95,7 @@ class pnlPlot(fnb.FlatNotebook):
       self.pltHist.ChangeNumOfBins(numBins)
 
     def onDateChanged(self, date, time):
-      print date , time
+      print "date: ", date, "time: ", time
       self.pltTS.onDateChanged(date, time)
 
     def OnPlotType(self, event, ptype):
@@ -108,7 +106,6 @@ class pnlPlot(fnb.FlatNotebook):
     def OnShowLegend(self, event, isVisible):
       self.pltTS.OnShowLegend(isVisible)
       self.pltProb.OnShowLegend(isVisible)
-
 
     def stopEdit(self):
         self._seriesPlotInfo.StopEditSeries()
@@ -138,8 +135,6 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltProb.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)
         self.pltTS.Plot(self._seriesPlotInfo)
-
-
 
     #     self.PlotGraph()
     def selectPlot(self, value):
