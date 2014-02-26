@@ -1,12 +1,13 @@
 #Boa:FramePanel:pnlSeriesSelector
 import os
+
 import wx
+
 # import wx.lib.agw.ultimatelistctrl as ULC
 # from ObjectListView import ObjectListView, ColumnDefn, Filter
 
 from wx.lib.pubsub import pub as Publisher
 
-import sqlite3
 # from ObjectListView import Filter
 import wx.lib.agw.ultimatelistctrl as ULC
 try:
@@ -14,9 +15,7 @@ try:
 except ImportError: # if it's not there locally, try the wxPython lib.
     import wx.lib.agw.pycollapsiblepane as PCP
 from clsULC import clsULC, TextSearch, Chain
-import frmODMToolsMain
 import frmQueryBuilder
-import frmDataExport
 
 from odmdata import MemoryDatabase
 from odmservices import ServiceManager
@@ -278,6 +277,7 @@ class pnlSeriesSelector(wx.Panel):
 
         self.tableSeries.SetColumns(self.dataRep.getSeriesColumns())
         self.tableSeries.SetObjects(self.dataRep.getSeriesCatalog())
+        self.tableSeries.EnableSelectionVista(True)
 
 
     def initSVBoxes(self):

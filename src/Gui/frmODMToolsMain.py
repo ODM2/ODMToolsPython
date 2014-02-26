@@ -26,7 +26,6 @@ import wx.py.crust
 import frmDBConfiguration
 
 from odmservices import ServiceManager
-from odmservices import RecordService
 from odmservices import utilities as util
 from pnlScript import pnlScript
 import pnlSeriesSelector
@@ -200,6 +199,7 @@ class frmODMToolsMain(wx.Frame):
         self.pnlPlot.selectPlot(value)
 
     def addPlot(self, dataRep, seriesID):
+        #datarepository
         self.pnlPlot.addPlot(dataRep, seriesID)
         self._ribbon.enableButtons(self.pnlPlot.getActivePlotID() )
 

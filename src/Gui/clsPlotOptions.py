@@ -1,33 +1,7 @@
-import numpy
 import math
 
+import numpy
 
-
-class plotData (object):
-  def __init__(self, sID, dValues, dTimes,  ylabel, title, color ):
-    self.SeriesID= sID
-    self.DataValues = dValues
-    self.DateTimes=dTimes
-
-    self.startDate= min(dTimes)
-    self.endDate=max(dTimes)
-    self.ylabel = ylabel
-    self.title = title
-    self.color = color
-
-class axisData (object):
-  def __init__(self, axisid, axis,  position, side="", rightadjust="", leftadjust="", minx="", maxx=""):
-    self.axisid= axisid
-    self.axis = axis
-    self.rightadjust= rightadjust
-    self.leftadjust = leftadjust
-    self.position = position
-    self.side = side
-    self.minx= minx
-    self.maxx= maxx
-
-  def __repr__(self):
-    return "<AxisData(id:'%s', axis:'%s', pos:'%s', side:'%s', radj:'%s', ladj:'%s')>" % (self.axisid, self.axis, self.position, self.side, self.rightadjust, self.leftadjust)
 
 class PlotOptions(object):
     # def enum( **enums):
@@ -100,6 +74,7 @@ class SeriesPlotInfo(object):
     def __init__(self, dbConn,  plotOptions):#siteDisplayColumn,
         # self._siteDisplayColumn = siteDisplayColumn
         self._plotOptions= plotOptions
+        #dbConn is a connection to the memory_database
         self.dbConn= dbConn
         self._seriesInfos = {}
         self.editID= None
@@ -109,7 +84,10 @@ class SeriesPlotInfo(object):
         if self.editID in self._seriesInfos:
             self._seriesInfos[self.editID].edit = True
             self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
-            self._seriesInfos[self.editID].color = "Black"
+            self._seriesInfos[self.editID].color = "" \
+                                                   "" \
+                                                   "" \
+                                                   "    Black"
 
     def UpdateEditSeries(self):
         if self.editID in self._seriesInfos:
