@@ -345,7 +345,7 @@ class plotTimeSeries(wx.Panel):
             #print len(self.editCurve.dataTable), len(self.editCurve.dataTable[:1])
             for i in xrange(len(self.editCurve.dataTable)):
                 radius=3
-                print "row: ", i,  self.editCurve.dataTable[i][1].toordinal(), event.xdata, abs(event.xdata - self.editCurve.dataTable[i][1].toordinal())
+                #print "row: ", i,  self.editCurve.dataTable[i][1].toordinal(), event.xdata, abs(event.xdata - self.editCurve.dataTable[i][1].toordinal())
 
                 if abs(event.xdata - self.editCurve.dataTable[i][1].toordinal()) < radius and abs(event.ydata-self.editCurve.dataTable[i][0]) < radius:
                     top = tip='(%s, %f)'%(self.editCurve.dataTable[i][1],self.editCurve.dataTable[i][0])
