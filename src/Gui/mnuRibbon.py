@@ -15,6 +15,29 @@ import wizSave
 
 import gui_utils as g_util
 
+## Enable logging
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+console.setFormatter(
+    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
+)
+logger.addHandler(console)
+
+'''
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+    datefmt='%m/%d/%Y %I:%M:%S %p',
+    filename='../' + __name__ + '.log',
+    filemode='w'
+)
+'''
+
+##
+
 [wxID_PANEL1, wxID_RIBBONPLOTTIMESERIES, wxID_RIBBONPLOTPROB,
  wxID_RIBBONPLOTHIST, wxID_RIBBONPLOTBOX, wxID_RIBBONPLOTSUMMARY,
  wxID_RIBBONPLOTTSTYPE, wxID_RIBBONPLOTTSCOLOR, wxID_RIBBONPLOTTSLEGEND,
@@ -36,7 +59,6 @@ import gui_utils as g_util
 ## #################################
 
 class mnuRibbon(RB.RibbonBar):
-
     def _init_ctrls(self, prnt):
         RB.RibbonBar.__init__(self,  name='ribbon', parent=prnt, id=wxID_PANEL1)
         self.SetArtProvider(RB.RibbonAUIArtProvider())
@@ -50,7 +72,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
 #------Plot Type ---------------------------------------------------------------------------
-        
+
         plot_panel = RB.RibbonPanel(home, wx.ID_ANY, "Plots", wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)
@@ -137,7 +159,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
 #-------------------------------------------------------------------------------
-        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit", 
+        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit",
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "blank.png")))
 
         main_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Main", wx.NullBitmap, wx.DefaultPosition,
@@ -212,8 +234,11 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.subscribe(self.resetDateRange, ("resetdate"))
 
     def __init__(self, parent, id, name):
+
         self.parent=parent
         self._init_ctrls(parent)
+
+
 
     def BindEvents(self):
         ###Docking Window Selection
@@ -241,7 +266,7 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(wx.EVT_DATE_CHANGED, self.onsDateChanged, id = wxID_STARTDPDATE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.OnFullDate, id= wxID_RIBBONPLOTDATEFULL)
 
-        ###Add event  to editab
+        ###Add event  to edit tab
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onExecuteScript, id= wxID_RIBBONEDITSCRIPTEXECUTE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.OnEditSeries, id= wxID_RIBBONEDITSERIES)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.OnRestore, id= wxID_RIBBONEDITRESTORE)
@@ -325,8 +350,10 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def OnEditFilter(self, event):
+        logger.debug("Entered!")
         data_filter = frmDataFilters.frmDataFilter(self, self.parent.getRecordService())
         self.filterlist = data_filter.ShowModal()
+        print "filter_list: ", self.filterlist
         data_filter.Destroy()
         event.Skip()
 
@@ -370,7 +397,6 @@ class mnuRibbon(RB.RibbonBar):
         else:
             self.parent.stopEdit()
         event.Skip()
-
 
     def OnNumBins(self, event):
         Publisher.sendMessage(("OnNumBins"), numBins=event.Selection)
@@ -512,7 +538,7 @@ class mnuRibbon(RB.RibbonBar):
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
             self.dpEndDate.Enabled = False
             self.dpStartDate.Enabled= False
-            
+
         #Summary
         elif plot == 4:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)

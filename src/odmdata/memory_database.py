@@ -2,7 +2,7 @@
 import sqlite3
 
 class MemoryDatabase(object):
-
+### this code should be changed to work with the database abstract layer so that sql queries are not in the code
 
     # series_service is a SeriesService
     def __init__(self, series_service):
@@ -30,7 +30,7 @@ class MemoryDatabase(object):
 
     def getDataValuesforEdit(self):  
         # query = "SELECT ValueID, SeriesID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, QualifierCode, OffsetValue, OffsetTypeID, CensorCode, SampleID FROM DataValuesEdit AS d LEFT JOIN Qualifiers AS q ON (d.QualifierID = q.QualifierID) "
-        query = "SELECT * from DataValuesEdit"                      
+        query = "SELECT * from DataValuesEdit ORDER BY LocalDateTime"
         self.cursor.execute(query)
         return [list(x) for x in  self.cursor.fetchall()]
 
@@ -46,7 +46,7 @@ class MemoryDatabase(object):
 
 
     def getEditColumns(self):
-        sql = "SELECT * FROM DataValuesEdit WHERE 1=0"
+        sql = "SELECT * FROM DataValuesEdit WHERE 1=0 "
         # sql= "SELECT ValueID, SeriesID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, QualifierCode, OffsetValue, OffsetTypeID, CensorCode, SampleID FROM DataValuesEdit AS d LEFT JOIN Qualifiers AS q ON (d.QualifierID = q.QualifierID) WHERE 1=0"
         self.cursor.execute(sql)  
         return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]
@@ -82,6 +82,8 @@ class MemoryDatabase(object):
         self.cursor.execute(sql)  
         return (x[0] for (i,x) in enumerate(self.cursor.description))
 
+
+
     def resetDB(self, series_service):
         self.series_service = series_service
 
@@ -104,6 +106,7 @@ class MemoryDatabase(object):
         self.cursor.execute("DROP TABLE DataValuesEdit")
         self.conn.commit()
         self.createEditTable()
+
 
     def initEditValues(self, seriesID):
         if not self.editLoaded:

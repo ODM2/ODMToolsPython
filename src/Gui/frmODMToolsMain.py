@@ -25,7 +25,6 @@ import wx.py.crust
 import frmDBConfiguration
 
 from odmservices import ServiceManager
-from odmservices import RecordService
 from odmservices import utilities as util
 from pnlScript import pnlScript
 import pnlSeriesSelector
@@ -47,18 +46,11 @@ def create(parent):
  wxID_TXTPYTHONCONSOLE,
 ] = [wx.NewId() for _init_ctrls in range(13)]
 
-## ###################################################
-## Establish a connection with the database server
-## ###################################################
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
         self.service_manager = ServiceManager()
         self.record_service = None
-
-        ## ###################################################
-        ## Establish a connection with the database server
-        ## ###################################################
 
         conn_dict = self.service_manager.get_current_connection()
         #there is a connection but it is unsuccessful
@@ -102,8 +94,8 @@ class frmODMToolsMain(wx.Frame):
                           style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
                              False, u'Tahoma'))
-        # Publisher.subscribe(self.addPlot, ("add.NewPlot"))
-        # Publisher.subscribe(self.addEdit, ("edit.NewPlot"))
+        #Publisher.subscribe(self.addPlot, ("add.NewPlot"))
+        #Publisher.subscribe(self.addEdit, ("edit.NewPlot"))
         Publisher.subscribe(self.onDocking, ("adjust.Docking"))
 
         Publisher.subscribe(self.onDocking, ("adjust.Docking"))
@@ -125,10 +117,15 @@ class frmODMToolsMain(wx.Frame):
                                    parent=self, size=wx.Size(605, 458),
                                    style=wx.TAB_TRAVERSAL)
 
+
+
+
         ################ Series Selection Panel ##################
         self.pnlSelector = pnlSeriesSelector.pnlSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
                                                                parent=self.pnlDocking, size=wx.Size(770, 388),
                                                                style=wx.TAB_TRAVERSAL, dbservice=self.sc)
+
+
         ####################grid##################
         self.dataTable = pnlDataTable.pnlDataTable(id=wxID_ODMTOOLSGRID1, name='dataTable',
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
@@ -200,6 +197,7 @@ class frmODMToolsMain(wx.Frame):
         self.pnlPlot.selectPlot(value)
 
     def addPlot(self, dataRep, seriesID):
+        #datarepository
         self.pnlPlot.addPlot(dataRep, seriesID)
         self._ribbon.enableButtons(self.pnlPlot.getActivePlotID())
 

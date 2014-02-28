@@ -213,13 +213,16 @@ class frmDataFilter(wx.Dialog):
           if self.txtVChangeThresh.GetValue():
             self.recordService.value_change_threshold(float(self.txtVChangeThresh.GetValue()))
 
-        Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
+        Publisher.sendMessage("changePlotSelection", sellist=self.recordService.get_filter_list())
 
 
     def setDates(self):
       dateAfter = self.recordService.get_series_points()[0][2]
       dateBefore = self.recordService.get_series_points()[-1][2]
-      formattedDateAfter = wx.DateTimeFromDMY(int(dateAfter.day) - 1, int(dateAfter.month), int(dateAfter.year), 0, 0, 0)
+      print "dateAfter: ", dateAfter.day, " + ", dateAfter.month, " + ", dateAfter.year
+      print "dateBefore: ", dateBefore.day, " + ", dateBefore.month, " + ", dateBefore.year
+      formattedDateAfter = wx.DateTimeFromDMY(int(dateAfter.day), int(dateAfter.month), int(dateAfter.year), 0, 0, 0)
+
       formattedDateBefore = wx.DateTimeFromDMY(int(dateBefore.day) + 1, int(dateBefore.month), int(dateBefore.year), 0, 0, 0)
       self.dpAfter.SetRange(formattedDateAfter, formattedDateBefore)
       self.dpBefore.SetRange(formattedDateAfter, formattedDateBefore)

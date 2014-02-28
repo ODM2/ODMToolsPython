@@ -150,7 +150,6 @@ class EditService():
             self._filter_list[key] = True
 
     def value_change_threshold(self, value):
-
         length = len(self._series_points)
         tmp = {}
         for i in xrange(length):

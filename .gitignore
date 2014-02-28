@@ -47,3 +47,6 @@ odm_tools_python.sublime-workspace
 *.config
 *.exe
 setup/Output/setup.exe
+
+*.log
+.idea
