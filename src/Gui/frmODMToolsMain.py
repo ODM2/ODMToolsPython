@@ -8,8 +8,7 @@ sys.path.insert(0, directory)
 
 import wx
 import wx.grid
-import wx.aui
-# import wx.aui
+#import wx.aui
 
 try:
     from agw import aui
