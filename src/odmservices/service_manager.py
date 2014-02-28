@@ -1,11 +1,11 @@
+from sqlalchemy.exc import SQLAlchemyError
+
 import utilities as util
 from series_service import SeriesService
 from cv_service import CVService
 from edit_service import EditService
 from record_service import RecordService
 from export_service import ExportService
-
-from sqlalchemy.exc import SQLAlchemyError
 
 
 class ServiceManager():
@@ -94,7 +94,9 @@ class ServiceManager():
     def get_export_service(self):
         return ExportService(self.get_series_service())
 
-    # private
+    ## ###################
+    # private variables
+    ## ###################
 
     def __get_file(self, mode):
         fn = util.resource_path('connection.config')
@@ -115,7 +117,8 @@ class ServiceManager():
             driver = "pymysql"
 
         conn_string = self._connection_format % (
-        conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'], conn_dict['db'])
+            conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
+            conn_dict['db'])
         return conn_string
 
     def __save_connections(self):

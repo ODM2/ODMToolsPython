@@ -1,7 +1,4 @@
-from edit_service import EditService
-
 class RecordService():
-
     # Script header (imports etc.) will be set up in Main when record is clicked.
     def __init__(self, script, edit_service, connection_string, record=False):
         self._script = script
@@ -38,7 +35,7 @@ class RecordService():
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         if self._record:
-            self._script("#Lasso selection\n")        # TODO: write dv datetimes to script
+            self._script("#Lasso selection\n")  # TODO: write dv datetimes to script
 
     def select_points(self, id_list=[], datetime_list=[]):
         self._edit_service.select_points(id_list, datetime_list)
@@ -127,7 +124,7 @@ class RecordService():
         return method
 
     def get_variable(self, v):
-        var =  self._edit_service.get_variable(v.id)
+        var = self._edit_service.get_variable(v.id)
         if self._record:
             self._script('new_variable = series_service.get_variable_by_id(%s)\n' % (var.id))
         return var
@@ -155,8 +152,9 @@ class RecordService():
         return method
 
     def create_variable(self, v):
-        var = self._edit_service.create_variable(v.code,v. name, v.speciation, v.variable_unit_id, v.sample_medium,
-		v.value_type, v.is_regular, v.time_support, v.time_unit_id, v.data_type, v.general_category, v.no_data_value)
+        var = self._edit_service.create_variable(v.code, v.name, v.speciation, v.variable_unit_id, v.sample_medium,
+                                                 v.value_type, v.is_regular, v.time_support, v.time_unit_id,
+                                                 v.data_type, v.general_category, v.no_data_value)
         if self._record:
             self._script('new_variable = series_service.get_variable_by_id(%s)\n' % (var.id))
         return var
@@ -164,5 +162,6 @@ class RecordService():
     def write_header(self):
         self._script("from odmservices import EditService\n", 'black')
         self._script("from odmservices import SeriesService\n", 'black')
-        self._script("edit_service   = EditService(series_id=%s, connection_string='%s')\n" % (self._edit_service._series_id, self._connection_string), 'black')
+        self._script("edit_service   = EditService(series_id=%s, connection_string='%s')\n" % (
+        self._edit_service._series_id, self._connection_string), 'black')
         self._script("series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')

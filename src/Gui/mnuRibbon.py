@@ -15,7 +15,28 @@ import wizSave
 
 import gui_utils as g_util
 
+## Enable logging
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+console.setFormatter(
+    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
+)
+logger.addHandler(console)
 
+'''
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+    datefmt='%m/%d/%Y %I:%M:%S %p',
+    filename='../' + __name__ + '.log',
+    filemode='w'
+)
+'''
+
+##
 
 [wxID_PANEL1, wxID_RIBBONPLOTTIMESERIES, wxID_RIBBONPLOTPROB,
  wxID_RIBBONPLOTHIST, wxID_RIBBONPLOTBOX, wxID_RIBBONPLOTSUMMARY,
@@ -33,8 +54,11 @@ import gui_utils as g_util
  wxID_RIBBONEDITLINFILTER
  ] = [wx.NewId() for _init_ctrls in range(41)]
 
-class mnuRibbon(RB.RibbonBar):
+## #################################
+## Build Menu and Toolbar 
+## #################################
 
+class mnuRibbon(RB.RibbonBar):
     def _init_ctrls(self, prnt):
         RB.RibbonBar.__init__(self,  name='ribbon', parent=prnt, id=wxID_PANEL1)
         self.SetArtProvider(RB.RibbonAUIArtProvider())
@@ -48,7 +72,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
 #------Plot Type ---------------------------------------------------------------------------
-        
+
         plot_panel = RB.RibbonPanel(home, wx.ID_ANY, "Plots", wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)
@@ -75,22 +99,19 @@ class mnuRibbon(RB.RibbonBar):
         self.PlotsOptions_bar.AddSimpleButton(wxID_RIBBONPLOTTSLEGEND, "Show Legend",
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "legend.png")), help_string="show legend on plot", kind = 0x4)
 
-
         self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "# Hist Bins" ,
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "blank.png")), "")
 
-
-        self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "# Hist Bins", 
+        self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "# Hist Bins",
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash()  + "blank.png")), "")
 
-        self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTDATESTART, False)
+        self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTDATESTART, True)
 
         self.spnBins = wx.SpinCtrl(id=wxID_FRAME1SPINCTRL1, initial=50,
               max=100, min=1, name='spnBins', parent=self.PlotsOptions_bar,
               pos= wx.Point(84,6), #without color button
               size=wx.Size(43, 25),style=wx.SP_ARROW_KEYS)
         self.spnBins.Enabled = False
-
 
         self.PlotsOptions_bar.AddDropdownButton(wxID_RIBBONPLOTBOXTYPE, "Box Whisker Type",
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "box_whisker_type.png")), "")
@@ -138,7 +159,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
 #-------------------------------------------------------------------------------
-        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit", 
+        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit",
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "blank.png")))
 
         main_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Main", wx.NullBitmap, wx.DefaultPosition,
@@ -212,10 +233,12 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.subscribe(self.toggleEditButtons, ("edit.EnableButtons"))
         Publisher.subscribe(self.resetDateRange, ("resetdate"))
 
-
     def __init__(self, parent, id, name):
+
         self.parent=parent
         self._init_ctrls(parent)
+
+
 
     def BindEvents(self):
         ###Docking Window Selection
@@ -225,14 +248,12 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onDocking, id=wxID_RIBBONVIEWCONSOLE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onDocking, id=wxID_RIBBONVIEWSCRIPT)
 
-
         ###Plot type Selection
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onPlotSelection, id=wxID_RIBBONPLOTTIMESERIES)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onPlotSelection, id=wxID_RIBBONPLOTPROB)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onPlotSelection, id=wxID_RIBBONPLOTBOX)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onPlotSelection, id=wxID_RIBBONPLOTHIST)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onPlotSelection, id=wxID_RIBBONPLOTSUMMARY)
-
 
         ###Dropdownbox events
         self.Bind(RB.EVT_RIBBONBUTTONBAR_DROPDOWN_CLICKED, self.OnPlotTypeDropdown, id=wxID_RIBBONPLOTTSTYPE)
@@ -245,15 +266,11 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(wx.EVT_DATE_CHANGED, self.onsDateChanged, id = wxID_STARTDPDATE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.OnFullDate, id= wxID_RIBBONPLOTDATEFULL)
 
-
-
-        ###Add event  to editab
+        ###Add event  to edit tab
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.onExecuteScript, id= wxID_RIBBONEDITSCRIPTEXECUTE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.OnEditSeries, id= wxID_RIBBONEDITSERIES)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.OnRestore, id= wxID_RIBBONEDITRESTORE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED,  self.OnSave, id= wxID_RIBBONEDITSAVE)
-
-
 
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.OnEditFilter, id= wxID_RIBBONEDITFILTER)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.OnEditChangeValue, id= wxID_RIBBONEDITCHGVALUE)
@@ -270,17 +287,31 @@ class mnuRibbon(RB.RibbonBar):
         ###Ribbon Event
         self.Bind(RB.EVT_RIBBONBAR_PAGE_CHANGED, self.OnFileMenu, id=wxID_PANEL1)
 
+    def OnFileMenu(self, event):
+        if not self.GetActivePage()==0:
+            self.CurrPage = self.GetActivePage()
+
+        if self.GetActivePage()==0:
+            #reset activepage to original
+            self.SetActivePageByIndex(self.CurrPage)
+            menu = wx.Menu()
+            self.Bind(wx.EVT_MENU,  self.onChangeDBConfig, menu.Append(wx.ID_ANY, "Change DB Configuration"))
+            self.Bind(wx.EVT_MENU, self.onClose, menu.Append(wx.ID_ANY, "Close"))
+
+            self.PopupMenu(menu, wx.Point(50, 25))
+        event.Skip()
+
     def OnFullDate(self, event):
-        Publisher.sendMessage(("onDateChanged"), date=datetime.datetime.now(), time = "full")
+        Publisher.sendMessage("onDateChanged", date=datetime.datetime.now(), time="full")
 
     def oneDateChanged(self,event):
         date=event.Date
-        Publisher.sendMessage(("onDateChanged"), date= datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0), time="end")
+        Publisher.sendMessage("onDateChanged", date=datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0), time="end")
         event.Skip()
 
     def onsDateChanged(self,event):
-        date=event.date
-        Publisher.sendMessage(("onDateChanged"), date= datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0), time="start")
+        date=event.Date
+        Publisher.sendMessage("onDateChanged", date=datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0), time="start")
         event.Skip()
 
     def resetDateRange(self, startDate, endDate):
@@ -319,8 +350,10 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def OnEditFilter(self, event):
+        logger.debug("Entered!")
         data_filter = frmDataFilters.frmDataFilter(self, self.parent.getRecordService())
         self.filterlist = data_filter.ShowModal()
+        print "filter_list: ", self.filterlist
         data_filter.Destroy()
         event.Skip()
 
@@ -365,7 +398,6 @@ class mnuRibbon(RB.RibbonBar):
             self.parent.stopEdit()
         event.Skip()
 
-
     def OnNumBins(self, event):
         Publisher.sendMessage(("OnNumBins"), numBins=event.Selection)
         event.Skip()
@@ -382,20 +414,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
 
-    def OnFileMenu(self, event):
 
-        if not self.GetActivePage()==0:
-            self.CurrPage = self.GetActivePage()
-
-        if self.GetActivePage()==0:
-            #reset activepage to original
-            self.SetActivePageByIndex(self.CurrPage)
-            menu = wx.Menu()
-            self.Bind(wx.EVT_MENU,  self.onChangeDBConfig, menu.Append(wx.ID_ANY, "Change DB Configuration"))
-            self.Bind(wx.EVT_MENU, self.onClose, menu.Append(wx.ID_ANY, "Close"))
-
-            self.PopupMenu(menu, wx.Point(50, 25))
-        event.Skip()
 
 
     def onClose(self, event):
@@ -519,7 +538,7 @@ class mnuRibbon(RB.RibbonBar):
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
             self.dpEndDate.Enabled = False
             self.dpStartDate.Enabled= False
-            
+
         #Summary
         elif plot == 4:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
