@@ -4,8 +4,6 @@ import wx
 import wx.grid
 from ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
-import odmdata
-import sqlite3
 
 [wxID_PNLDATATABLE, wxID_PNLDATATABLEDATAGRID,
 ] = [wx.NewId() for _init_ctrls in range(2)]
@@ -20,8 +18,6 @@ class pnlDataTable(wx.Panel):
               parent=prnt,  size=wx.Size(677, 449),
               style=wx.TAB_TRAVERSAL)
         self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)#Virtual
-
-
 
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("")
@@ -41,22 +37,6 @@ class pnlDataTable(wx.Panel):
         Publisher.subscribe(self.OnRefresh, ("refreshTable"))
 
         self.Layout()
-
-    # def Init(self, DVConn):
-    #     self.cursor = DVConn
-    #     sql = "SELECT * FROM DataValuesEdit"
-    #     self.cursor.execute(sql)
-
-    #     self.myOlv.SetColumns( ColumnDefn(x[0], valueGetter=i, minimumWidth=40) for (i,x) in enumerate(self.cursor.description))
-
-    #     #####table Settings
-    #     self.myOlv.useAlternateBackColors = True
-    #     self.myOlv.oddRowsBackColor = "SlateGray"
-    #     self.myOlv.AutoSizeColumns()
-
-
-    #     self.values = [list(x) for x in self.cursor.fetchall()]
-    #     self.myOlv.SetObjects(self.values)
 
 
     def Init(self, dataRep, record_service):
@@ -108,14 +88,13 @@ class pnlDataTable(wx.Panel):
         idlist=[False] * self.dataRep.getEditRowCount()
         for sel in selobjects:
             idlist[self.myOlv.GetIndexOf(sel)]=True
-        # print idlist
+
         return idlist
 
 
     def OnChangeSelection(self, sellist):
         objlist=[]
-        # print sellist
-        # print type(sellist)
+
 
         for i in range(len(sellist)):
             if sellist[i]:
@@ -128,22 +107,6 @@ class pnlDataTable(wx.Panel):
 
     def stopEdit(self):
         self.Clear()
-
-
-# a) Call self.list_ctrl.SetFocus() right after you click the button;
-# b) Change the self._highlightUnfocusedBrush and self._highlightBrush
-# colours in the ULC source code to always return the brush colours you
-# want (not recommended).
-
-
-
-#########self.myOlv.GetCheckedObjects
-#########IsChecked(ModelObject)
-########Uncheck(modelObject), Check(modelObject)
-
-
-
-
 
 
 

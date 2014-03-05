@@ -125,7 +125,7 @@ class frmODMToolsMain(wx.Frame):
                                                                style=wx.TAB_TRAVERSAL, dbservice=self.sc)
 
 
-        ####################grid##################
+        ####################grid Table View##################
         self.dataTable = pnlDataTable.pnlDataTable(id=wxID_ODMTOOLSGRID1, name='dataTable',
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
                                                    style=0)
@@ -160,9 +160,9 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector").
                           Layer(0).Caption('Series Selector').MinSize(wx.Size(100, 200)))
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
-                          Name("Script").Show(show=False).Layer(0).Float().MinSize(wx.Size(200, 200)))
+                          Name("Script").Show(show=False).Layer(0).MinSize(wx.Size(200, 200)))
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-                          Name("Console").Layer(1).Show(show=False).Float())
+                          Name("Console").Layer(1).Show(show=False))
 
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot"))
 

@@ -49,7 +49,7 @@ logging.basicConfig(
  wxID_RIBBONEDITSCRIPTEXECUTE, wxID_RIBBONEDITSCRIPTOPEN, wxID_RIBBONEDITSCRIPTNEW,
  wxID_RIBBONEDITSCRIPTSAVE, wxID_RIBBONVIEWPLOT, wxID_RIBBONVIEWTABLE,
  wxID_RIBBONVIEWSERIES, wxID_RIBBONVIEWCONSOLE, wxID_RIBBONVIEWSCRIPT,
- wxID_RIBBONPLOTDATESTART, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE,
+ wxID_RIBBONPLOTBLANKBTN, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE,
  wxID_FRAME1SPINCTRL1, wxID_RIBBONEDITFILTER, wxID_RIBBONEDITRECORD,
  wxID_RIBBONEDITLINFILTER
  ] = [wx.NewId() for _init_ctrls in range(41)]
@@ -99,13 +99,12 @@ class mnuRibbon(RB.RibbonBar):
         self.PlotsOptions_bar.AddSimpleButton(wxID_RIBBONPLOTTSLEGEND, "Show Legend",
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "legend.png")), help_string="show legend on plot", kind = 0x4)
 
-        self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "# Hist Bins" ,
+        self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTBLANKBTN, "# Hist Bins" ,
                                 wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "blank.png")), "")
 
-        self.PlotsOptions_bar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "# Hist Bins",
-                                wx.Bitmap(g_util.resource_path("images" + g_util.slash()  + "blank.png")), "")
 
-        self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTDATESTART, True)
+        self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBLANKBTN, False)
+
 
         self.spnBins = wx.SpinCtrl(id=wxID_FRAME1SPINCTRL1, initial=50,
               max=100, min=1, name='spnBins', parent=self.PlotsOptions_bar,
@@ -126,13 +125,13 @@ class mnuRibbon(RB.RibbonBar):
         self.dateTime_buttonbar = RB.RibbonButtonBar(dateTime_panel)
 
 
-        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,
-                                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "Blank.png")), "")
-        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,
-                                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "Blank.png")), "")
-        self.dateTime_buttonbar.AddSimpleButton( wxID_RIBBONPLOTDATESTART, "" ,
-                                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "Blank.png")), "")
-        self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATESTART, False)
+        self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTBLANKBTN, "",
+                                        wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "Blank.png")), "")
+        self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTBLANKBTN, "",
+                                        wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "Blank.png")), "")
+        self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTBLANKBTN, "",
+                                        wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "Blank.png")), "")
+        self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTBLANKBTN, False)
 
 
         self.dpStartDate = wx.DatePickerCtrl(id=wxID_STARTDPDATE, name=u'dpStartDate',

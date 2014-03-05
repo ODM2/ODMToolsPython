@@ -202,9 +202,11 @@ class EditService():
         return self._series_service.get_series_by_id(self._series_id)
 
     def get_series_points(self):
+        #all point in the series
         return self._series_points
 
     def get_filtered_points(self):
+        #list of selected points
         tmp = []
         for i in range(len(self._series_points)):
             if self._filter_list[i]:
@@ -213,6 +215,7 @@ class EditService():
         return tmp
 
     def get_filter_list(self):
+        #true or false list the length of the entire series. true indicate the point is selected
         return self._filter_list
 
     def get_qcl(self, qcl_id):

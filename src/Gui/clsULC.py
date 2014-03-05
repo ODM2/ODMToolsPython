@@ -1,6 +1,6 @@
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
-
+##used for Series Selector
 
 class clsULC(ULC.UltimateListCtrl):
     def __init__(self, *args, **kwargs):

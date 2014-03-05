@@ -35,12 +35,17 @@ class RecordService():
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         if self._record:
-            self._script("#Lasso selection\n")  # TODO: write dv datetimes to script
+            print [x[2] for x in self._edit_service.get_filtered_points()]
+            self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))  # TODO: write dv datetimes to script
+
+
 
     def select_points(self, id_list=[], datetime_list=[]):
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
-            self._script("#Lasso selection\n")
+            print [x[2] for x in self._edit_service.get_filtered_points()]
+            self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))  # TODO: write dv datetimes to script
+            #print self._edit_service.get_filtered_points()
 
 
     ###################
@@ -162,6 +167,5 @@ class RecordService():
     def write_header(self):
         self._script("from odmservices import EditService\n", 'black')
         self._script("from odmservices import SeriesService\n", 'black')
-        self._script("edit_service   = EditService(series_id=%s, connection_string='%s')\n" % (
-        self._edit_service._series_id, self._connection_string), 'black')
+        self._script("edit_service  = EditService(series_id={id}, connection_string='{con}')\n".format(id=self._edit_service._series_id, con=self._connection_string), 'black')
         self._script("series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')
