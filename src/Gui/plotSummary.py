@@ -2,8 +2,6 @@
 
 import wx
 import wx.grid
-import numpy
-import math
 
 [wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY, 
 ] = [wx.NewId() for _init_ctrls in range(2)]
@@ -38,13 +36,13 @@ class plotSummary(wx.Panel):
         self._init_sizers()
 
     def Plot(self, seriesPlotInfo):
-        self.Clear()
-        for oneSeries in seriesPlotInfo.GetSeriesInfo():
+        self.clear()
+        for oneSeries in seriesPlotInfo.getSeriesInfo():
             self.addCol( oneSeries)
             
 
 
-    def Clear(self):        
+    def clear(self):
         if self.grdSummary.GetNumberCols()>0:
         # for col in range(self.grdSummary.GetNumberCols())
             self.grdSummary.DeleteCols(pos = 0, numCols = self.grdSummary.GetNumberCols(),  updateLabels = True)
@@ -121,62 +119,6 @@ class plotSummary(wx.Panel):
 
 
 
-
-
-
-
-    # def fillValues(self, cursor, series, Filter, col):
-    #     #SetCellValue(int row, int col, const wxString& s)  
-
-    #     # self.cursor = Values[0] 
-    #     self.cursor = cursor       
-
-
-    #     self.cursor.execute("SELECT DataValue FROM DataValues"+Filter)
-    #     dataValues =[x[0] for x in self.cursor.fetchall()]
-
-    #     self.cursor.execute("SELECT Count(ValueID) FROM DataValues WHERE CensorCode <> 'nc'")
-    #     val= self.cursor.fetchone()[0]
-    #     print(val)
-    #     data= sorted(dataValues)
-    #     count=len(data)
-
-    #     self.grdSummary.SetCellValue(0, col, repr(series.id))  
-    #     self.grdSummary.SetCellValue(1, col, repr(count))        
-    #     self.grdSummary.SetCellValue(2, col, repr(val))
-    #     self.grdSummary.SetCellValue(3, col, repr(round(numpy.mean(data),5)))  
-
-       
-    #     sumval = 0 
-    #     sign = 1 
-    #     for dv in data:
-    #         if dv == 0:
-    #             sumval = sumval+ numpy.log2(1)
-    #         else:
-    #             if dv < 0:
-    #                 sign = sign * -1
-    #             sumval = sumval+ numpy.log2(numpy.absolute(dv))    
-
-    #     if count > 0:
-    #         self.grdSummary.SetCellValue(4, col,  repr(round(sign * (2 ** float(sumval / float(count))),5)))
-    #         self.grdSummary.SetCellValue(5, col, repr(round(max(data),5)))  
-    #         self.grdSummary.SetCellValue(6, col, repr(round(min(data),5))) 
-    #         self.grdSummary.SetCellValue(7, col, repr(round(numpy.std(data),5)))  
-    #         self.grdSummary.SetCellValue(8, col, repr(round(numpy.var(data),5)))
-
-
-    #         ##Percentiles
-    #         self.grdSummary.SetCellValue(10, col, repr(round(data[int(math.floor(count/10))],5)))  
-    #         self.grdSummary.SetCellValue(11, col, repr(round(data[int(math.floor(count/4))],5)))
-
-                 
-    #         if count % 2 == 0 :
-    #             self.grdSummary.SetCellValue(12, col, repr(round((data[int(math.floor((count/2)-1))]+ data[int(count/2)])/2,5)))  
-    #         else:
-    #             self.grdSummary.SetCellValue(12, col, repr(round(data[int(numpy.ceil(count/2))],5)))    
-
-    #         self.grdSummary.SetCellValue(13, col, repr(round(data[int(math.floor(count/4*3))],5)))        
-    #         self.grdSummary.SetCellValue(14, col, repr(round(data[int(math.floor(count/10*9))],5)))
 
         
 

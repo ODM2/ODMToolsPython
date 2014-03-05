@@ -1,15 +1,10 @@
+import textwrap
 
 import wx
-import numpy
-import math
-from wx.lib.pubsub import pub as Publisher
-
 import matplotlib
-import matplotlib.pyplot as plt
-import textwrap
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-from matplotlib.widgets import Lasso
+
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 
@@ -48,7 +43,7 @@ class plotHist(wx.Panel):
       self.toolbar.Realize()
 
 
-      self.SetColor("WHITE")
+      self.setColor("WHITE")
       self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
             False, u'Tahoma'))
 
@@ -60,16 +55,16 @@ class plotHist(wx.Panel):
 
 
 
-  def ChangeNumOfBins(self, bins):
+  def changeNumOfBins(self, bins):
       self.bins = bins
       self.updatePlot()
 
 
-  def Clear(self):
+  def clear(self):
       self.figure.clear()
       self.hist=[]
 
-  def GridSize(self, cells):
+  def gridSize(self, cells):
       rows = 1
       cols = 1
       while rows * cols < cells:
@@ -90,12 +85,12 @@ class plotHist(wx.Panel):
       self.updatePlot()
 
   def updatePlot(self):
-      self.Clear()
+      self.clear()
       count = self.seriesPlotInfo.count()
-      rows, cols = self.GridSize(count)
+      rows, cols = self.gridSize(count)
       self.plots=[]
       i=1
-      for oneSeries in self.seriesPlotInfo.GetSeriesInfo():
+      for oneSeries in self.seriesPlotInfo.getSeriesInfo():
         self.plots.append(self.figure.add_subplot(repr(rows)+repr(cols)+repr(i)))
 
         wrap, text = self.textSize(count)
@@ -114,7 +109,7 @@ class plotHist(wx.Panel):
       self.canvas.draw()
 
 
-  def SetColor( self, color):
+  def setColor( self, color):
       """Set figure and canvas colours to be the same."""
       self.figure.set_facecolor( color )
       self.figure.set_edgecolor( color )

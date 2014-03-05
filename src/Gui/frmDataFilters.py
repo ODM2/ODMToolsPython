@@ -1,9 +1,20 @@
 #Boa:Frame:frmDataFilter
 
 from datetime import datetime
+import logging
+
 import wx
 from wx.lib.pubsub import pub as Publisher
 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+console.setFormatter(
+    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
+)
+logger.addHandler(console)
 
 def create(parent):
     return frmDataFilter(parent)
@@ -133,31 +144,31 @@ class frmDataFilter(wx.Dialog):
               name=u'checkbox', label=u'Filter from previous filter',
               parent=self.panel1, pos=wx.Point(8, 306),
               size=wx.Size(232,25), style=0)
-        self.chkToggleFilterSelection.Bind(wx.EVT_CHECKBOX, self.OnCheckbox,
+        self.chkToggleFilterSelection.Bind(wx.EVT_CHECKBOX, self.onCheckbox,
               id=wxID_FRMDATAFILTERCHKFILTER)
 
         self.btnClear = wx.Button(id=wxID_FRMDATAFILTERBTNCLEAR,
               label=u'Clear Filter', name=u'btnClear', parent=self.panel1,
               pos=wx.Point(8, 335), size=wx.Size(64, 23), style=0)
-        self.btnClear.Bind(wx.EVT_BUTTON, self.OnBtnClearButton,
+        self.btnClear.Bind(wx.EVT_BUTTON, self.onBtnClearButton,
               id=wxID_FRMDATAFILTERBTNCLEAR)
 
         self.btnOK = wx.Button(id=wxID_FRMDATAFILTERBTNOK, label=u'OK',
               name=u'btnOK', parent=self.panel1, pos=wx.Point(128, 335),
               size=wx.Size(48, 23), style=0)
-        self.btnOK.Bind(wx.EVT_BUTTON, self.OnBtnOKButton,
+        self.btnOK.Bind(wx.EVT_BUTTON, self.onBtnOKButton,
               id=wxID_FRMDATAFILTERBTNOK)
 
         self.btnCancel = wx.Button(id=wxID_FRMDATAFILTERBTNCANCEL,
               label=u'Cancel', name=u'btnCancel', parent=self.panel1,
               pos=wx.Point(184, 335), size=wx.Size(48, 23), style=0)
-        self.btnCancel.Bind(wx.EVT_BUTTON, self.OnBtnCancelButton,
+        self.btnCancel.Bind(wx.EVT_BUTTON, self.onBtnCancelButton,
               id=wxID_FRMDATAFILTERBTNCANCEL)
 
         self.btnApply = wx.Button(id=wxID_FRMDATAFILTERBTNAPPLY, label=u'Apply',
               name=u'btnApply', parent=self.panel1, pos=wx.Point(240, 335),
               size=wx.Size(48, 23), style=0)
-        self.btnApply.Bind(wx.EVT_BUTTON, self.OnBtnApplyButton,
+        self.btnApply.Bind(wx.EVT_BUTTON, self.onBtnApplyButton,
               id=wxID_FRMDATAFILTERBTNAPPLY)
 
 
@@ -167,10 +178,10 @@ class frmDataFilter(wx.Dialog):
         self.recordService = series
         self._init_ctrls(parent)
 
-    def OnCheckbox(self, event):
+    def onCheckbox(self, event):
       self.recordService.toggle_filter_previous()
 
-    def OnBtnClearButton(self, event):
+    def onBtnClearButton(self, event):
         self.setDates()
         self.txtThreshValGT.Clear()
         self.txtThreshValLT.Clear()
@@ -181,15 +192,15 @@ class frmDataFilter(wx.Dialog):
 
         Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
 
-    def OnBtnOKButton(self, event):
+    def onBtnOKButton(self, event):
         if not self.is_applied:
-            self.OnBtnApplyButton(event)
+            self.onBtnApplyButton(event)
         self.Close()
 
-    def OnBtnCancelButton(self, event):
+    def onBtnCancelButton(self, event):
         self.Close()
 
-    def OnBtnApplyButton(self, event):
+    def onBtnApplyButton(self, event):
         self.is_applied = True
         if self.rbThreshold.GetValue():
           if self.txtThreshValGT.GetValue():
@@ -219,8 +230,10 @@ class frmDataFilter(wx.Dialog):
     def setDates(self):
       dateAfter = self.recordService.get_series_points()[0][2]
       dateBefore = self.recordService.get_series_points()[-1][2]
-      print "dateAfter: ", dateAfter.day, " + ", dateAfter.month, " + ", dateAfter.year
-      print "dateBefore: ", dateBefore.day, " + ", dateBefore.month, " + ", dateBefore.year
+
+      logger.debug("dateAfter: ", dateAfter.day, " + ", dateAfter.month, " + ", dateAfter.year)
+      logger.debug("dateBefore: ", dateBefore.day, " + ", dateBefore.month, " + ", dateBefore.year)
+
       formattedDateAfter = wx.DateTimeFromDMY(int(dateAfter.day), int(dateAfter.month), int(dateAfter.year), 0, 0, 0)
 
       formattedDateBefore = wx.DateTimeFromDMY(int(dateBefore.day) + 1, int(dateBefore.month), int(dateBefore.year), 0, 0, 0)

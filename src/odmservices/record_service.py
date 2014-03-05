@@ -36,7 +36,7 @@ class RecordService():
         self._edit_service.select_points_tf(tf_list)
         if self._record:
             print [x[2] for x in self._edit_service.get_filtered_points()]
-            self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))  # TODO: write dv datetimes to script
+            self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
 
 
 
@@ -44,7 +44,7 @@ class RecordService():
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
             print [x[2] for x in self._edit_service.get_filtered_points()]
-            self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))  # TODO: write dv datetimes to script
+            self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
             #print self._edit_service.get_filtered_points()
 
 

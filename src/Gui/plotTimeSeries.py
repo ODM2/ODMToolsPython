@@ -108,26 +108,11 @@ class plotTimeSeries(wx.Panel):
     def onDateChanged(self, startDate, endDate):
         self.startDate = startDate
         self.endDate = endDate
-
-        logger.debug("%s to %s" % (self.startDate, self.endDate))
-
-        #self.startDate = self.maxStart
-        #self.endDate = self.maxEnd
-        logger.debug("-------------------------------------")
-        logger.debug("CurrentDates: ")
-        logger.debug("self.startDate: %s %s" % (self.startDate, type(self.startDate)))
-        logger.debug("self.endDate: %s %s" % (self.endDate, type(self.startDate)))
-        #logger.debug("self.maxStart: %s %s" % (self.maxStart, type(self.maxStart)))
-        #logger.debug("self.maxEnd: %s %s" % (self.maxEnd, type(self.maxEnd)))
-        logger.debug("self.startDate.date() == self.endDate.date(): %s " %
-                     (self.startDate.date() == self.endDate.date()))
-        logger.debug("-------------------------------------")
-
         self.timeSeries.axis.axes.set_xbound(startDate, endDate)
         self.canvas.draw()
 
 
-    def set_date_bound(self, start, end):
+    def setDateBound(self, start, end):
         if start > self.maxStart:
             self.startDate = self.maxStart = start
         if end < self.maxEnd:
@@ -135,7 +120,7 @@ class plotTimeSeries(wx.Panel):
         Publisher.sendMessage(("resetdate"), startDate=self.maxStart, endDate=self.maxEnd)
 
 
-    def OnShowLegend(self, isVisible):
+    def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
         if isVisible:
             plt.subplots_adjust(bottom=.1 + .1)
@@ -148,7 +133,7 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
 
 
-    def OnPlotType(self, ptype):
+    def onPlotType(self, ptype):
         # self.timeSeries.clear()
         if ptype == "line":
             ls = '-'
@@ -167,8 +152,8 @@ class plotTimeSeries(wx.Panel):
 
         self.canvas.draw()
 
-
-    def Clear(self):
+#clear plot
+    def clear(self):
         lines = []
         for key, ax in self.axislist.items():
             ax.clear()
@@ -176,7 +161,7 @@ class plotTimeSeries(wx.Panel):
 
 
     def stopEdit(self):
-        self.Clear()
+        self.clear()
         self.selectedlist = None
         self.editPoint = None
         self.lman = None
@@ -189,7 +174,7 @@ class plotTimeSeries(wx.Panel):
         self.curveindex = -1
         self.editCurve = None
         # self.RefreshPlot()
-        if self.seriesPlotInfo and self.seriesPlotInfo.IsPlotted(self.editseriesID):
+        if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.updatePlot()
         self.editseriesID = -1
 
@@ -206,8 +191,8 @@ class plotTimeSeries(wx.Panel):
 
 
         #redraw editpoints and curve
-        self.seriesPlotInfo.UpdateEditSeries()
-        self.editCurve = self.seriesPlotInfo.GetEditSeriesInfo()
+        self.seriesPlotInfo.updateEditSeries()
+        self.editCurve = self.seriesPlotInfo.getEditSeriesInfo()
         self.drawEditPlot(self.editCurve)
         Publisher.sendMessage(("refreshTable"), e=None)
         # self.parent.parent.dataTable.Refresh()
@@ -239,7 +224,7 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetBackgroundColour(color)
 
 
-    def Close(self):
+    def close(self):
         plt.close()
 
 
@@ -249,16 +234,16 @@ class plotTimeSeries(wx.Panel):
 
 
     def updatePlot(self):
-        self.Clear()
+        self.clear()
         count = self.seriesPlotInfo.count()
         self.lines = []
 
         # self.timeSeries=self.canvas.add_subplot(111)
         self.setUpYAxis()
 
-        for oneSeries in self.seriesPlotInfo.GetSeriesInfo():
+        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
             #is this the series to be edited
-            if oneSeries.seriesID == self.seriesPlotInfo.GetEditSeriesID():
+            if oneSeries.seriesID == self.seriesPlotInfo.getEditSeriesID():
 
                 self.curveindex = len(self.lines)
                 self.lines.append("")
@@ -272,7 +257,7 @@ class plotTimeSeries(wx.Panel):
                                        self.format, color=oneSeries.color, xdate=True, tz=None,
                                        label=oneSeries.plotTitle))
 
-            self.set_date_bound(oneSeries.dataTable[1][1], oneSeries.dataTable[-1][1])
+            self.setDateBound(oneSeries.dataTable[1][1], oneSeries.dataTable[-1][1])
         if count > 1:
             # self.timeSeries.set_title("Multiple Series plotted")
             self.timeSeries.set_title("")
@@ -297,8 +282,8 @@ class plotTimeSeries(wx.Panel):
 
     def setEdit(self, id):
         self.editseriesID = id
-        if self.seriesPlotInfo and self.seriesPlotInfo.IsPlotted(self.editseriesID):
-            self.editCurve = self.seriesPlotInfo.GetSeries(self.editseriesID)
+        if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
+            self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
             self.updatePlot()
             # print self.editCurve
 
@@ -309,7 +294,7 @@ class plotTimeSeries(wx.Panel):
         right = 0
         adj = .05
         #loop through the list of curves and add an axis for each
-        for oneSeries in self.seriesPlotInfo.GetSeriesInfo():
+        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
             #test to see if the axis already exists
             if not oneSeries.axisTitle in self.axislist:
                 self.axislist[oneSeries.axisTitle] = None

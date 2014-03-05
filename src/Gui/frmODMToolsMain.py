@@ -104,7 +104,7 @@ class frmODMToolsMain(wx.Frame):
         Publisher.subscribe(self.onExecuteScript, ("execute.script"))
         Publisher.subscribe(self.onChangeDBConn, ("change.dbConfig"))
         Publisher.subscribe(self.onSetScriptTitle, ("script.title"))
-        Publisher.subscribe(self.OnClose, ("onClose"))
+        Publisher.subscribe(self.onClose, ("onClose"))
 
 
         ############### Ribbon ###################
@@ -170,7 +170,7 @@ class frmODMToolsMain(wx.Frame):
 
         self._mgr.Update()
 
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.Bind(wx.EVT_CLOSE, self.onClose)
 
         self._init_sizers()
         self._ribbon.Realize()
@@ -195,10 +195,10 @@ class frmODMToolsMain(wx.Frame):
     def onPlotSelection(self, value):
         self.pnlPlot.selectPlot(value)
 
-    def addPlot(self, dataRep, seriesID):
-        #datarepository
-        self.pnlPlot.addPlot(dataRep, seriesID)
-        self._ribbon.enableButtons(self.pnlPlot.getActivePlotID())
+    def addPlot(self, memDB, seriesID):
+        #Memory Database
+        self.pnlPlot.addPlot(memDB, seriesID)
+        self._ribbon.enableButtons(self.pnlPlot.getActivePlotID)
 
     def onSetScriptTitle(self, title):
         scriptPane = self._mgr.GetPane(self.txtPythonScript)
@@ -212,7 +212,7 @@ class frmODMToolsMain(wx.Frame):
         self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
                                                                       connection=memDB.conn)
         self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
-        self.dataTable.Init(memDB, self.record_service)
+        self.dataTable.init(memDB, self.record_service)
         self._ribbon.toggleEditButtons(True)
 
         # set record service for console
@@ -239,12 +239,12 @@ class frmODMToolsMain(wx.Frame):
             #clear all plots
             self.pnlPlot.Clear()
             #clear table
-            self.dataTable.Clear()
+            self.dataTable.clear()
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
 
-    def GetDBService(self):
+    def getDBService(self):
         return self.service_manager
 
     def toggleConsoleTools(self):
@@ -265,7 +265,7 @@ class frmODMToolsMain(wx.Frame):
 
         self._mgr.LoadPerspective(f.read(), True)
 
-    def OnClose(self, event):
+    def onClose(self, event):
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:

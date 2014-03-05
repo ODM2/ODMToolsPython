@@ -16,10 +16,10 @@ class clsULC(ULC.UltimateListCtrl):
         ULC.UltimateListCtrl.__init__(self, *args, **kwargs)
 
 
-    def Clear(self):
-        self.EmptyTable()
+    def clear(self):
+        self.emptyTable()
 
-    def SetColumns(self, columns):
+    def setColumns(self, columns):
         # self.columns = columns
         # # for c in columns:
         # 	self.columns.append(c)
@@ -40,9 +40,9 @@ class clsULC(ULC.UltimateListCtrl):
                 self.InsertColumn(col=colnum, format=wx.LIST_FORMAT_LEFT,
                                   heading=c, width=140)
 
-    def EmptyTable(self):
+    def emptyTable(self):
         self.ModelObjects = None
-        self.RepopulateList()
+        self.repopulateList()
 
     # def SetCursor(self, cursor):
     # 	self.cursor = cursor
@@ -52,21 +52,21 @@ class clsULC(ULC.UltimateListCtrl):
     # 	self.cursor.execute(sql)
     # 	self.SetObjects(self.cursor.fetchall())
 
-    def SetObjects(self, modelObjects):
+    def setObjects(self, modelObjects):
         self.modelObjects = modelObjects
-        self.RepopulateList()
+        self.repopulateList()
 
 
-    def _BuildInnerList(self):
+    def _buildInnerList(self):
         if self.filter:
             self.innerList = self.filter(self.modelObjects)
         else:
             self.innerList = self.modelObjects
 
 
-    def RepopulateList(self):
+    def repopulateList(self):
         self.DeleteAllItems()
-        self._BuildInnerList()
+        self._buildInnerList()
 
         for series in self.innerList:
             ind = self.GetItemCount()
@@ -80,11 +80,11 @@ class clsULC(ULC.UltimateListCtrl):
         self.Select(0, True)
 
 
-    def GetSelection(self):
+    def getSelection(self):
         #returns the one highlighted row in the table
         return self.GetFirstSelected()
 
-    def GetObjectAt(self, index):
+    def getObjectAt(self, index):
         return self.innerList[index]
 
     # 	def GetObjectAt(self, index):
@@ -101,43 +101,43 @@ class clsULC(ULC.UltimateListCtrl):
     # def RemoveCheckedItem(self, id):
     # 	pass
 
-    def GetChecked(self):
+    def getChecked(self):
         #returns a list of the checked ids
         return [x[0] for x in modelObjects if x[-1]]
 
-    def CheckItem(self, index):
+    def checkItem(self, index):
         self.innerList[index][-1] = 1
-        self._mainWin.CheckItem(self.GetItem(index, 0), True, False)
+        self._mainWin.CheckItem(self.getItem(index, 0), True, False)
 
 
-    def GetColumnText(self, index, colid):
+    def getColumnText(self, index, colid):
         # print self.GetItemData(index)
         item = self.GetItem(index, colid)
         # print item
         return item.GetText()
 
-    def GetStringValue(self, col, modelObject=None, row=None):
+    def getStringValue(self, col, modelObject=None, row=None):
         if modelObject:
             return modelObject[self.getColID(col['title'])]
         else:
             return self.modelObjects[row][self.getColID(col['title'])]
 
-    def SetStringValue(self, col, Value, modelObject=None, row=None):
+    def setStringValue(self, col, Value, modelObject=None, row=None):
         if modelObject:
             modelObject[self.getColID(col['title'])] = Value
         else:
             self.modelObjects[row][self.getColID(col['title'])] = Value
 
-    def GetFilter(self):
+    def getFilter(self):
         return self.filter
 
-    def GetFilteredObjects(self):
+    def getFilteredObjects(self):
         return self.innerList
 
-    def SetFilter(self, filter):
+    def setFilter(self, filter):
         self.filter = filter
 
-    def ClearFilter(self):
+    def clearFilter(self):
         self.filter = None
 
     def getColID(self, element):
@@ -464,7 +464,7 @@ class TextSearch(object):
 
         return [x for x in modelObjects if _containsText(x)]
 
-    def SetText(self, text):
+    def setText(self, text):
         self.text = text
 
 

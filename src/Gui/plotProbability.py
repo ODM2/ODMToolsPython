@@ -1,17 +1,13 @@
+import textwrap
 
 import wx
-
-from wx.lib.pubsub import pub as Publisher
-
 import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-from matplotlib.widgets import Lasso
-from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 import matplotlib.pyplot as plt
-import mpl_toolkits.axisartist as AA
 from matplotlib.font_manager import FontProperties
-import textwrap
+
+from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 
 class plotProb(wx.Panel):
@@ -31,7 +27,7 @@ class plotProb(wx.Panel):
       self.SetSizer(self.boxSizer1)
    
    
-  def Clear(self):
+  def clear(self):
     self.plot.clear()
 
   def _init_ctrls(self, prnt):
@@ -52,7 +48,7 @@ class plotProb(wx.Panel):
        
       #self.canvas.SetCursor(wx.StockCursor(wx.CURSOR_CROSS))        
       #self.canvas.SetScrollbar(wx.HORIZONTAL, 0,5, 1000)
-      self.SetColor("WHITE")
+      self.setColor("WHITE")
       self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
             False, u'Tahoma'))
 
@@ -65,7 +61,7 @@ class plotProb(wx.Panel):
       self._init_sizers()
 
    
-  def OnPlotType(self, ptype):
+  def onPlotType(self, ptype):
     # self.timeSeries.clear()
     if ptype == "line":
       ls = '-'
@@ -84,7 +80,7 @@ class plotProb(wx.Panel):
 
     self.canvas.draw()
 
-  def OnShowLegend(self, isVisible):
+  def onShowLegend(self, isVisible):
     # print self.timeSeries.show_legend
     if isVisible:
       plt.subplots_adjust(bottom=.1+.1)
@@ -104,11 +100,11 @@ class plotProb(wx.Panel):
 
 
   def updatePlot(self):
-      self.Clear() 
+      self.clear()
       count = self.seriesPlotInfo.count()   
       self.lines=[]
       self.plot=self.figure.add_subplot(111)
-      for oneSeries in self.seriesPlotInfo.GetSeriesInfo():
+      for oneSeries in self.seriesPlotInfo.getSeriesInfo():
 
         self.plot.set_xlabel("Cumulative Frequency < Stated Value %")
         if count > 1: 
@@ -159,8 +155,8 @@ class plotProb(wx.Panel):
       self.Xaxis = []
       for it in range (0, length):
           #curValue = datavalues[it]
-          curFreq= self.CalcualteProbabilityFreq(it+1, length)
-          curX = self.CalculateProbabilityXPosition(curFreq)
+          curFreq= self.calcualteProbabilityFreq(it+1, length)
+          curX = self.calculateProbabilityXPosition(curFreq)
           #self.Yaxis.append(curValue)
           self.Xaxis.append(curX)
       
@@ -194,20 +190,20 @@ class plotProb(wx.Panel):
       self.plot.set_xbound(-4,4)
  
    
-  def SetColor( self, color):
+  def setColor( self, color):
       """Set figure and canvas colours to be the same."""        
       self.figure.set_facecolor( color )
       self.figure.set_edgecolor( color )
       self.canvas.SetBackgroundColour( color )
 
-  def CalculateProbabilityXPosition(self, freq):
+  def calculateProbabilityXPosition(self, freq):
       try:
         return round(4.91*((freq **.14) -(1.00 - freq)**.14), 3)
       except:
         print "An error occurred while calculating the X-Position for a point in the prob plot"
         pass
 
-  def CalcualteProbabilityFreq(self, rank, numRows):     
+  def calcualteProbabilityFreq(self, rank, numRows):
       try:
         return round((rank - .0375)/(numRows+1-(2*0.375)), 3)
       except:
@@ -221,14 +217,3 @@ class plotProb(wx.Panel):
       self._init_ctrls(parent)
 
 
-class plotData (object):
-  def __init__(self, sID, dValues, dTimes,  ylabel, title, color ):
-    self.SeriesID= sID
-    self.DataValues = dValues
-    self.DateTimes=dTimes
-
-    self.startDate= min(dTimes)
-    self.endDate=max(dTimes)
-    self.ylabel = ylabel
-    self.title = title
-    self.color = color

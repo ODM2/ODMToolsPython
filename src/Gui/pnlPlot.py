@@ -5,69 +5,68 @@ from wx.lib.pubsub import pub as Publisher
 
 try:
     from agw import flatnotebook as fnb
-except ImportError: # if it's not there locally, try the wxPython lib.
+except ImportError:  # if it's not there locally, try the wxPython lib.
     import wx.lib.agw.flatnotebook as fnb
 
 import matplotlib
+
 matplotlib.use('WXAgg')
 import plotTimeSeries
 import plotSummary
 import plotHistogram
 import plotBoxWhisker
 import plotProbability
-from clsPlotOptions import PlotOptions, OneSeriesPlotInfo, SeriesPlotInfo
+from clsPlotOptions import PlotOptions, SeriesPlotInfo
 
 [wxID_PANEL1, wxID_PAGEBOX, wxID_PAGEHIST, wxID_PAGEPROB,
-wxID_PAGESUMMARY, wxID_PAGETIMESERIES, wxID_TABPLOTS
+ wxID_PAGESUMMARY, wxID_PAGETIMESERIES, wxID_TABPLOTS
 ] = [wx.NewId() for _init_ctrls in range(7)]
 
 
 class pnlPlot(fnb.FlatNotebook):
-
     def _init_ctrls(self, parent):
         fnb.FlatNotebook.__init__(self, id=wxID_TABPLOTS, name=u'tabPlots',
-              parent=parent, pos=wx.Point(0, 0), size=wx.Size(491, 288),
-              agwStyle=fnb.FNB_NODRAG | fnb.FNB_HIDE_TABS)
+                                  parent=parent, pos=wx.Point(0, 0), size=wx.Size(491, 288),
+                                  agwStyle=fnb.FNB_NODRAG | fnb.FNB_HIDE_TABS)
         # style |= fnb.FNB_HIDE_TABS
         # self.book.SetAGWWindowStyleFlag(style)
 
         self.pltTS = plotTimeSeries.plotTimeSeries(id=wxID_PAGETIMESERIES, name='pltTS',
-                parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
-                style=wx.TAB_TRAVERSAL)
+                                                   parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
+                                                   style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltTS, 'TimeSeries')
 
         self.pltProb = plotProbability.plotProb(id=wxID_PAGEPROB, name='pltProb',
-                parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
-                style=wx.TAB_TRAVERSAL)
+                                                parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
+                                                style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltProb, 'Probablity')
 
         self.pltHist = plotHistogram.plotHist(id=wxID_PAGEHIST, name='pltHist',
-                parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
-                style=wx.TAB_TRAVERSAL)
+                                              parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
+                                              style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltHist, 'Histogram')
 
-        self.pltBox = plotBoxWhisker.plotBox(id=wxID_PAGEBOX, name='pltBox',
-                parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
-                style=wx.TAB_TRAVERSAL)
+        self.pltBox = plotBoxWhisker.PlotBox(id=wxID_PAGEBOX, name='pltBox',
+                                             parent=self, pos=wx.Point(0, 0), size=wx.Size(605, 458),
+                                             style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltBox, 'Box/Whisker')
 
-        self.pltSum = plotSummary.plotSummary( id = wxID_PAGESUMMARY, name=u'pltSum',
-              parent=self, pos=wx.Point(784, 256), size=wx.Size(437, 477),
-              style=wx.TAB_TRAVERSAL)
+        self.pltSum = plotSummary.plotSummary(id=wxID_PAGESUMMARY, name=u'pltSum',
+                                              parent=self, pos=wx.Point(784, 256), size=wx.Size(437, 477),
+                                              style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltSum, 'Summary')
 
         Publisher.subscribe(self.onDateChanged, ("onDateChanged"))
-        Publisher.subscribe(self.OnPlotType, ("onPlotType"))
-        Publisher.subscribe(self.OnShowLegend, ("OnShowLegend"))
-        Publisher.subscribe(self.OnNumBins, ("OnNumBins"))
-        Publisher.subscribe(self.OnRemovePlot, ("removePlot"))
-        Publisher.subscribe(self.OnChangeSelection, ("changePlotSelection"))
-        Publisher.subscribe(self.OnChangeSelectionDT, ("changePlotSelectionDT"))
+        Publisher.subscribe(self.onPlotType, ("onPlotType"))
+        Publisher.subscribe(self.onShowLegend, ("onShowLegend"))
+        Publisher.subscribe(self.onNumBins, ("onNumBins"))
+        Publisher.subscribe(self.onRemovePlot, ("removePlot"))
+        Publisher.subscribe(self.onChangeSelection, ("changePlotSelection"))
+        Publisher.subscribe(self.onChangeSelectionDT, ("changePlotSelectionDT"))
         Publisher.subscribe(self.onUpdateValues, ("updateValues"))
 
-
         self.selectedSerieslist = []
-        self._seriesPlotInfo= None
+        self._seriesPlotInfo = None
         self.editID = None
 
 
@@ -75,88 +74,91 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.updateValues()
 
 
-    def OnChangeSelection(self, sellist):
-      self.pltTS.changeSelection(sellist)
+    def onChangeSelection(self, sellist):
+        self.pltTS.changeSelection(sellist)
 
-    def OnChangeSelectionDT(self, sellist):
-      self.pltTS.changeSelectionDT(sellist)
+    def onChangeSelectionDT(self, sellist):
+        self.pltTS.changeSelectionDT(sellist)
 
-    def OnRemovePlot(self, seriesID):
+    def onRemovePlot(self, seriesID):
 
-      # self.selectedSerieslist.remove(seriesID)
-      self._seriesPlotInfo.Update(seriesID, False)
-      self.pltTS.Plot(self._seriesPlotInfo)
-      self.pltSum.Plot(self._seriesPlotInfo)
-      self.pltBox.Plot(self._seriesPlotInfo)
-      self.pltHist.Plot(self._seriesPlotInfo)
-      self.pltProb.Plot(self._seriesPlotInfo)
+        # self.selectedSerieslist.remove(seriesID)
+        self._seriesPlotInfo.update(seriesID, False)
+        self.pltTS.Plot(self._seriesPlotInfo)
+        self.pltSum.Plot(self._seriesPlotInfo)
+        self.pltBox.Plot(self._seriesPlotInfo)
+        self.pltHist.Plot(self._seriesPlotInfo)
+        self.pltProb.Plot(self._seriesPlotInfo)
 
-    def OnNumBins(self , numBins):
-      self.pltHist.ChangeNumOfBins(numBins)
+    def onNumBins(self, numBins):
+        self.pltHist.changeNumOfBins(numBins)
 
     def onDateChanged(self, startDate, endDate):
-      self.pltTS.onDateChanged(startDate, endDate)
+        self.pltTS.onDateChanged(startDate, endDate)
 
-    def OnPlotType(self, event, ptype):
-      self.pltTS.OnPlotType(ptype)
-      self.pltProb.OnPlotType(ptype)
+    def onPlotType(self, event, ptype):
+        self.pltTS.onPlotType(ptype)
+        self.pltProb.onPlotType(ptype)
 
 
-    def OnShowLegend(self, event, isVisible):
-      self.pltTS.OnShowLegend(isVisible)
-      self.pltProb.OnShowLegend(isVisible)
+    def onShowLegend(self, event, isVisible):
+        self.pltTS.onShowLegend(isVisible)
+        self.pltProb.onShowLegend(isVisible)
 
     def stopEdit(self):
-        self._seriesPlotInfo.StopEditSeries()
+        self._seriesPlotInfo.stopEditSeries()
         self.editID = None
         self.pltTS.stopEdit()
 
-    def addEditPlot(self, dataRep, seriesID, record_service):
+    def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
         if not self._seriesPlotInfo:
             options = PlotOptions("Both", 0, False, False, True)
-            self._seriesPlotInfo= SeriesPlotInfo(dataRep, options )
-        self.editID= seriesID
-        self._seriesPlotInfo.SetEditSeries(self.editID)
+            self._seriesPlotInfo = SeriesPlotInfo(memDB, options)
+        self.editID = seriesID
+        self._seriesPlotInfo.setEditSeries(self.editID)
         self.pltTS.setEdit(self.editID)
 
-    def addPlot(self, dataRep, seriesID):
+    def addPlot(self, memDB, seriesID):
 
         if not self._seriesPlotInfo:
             options = PlotOptions("Both", 0, False, False, True)
-            self._seriesPlotInfo= SeriesPlotInfo(dataRep, options )
+            self._seriesPlotInfo = SeriesPlotInfo(memDB, options)
 
-        self._seriesPlotInfo.Update(seriesID, True)
+        self._seriesPlotInfo.update(seriesID, True)
         self.selectedSerieslist.append(seriesID)
 
         self.pltSum.Plot(self._seriesPlotInfo)
-        self.pltHist.Plot(self._seriesPlotInfo)
         self.pltProb.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)
+        self.pltHist.Plot(self._seriesPlotInfo)
+
         self.pltTS.Plot(self._seriesPlotInfo)
 
     #     self.PlotGraph()
     def selectPlot(self, value):
+        #select the corresponding page of the notebook
         self.SetSelection(value)
 
     def getActivePlotID(self):
         return self.GetSelection()
 
-    def Close(self):
-        self.pltTS.Close()
+    def close(self):
+        self.pltTS.close()
 
-    def Clear(self):
-        self.pltSum.Clear()
-        self.pltHist.Clear()
-        self.pltProb.Clear()
-        self.pltBox.Clear()
-        self.pltTS.Clear()
-        self._seriesPlotInfo= None
-##    def get_edit_metadata(self)
+    def clear(self):
+        self.pltSum.clear()
+        self.pltHist.clear()
+        self.pltProb.clear()
+        self.pltBox.clear()
+        self.pltTS.clear()
+        self._seriesPlotInfo = None
+
+    ##    def get_edit_metadata(self)
 
 
 
 
-    def __init__(self, parent, id,  size, style, name, pos= None):
+    def __init__(self, parent, id, size, style, name, pos=None):
         self._init_ctrls(parent)
         self.parent = parent

@@ -66,20 +66,20 @@ class OneSeriesPlotInfo(object):
 
 
     def getPlotOptions(self):
-        return self.plot_options
+        return self.plotOptions
 
 class SeriesPlotInfo(object):
     # self._siteDisplayColumn = ""
 
-    def __init__(self, dbConn,  plotOptions):#siteDisplayColumn,
+    def __init__(self, memDB,  plotOptions):#siteDisplayColumn,
         # self._siteDisplayColumn = siteDisplayColumn
         self._plotOptions= plotOptions
-        #dbConn is a connection to the memory_database
-        self.dbConn= dbConn
+        #memDB is a connection to the memory_database
+        self.memDB= memDB
         self._seriesInfos = {}
         self.editID= None
 
-    def SetEditSeries(self, seriesID):
+    def setEditSeries(self, seriesID):
         self.editID = int(seriesID)
         if self.editID in self._seriesInfos:
             self._seriesInfos[self.editID].edit = True
@@ -89,30 +89,30 @@ class SeriesPlotInfo(object):
                                                    "" \
                                                    "    Black"
 
-    def UpdateEditSeries(self):
+    def updateEditSeries(self):
         if self.editID in self._seriesInfos:
-            self._seriesInfos[self.editID].dataTable= self.dbConn.getEditDataValuesforGraph()
+            self._seriesInfos[self.editID].dataTable= self.memDB.getEditDataValuesforGraph()
 
 
-    def IsPlotted(self, sid ):
+    def isPlotted(self, sid ):
         if int(sid) in self._seriesInfos:
             return True
         else:
             return False
 
-    def GetEditSeriesID(self):
+    def getEditSeriesID(self):
         if self.editID:
             return int(self.editID)
         else: return None
 
-    def StopEditSeries(self):
+    def stopEditSeries(self):
         if self.editID in self._seriesInfos:
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
         self.editID = None
 
 
-    def GetEditSeriesInfo(self):
+    def getEditSeriesInfo(self):
         if self.editID and (self.editID in self._seriesInfos):
             return self._seriesInfos[self.editID]
         else:
@@ -122,7 +122,7 @@ class SeriesPlotInfo(object):
     def count(self):
         return len(self._seriesInfos)
 
-    def Update(self, e, isselected):
+    def update(self, e, isselected):
         if not isselected :
             del self._seriesInfos[e]
         else:
@@ -133,25 +133,25 @@ class SeriesPlotInfo(object):
     #     for key, value in enumerate(self._seriesInfos):
     #         self._seriesInfos[key]=None
 
-    def SetBoxInterval(self, title):
+    def setBoxInterval(self, title):
         self._plotOptions.boxWhiskerMethod = title
         for key, value in self._seriesInfos.items():
             value.BoxWhisker.setInterval(title)
 
-    def GetSeriesIDs(self):
+    def getSeriesIDs(self):
         return self._seriesInfos.keys()
 
-    def GetSeries(self, seriesID):
+    def getSeries(self, seriesID):
         if seriesID in self._seriesInfos:
             return self._seriesInfos[seriesID]
         else:
             return None
 
-    def GetSeriesInfo(self):
+    def getSeriesInfo(self):
 
         lst = []#of length len(seriesInfos)
 
-        for key in self.GetSeriesIDs():
+        for key in self.getSeriesIDs():
 
             #if the current series is not already in the list
             seriesInfo = self._seriesInfos[key]
@@ -164,7 +164,7 @@ class SeriesPlotInfo(object):
 
 
                 seriesID = key
-                series =  self.dbConn.series_service.get_series_by_id(seriesID)
+                series =  self.memDB.series_service.get_series_by_id(seriesID)
                 strStartDate= series.begin_date_time#self._plotOptions._startDateTime
                 strEndDate = series.end_date_time#self._plotOptions._endDateTime#+1 day - 1 millisecond
                 variableName = series.variable_name
@@ -173,9 +173,9 @@ class SeriesPlotInfo(object):
                 dataType = series.data_type
                 noDataValue = series.variable.no_data_value
                 if self.editID == seriesID:
-                    data = self.dbConn.getEditDataValuesforGraph()
+                    data = self.memDB.getEditDataValuesforGraph()
                 else:
-                    data = self.dbConn.getDataValuesforGraph(seriesID, repr(noDataValue), strStartDate.strftime('%y-%m-%d %H:%M:%S'), strEndDate.strftime('%y-%m-%d %H:%M:%S'))
+                    data = self.memDB.getDataValuesforGraph(seriesID, repr(noDataValue), strStartDate.strftime('%y-%m-%d %H:%M:%S'), strEndDate.strftime('%y-%m-%d %H:%M:%S'))
 
                 seriesInfo.seriesID = seriesID
                 seriesInfo.series = series
@@ -356,19 +356,19 @@ class Probability(object):
 
         for it in range (length):
           #curValue = datavalues[it]
-          curFreq= self.CalcualteProbabilityFreq(it+1, length)
-          curX = self.CalculateProbabilityXPosition(curFreq)
+          curFreq= self.calcualteProbabilityFreq(it+1, length)
+          curX = self.calculateProbabilityXPosition(curFreq)
           #self.Yaxis.append(curValue)
           self.Xaxis.append(curX)
 
-    def CalculateProbabilityXPosition(self, freq):
+    def calculateProbabilityXPosition(self, freq):
       try:
         return round(4.91*((freq **.14) -(1.00 - freq)**.14), 3)
       except:
         print "An error occurred while calculating the X-Position for a point in the prob plot"
         pass
 
-    def CalcualteProbabilityFreq(self, rank, numRows):
+    def calcualteProbabilityFreq(self, rank, numRows):
       try:
         return round((rank - .0375)/(numRows+1-(2*0.375)), 3)
       except:
