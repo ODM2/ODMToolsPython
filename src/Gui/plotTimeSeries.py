@@ -348,9 +348,7 @@ class plotTimeSeries(wx.Panel):
         self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
         # acquire a lock on the widget drawing
         self.canvas.widgetlock(self.lasso)
-        self.canvas.draw_idle()
-        self.canvas.widgetlock.release(self.lasso)
-        del self.lasso
+
 
 
     def _onMotion(self, event):

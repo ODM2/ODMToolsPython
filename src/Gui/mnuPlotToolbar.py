@@ -1,8 +1,10 @@
+import os
+
 import wx
-import sys, os
-import gui_utils as g_util
-from clsPlatform import clsPlatform as plt
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
+
+import gui_utils as g_util
+
 
 class MyCustomToolbar(NavigationToolbar): 
 

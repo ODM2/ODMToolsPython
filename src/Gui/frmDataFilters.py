@@ -67,6 +67,7 @@ class frmDataFilter(wx.Dialog):
         self.sbDate.SetFont(wx.Font(8, wx.SWISS, wx.NORMAL, wx.BOLD, False,
               u'MS Shell Dlg 2'))
 
+
         self.rbThreshold = wx.RadioButton(id=wxID_FRMDATAFILTERRBTHRESHOLD,
               label=u'', name=u'rbThreshold', parent=self.panel1,
               pos=wx.Point(8, 8), size=wx.Size(16, 13), style=0)
@@ -98,10 +99,12 @@ class frmDataFilter(wx.Dialog):
         self.txtThreshValGT = wx.TextCtrl(id=wxID_FRMDATAFILTERTXTTHRESHVALGT,
               name=u'txtThreshValGT', parent=self.panel1, pos=wx.Point(72, 24),
               size=wx.Size(200, 21), style=0, value='')
+        self.txtThreshValGT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
 
         self.txtThreshValLT = wx.TextCtrl(id=wxID_FRMDATAFILTERTXTTHRESVALLT,
               name=u'txtThresValLT', parent=self.panel1, pos=wx.Point(72, 48),
               size=wx.Size(200, 21), style=0, value='')
+        self.txtThreshValLT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
 
         self.lblGapValue = wx.StaticText(id=wxID_FRMDATAFILTERLBLGAPVALUE,
               label=u'Value:', name=u'lblGapValue', parent=self.panel1,
@@ -114,11 +117,13 @@ class frmDataFilter(wx.Dialog):
         self.txtGapsVal = wx.TextCtrl(id=wxID_FRMDATAFILTERTXTGAPSVAL,
               name=u'txtGapsVal', parent=self.panel1, pos=wx.Point(80, 104),
               size=wx.Size(192, 21), style=0, value='')
+        self.txtGapsVal.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
 
         self.cbGapTime = wx.ComboBox(choices=['second', 'minute', 'hour',
               'day'], id=wxID_FRMDATAFILTERCBGAPTIME, name=u'cbGapTime',
               parent=self.panel1, pos=wx.Point(96, 128), size=wx.Size(176, 21),
               style=0, value='second')
+        self.cbGapTime.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
 
         self.lblDateAfter = wx.StaticText(id=wxID_FRMDATAFILTERLBLDATEAFTER,
               label=u'After:', name=u'lblDateAfter', parent=self.panel1,
@@ -131,14 +136,17 @@ class frmDataFilter(wx.Dialog):
         self.dpAfter = wx.DatePickerCtrl(id=wxID_FRMDATAFILTERDBAFTER,
               name=u'dbAfter', parent=self.panel1, pos=wx.Point(24, 248),
               size=wx.Size(248, 21), style=wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+        self.dpAfter.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
 
         self.dpBefore = wx.DatePickerCtrl(id=wxID_FRMDATAFILTERDPBEFORE,
               name=u'dpBefore', parent=self.panel1, pos=wx.Point(24, 200),
               size=wx.Size(248, 21), style=wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+        self.dpBefore.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
 
         self.txtVChangeThresh = wx.TextCtrl(id=wxID_FRMDATAFILTERTXTVCHANGETHRESH,
               name=u'changeThresh', parent=self.panel1, pos=wx.Point(168, 280),
               size=wx.Size(100, 21), style=0, value='')
+        self.txtVChangeThresh.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
 
         self.chkToggleFilterSelection = wx.CheckBox(id=wxID_FRMDATAFILTERCHKFILTER,
               name=u'checkbox', label=u'Filter from previous filter',
@@ -180,6 +188,24 @@ class frmDataFilter(wx.Dialog):
 
     def onCheckbox(self, event):
       self.recordService.toggle_filter_previous()
+
+
+    def onSetFocus(self, event):
+        logger.debug("event ed : %s"%repr(event.Id))
+
+        #DateRAnge
+        if event.Id in (wxID_FRMDATAFILTERDBAFTER, wxID_FRMDATAFILTERDPBEFORE):
+            self.rbDate.SetValue(True)
+        #Data Gaps
+        elif event.Id in ( wxID_FRMDATAFILTERTXTGAPSVAL, wxID_FRMDATAFILTERCBGAPTIME):
+            self.rbDataGaps.SetValue(True)
+        #Value Threshold
+        elif event.Id in (wxID_FRMDATAFILTERTXTTHRESVALLT, wxID_FRMDATAFILTERTXTTHRESHVALGT):
+            self.rbThreshold.SetValue(True)
+        #value change threshold
+        elif event.Id ==wxID_FRMDATAFILTERTXTVCHANGETHRESH:
+            self.rbVChangeThresh.SetValue(True)
+
 
     def onBtnClearButton(self, event):
         self.setDates()
@@ -231,8 +257,8 @@ class frmDataFilter(wx.Dialog):
       dateAfter = self.recordService.get_series_points()[0][2]
       dateBefore = self.recordService.get_series_points()[-1][2]
 
-      logger.debug("dateAfter: ", dateAfter.day, " + ", dateAfter.month, " + ", dateAfter.year)
-      logger.debug("dateBefore: ", dateBefore.day, " + ", dateBefore.month, " + ", dateBefore.year)
+      # logger.debug("dateAfter: ", repr(dateAfter.day), " + ", repr(dateAfter.month), " + ", repr(dateAfter.year))
+      # logger.debug("dateBefore: ", repr(dateBefore.day), " + ", repr(dateBefore.month), " + ", repr(dateBefore.year))
 
       formattedDateAfter = wx.DateTimeFromDMY(int(dateAfter.day), int(dateAfter.month), int(dateAfter.year), 0, 0, 0)
 
