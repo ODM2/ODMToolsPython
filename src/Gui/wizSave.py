@@ -71,7 +71,7 @@ class VariablePage(wiz.WizardPageSimple):
         self._init_data(series_service)
 
     def _init_data(self, series_service):
-        vars=series_service.get_vars()
+        vars=series_service.get_all_variables()
         for v in vars:
             num_items = self.panel.lstVariable.GetItemCount()
             self.panel.lstVariable.InsertStringItem(num_items, str(v.code))

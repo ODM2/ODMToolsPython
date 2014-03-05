@@ -14,6 +14,18 @@ from wx.lib.pubsub import pub as Publisher
 
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
+## Enable logging
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+console.setFormatter(
+    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
+)
+logger.addHandler(console)
+
 
 class plotTimeSeries(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -93,29 +105,35 @@ class plotTimeSeries(wx.Panel):
 
         self.canvas.draw()
 
-    def onDateChanged(self, date, time):
-        # print date
-        # self.timeSeries.clear()
-        ##      date = datetime.datetime(date.Year, date.Month+1, date.Day, 0, 0, 0)
-        ##      print date
-        if time == "start":
-            self.startDate = date
-        elif time == "end":
-            self.endDate = date
-        else:
-            self.startDate = self.maxStart
-            self.endDate = self.maxEnd
+    def onDateChanged(self, startDate, endDate):
+        self.startDate = startDate
+        self.endDate = endDate
 
-        self.timeSeries.axis.axes.set_xbound(self.startDate, self.endDate)
+        logger.debug("%s to %s" % (self.startDate, self.endDate))
+
+        #self.startDate = self.maxStart
+        #self.endDate = self.maxEnd
+        logger.debug("-------------------------------------")
+        logger.debug("CurrentDates: ")
+        logger.debug("self.startDate: %s %s" % (self.startDate, type(self.startDate)))
+        logger.debug("self.endDate: %s %s" % (self.endDate, type(self.startDate)))
+        #logger.debug("self.maxStart: %s %s" % (self.maxStart, type(self.maxStart)))
+        #logger.debug("self.maxEnd: %s %s" % (self.maxEnd, type(self.maxEnd)))
+        logger.debug("self.startDate.date() == self.endDate.date(): %s " %
+                     (self.startDate.date() == self.endDate.date()))
+        logger.debug("-------------------------------------")
+
+        self.timeSeries.axis.axes.set_xbound(startDate, endDate)
         self.canvas.draw()
 
+
     def set_date_bound(self, start, end):
-        print "start:", start, end
         if start > self.maxStart:
             self.startDate = self.maxStart = start
         if end < self.maxEnd:
             self.endDate = self.maxEnd = end
         Publisher.sendMessage(("resetdate"), startDate=self.maxStart, endDate=self.maxEnd)
+
 
     def OnShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
@@ -123,8 +141,6 @@ class plotTimeSeries(wx.Panel):
             plt.subplots_adjust(bottom=.1 + .1)
             self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
                                    ncol=2, prop=self.fontP)
-
-
         else:
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
@@ -158,6 +174,7 @@ class plotTimeSeries(wx.Panel):
             ax.clear()
             # self.stopEdit()
 
+
     def stopEdit(self):
         self.Clear()
         self.selectedlist = None
@@ -166,7 +183,7 @@ class plotTimeSeries(wx.Panel):
         self.canvas.mpl_disconnect(self.lassoAction)
         self.canvas.mpl_disconnect(self.hoverAction)
         self.lassoAction = None
-        self.hoverAction= None
+        self.hoverAction = None
         self.xys = None
 
         self.curveindex = -1
@@ -196,6 +213,7 @@ class plotTimeSeries(wx.Panel):
         # self.parent.parent.dataTable.Refresh()
         self.canvas.draw()
 
+
     def drawEditPlot(self, oneSeries):
         curraxis = self.axislist[oneSeries.axisTitle]
         self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
@@ -204,12 +222,12 @@ class plotTimeSeries(wx.Panel):
                                                          label=oneSeries.plotTitle)
 
         self.selectedlist = self.parent.record_service.get_filter_list()
-        self.editPoint = curraxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],s=20, c=['k' if x == 0 else 'r' for x in self.selectedlist])
+        self.editPoint = curraxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
+                                          s=20, c=['k' if x == 0 else 'r' for x in self.selectedlist])
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
 
         self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
-        self.hoverAction= self.canvas.mpl_connect('motion_notify_event', self._onMotion)
-
+        self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
 
 
     def _setColor(self, color):
@@ -220,6 +238,7 @@ class plotTimeSeries(wx.Panel):
         plt.gcf().set_edgecolor(color)
         self.canvas.SetBackgroundColour(color)
 
+
     def Close(self):
         plt.close()
 
@@ -227,6 +246,7 @@ class plotTimeSeries(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
         self.updatePlot()
+
 
     def updatePlot(self):
         self.Clear()
@@ -343,35 +363,31 @@ class plotTimeSeries(wx.Panel):
         self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
         # acquire a lock on the widget drawing
         self.canvas.widgetlock(self.lasso)
+        self.canvas.draw_idle()
+        self.canvas.widgetlock.release(self.lasso)
+        del self.lasso
 
 
     def _onMotion(self, event):
         collisionFound = False
-        if event.xdata!=None and event.ydata!=None: #mouse is inside the axes
+        if event.xdata != None and event.ydata != None:  #mouse is inside the axes
             #print len(self.editCurve.dataTable), len(self.editCurve.dataTable[:1])
             for i in xrange(len(self.editCurve.dataTable)):
-                radius=3
+                radius = 3
                 #print "row: ", i,  self.editCurve.dataTable[i][1].toordinal(), event.xdata, abs(event.xdata - self.editCurve.dataTable[i][1].toordinal())
 
-                if abs(event.xdata - self.editCurve.dataTable[i][1].toordinal()) < radius and abs(event.ydata-self.editCurve.dataTable[i][0]) < radius:
-                    top = tip='(%s, %f)'%(self.editCurve.dataTable[i][1],self.editCurve.dataTable[i][0])
+                if abs(event.xdata - self.editCurve.dataTable[i][1].toordinal()) < radius and abs(
+                                event.ydata - self.editCurve.dataTable[i][0]) < radius:
+                    top = tip = '(%s, %f)' % (self.editCurve.dataTable[i][1], self.editCurve.dataTable[i][0])
                     self.tooltip.SetTip(tip)
                     self.tooltip.Enable(True)
-                    collisionFound =True
+                    collisionFound = True
                     break
         if not collisionFound:
             self.tooltip.Enable(False)
 
 
+
     def __init__(self, parent, id, pos, size, style, name):
         self._init_ctrls(parent)
-
-
-
-
-
-
-
-
-
 

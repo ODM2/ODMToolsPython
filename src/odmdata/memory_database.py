@@ -194,7 +194,7 @@ class MemoryDatabase(object):
                 QualityControlLevelID INTEGER NOT NULL,
 
                 PRIMARY KEY (ValueID),
-                UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID))
+                UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID, SampleID))
                """)
 
 
@@ -221,5 +221,5 @@ class MemoryDatabase(object):
                 QualityControlLevelID INTEGER NOT NULL,
 
                 PRIMARY KEY (ValueID),
-                UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID))
+                UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID, SampleID))
                """)
