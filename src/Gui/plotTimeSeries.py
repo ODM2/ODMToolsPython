@@ -16,16 +16,9 @@ from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 ## Enable logging
 import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-console.setFormatter(
-    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
-)
-logger.addHandler(console)
-
+from common.logger import LoggerTool
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w' ,logging.DEBUG)
 
 class plotTimeSeries(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):

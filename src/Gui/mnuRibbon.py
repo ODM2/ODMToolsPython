@@ -17,26 +17,9 @@ import gui_utils as g_util
 
 ## Enable logging
 import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-console.setFormatter(
-    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
-)
-logger.addHandler(console)
-
-'''
-logging.basicConfig(
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    level=logging.DEBUG,
-    datefmt='%m/%d/%Y %I:%M:%S %p',
-    filename='../' + __name__ + '.log',
-    filemode='w'
-)
-'''
-
+from common.logger import LoggerTool
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 ##
 
 [wxID_PANEL1, wxID_RIBBONPLOTTIMESERIES, wxID_RIBBONPLOTPROB,
@@ -312,7 +295,14 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.sendMessage("onDateChanged", date=datetime.datetime.now(), time="full")
 
     def onDateChanged(self, event):
-        date = event.Date
+        logger.fatal("%s" % (type(self.dpEndDate.GetValue())))
+        logger.fatal("%s" % (dir(self.dpEndDate.GetValue())))
+        #logger.fatal("%s" % (self.dpEndDate.GetValue()))
+
+        logger.fatal("%s" % (type(self.dpStartDate.GetValue())))
+        #logger.fatal("%s" % (dir(self.dpStartDate.GetValue())))
+        logger.fatal("min: %s" % (self.dpStartDate.GetValue().Minute))
+
         date=self.dpStartDate.GetValue()
         startDate = datetime.datetime(date.Year, date.Month + 1, date.Day, 0, 0, 0)
         date=self.dpEndDate.GetValue()
