@@ -295,13 +295,13 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.sendMessage("onDateChanged", date=datetime.datetime.now(), time="full")
 
     def onDateChanged(self, event):
-        logger.fatal("%s" % (type(self.dpEndDate.GetValue())))
-        logger.fatal("%s" % (dir(self.dpEndDate.GetValue())))
+        #logger.fatal("%s" % (type(self.dpEndDate.GetValue())))
+        #logger.fatal("%s" % (dir(self.dpEndDate.GetValue())))
         #logger.fatal("%s" % (self.dpEndDate.GetValue()))
 
-        logger.fatal("%s" % (type(self.dpStartDate.GetValue())))
+        #logger.fatal("%s" % (type(self.dpStartDate.GetValue())))
         #logger.fatal("%s" % (dir(self.dpStartDate.GetValue())))
-        logger.fatal("min: %s" % (self.dpStartDate.GetValue().Minute))
+        #logger.fatal("min: %s" % (self.dpStartDate.GetValue().Minute))
 
         date=self.dpStartDate.GetValue()
         startDate = datetime.datetime(date.Year, date.Month + 1, date.Day, 0, 0, 0)
@@ -358,7 +358,6 @@ class mnuRibbon(RB.RibbonBar):
         logger.debug("Entered!")
         data_filter = frmDataFilters.frmDataFilter(self, self.parent.getRecordService())
         self.filterlist = data_filter.ShowModal()
-        print "filter_list: ", self.filterlist
         data_filter.Destroy()
         event.Skip()
 

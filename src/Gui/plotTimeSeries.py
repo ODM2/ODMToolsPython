@@ -18,6 +18,7 @@ from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 import logging
 from common.logger import LoggerTool
 tool = LoggerTool()
+
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w' ,logging.DEBUG)
 
 class plotTimeSeries(wx.Panel):
@@ -324,7 +325,7 @@ class plotTimeSeries(wx.Panel):
         seldatetimes = [matplotlib.dates.num2date(x[0]) for x in verts]
         #print seldatetimes
 
-        # self.parent.record_service.select_points(datetime_list=seldatetimes)
+        self.parent.record_service.select_points(datetime_list=seldatetimes)
 
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
@@ -341,8 +342,6 @@ class plotTimeSeries(wx.Panel):
         self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
         # acquire a lock on the widget drawing
         self.canvas.widgetlock(self.lasso)
-
-
 
     def _onMotion(self, event):
         collisionFound = False
@@ -361,8 +360,6 @@ class plotTimeSeries(wx.Panel):
                     break
         if not collisionFound:
             self.tooltip.Enable(False)
-
-
 
     def __init__(self, parent, id, pos, size, style, name):
         self._init_ctrls(parent)

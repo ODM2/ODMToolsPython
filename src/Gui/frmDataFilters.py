@@ -1,20 +1,15 @@
 #Boa:Frame:frmDataFilter
 
 from datetime import datetime
-import logging
-
 import wx
 from wx.lib.pubsub import pub as Publisher
 
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-console.setFormatter(
-    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
-)
-logger.addHandler(console)
+## Enable logging
+import logging
+from common.logger import LoggerTool
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+##
 
 def create(parent):
     return frmDataFilter(parent)
@@ -193,7 +188,7 @@ class frmDataFilter(wx.Dialog):
     def onSetFocus(self, event):
         logger.debug("event ed : %s"%repr(event.Id))
 
-        #DateRAnge
+        #DateRange
         if event.Id in (wxID_FRMDATAFILTERDBAFTER, wxID_FRMDATAFILTERDPBEFORE):
             self.rbDate.SetValue(True)
         #Data Gaps

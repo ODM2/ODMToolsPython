@@ -6,6 +6,7 @@ By Jacob Meline
 __author__ = 'Jacob'
 
 import logging
+import os
 
 
 class LoggerTool():
@@ -18,7 +19,11 @@ class LoggerTool():
         #formatter = logging.Formatter('%(asctime)s : %(message)s')
         formatter = logging.Formatter(self.formatString)
 
-        fileHandler = logging.FileHandler(logFile, mode=m)
+        logPath = os.path.abspath(os.path.dirname("../../"))
+        logPath += '/log/'
+        if not os.path.exists(logPath):
+            os.mkdir(logPath, 0755)
+        fileHandler = logging.FileHandler(logPath + logFile, mode=m)
         fileHandler.setFormatter(formatter)
         streamHandler = logging.StreamHandler()
         streamHandler.setFormatter(formatter)
