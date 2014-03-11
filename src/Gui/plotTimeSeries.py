@@ -16,16 +16,10 @@ from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 ## Enable logging
 import logging
+from common.logger import LoggerTool
+tool = LoggerTool()
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-console.setFormatter(
-    logging.Formatter('%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s')
-)
-logger.addHandler(console)
-
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w' ,logging.DEBUG)
 
 class plotTimeSeries(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -329,7 +323,7 @@ class plotTimeSeries(wx.Panel):
         seldatetimes = [matplotlib.dates.num2date(x[0]) for x in verts]
         #print seldatetimes
 
-        # self.parent.record_service.select_points(datetime_list=seldatetimes)
+        self.parent.record_service.select_points(datetime_list=seldatetimes)
 
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
@@ -347,8 +341,6 @@ class plotTimeSeries(wx.Panel):
         # acquire a lock on the widget drawing
         self.canvas.widgetlock(self.lasso)
 
-
-
     def _onMotion(self, event):
         collisionFound = False
         if event.xdata != None and event.ydata != None:  #mouse is inside the axes
@@ -364,8 +356,6 @@ class plotTimeSeries(wx.Panel):
                     break
         if not collisionFound:
             self.tooltip.Enable(False)
-
-
 
     def __init__(self, parent, id, pos, size, style, name):
         self._init_ctrls(parent)
