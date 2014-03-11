@@ -199,7 +199,6 @@ class frmODMToolsMain(wx.Frame):
         #Memory Database
         self.pnlPlot.addPlot(memDB, seriesID)
         Publisher.sendMessage("EnablePlotButton", plot=self.pnlPlot.getActivePlotID(), isActive=True)
-        #self._ribbon.enableButtons(self.pnlPlot.getActivePlotID)
 
     def onSetScriptTitle(self, title):
         scriptPane = self._mgr.GetPane(self.txtPythonScript)

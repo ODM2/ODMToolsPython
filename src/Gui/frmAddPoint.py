@@ -87,7 +87,7 @@ class frmAddPoint(wx.Dialog):
     def _init_table(self, series=None):
       self.grdDataValues.CreateGrid(1,10)
       # self.Service = Publisher.sendMessage(("GetDBService"), None)
-      service_manager =self.parent.parent.GetDBService()
+      service_manager =self.parent.parent.getDBService()
       # print DBConn
       self.service = service_manager.get_cv_service()
 

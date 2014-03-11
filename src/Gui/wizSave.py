@@ -300,8 +300,6 @@ class wizSave(wx.wizard.Wizard):
 
 ##        fin_btn = self.FindWindowById(wx.ID_FINISH)
 ##        fin_btn.SetLabel("Save Series")
-
-
         self.GetPageAreaSizer().Add(self.page1)
         self.RunWizard(self.page1)
         self.Destroy()
@@ -344,7 +342,12 @@ class wizSave(wx.wizard.Wizard):
         else:
             Method=self.record_service.create_method(Method)
 
-        self.record_service.save(Variable, Method, QCL)
+
+        if self.pnlIntroduction.rbSave.GetValue():
+            self.record_service.save(Variable, Method, QCL, True)
+        else:
+            self.record_service.save(Variable, Method, QCL, False)
+
         #t actual object from session. if it doesnt exist in the database use the created one.
 ##        event.Skip()
 

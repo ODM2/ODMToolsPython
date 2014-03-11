@@ -1,4 +1,6 @@
+
 from sqlalchemy import distinct
+
 
 from odmdata import SessionFactory
 from odmdata import Site
@@ -6,7 +8,6 @@ from odmdata import Variable
 from odmdata import Unit
 from odmdata import Series
 from odmdata import DataValue
-from odmdata import QualityControlLevel
 from odmdata import Qualifier
 from odmdata import OffsetType
 from odmdata import Sample
@@ -14,6 +15,10 @@ from odmdata import Method
 from odmdata import QualityControlLevel
 from odmdata import ODMVersion
 
+from common.logger import LoggerTool
+import logging
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class SeriesService():
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
@@ -117,8 +122,44 @@ class SeriesService():
         # Pass in probably a Series object, match it against the database
         pass
 
+    def save_series(self, series, data_values, isSave=False):
+        doesExist = self.series_exists(
+            series.site_id,
+            series.variable_id,
+            series.method_id,
+            series.source_id,
+            series.quality_control_level_id
+        )
+        # Save case
+        if isSave:
+            if doesExist:
+                self._edit_session.add(series)
+                self._edit_session.add_all(data_values)
+                self._edit_session.commit()
+                logger.debug("Existing File was overwritten with new information")
+                return True
+            else:
+                logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
+                # there wasn't an existing file to overwrite
+                return False
+        # Save As case
+        elif not isSave:
+            if doesExist:
+                logger.debug("There is already an existing file with this information. Please select 'Save' to overwrite")
+                return False
+            else:
+                self._edit_session.add(series)
+                self._edit_session.add_all(data_values)
+            self._edit_session.commit()
+            logger.debug("A new series was added to the database")
+        return True
+
+    '''
     def save_series(self, series, data_values):
-        if self.series_exists(series.site_id, series.variable_id, series.method_id, series.source_id,
+        if self.series_exists(series.site_id,
+                              series.variable_id,
+                              series.method_id,
+                              series.source_id,
                               series.quality_control_level_id):
             return False
         else:
@@ -126,11 +167,14 @@ class SeriesService():
             self._edit_session.add_all(data_values)
         self._edit_session.commit()
         return True
+    '''
 
     def series_exists(self, site_id, var_id, method_id, source_id, qcl_id):
         try:
-            result = self._edit_session.query(Series).filter_by(site_id=site_id, variable_id=var_id,
-                                                                method_id=method_id, source_id=source_id,
+            result = self._edit_session.query(Series).filter_by(site_id=site_id,
+                                                                variable_id=var_id,
+                                                                method_id=method_id,
+                                                                source_id=source_id,
                                                                 quality_control_level_id=qcl_id).one()
             return True
         except:

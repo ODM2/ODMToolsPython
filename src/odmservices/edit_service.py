@@ -377,7 +377,7 @@ class EditService():
         self._connection.rollback()
         self._populate_series()
 
-    def save(self, var=None, method=None, qcl=None):
+    def save(self, var=None, method=None, qcl=None, isSave=False):
         dvs = []
         is_new_series = False
 
@@ -447,7 +447,7 @@ class EditService():
 
         series.data_values = dvs
         logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
-        if self._series_service.save_series(series, dvs):
+        if self._series_service.save_series(series, dvs, isSave):
             logger.debug("series saved!")
         else:
             logger.debug("Crap happened")
