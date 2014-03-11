@@ -1,14 +1,7 @@
 import sqlite3
-import copy
 
 from odmdata import SessionFactory
-from odmdata import Site
-from odmdata import Variable
-from odmdata import Unit
-from odmdata import Series
 from odmdata import DataValue
-from odmdata import QualityControlLevel
-from odmdata import Qualifier
 from series_service import SeriesService
 from odmdata import series as series_module
 
@@ -182,6 +175,7 @@ class EditService():
                     self._filter_list[i] = True
         elif datetime_list != None:
             for i in range(len(self._series_points)):
+
                 if self._series_points[i][2] in datetime_list:
                     self._filter_list[i] = True
         else:

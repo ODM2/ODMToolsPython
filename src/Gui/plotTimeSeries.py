@@ -320,8 +320,8 @@ class plotTimeSeries(wx.Panel):
 
 
     def callback(self, verts):
-        seldatetimes = [matplotlib.dates.num2date(x[0]) for x in verts]
-        #print seldatetimes
+        seldatetimes = [matplotlib.dates.num2date(x[0]).replace(tzinfo=None) for x in verts]
+        print seldatetimes
 
         self.parent.record_service.select_points(datetime_list=seldatetimes)
 

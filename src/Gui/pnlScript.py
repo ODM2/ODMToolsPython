@@ -1,9 +1,10 @@
-import wx
-import wx.stc as stc
 import os
+
+import wx
 from wx.lib.pubsub import pub as Publisher
 
 from highlightSTC import highlightSTC
+
 
 ID_NEW=101
 ID_OPEN=102
@@ -188,7 +189,7 @@ class pnlScript(wx.Frame):
         lenText = len(text.encode('utf8'))
         end = self.control.GetLength()
 ##        self.control.DocumentEnd()
-        self.control.AppendTextRaw(text, lenText)
+        self.control.AppendText(text)
 ##        self.control.AddStyledText(text)
         self.control.StartStyling(end, 31)
         self.control.SetStyling(lenText, style)

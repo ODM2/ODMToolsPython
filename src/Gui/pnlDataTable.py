@@ -1,14 +1,14 @@
 #Boa:FramePanel:pnlDataTable
 
+import logging
+
 import wx
 import wx.grid
-from ObjectListView import ColumnDefn, FastObjectListView, VirtualObjectListView
+from ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
 
-import wx.lib.agw.ultimatelistctrl as ULC
-
-import logging
 from common.logger import LoggerTool
+
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
@@ -104,9 +104,9 @@ class pnlDataTable(wx.Panel):
         #for i in self.currentItem:
             #logger.debug("index: %s" % (i[3]))
 
-        #print [x[3] for x in self.currentItem]
+        print [x[3] for x in self.currentItem]
 
-        #self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
+        self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
 
 
 
