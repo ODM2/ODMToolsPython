@@ -9,6 +9,11 @@ from odmdata import QualityControlLevel
  wxID_PNLQCLTXTEXPLANATION,
 ] = [wx.NewId() for _init_ctrls in range(10)]
 
+from common.logger import LoggerTool
+import logging
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 class pnlQCL(wx.Panel):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -110,9 +115,8 @@ class pnlQCL(wx.Panel):
 
         elif self.rbSelect.Value:
             index = self.GetLstSelection()
-            print self.lstQCL.GetItem(index,-1).GetText()
-            q= self.series_service.get_qcl_by_id(self.lstQCL.GetItem(index,-1).GetText())
-
+            logger.debug(self.lstQCL.GetItem(index,-1).GetText())
+            q= self.series_service.get_qcl_by_code(self.lstQCL.GetItem(index,-1).GetText())
 
 ##            q.id = self.lstQCL.GetItem(index,3).GetText()
 ##            q.code = self.lstQCL.GetItem(index, 0).GetText()

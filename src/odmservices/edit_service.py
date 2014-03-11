@@ -5,6 +5,10 @@ from odmdata import DataValue
 from series_service import SeriesService
 from odmdata import series as series_module
 
+from common.logger import LoggerTool
+import logging
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class EditService():
     # Mutual exclusion: cursor, or connection_string
@@ -23,7 +27,7 @@ class EditService():
             self._series_service = service_manager.get_series_service()
         else:
             # One or the other must be set
-            print "Must have either a connection string or session factory"
+            logger.debug("Must have either a connection string or session factory")
             # TODO throw an exception
 
         self._edit_session = self._session_factory.get_session()
@@ -222,7 +226,7 @@ class EditService():
         return self._series_service.get_method_by_id(method_id)
 
     def get_variable(self, variable_id):
-        print variable_id
+        logger.debug(variable_id)
         return self._series_service.get_variable_by_id(variable_id)
 
 
@@ -256,7 +260,7 @@ class EditService():
         self._filter_list = tmp_filter_list
 
     def add_points(self, points):
-        print points
+        logger.debug(points)
         query = "INSERT INTO DataValuesEdit (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
         query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
@@ -378,18 +382,20 @@ class EditService():
         is_new_series = False
 
         if var is not None:
+            logger.debug(var.id)
             self._cursor.execute("UPDATE DataValuesEdit SET VariableID = %s" % (var.id))
             is_new_series = True
         if method is not None:
-            print method.id
+            logger.debug(method.id)
             self._cursor.execute("UPDATE DataValuesEdit SET MethodID = %s" % (method.id))
             is_new_series = True
         # check that the code is not zero
-        if qcl is not None and qcl.code > 0:
+        #if qcl is not None and qcl.code != 0:
+        if qcl is not None:
             self._cursor.execute("UPDATE DataValuesEdit SET QualityControlLevelID = %s" % (qcl.id))
             is_new_series = True
-        else:
-            raise ValueError("Quality Control Level cannot be zero")
+        #else:
+        #    raise ValueError("Quality Control Level cannot be zero")
 
         self._cursor.execute("SELECT * FROM DataValuesEdit ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
@@ -406,7 +412,7 @@ class EditService():
         series = self._series_service.get_series_by_id(self._series_id)
 
         if is_new_series:
-            series = series_module.copy(series)
+            series = series_module.copy_series(series)
             if var:
                 series.variable_id = var.id
                 series.variable_code = var.code
@@ -440,7 +446,11 @@ class EditService():
             self._series_service.delete_dvs(old_dvs)
 
         series.data_values = dvs
-        self._series_service.save_series(series, dvs)
+        logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
+        if self._series_service.save_series(series, dvs):
+            logger.debug("series saved!")
+        else:
+            logger.debug("Crap happened")
 
     def create_qcl(self, code, definition, explanation):
         return self._series_service.create_qcl(code, definition, explanation)

@@ -15,7 +15,10 @@ wxID_PNLSUMMARY, wxID_WIZSAVE,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
 
-
+from common.logger import LoggerTool
+import logging
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 ########################################################################
 class QCLPage(wiz.WizardPageSimple):
@@ -201,10 +204,18 @@ class IntroPage(wiz.PyWizardPage):
         if self.pnlIntroduction.rbSave.GetValue():
             self.next.GetNext().GetNext().GetNext().SetPrev(self)
             return self.next.GetNext().GetNext().GetNext()
-        else:
+        elif self.pnlIntroduction.rbSaveAs.GetValue():
+
             # print self.next
-            self.next.GetNext().SetPrev(self.next)
-            return self.next
+
+            #if self.next is None:
+            #    print "next Page is null"
+            #else:
+            #    print "next Page is NOT null", type(self.next)
+
+            if self.next is not None:
+                self.next.GetNext().SetPrev(self.next)
+                return self.next
 
     def GetPrev(self):
         return self.prev
@@ -231,14 +242,6 @@ class TitledPage(wiz.WizardPageSimple):
 
 
 ########################################################################
-
-
-
-def create(parent):
-    return wizSave(parent, serviceMan)
-
-
-
 class wizSave(wx.wizard.Wizard):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -251,7 +254,6 @@ class wizSave(wx.wizard.Wizard):
         self.Bind(wx.wizard.EVT_WIZARD_FINISHED, self.on_wizard_finished)
 
     def get_metadata(self):
-
 
         if self.is_changing_series:
             method = self.page2.panel.getMethod()

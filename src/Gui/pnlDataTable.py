@@ -115,6 +115,7 @@ class pnlDataTable(wx.Panel):
         logger.debug("OnItemDeSelected: %s\n" % (event.m_itemIndex))
 
         # self.selectedpoints.remove(event.m_itemIndex)
+
     def onKeyPress(self, event):
         # check for Ctrl+A
         keycode = event.GetKeyCode()
@@ -129,10 +130,6 @@ class pnlDataTable(wx.Panel):
         if self.doneselecting:
             selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
             Publisher.sendMessage(("changePlotSelection"), sellist = selectedids)
-
-
-
-
 
     def getSelectedIDs(self, selobjects):
         idlist=[False] * self.dataRep.getEditRowCount()

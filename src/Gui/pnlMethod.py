@@ -10,6 +10,11 @@ from odmdata import Method
  wxID_PNLMETHODSRICHTEXTCTRL1,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
+from common.logger import LoggerTool
+import logging
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 class pnlMethod(wx.Panel):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -102,8 +107,8 @@ class pnlMethod(wx.Panel):
 
         elif self.rbSelect.Value:
             index = self.lstMethods.GetFirstSelected()
-            print self.lstMethods.GetItem(index,-1).GetText()
-            m= self.series_service.get_method_by_id(self.lstMethods.GetItem(index,-1).GetText())
+            logger.debug(self.lstMethods.GetItem(index,-1).GetText())
+            m= self.series_service.get_method_by_description(self.lstMethods.GetItem(index,-1).GetText())
 
         elif self.rbCreateNew.Value:
             m.description = self.txtMethodDescrip.Value()

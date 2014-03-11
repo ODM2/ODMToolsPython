@@ -45,6 +45,12 @@ class SeriesService():
         except:
             return None
 
+    def get_variable_by_code(self, variable_code):
+        try:
+            return self._edit_session.query(Variable).filter_by(code=variable_code).one()
+        except:
+            return None
+
     def get_variables_by_site_code(self, site_code):  # covers NoDV, VarUnits, TimeUnits
         try:
             var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).filter_by(
@@ -145,6 +151,12 @@ class SeriesService():
         except:
             return None
 
+    def get_qcl_by_code(self, qcl_code):
+        try:
+            return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).one()
+        except:
+            return None
+
     # Method methods
     def get_all_methods(self):
         return self._edit_session.query(Method).all()
@@ -152,6 +164,13 @@ class SeriesService():
     def get_method_by_id(self, method_id):
         try:
             result = self._edit_session.query(Method).filter_by(id=method_id).one()
+        except:
+            result = None
+        return result
+
+    def get_method_by_description(self, method_code):
+        try:
+            result = self._edit_session.query(Method).filter_by(description=method_code).one()
         except:
             result = None
         return result

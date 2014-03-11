@@ -8,6 +8,12 @@ from odmdata import Variable
  wxID_PNLVARIABLERBCURRENT, wxID_PNLVARIABLERBSELECT,wxID_PNLVARIABLETXTNEWVAR,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
+from common.logger import LoggerTool
+import logging
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
+
 class pnlVariable(wx.Panel):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -105,8 +111,8 @@ class pnlVariable(wx.Panel):
             v= self.prev_var
         elif self.rbSelect.Value:
             index = self.lstVariable.GetFirstSelected()
-            print self.lstVariable.GetItem(index,-1).GetText()
-            v= self.series_service.get_variable_by_id(self.lstVariable.GetItem(index,-1).GetText())
+            logger.debug(self.lstVariable.GetItem(index,-1).GetText())
+            v= self.series_service.get_variable_by_code(self.lstVariable.GetItem(index,-1).GetText())
 ##            index = self.lstVariable.GetFocusedItem()
 ##            v.id = self.lstVariable.GetItem(index,-1)
 ##            v.code = self.lstVariables.GetItem(index, 0)

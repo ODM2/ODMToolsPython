@@ -227,7 +227,7 @@ class pnlSeriesSelector(wx.Panel):
         self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeries,
               name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),
               size=wx.Size(903, 108),
-              agwStyle= ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT )#|ULC.ULC_SINGLE_SEL)
+              agwStyle= ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT |ULC.ULC_SINGLE_SEL)
 ##        self.splitter.Initialize(self.tableSeries)
         self.cpnlSimple.Collapse(True)
         # self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 1)
