@@ -20,7 +20,7 @@ class pnlDataTable(wx.Panel):
         self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)#Virtual
 
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
-        self.myOlv.SetEmptyListMsg("")
+        self.myOlv.SetEmptyListMsg("NO Series selected for Editing")
 
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_2.Add(self.myOlv, 1, wx.ALL|wx.EXPAND, 4)

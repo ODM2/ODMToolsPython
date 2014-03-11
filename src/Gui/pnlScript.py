@@ -188,7 +188,7 @@ class pnlScript(wx.Frame):
         lenText = len(text.encode('utf8'))
         end = self.control.GetLength()
 ##        self.control.DocumentEnd()
-        self.control.AppendTextRaw(text)
+        self.control.AppendTextRaw(text, lenText)
 ##        self.control.AddStyledText(text)
         self.control.StartStyling(end, 31)
         self.control.SetStyling(lenText, style)
