@@ -268,8 +268,6 @@ class plotTimeSeries(wx.Panel):
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
-
-        # self.timeSeries.set_xlim([0,1000])
         self.timeSeries.set_xlabel("Date Time")
         self.canvas.draw()
 
@@ -322,8 +320,8 @@ class plotTimeSeries(wx.Panel):
 
 
     def callback(self, verts):
-        seldatetimes = [matplotlib.dates.num2date(x[0]) for x in verts]
-        #print seldatetimes
+        seldatetimes = [matplotlib.dates.num2date(x[0]).replace(tzinfo=None) for x in verts]
+        print seldatetimes
 
         self.parent.record_service.select_points(datetime_list=seldatetimes)
 
@@ -346,10 +344,8 @@ class plotTimeSeries(wx.Panel):
     def _onMotion(self, event):
         collisionFound = False
         if event.xdata != None and event.ydata != None:  #mouse is inside the axes
-            #print len(self.editCurve.dataTable), len(self.editCurve.dataTable[:1])
             for i in xrange(len(self.editCurve.dataTable)):
                 radius = 3
-                #print "row: ", i,  self.editCurve.dataTable[i][1].toordinal(), event.xdata, abs(event.xdata - self.editCurve.dataTable[i][1].toordinal())
 
                 if abs(event.xdata - self.editCurve.dataTable[i][1].toordinal()) < radius and abs(
                                 event.ydata - self.editCurve.dataTable[i][0]) < radius:
