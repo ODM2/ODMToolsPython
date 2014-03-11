@@ -41,9 +41,10 @@ class pnlDataTable(wx.Panel):
         self.doneselecting=True
 
         self.myOlv._highlightBrush=wx.Brush("red")
-        self.myOlv.SetEmptyListMsg("Empy!")
 
         self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected )
+        self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
+
         #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.testBinding)
 
 ##        self.myOlv.Bind(wx.EVT_LIST_COL_END_DRAG , self.onLUp,id=wxID_PNLDATATABLE )
@@ -100,15 +101,10 @@ class pnlDataTable(wx.Panel):
         self.currentItem = event.GetEventObject().GetSelectedObjects()
         logger.debug("OnItemSelected: %s\n" % (self.currentItem))
         logger.debug("size %d" % len(self.currentItem))
-
         #for i in self.currentItem:
             #logger.debug("index: %s" % (i[3]))
-
         #print [x[3] for x in self.currentItem]
-
         #self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
-
-
 
         if self.doneselecting:
             selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
@@ -118,6 +114,24 @@ class pnlDataTable(wx.Panel):
         logger.debug("OnItemDeSelected: %s\n" % (event.m_itemIndex))
 
         # self.selectedpoints.remove(event.m_itemIndex)
+    def onKeyPress(self, event):
+        # check for Ctrl+A
+        keycode = event.GetKeyCode()
+        if keycode == 1:
+            logger.debug("OnKeyPress! Ctrl+A was pressed")
+            self.myOlv.SelectAll()
+            self.currentItem = self.myOlv.GetSelectedObjects()
+            if len(self.currentItem) > 0:
+                print "self.currentItem: ", self.currentItem
+                print "len: ", len(self.currentItem)
+
+        if self.doneselecting:
+            selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
+            Publisher.sendMessage(("changePlotSelection"), sellist = selectedids)
+
+
+
+
 
     def getSelectedIDs(self, selobjects):
         idlist=[False] * self.dataRep.getEditRowCount()
