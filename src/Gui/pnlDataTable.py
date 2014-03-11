@@ -31,7 +31,7 @@ class pnlDataTable(wx.Panel):
         #self.myOlv = VirtualObjectListView(self, -1, style=wx.LC_REPORT) #Virtual
 
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
-        self.myOlv.SetEmptyListMsg("NO Series selected for Editing")
+        self.myOlv.SetEmptyListMsg("No Series selected for Editing")
 
         self.currentItem = 0
 

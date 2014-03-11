@@ -412,7 +412,7 @@ class pnlSeriesSelector(wx.Panel):
 
 
     def onCbSitesCombobox(self, event):
-        self.site_code = self.siteList[event.GetSelection()].code        
+        self.site_code = self.siteList[event.GetSelection()].code
         self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
 
 
@@ -439,7 +439,7 @@ class pnlSeriesSelector(wx.Panel):
 
     def siteAndVariables(self):
         self.site_code = self.siteList[self.cbSites.Selection].code
-        
+
         self.cbVariables.Clear()
         self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
         for var in self.varList:
@@ -510,6 +510,12 @@ class pnlSeriesSelector(wx.Panel):
 
     def onTableSeriesListItemSelected(self, event):
         self.selectForPlot( event.m_itemIndex)
+
+        isActive = False
+        if len(self.tableSeries.getChecked())>0:
+            isActive = True
+
+        Publisher.sendMessage(("EnablePlotButtons"), plot=0, isActive=isActive)
         event.Skip()
 
     def selectForPlot(self, selIndex ):

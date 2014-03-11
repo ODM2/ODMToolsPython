@@ -1,3 +1,4 @@
+
 #Boa:FramePanel:Panel1
 
 import datetime
@@ -108,6 +109,7 @@ class mnuRibbon(RB.RibbonBar):
 
         self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
         self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
+        self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
 
         dateTime_panel = RB.RibbonPanel(home, wx.ID_ANY, "Date Time", wx.NullBitmap, wx.DefaultPosition,
                                         wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
@@ -223,8 +225,10 @@ class mnuRibbon(RB.RibbonBar):
         self.SetActivePageByIndex(self.CurrPage)
 
         self.bindEvents()
-        Publisher.subscribe(self.toggleEditButtons, ("edit.EnableButtons"))
+        Publisher.subscribe(self.toggleEditButtons, ("EnableEditButtons"))
+        Publisher.subscribe(self.enableButtons, ("EnablePlotButtons"))
         Publisher.subscribe(self.resetDateRange, ("resetdate"))
+
 
     def __init__(self, parent, id, name):
         self.parent = parent
@@ -483,7 +487,8 @@ class mnuRibbon(RB.RibbonBar):
             value = 3
         elif event.Id == wxID_RIBBONPLOTSUMMARY:
             value = 4
-        self.enableButtons(value)
+        # TODO fix case where the plot enables the buttons without checking if series is actually selected
+        self.enableButtons(value, True)
         Publisher.sendMessage(("select.Plot"), value=value)
         event.Skip()
 
@@ -503,9 +508,19 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.sendMessage(("adjust.Docking"), value=value)
         event.Skip()
 
-    def enableButtons(self, plot):
+    def enableButtons(self, plot, isActive):
+
+        if not isActive:
+            self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
+            self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
+            self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
+            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
+            self.spnBins.Enabled = False
+            self.dpEndDate.Enabled = False
+            self.dpStartDate.Enabled = False
+
         ##tims series or probability
-        if plot == 0 or plot == 1:
+        elif plot == 0 or plot == 1:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
@@ -545,12 +560,16 @@ class mnuRibbon(RB.RibbonBar):
             self.dpStartDate.Enabled = False
 
 
+    # TODO change states when points are selected rather than all at once
     def toggleEditButtons(self, state):
+
+        # edit when series is selected for editing
         self.main_bar.EnableButton(wxID_RIBBONEDITRESTORE, state)
         self.main_bar.EnableButton(wxID_RIBBONEDITSAVE, state)
-
-        self.edit_bar.EnableButton(wxID_RIBBONEDITLINFILTER, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITFILTER, state)
+
+        # when points are selected
+        self.edit_bar.EnableButton(wxID_RIBBONEDITLINFILTER, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITCHGVALUE, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITINTEROPOLATE, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITFLAG, state)
