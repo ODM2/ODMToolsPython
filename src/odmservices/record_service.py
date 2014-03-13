@@ -38,8 +38,6 @@ class RecordService():
             print [x[2] for x in self._edit_service.get_filtered_points()]
             self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
 
-
-
     def select_points(self, id_list=[], datetime_list=[]):
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
@@ -93,8 +91,8 @@ class RecordService():
         if self._record:
             self._script("edit_service.restore()\n", 'black')
 
-    def save(self, var=None, method=None, qcl=None):
-        self._edit_service.save(var=var, method=method, qcl=qcl)
+    def save(self, var=None, method=None, qcl=None, isSave=False):
+        self._edit_service.save(var=var, method=method, qcl=qcl, isSave=isSave)
         if self._record:
             self._script("edit_service.save()\n", 'black')
 

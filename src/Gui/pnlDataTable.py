@@ -17,6 +17,8 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class pnlDataTable(wx.Panel):
+    def __init__(self, parent, id,  size, style, name, pos=None):
+        self._init_ctrls(parent)
 
     # selectedpoints = []
     def _init_ctrls(self, prnt):
@@ -157,6 +159,5 @@ class pnlDataTable(wx.Panel):
 
 
 
-    def __init__(self, parent, id,  size, style, name, pos=None):
-        self._init_ctrls(parent)
+
 

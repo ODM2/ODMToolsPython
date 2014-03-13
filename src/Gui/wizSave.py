@@ -14,7 +14,7 @@ import pnlIntro
 wxID_PNLSUMMARY, wxID_WIZSAVE,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
-
+from wx.lib.pubsub import pub as Publisher
 from common.logger import LoggerTool
 import logging
 tool = LoggerTool()
@@ -342,14 +342,11 @@ class wizSave(wx.wizard.Wizard):
         else:
             Method=self.record_service.create_method(Method)
 
-
-        if self.pnlIntroduction.rbSave.GetValue():
+        # initiate either "Save as" or "Save"
+        if self.page1.pnlIntroduction.rbSave.GetValue():
             self.record_service.save(Variable, Method, QCL, True)
         else:
             self.record_service.save(Variable, Method, QCL, False)
-
-        #t actual object from session. if it doesnt exist in the database use the created one.
-##        event.Skip()
-
+            Publisher.sendMessage("refreshSeries")
 
 

@@ -1,4 +1,5 @@
 #Boa:FramePanel:pnlSeriesSelector
+import logging
 import os
 
 import wx
@@ -10,6 +11,8 @@ from wx.lib.pubsub import pub as Publisher
 
 # from ObjectListView import Filter
 import wx.lib.agw.ultimatelistctrl as ULC
+from common.logger import LoggerTool
+
 try:
     from agw import pycollapsiblepane as PCP
 except ImportError: # if it's not there locally, try the wxPython lib.
@@ -20,6 +23,8 @@ import frmQueryBuilder
 from odmdata import MemoryDatabase
 from odmservices import ServiceManager
 
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 ##########only use this section when testing series selector #############
@@ -249,7 +254,7 @@ class pnlSeriesSelector(wx.Panel):
     #    print "event:", event.m_itemIndex
 
 
-    def __init__(self, parent, id,  size, style, name, dbservice,pos=None,):
+    def __init__(self, parent, id,  size, style, name, dbservice, pos=None,):
         self.parent= parent
         self._init_ctrls(parent)
 
@@ -257,15 +262,20 @@ class pnlSeriesSelector(wx.Panel):
         self.initTableSeries()
         self.initSVBoxes()
 
+        # Subscribe functions
+        self.initPubSub()
+
         sm = ServiceManager()
         self.export_service = sm.get_export_service()
 
+    def initPubSub(self):
+        Publisher.subscribe(self.refreshSeries, "refreshSeries" )
 
     def resetDB(self, dbservice):
 
         #####INIT DB Connection
         self.dbservice = dbservice
-        self.tableSeries.clear()
+        #self.tableSeries.clear()
         self.cbVariables.Clear()
         self.cbSites.Clear()
         self.siteList = None
@@ -310,12 +320,15 @@ class pnlSeriesSelector(wx.Panel):
         popup_edit_series = wx.NewId()
         popup_plot_series = wx.NewId()
         popup_export_data = wx.NewId()
+        popup_series_refresh = wx.NewId()
+
         popup_export_metadata = wx.NewId()
         popup_select_all = wx.NewId()
         popup_select_none = wx.NewId()
         popup_menu = wx.Menu()
         self.Bind(wx.EVT_MENU,  self.onRightPlot, popup_menu.Append(popup_plot_series, 'Plot'))
         self.Bind(wx.EVT_MENU,  self.onRightEdit, popup_menu.Append(popup_edit_series, 'Edit'))
+        self.Bind(wx.EVT_MENU,  self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU,  self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))
         self.Bind(wx.EVT_MENU,  self.onRightExMeta, popup_menu.Append(popup_export_metadata, 'Export MetaData'))
@@ -373,6 +386,15 @@ class pnlSeriesSelector(wx.Panel):
     def onRightEdit(self, event):
         self.selectForEdit(self.tableSeries.getColumnText(self.selectedIndex, 1))
         event.Skip()
+
+    def onRightRefresh(self, event):
+        self.refreshSeries()
+        event.Skip()
+
+    def refreshSeries(self):
+        self.resetDB(self.dbservice)
+        logger.debug("Refresh Occurred")
+
 
     def onEditButton(self, event):
         #

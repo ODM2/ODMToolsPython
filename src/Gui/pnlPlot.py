@@ -24,6 +24,10 @@ from clsPlotOptions import PlotOptions, SeriesPlotInfo
 
 
 class pnlPlot(fnb.FlatNotebook):
+    def __init__(self, parent, id, size, style, name, pos=None):
+        self._init_ctrls(parent)
+        self.parent = parent
+
     def _init_ctrls(self, parent):
         fnb.FlatNotebook.__init__(self, id=wxID_TABPLOTS, name=u'tabPlots',
                                   parent=parent, pos=wx.Point(0, 0), size=wx.Size(491, 288),
@@ -159,6 +163,4 @@ class pnlPlot(fnb.FlatNotebook):
 
 
 
-    def __init__(self, parent, id, size, style, name, pos=None):
-        self._init_ctrls(parent)
-        self.parent = parent
+

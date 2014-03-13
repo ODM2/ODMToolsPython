@@ -199,6 +199,7 @@ class frmODMToolsMain(wx.Frame):
         #Memory Database
         self.pnlPlot.addPlot(memDB, seriesID)
         Publisher.sendMessage("EnablePlotButton", plot=self.pnlPlot.getActivePlotID(), isActive=True)
+        #self._ribbon.enableButtons(self.pnlPlot.getActivePlotID)
 
     def onSetScriptTitle(self, title):
         scriptPane = self._mgr.GetPane(self.txtPythonScript)
@@ -231,15 +232,17 @@ class frmODMToolsMain(wx.Frame):
     def onChangeDBConn(self, event):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
-        print value
+        #print value
         if value == 5101:
             #reset Series Selector
-            self.pnlSelector.resetDB(self.sc)
+            #self.pnlSelector.resetDB(self.sc)
+            Publisher.sendMessage("refreshSeries")
             #clear editseries
             #clear all plots
-            self.pnlPlot.Clear()
+            self.pnlPlot.clear()
             #clear table
             self.dataTable.clear()
+            Publisher.sendMessage("refreshTable")
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
