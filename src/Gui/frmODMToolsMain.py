@@ -232,17 +232,18 @@ class frmODMToolsMain(wx.Frame):
     def onChangeDBConn(self, event):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
-        #print value
+        print "value:", value
         if value == 5101:
             #reset Series Selector
-            #self.pnlSelector.resetDB(self.sc)
-            Publisher.sendMessage("refreshSeries")
+            self.createService()
+            self.pnlSelector.resetDB(self.sc)
+            #Publisher.sendMessage("refreshSeries")
             #clear editseries
             #clear all plots
             self.pnlPlot.clear()
             #clear table
             self.dataTable.clear()
-            Publisher.sendMessage("refreshTable")
+            #Publisher.sendMessage("refreshTable")
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()

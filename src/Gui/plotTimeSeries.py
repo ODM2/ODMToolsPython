@@ -81,7 +81,6 @@ class plotTimeSeries(wx.Panel):
 
         self.maxStart = datetime.datetime(1900, 01, 01, 0, 0, 0)
         self.maxEnd = datetime.datetime.now()
-
         self.canvas.draw()
         self._init_sizers()
 
@@ -96,6 +95,7 @@ class plotTimeSeries(wx.Panel):
         self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
         self.parent.record_service.select_points_tf(sellist)
         Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
+
 
         self.canvas.draw()
 
@@ -231,6 +231,7 @@ class plotTimeSeries(wx.Panel):
         self.clear()
         count = self.seriesPlotInfo.count()
         self.lines = []
+        fig, ax = plt.subplots(1)
 
         # self.timeSeries=self.canvas.add_subplot(111)
         self.setUpYAxis()

@@ -22,7 +22,6 @@ class pnlDataTable(wx.Panel):
 
     # selectedpoints = []
     def _init_ctrls(self, prnt):
-
         # generated method, don't edit
         wx.Panel.__init__(self, id=wxID_PNLDATATABLE, name=u'pnlDataTable',
               parent=prnt,  size=wx.Size(677, 449),
@@ -30,10 +29,9 @@ class pnlDataTable(wx.Panel):
         self.parent= prnt
         self.record_service= self.parent.Parent.getRecordService()
         self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT) #Virtual
-        #self.myOlv = VirtualObjectListView(self, -1, style=wx.LC_REPORT) #Virtual
 
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
-        self.myOlv.SetEmptyListMsg("No Series selected for Editing")
+        self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
 
         self.currentItem = 0
 
@@ -47,8 +45,6 @@ class pnlDataTable(wx.Panel):
         self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected )
         self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
 
-        #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.testBinding)
-
 ##        self.myOlv.Bind(wx.EVT_LIST_COL_END_DRAG , self.onLUp,id=wxID_PNLDATATABLE )
         self.myOlv.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onItemDeSelected )
 ##        self.myOlv.Bind(wx.EVT_LEFT_UP, self.onLUp, id=wxID_PNLDATATABLE )
@@ -57,11 +53,6 @@ class pnlDataTable(wx.Panel):
         Publisher.subscribe(self.onRefresh, ("refreshTable"))
 
         self.Layout()
-
-    def testBinding(self, event):
-        lines = event.GetEventObject().GetSelectedObjects()
-        print "selectedObjects:", lines
-        print "size:", self.myOlv.SelectedItemCount
 
 
     def init(self, dataRep, record_service):

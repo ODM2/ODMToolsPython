@@ -1,4 +1,4 @@
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, DBAPIError
 
 import utilities as util
 from series_service import SeriesService
@@ -13,6 +13,7 @@ class ServiceManager():
         self.debug = debug
         f = self.__get_file('r')
         self._connections = []
+        self.version = 0
         self._connection_format = "%s+%s://%s:%s@%s/%s"
 
         # Read all lines (connections) in the connection.cfg file
@@ -60,7 +61,9 @@ class ServiceManager():
 
     def test_connection(self, conn_dict):
         try:
-            version = self.get_db_version(conn_dict)
+            self.version = self.get_db_version(conn_dict)
+        except DBAPIError: pass
+            #print e.message
         except SQLAlchemyError:
             return False
         return True
@@ -72,8 +75,9 @@ class ServiceManager():
     def get_db_version(self, conn_dict):
         conn_string = self.__build_connection_string(conn_dict)
         service = SeriesService(conn_string)
-        version = service.get_db_version()
-        return version
+        if not self.version:
+            self.version = service.get_db_version()
+        return self.version
 
     def get_series_service(self):
         conn_string = self.__build_connection_string(self._current_connection)
