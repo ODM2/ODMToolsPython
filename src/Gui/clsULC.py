@@ -109,6 +109,7 @@ class clsULC(ULC.UltimateListCtrl):
 
     def checkItem(self, index):
         self.innerList[index][-1] = 1
+        # TODO clsUCL object has no attribute 'getItem'
         self._mainWin.CheckItem(self.getItem(index, 0), True, False)
 
 

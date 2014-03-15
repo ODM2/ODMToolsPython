@@ -50,7 +50,6 @@ class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
         self.service_manager = ServiceManager()
         self.record_service = None
-
         conn_dict = self.service_manager.get_current_connection()
         #there is a connection but it is unsuccessful
         if (conn_dict == None
@@ -58,7 +57,6 @@ class frmODMToolsMain(wx.Frame):
             # Create a DB form which will set a connection for the service manager
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
-
         if (conn_dict != None and self.service_manager.get_db_version(conn_dict) != u'1.1.1'):
             wx.MessageBox('The ODM database must be version 1.1.1 to use ODMToolsPython',
                           'Database Version Incompatible', wx.OK)
@@ -73,14 +71,11 @@ class frmODMToolsMain(wx.Frame):
     def _init_sizers(self):
         # generated method, don't edit
         self.s = wx.BoxSizer(wx.VERTICAL)
-
         self._init_s_Items(self.s)
-
         self.SetSizer(self.s)
 
     def _init_s_Items(self, parent):
         # generated method, don't edit
-
         parent.AddWindow(self._ribbon, 0, wx.EXPAND)
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
@@ -89,7 +84,7 @@ class frmODMToolsMain(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=prnt,
-                          size=wx.Size(900, 700),
+                          size=wx.Size(1000, 900),
                           style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
                              False, u'Tahoma'))
@@ -116,20 +111,15 @@ class frmODMToolsMain(wx.Frame):
                                    parent=self, size=wx.Size(605, 458),
                                    style=wx.TAB_TRAVERSAL)
 
-
-
-
         ################ Series Selection Panel ##################
         self.pnlSelector = pnlSeriesSelector.pnlSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
                                                                parent=self.pnlDocking, size=wx.Size(770, 388),
                                                                style=wx.TAB_TRAVERSAL, dbservice=self.sc)
 
-
         ####################grid Table View##################
         self.dataTable = pnlDataTable.pnlDataTable(id=wxID_ODMTOOLSGRID1, name='dataTable',
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
                                                    style=0)
-
 
         ############# Graph ###############
         self.pnlPlot = pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
@@ -138,7 +128,6 @@ class frmODMToolsMain(wx.Frame):
 
 
         ############# Script & Console ###############
-
         self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE,
                                                        size=wx.Size(500, 800), style=0)
 
@@ -152,7 +141,6 @@ class frmODMToolsMain(wx.Frame):
 
 
         ############ Docking ###################
-
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
