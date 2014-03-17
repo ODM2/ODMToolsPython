@@ -165,7 +165,7 @@ class frmDBConfig(wx.Dialog):
       conn_dict = self._GetFieldValues()
       message = ""
       if (self.service_manager.test_connection(conn_dict) and 
-          self.service_manager.get_db_version() == '1.1.1'):
+          self.service_manager.get_db_version(conn_dict) == '1.1.1'):
         message = "This connection is valid"
       else:
         message = "This connection is invalid"
