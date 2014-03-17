@@ -17,9 +17,10 @@ from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 ## Enable logging
 import logging
 from common.logger import LoggerTool
-tool = LoggerTool()
 
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w' ,logging.DEBUG)
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 class plotTimeSeries(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -40,14 +41,15 @@ class plotTimeSeries(wx.Panel):
         wx.Panel.__init__(self, parent, -1)
         self.parent = parent
 
-
         #init Plot
         self.timeSeries = host_subplot(111, axes_class=AA.Axes)
         self.timeSeries.plot([], [])
         self.timeSeries.set_title("No Data To Plot")
+
         self.canvas = FigCanvas(self, -1, plt.gcf())
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
                                     False, u'Tahoma'))
+
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
@@ -82,7 +84,6 @@ class plotTimeSeries(wx.Panel):
 
         self.maxStart = datetime.datetime(1900, 01, 01, 0, 0, 0)
         self.maxEnd = datetime.datetime.now()
-
         self.canvas.draw()
         self._init_sizers()
 
@@ -94,11 +95,13 @@ class plotTimeSeries(wx.Panel):
         # needs to have graph first
 
         #list of True False
+
         if self.editPoint:
             self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
             self.parent.record_service.select_points_tf(sellist)
             self.canvas.draw()
         Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
+
 
 
 
@@ -126,7 +129,6 @@ class plotTimeSeries(wx.Panel):
         else:
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
-        # self.timeSeries.plot(legend= not isVisible)
         self.canvas.draw()
 
 
@@ -149,7 +151,7 @@ class plotTimeSeries(wx.Panel):
 
         self.canvas.draw()
 
-#clear plot
+    #clear plot
     def clear(self):
         lines = []
         for key, ax in self.axislist.items():
@@ -191,7 +193,7 @@ class plotTimeSeries(wx.Panel):
         self.seriesPlotInfo.updateEditSeries()
         self.editCurve = self.seriesPlotInfo.getEditSeriesInfo()
         self.drawEditPlot(self.editCurve)
-        Publisher.sendMessage(("refreshTable"), e=None)
+        Publisher.sendMessage("refreshTable", e=None)
         # self.parent.parent.dataTable.Refresh()
         self.canvas.draw()
 
@@ -220,28 +222,23 @@ class plotTimeSeries(wx.Panel):
         plt.gcf().set_edgecolor(color)
         self.canvas.SetBackgroundColour(color)
 
-
     def close(self):
         plt.close()
-
 
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
         self.updatePlot()
-
 
     def updatePlot(self):
         self.clear()
         count = self.seriesPlotInfo.count()
         self.lines = []
 
-        # self.timeSeries=self.canvas.add_subplot(111)
         self.setUpYAxis()
 
         for oneSeries in self.seriesPlotInfo.getSeriesInfo():
             #is this the series to be edited
             if oneSeries.seriesID == self.seriesPlotInfo.getEditSeriesID():
-
                 self.curveindex = len(self.lines)
                 self.lines.append("")
                 self.editCurve = oneSeries
@@ -251,17 +248,18 @@ class plotTimeSeries(wx.Panel):
                 curraxis = self.axislist[oneSeries.axisTitle]
                 self.lines.append(
                     curraxis.plot_date([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                       self.format, color=oneSeries.color, xdate=True, tz=None,
+                                       self.format, color=oneSeries.color, xdate=True, tz=None, antialiased=True,
                                        label=oneSeries.plotTitle))
 
             self.setDateBound(oneSeries.dataTable[1][1], oneSeries.dataTable[-1][1])
+
         if count > 1:
             # self.timeSeries.set_title("Multiple Series plotted")
             self.timeSeries.set_title("")
             plt.subplots_adjust(bottom=.1 + .1)
             # self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
             #      ncol=2, prop = self.fontP)
-            self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
+            self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -1.75),
                                    ncol=2, prop=self.fontP)
         elif count == 0:
             self.timeSeries.set_title("")
@@ -272,6 +270,13 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.legend_ = None
 
         self.timeSeries.set_xlabel("Date Time")
+
+        self.timeSeries.axis[:].major_ticks.set_tick_out(True)
+        self.timeSeries.axis["bottom"].label.set_pad(20)
+        self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
+        self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(25)
+
+
         self.canvas.draw()
 
 

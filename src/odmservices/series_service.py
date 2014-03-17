@@ -171,11 +171,14 @@ class SeriesService():
 
     def series_exists(self, site_id, var_id, method_id, source_id, qcl_id):
         try:
-            result = self._edit_session.query(Series).filter_by(site_id=site_id,
-                                                                variable_id=var_id,
-                                                                method_id=method_id,
-                                                                source_id=source_id,
-                                                                quality_control_level_id=qcl_id).one()
+            result = self._edit_session.query(Series).filter_by(
+                site_id=site_id,
+                variable_id=var_id,
+                method_id=method_id,
+                source_id=source_id,
+                quality_control_level_id=qcl_id
+            ).one()
+
             return True
         except:
             return False
@@ -259,8 +262,10 @@ class SeriesService():
         self._edit_session.commit()
         return meth
 
-    def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
-                        value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
+    def create_variable(
+            self, code, name, speciation, variable_unit_id, sample_medium,
+            value_type, is_regular, time_support, time_unit_id, data_type,
+            general_category, no_data_value):
         var = Variable()
         var.code = code
         var.name = name
