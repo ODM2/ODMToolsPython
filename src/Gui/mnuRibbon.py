@@ -6,12 +6,11 @@ import datetime
 import wx
 import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
-
-import frmDataFilters
-import frmChangeValue
-import frmAddPoint
-import frmFlagValues
-import frmLinearDrift
+from frmDataFilters import frmDataFilter
+from frmChangeValue import frmChangeValue
+from frmAddPoint import frmAddPoint
+from frmFlagValues import frmFlagValues
+from frmLinearDrift import frmLinearDrift
 import wizSave
 import gui_utils as g_util
 
@@ -335,7 +334,7 @@ class mnuRibbon(RB.RibbonBar):
 
 
     def onLineDrift(self, event):
-        lin_drift = frmLinearDrift.frmLinearDrift(self, self.parent.getRecordService())
+        lin_drift = frmLinearDrift(self, self.parent.getRecordService())
         lin_drift.ShowModal()
         event.Skip()
 
@@ -362,13 +361,13 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditFilter(self, event):
         logger.debug("Entered!")
-        data_filter = frmDataFilters.frmDataFilter(self, self.parent.getRecordService())
+        data_filter = frmDataFilter(self, self.parent.getRecordService())
         self.filterlist = data_filter.ShowModal()
         data_filter.Destroy()
         event.Skip()
 
     def onEditChangeValue(self, event):
-        change_value = frmChangeValue.frmChangeValue(self, self.parent.getRecordService())
+        change_value = frmChangeValue(self, self.parent.getRecordService())
         change_value.ShowModal()
         event.Skip()
 
@@ -378,7 +377,7 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditFlag(self, event):
-        add_flag = frmFlagValues.frmFlagValues(self)
+        add_flag = frmFlagValues(self)
         if add_flag.ShowModal() == wx.ID_OK:
             self.parent.getRecordService().flag(add_flag.GetValue())
             Publisher.sendMessage(("updateValues"), event=event)
@@ -386,7 +385,7 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditAddPoint(self, event):
-        add_value = frmAddPoint.frmAddPoint(self, self.parent.getRecordService())
+        add_value = frmAddPoint(self, self.parent.getRecordService())
         add_value.ShowModal()
         Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()

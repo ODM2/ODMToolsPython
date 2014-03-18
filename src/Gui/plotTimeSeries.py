@@ -79,6 +79,7 @@ class plotTimeSeries(wx.Panel):
         self.curveindex = -1
         self.editseriesID = -1
         self.editCurve = None
+        self.editPoint =None
         self.lassoAction = None
         self.hoverAction = None
 
@@ -93,11 +94,15 @@ class plotTimeSeries(wx.Panel):
         # needs to have graph first
 
         #list of True False
-        self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
-        self.parent.record_service.select_points_tf(sellist)
-        Publisher.sendMessage("changeTableSelection", sellist=sellist)
 
-        self.canvas.draw()
+        if self.editPoint:
+            self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
+            self.parent.record_service.select_points_tf(sellist)
+            self.canvas.draw()
+        Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
+
+
+
 
     def onDateChanged(self, startDate, endDate):
         self.startDate = startDate

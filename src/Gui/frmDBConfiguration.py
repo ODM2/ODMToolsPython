@@ -169,6 +169,7 @@ class frmDBConfig(wx.Dialog):
                           id=wxID_FRMDBCONFIGBTNTEST)
 
     def OnBtnTest(self, event):
+
         conn_dict = self._GetFieldValues()
 
         message = ""
@@ -188,6 +189,7 @@ class frmDBConfig(wx.Dialog):
         else:
             message = "Please enter valid connection information"
             wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
+
 
     def OnBtnSave(self, event):
         conn_dict = self._GetFieldValues()
