@@ -186,8 +186,8 @@ class frmDBConfig(wx.Dialog):
                 message = "This connection is invalid"
                 wx.MessageBox(message, 'Test Connection', wx.OK | wx.ICON_ERROR)
         else:
-            message = "Unable to test connection due to insufficient data"
-            wx.MessageBox(message, 'Insufficient Data', wx.OK | wx.ICON_EXCLAMATION)
+            message = "Please enter valid connection information"
+            wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
 
     def OnBtnSave(self, event):
         conn_dict = self._GetFieldValues()

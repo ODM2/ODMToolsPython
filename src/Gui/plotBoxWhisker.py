@@ -124,8 +124,17 @@ class PlotBox(wx.Panel):
             self.plots[i - 1].set_autoscale_on(True)
             self.plots[i - 1].set_xticklabels(oneSeries.BoxWhisker.currinterval.xlabels)
 
-            i = i + 1
+            i += 1
 
+        left  = 0.125  # the left side of the subplots of the figure
+        right = 0.9    # the right side of the subplots of the figure
+        bottom = 0.1   # the bottom of the subplots of the figure
+        top = 0.9      # the top of the subplots of the figure
+        wspace = 0.5   # the amount of width reserved for blank space between subplots
+        hspace = 0.5   # the amount of height reserved for white space between subplots
+        self.figure.subplots_adjust(
+            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+        )
         self.canvas.draw()
 
 

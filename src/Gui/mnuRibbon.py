@@ -227,7 +227,7 @@ class mnuRibbon(RB.RibbonBar):
         self.bindEvents()
         Publisher.subscribe(self.toggleEditButtons, ("EnableEditButtons"))
         Publisher.subscribe(self.enableButtons, ("EnablePlotButtons"))
-        Publisher.subscribe(self.resetDateRange, ("resetdate"))
+        Publisher.subscribe(self.resetDateRange, "resetdate")
 
 
     def __init__(self, parent, id, name):
@@ -296,6 +296,8 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onFullDate(self, event):
+        start = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
+        end = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
         Publisher.sendMessage("onDateChanged", date=datetime.datetime.now(), time="full")
 
     def onDateChanged(self, event):
