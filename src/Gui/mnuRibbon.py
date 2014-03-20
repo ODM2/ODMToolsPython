@@ -295,9 +295,7 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onFullDate(self, event):
-        start = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
-        end = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
-        Publisher.sendMessage("onDateChanged", date=datetime.datetime.now(), time="full")
+        Publisher.sendMessage("onDateFull")
 
     def onDateChanged(self, event):
         #logger.fatal("%s" % (type(self.dpEndDate.GetValue())))
@@ -316,6 +314,7 @@ class mnuRibbon(RB.RibbonBar):
         # check conditions
         logger.debug("startDate: %s" % (startDate))
         logger.debug("endDate: %s" % (endDate))
+
         if startDate.date() <= endDate.date():
             endDate = endDate.replace(hour=11, minute=59, second=59)
         else:

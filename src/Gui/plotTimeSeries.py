@@ -101,9 +101,6 @@ class plotTimeSeries(wx.Panel):
             self.canvas.draw()
         Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
 
-
-
-
     def onDateChanged(self, startDate, endDate):
         self.startDate = startDate
         self.endDate = endDate
@@ -115,7 +112,19 @@ class plotTimeSeries(wx.Panel):
             self.startDate = self.maxStart = start
         if end < self.maxEnd:
             self.endDate = self.maxEnd = end
-        Publisher.sendMessage(("resetdate"), startDate=self.maxStart, endDate=self.maxEnd)
+
+        #logger.debug("self.maxStart: %s" % (self.maxStart))
+        #logger.debug("self.maxEnd: %s" % (self.maxEnd))
+
+        Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
+
+    def onDateFull(self):
+        logger.debug("Date: %s, %s" % (self.maxStart, self.maxEnd))
+        # Resets the Date Time field
+        Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
+        # Modify the plot to reflect the new Date Time
+        Publisher.sendMessage("onDateChanged", startDate=self.maxStart, endDate=self.maxEnd)
+
 
     def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
@@ -228,9 +237,6 @@ class plotTimeSeries(wx.Panel):
 
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
-        print type(self.seriesPlotInfo)
-        print "dir: ", dir(self.seriesPlotInfo)
-        logger.debug("SeriesPlotInfo: %s" % ([x for x in self.seriesPlotInfo.getSeriesInfo()]))
         self.updatePlot()
 
     def updatePlot(self):

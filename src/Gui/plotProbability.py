@@ -2,9 +2,9 @@ import textwrap
 
 import wx
 import matplotlib
+import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar

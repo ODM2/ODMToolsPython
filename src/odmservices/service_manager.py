@@ -23,14 +23,17 @@ class ServiceManager():
                 break
             else:
                 line = line.split()
-                line_dict = {}
-                line_dict['engine'] = line[0]
-                line_dict['user'] = line[1]
-                line_dict['password'] = line[2]
-                line_dict['address'] = line[3]
-                line_dict['db'] = line[4]
 
-                self._connections.append(line_dict)
+                if len(line) >= 5:
+                    print "lineSize: ", len(line)
+                    line_dict = {}
+
+                    line_dict['engine'] = line[0]
+                    line_dict['user'] = line[1]
+                    line_dict['password'] = line[2]
+                    line_dict['address'] = line[3]
+                    line_dict['db'] = line[4]
+                    self._connections.append(line_dict)
 
         if len(self._connections) is not 0:
             # The current connection defaults to the most recent (i.e. the last written to the file)
@@ -62,7 +65,8 @@ class ServiceManager():
     def test_connection(self, conn_dict):
         try:
             self.version = self.get_db_version(conn_dict)
-        except DBAPIError: pass
+        except DBAPIError:
+            pass
             #print e.message
         except SQLAlchemyError:
             return False

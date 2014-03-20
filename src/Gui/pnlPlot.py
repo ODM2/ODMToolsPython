@@ -61,6 +61,8 @@ class pnlPlot(fnb.FlatNotebook):
         self.AddPage(self.pltSum, 'Summary')
 
         Publisher.subscribe(self.onDateChanged, ("onDateChanged"))
+        Publisher.subscribe(self.onDateFull, ("onDateFull"))
+
         Publisher.subscribe(self.onPlotType, ("onPlotType"))
         Publisher.subscribe(self.onShowLegend, ("onShowLegend"))
         Publisher.subscribe(self.onNumBins, ("onNumBins"))
@@ -76,7 +78,6 @@ class pnlPlot(fnb.FlatNotebook):
 
     def onUpdateValues(self, event):
         self.pltTS.updateValues()
-
 
     def onChangeSelection(self, sellist):
         self.pltTS.changeSelection(sellist)
@@ -100,10 +101,13 @@ class pnlPlot(fnb.FlatNotebook):
     def onDateChanged(self, startDate, endDate):
         self.pltTS.onDateChanged(startDate, endDate)
 
+    # Reset the date to the full date
+    def onDateFull(self):
+        self.pltTS.onDateFull()
+
     def onPlotType(self, event, ptype):
         self.pltTS.onPlotType(ptype)
         self.pltProb.onPlotType(ptype)
-
 
     def onShowLegend(self, event, isVisible):
         self.pltTS.onShowLegend(isVisible)
