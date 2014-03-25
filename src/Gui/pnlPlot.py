@@ -32,6 +32,7 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class pnlPlot(fnb.FlatNotebook):
     def __init__(self, parent, id, size, style, name, pos=None):
         self._init_ctrls(parent)
+        self.initPubSub()
         self.parent = parent
 
     def _init_ctrls(self, parent):
@@ -66,29 +67,26 @@ class pnlPlot(fnb.FlatNotebook):
                                               style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltSum, 'Summary')
 
+        self.selectedSerieslist = []
+        self._seriesPlotInfo = None
+        self.editID = None
+
+    def initPubSub(self):
         Publisher.subscribe(self.onDateChanged, ("onDateChanged"))
         Publisher.subscribe(self.onDateFull, ("onDateFull"))
-
         Publisher.subscribe(self.onPlotType, ("onPlotType"))
         Publisher.subscribe(self.onShowLegend, ("onShowLegend"))
         Publisher.subscribe(self.onNumBins, ("onNumBins"))
         Publisher.subscribe(self.onRemovePlot, ("removePlot"))
         Publisher.subscribe(self.onChangeSelection, ("changeSelection"))
         Publisher.subscribe(self.onUpdateValues, ("updateValues"))
-
-        self.selectedSerieslist = []
-        self._seriesPlotInfo = None
-        self.editID = None
-
+        Publisher.subscribe(self.clear, "clearPlot")
 
     def onUpdateValues(self, event):
         self.pltTS.updateValues()
 
-
     def onChangeSelection(self, sellist, datetime_list):
         self.pltTS.changePlotSelection(sellist, datetime_list)
-
-
 
     def onRemovePlot(self, seriesID):
 
@@ -160,20 +158,13 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.close()
 
     def clear(self):
+        self.pltTS.init_plot()
         self.pltSum.clear()
         self.pltHist.clear()
         self.pltProb.clear()
         self.pltBox.clear()
-        self.pltTS.clear()
+        #self.pltTS.clear()
 
         # Set title of TimeSeries to default
-        self.pltTS.timeSeries.set_title("No Data To Plot")
-
+        #self.pltTS.timeSeries.set_title("No Data To Plot")
         self._seriesPlotInfo = None
-
-    ##    def get_edit_metadata(self)
-
-
-
-
-

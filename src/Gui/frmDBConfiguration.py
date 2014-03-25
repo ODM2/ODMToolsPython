@@ -32,13 +32,11 @@ class frmDBConfig(wx.Dialog):
 
     def _init_coll_boxSizer3_Items(self, parent):
         # generated method, don't edit
-
         parent.AddWindow(self.lblDbType, 25, border=5, flag=wx.ALL | wx.GROW)
         parent.AddWindow(self.dbComboBox, 75, border=5, flag=wx.GROW | wx.ALL)
 
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
-
         parent.AddSizer(self.boxSizer3, 17, border=5, flag=wx.GROW | wx.ALL)
         parent.AddWindow(self.pnlConnection, 66, border=5,
                          flag=wx.GROW | wx.ALL)
@@ -46,7 +44,6 @@ class frmDBConfig(wx.Dialog):
 
     def _init_coll_boxSizer2_Items(self, parent):
         # generated method, don't edit
-
         parent.AddWindow(self.btnTest, 33, border=5, flag=wx.GROW | wx.ALL)
         parent.AddWindow(self.btnSave, 33, border=5, flag=wx.ALL | wx.GROW)
         parent.AddWindow(self.btnCancel, 33, border=5, flag=wx.GROW | wx.ALL)
@@ -54,9 +51,7 @@ class frmDBConfig(wx.Dialog):
     def _init_sizers(self):
         # generated method, don't edit
         self.boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
-
         self.boxSizer2 = wx.BoxSizer(orient=wx.HORIZONTAL)
-
         self.boxSizer3 = wx.BoxSizer(orient=wx.HORIZONTAL)
 
         self._init_coll_boxSizer1_Items(self.boxSizer1)
