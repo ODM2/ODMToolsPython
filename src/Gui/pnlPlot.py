@@ -18,6 +18,12 @@ import plotBoxWhisker
 import plotProbability
 from clsPlotOptions import PlotOptions, SeriesPlotInfo
 
+import logging
+from common.logger import LoggerTool
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 [wxID_PANEL1, wxID_PAGEBOX, wxID_PAGEHIST, wxID_PAGEPROB,
  wxID_PAGESUMMARY, wxID_PAGETIMESERIES, wxID_TABPLOTS
 ] = [wx.NewId() for _init_ctrls in range(7)]
@@ -67,8 +73,7 @@ class pnlPlot(fnb.FlatNotebook):
         Publisher.subscribe(self.onShowLegend, ("onShowLegend"))
         Publisher.subscribe(self.onNumBins, ("onNumBins"))
         Publisher.subscribe(self.onRemovePlot, ("removePlot"))
-        Publisher.subscribe(self.onChangeSelection, ("changePlotSelection"))
-        Publisher.subscribe(self.onChangeSelectionDT, ("changePlotSelectionDT"))
+        Publisher.subscribe(self.onChangeSelection, ("changeSelection"))
         Publisher.subscribe(self.onUpdateValues, ("updateValues"))
 
         self.selectedSerieslist = []
@@ -79,11 +84,11 @@ class pnlPlot(fnb.FlatNotebook):
     def onUpdateValues(self, event):
         self.pltTS.updateValues()
 
-    def onChangeSelection(self, sellist):
-        self.pltTS.changeSelection(sellist)
 
-    def onChangeSelectionDT(self, sellist):
-        self.pltTS.changeSelectionDT(sellist)
+    def onChangeSelection(self, sellist, datetime_list):
+        self.pltTS.changePlotSelection(sellist, datetime_list)
+
+
 
     def onRemovePlot(self, seriesID):
 

@@ -114,6 +114,11 @@ class ConsoleTools(object):
             self._record_service.flag(qualifier_id)
             self.refresh_plot()
 
+    def select_points(self, id_list=[], datetime_list=[] ):
+        if self._record_service:
+            self._record_service.select_points(id_list, datetime_list)
+            self.refresh_plot()
+
     def delete_points(self):
         if self._record_service:
             self._record_service.delete_points()

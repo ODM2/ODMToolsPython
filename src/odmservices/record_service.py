@@ -167,3 +167,5 @@ class RecordService():
         self._script("from odmservices import SeriesService\n", 'black')
         self._script("edit_service  = EditService(series_id={id}, connection_string='{con}')\n".format(id=self._edit_service._series_id, con=self._connection_string), 'black')
         self._script("series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')
+        self._script("## To run commands from the python console uncomment and run the following command ##\n", 'black')
+        self._script("#edit_service = Tools\n", 'black')

@@ -38,28 +38,23 @@ class pnlDataTable(wx.Panel):
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_2.Add(self.myOlv, 1, wx.ALL|wx.EXPAND, 4)
         self.SetSizer(sizer_2)
-        self.doneselecting=True
 
-        self.myOlv._highlightBrush=wx.Brush("red")
+
 
         self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected )
         self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
 
-##        self.myOlv.Bind(wx.EVT_LIST_COL_END_DRAG , self.onLUp,id=wxID_PNLDATATABLE )
-        self.myOlv.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onItemDeSelected )
-##        self.myOlv.Bind(wx.EVT_LEFT_UP, self.onLUp, id=wxID_PNLDATATABLE )
-##        self.myOlv.Bind(wx.EVT_LEFT_DOWN, self.onLDown, id=wxID_PNLDATATABLE)
         Publisher.subscribe(self.onChangeSelection, ("changeTableSelection"))
         Publisher.subscribe(self.onRefresh, ("refreshTable"))
 
         self.Layout()
 
 
-    def init(self, dataRep, record_service):
-        self.dataRep = dataRep
+    def init(self, memDB, record_service):
+        self.memDB = memDB
         self.record_service = record_service
 
-        self.myOlv.SetColumns( ColumnDefn(x, valueGetter=i, minimumWidth=40) for x, i in self.dataRep.getEditColumns())
+        self.myOlv.SetColumns(ColumnDefn(x, valueGetter=i, minimumWidth=40) for x, i in self.memDB.getEditColumns())
 
         #####table Settings
         self.myOlv.useAlternateBackColors = True
@@ -68,23 +63,16 @@ class pnlDataTable(wx.Panel):
 
 
         # self.values = [list(x) for x in self.cursor.fetchall()]
-        self.myOlv.SetObjects(self.dataRep.getDataValuesforEdit())
+        self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def onRefresh(self, e):
-        self.myOlv.SetObjects(self.dataRep.getDataValuesforEdit())
+        self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def clear(self):
-        self.dataRep= None
+        self.memDB= None
         self.record_service = None
         self.myOlv.SetObjects(None)
 
-    def onLUp (self, event):
-        print "in up"
-        self.doneselecting = True
-
-    def onLDown(self, event):
-        print "in down"
-        self.doneselecting = False
 
     def onItemSelected(self, event):
         # print "in onItemSelected"
@@ -97,17 +85,11 @@ class pnlDataTable(wx.Panel):
         #for i in self.currentItem:
             #logger.debug("index: %s" % (i[3]))
 
-        print [x[3] for x in self.currentItem]
+        logger.debug("dates %s" %  [x[3] for x in self.currentItem])
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
-
-        if self.doneselecting:
-            selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
-            Publisher.sendMessage(("changePlotSelection"), sellist = selectedids)
-
-    def onItemDeSelected(self, event):
-        logger.debug("OnItemDeSelected: %s\n" % (event.m_itemIndex))
-
-        # self.selectedpoints.remove(event.m_itemIndex)
+        #update plot
+        selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
+        Publisher.sendMessage(("changeSelection"), sellist=[], datetime_list=[x[3] for x in self.currentItem])
 
     def onKeyPress(self, event):
         # check for Ctrl+A
@@ -120,33 +102,33 @@ class pnlDataTable(wx.Panel):
                 print "self.currentItem: ", self.currentItem
                 print "len: ", len(self.currentItem)
 
-        if self.doneselecting:
-            selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
-            Publisher.sendMessage(("changePlotSelection"), sellist = selectedids)
+        selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
+        self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
+        Publisher.sendMessage(("changeSelection"), sellist= [], datetime_list=[x[3] for x in self.currentItem] )
 
-    def getSelectedIDs(self, selobjects):
-        idlist=[False] * self.dataRep.getEditRowCount()
-        for sel in selobjects:
-            idlist[self.myOlv.GetIndexOf(sel)]=True
+    def onChangeSelection(self, sellist=None, datetime_list= None):
+        if len(sellist)>0:
+            objlist=[]
 
-        return idlist
+            for i in range(len(sellist)):
+                if sellist[i]:
+                    objlist.append(self.myOlv.GetObjectAt(i))
+            self.myOlv.SelectObjects(objlist, deselectOthers=True)
+        else:
+            dtlist= None
+            self.myOlv.SelectObjects(dtlist, deselectOthers=True)
 
-
-    def onChangeSelection(self, sellist):
-        objlist=[]
-
-
-        for i in range(len(sellist)):
-            if sellist[i]:
-                objlist.append(self.myOlv.GetObjectAt(i))
-        # print objlist
-        self.doneselecting = False
-        self.myOlv.SelectObjects(objlist, deselectOthers=True)
-        self.doneselecting = True
         self.myOlv.SetFocus()
 
     def stopEdit(self):
         self.clear()
+
+    def getSelectedIDs(self, selobjects):
+        idlist=[False] * self.memDB.getEditRowCount()
+        for sel in selobjects:
+            idlist[self.myOlv.GetIndexOf(sel)]=True
+
+        return idlist
 
 
 

@@ -88,18 +88,37 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
         self._init_sizers()
 
-    def changeSelection(self, sellist):
-        # k black
-        # r red
+
+    def changePlotSelection(self, sellist=None, datetime_list=None):
+
+        # k black,    # r red
+
         # needs to have graph first
-
-        #list of True False
-
         if self.editPoint:
-            self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
-            self.parent.record_service.select_points_tf(sellist)
+            if len(sellist)>0:
+                #list of True False
+                self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
+            else:
+                #TODO convert datetime list to TF list
+                tflist=[False] *len(self.editCurve.dataTable)
+                logger.debug("list {list}, type:{type}".format(list=sorted(datetime_list), type=type(datetime_list[0])))
+                logger.debug("table entry: {table}, type{type}".format(table=[x[1] for x in self.editCurve.dataTable],type=type(self.editCurve.dataTable[0][1])))
+                for i in range(len(self.editCurve.dataTable)):
+                    if self.editCurve.dataTable[i][1] in datetime_list:
+                        tflist[i] = True
+                self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
+
             self.canvas.draw()
-        Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
+
+
+    def changeSelection(self, sellist=None, datetime_list=None):
+        self.changePlotSelection(sellist, datetime_list)
+        if len(sellist)>0:
+            self.parent.record_service.select_points_tf(sellist)
+            Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
+        else:
+            self.parent.record_service.select_points(datetime_list=datetime_list)
+
 
     def onDateChanged(self, startDate, endDate):
         self.startDate = startDate
@@ -191,19 +210,22 @@ class plotTimeSeries(wx.Panel):
         # self.addEdit(self.editCursor, self.editSeries, self.editDataFilter)
 
         #clear current edit points and curve
-        curraxis = self.axislist[self.editCurve.axisTitle]
-        for l in curraxis.lines:
-            if l.get_label() == self.editCurve.plotTitle:
-                curraxis.lines.remove(l)
-        self.editPoint.remove()
+        if self.editCurve:
+            curraxis = self.axislist[self.editCurve.axisTitle]
+            for l in curraxis.lines:
+                if l.get_label() == self.editCurve.plotTitle:
+                    curraxis.lines.remove(l)
+            self.editPoint.remove()
 
 
-        #redraw editpoints and curve
-        self.seriesPlotInfo.updateEditSeries()
-        self.editCurve = self.seriesPlotInfo.getEditSeriesInfo()
-        self.drawEditPlot(self.editCurve)
+            #redraw editpoints and curve
+            self.seriesPlotInfo.updateEditSeries()
+            self.editCurve = self.seriesPlotInfo.getEditSeriesInfo()
+            self.drawEditPlot(self.editCurve)
+            self.canvas.draw()
         Publisher.sendMessage("refreshTable", e=None)
         # self.parent.parent.dataTable.Refresh()
+
 
         plt.gcf().autofmt_xdate()
         self.canvas.draw()
@@ -341,15 +363,16 @@ class plotTimeSeries(wx.Panel):
 
 
     def callback(self, verts):
-        # TODO TypeError: int() argument must be a string or a number, not 'NoneType'
-        seldatetimes = [matplotlib.dates.num2date(x[0]).replace(tzinfo=None) for x in verts]
+        seldatetimes = [(matplotlib.dates.num2date(x[0]).replace(tzinfo=None)).replace(microsecond=0) for x in verts]
+
         print seldatetimes
 
-        self.parent.record_service.select_points(datetime_list=seldatetimes)
+
+        #self.parent.record_service.select_points(datetime_list=seldatetimes)
 
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
-        self.changeSelection(ind)
+        self.changeSelection(sellist=ind, datetime_list= [x.replace(microsecond=0)for x in seldatetimes] )
 
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)
