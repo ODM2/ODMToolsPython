@@ -22,12 +22,14 @@ class EditService():
             self._session_factory = SessionFactory(connection_string, debug)
             self._series_service = SeriesService(connection_string, debug)
         elif (factory is not None):
+            #TODO code has changed to no longer use a session factory, refactor so it is correct
             self._session_factory = factory
             service_manager = ServiceManager()
             self._series_service = service_manager.get_series_service()
         else:
             # One or the other must be set
             logger.debug("Must have either a connection string or session factory")
+            #
             # TODO throw an exception
 
         self._edit_session = self._session_factory.get_session()
