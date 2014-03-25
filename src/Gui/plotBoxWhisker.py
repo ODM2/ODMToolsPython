@@ -88,7 +88,7 @@ class PlotBox(wx.Panel):
             wrap, text = self.textSize(count)
             self.plots[i - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
             self.plots[i - 1].set_ylabel(
-                "\n".join(textwrap.wrap(oneSeries.variableName + "(" + oneSeries.variableUnits + ")", wrap)))
+                "\n".join(textwrap.wrap(oneSeries.variableName + " (" + oneSeries.variableUnits + ")", wrap)))
             self.plots[i - 1].set_title(
                 "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
 
@@ -135,6 +135,13 @@ class PlotBox(wx.Panel):
         self.figure.subplots_adjust(
             left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
         )
+
+        #self.figure.autofmt_xdate()
+        plt.xticks(rotation=30, size='small')
+        plt.margins(0.2)
+        # Tweak spacing to prevent clipping of tick-labels
+        plt.subplots_adjust(bottom=0.15)
+
         self.canvas.draw()
 
 

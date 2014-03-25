@@ -498,12 +498,16 @@ class pnlSeriesSelector(wx.Panel):
     def onCheck(self, event):
         # self.tableSeries.DeleteAllItems()
         if self.checkSite.GetValue():
+            logger.debug("checksite: %s" % (self.checkSite.GetValue()))
             if self.checkVariable.GetValue():
+                logger.debug("checkvariable: %s" % (self.checkVariable.GetValue()))
                 self.siteAndVariables()
             else:
+                logger.debug("siteOnly: %s" % (self.siteOnly()))
                 self.siteOnly()
         else:
             if self.checkVariable.GetValue():
+                logger.debug("VariableOnly: %s" % (self.variableOnly()))
                 self.variableOnly()
             else:
                 self.cbSites.Enabled = False

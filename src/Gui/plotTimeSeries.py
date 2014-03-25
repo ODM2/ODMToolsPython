@@ -125,7 +125,6 @@ class plotTimeSeries(wx.Panel):
         # Modify the plot to reflect the new Date Time
         Publisher.sendMessage("onDateChanged", startDate=self.maxStart, endDate=self.maxEnd)
 
-
     def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
         if isVisible:
@@ -301,7 +300,6 @@ class plotTimeSeries(wx.Panel):
             self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
             self.updatePlot()
             # print self.editCurve
-
 
     def setUpYAxis(self):
         self.axislist = {}

@@ -1,5 +1,4 @@
 import math
-
 import numpy
 
 
@@ -180,7 +179,7 @@ class SeriesPlotInfo(object):
                 seriesInfo.variableName = variableName
                 seriesInfo.variableUnits = unitsName
                 seriesInfo.plotTitle = siteName + " " + variableName
-                seriesInfo.axisTitle = variableName + "(" + unitsName + ")"
+                seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
                 seriesInfo.Probability = Probability(data)
                 seriesInfo.statistics = Statistics(data, self._plotOptions.useCensoredData)
                 seriesInfo.BoxWhisker = BoxWhisker(data, self._plotOptions.boxWhiskerMethod)

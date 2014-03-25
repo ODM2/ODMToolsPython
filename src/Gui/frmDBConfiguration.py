@@ -161,7 +161,7 @@ class frmDBConfig(wx.Dialog):
         conn_dict = self._GetFieldValues()
 
         message = ""
-        if conn_dict['user'] and conn_dict['password'] and conn_dict['address'] and conn_dict['db']:
+        if conn_dict['user'] and conn_dict['password']  and conn_dict['address'] and conn_dict['db']:
             if self.service_manager.test_connection(conn_dict):
                 try:
                     if self.service_manager.get_db_version(conn_dict) == '1.1.1':
