@@ -4,9 +4,10 @@ import datetime
 import wx
 import matplotlib
 import matplotlib.pyplot as plt
+import mpl_toolkits.axisartist as AA
+
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
-import mpl_toolkits.axisartist as AA
 from matplotlib.font_manager import FontProperties
 from matplotlib.widgets import Lasso
 from matplotlib import path
@@ -29,27 +30,27 @@ class plotTimeSeries(wx.Panel):
         parent.AddWindow(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         parent.AddWindow(self.toolbar, 0, wx.EXPAND)
 
-
     def _init_sizers(self):
         # generated method, don't edit
         self.boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
         self._init_coll_boxSizer1_Items(self.boxSizer1)
         self.SetSizer(self.boxSizer1)
 
+    def _init_plot(self):
+        self.timeSeries = host_subplot(111, axes_class=AA.Axes)
+        self.timeSeries.plot([], [])
+        self.timeSeries.set_title("No Data To Plot")
+        self.canvas = FigCanvas(self, -1, plt.gcf())
+        self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
+                                    False, u'Tahoma'))
+        self.isShowLegendEnabled = False
 
     def _init_ctrls(self, parent):
         wx.Panel.__init__(self, parent, -1)
         self.parent = parent
 
         #init Plot
-        self.timeSeries = host_subplot(111, axes_class=AA.Axes)
-        self.timeSeries.plot([], [])
-        self.timeSeries.set_title("No Data To Plot")
-
-        self.canvas = FigCanvas(self, -1, plt.gcf())
-        self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
-                                    False, u'Tahoma'))
-
+        self._init_plot()
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
@@ -58,7 +59,7 @@ class plotTimeSeries(wx.Panel):
 
         #set properties
         self.fontP = FontProperties()
-        self.fontP.set_size('small')
+        self.fontP.set_size('x-small')
 
         self.format = '-o'
         self._setColor("WHITE")
@@ -87,9 +88,11 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
         self._init_sizers()
 
+
     def changePlotSelection(self, sellist=None, datetime_list=None):
 
         # k black,    # r red
+
         # needs to have graph first
         if self.editPoint:
             if len(sellist)>0:
@@ -107,6 +110,7 @@ class plotTimeSeries(wx.Panel):
 
             self.canvas.draw()
 
+
     def changeSelection(self, sellist=None, datetime_list=None):
         self.changePlotSelection(sellist, datetime_list)
         if len(sellist)>0:
@@ -116,31 +120,46 @@ class plotTimeSeries(wx.Panel):
             self.parent.record_service.select_points(datetime_list=datetime_list)
 
 
-
     def onDateChanged(self, startDate, endDate):
         self.startDate = startDate
         self.endDate = endDate
         self.timeSeries.axis.axes.set_xbound(startDate, endDate)
         self.canvas.draw()
 
-
     def setDateBound(self, start, end):
         if start > self.maxStart:
             self.startDate = self.maxStart = start
         if end < self.maxEnd:
             self.endDate = self.maxEnd = end
-        Publisher.sendMessage(("resetdate"), startDate=self.maxStart, endDate=self.maxEnd)
+
+        #logger.debug("self.maxStart: %s" % (self.maxStart))
+        #logger.debug("self.maxEnd: %s" % (self.maxEnd))
+
+        Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
+
+    def onDateFull(self):
+        logger.debug("Date: %s, %s" % (self.maxStart, self.maxEnd))
+        # Resets the Date Time field
+        Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
+        # Modify the plot to reflect the new Date Time
+        Publisher.sendMessage("onDateChanged", startDate=self.maxStart, endDate=self.maxEnd)
 
 
     def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
         if isVisible:
+            self.isShowLegendEnabled = True
+            logger.debug("IsVisible")
             plt.subplots_adjust(bottom=.1 + .1)
-            self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-                                   ncol=2, prop=self.fontP)
+            self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -0.16),
+                                   ncol=2, fancybox=True, prop=self.fontP)
         else:
+            self.isShowLegendEnabled = False
+            logger.debug("IsNotVisible")
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
+
+        plt.gcf().autofmt_xdate()
         self.canvas.draw()
 
 
@@ -161,15 +180,14 @@ class plotTimeSeries(wx.Panel):
             if not (i == self.curveindex):
                 plt.setp(line, linestyle=ls, marker=m)
 
+        plt.gcf().autofmt_xdate()
         self.canvas.draw()
-
     #clear plot
     def clear(self):
         lines = []
         for key, ax in self.axislist.items():
             ax.clear()
             # self.stopEdit()
-
 
     def stopEdit(self):
         self.clear()
@@ -188,7 +206,6 @@ class plotTimeSeries(wx.Panel):
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.updatePlot()
         self.editseriesID = -1
-
 
     def updateValues(self):
         # self.addEdit(self.editCursor, self.editSeries, self.editDataFilter)
@@ -211,6 +228,8 @@ class plotTimeSeries(wx.Panel):
         # self.parent.parent.dataTable.Refresh()
 
 
+        plt.gcf().autofmt_xdate()
+        self.canvas.draw()
 
     def drawEditPlot(self, oneSeries):
         curraxis = self.axislist[oneSeries.axisTitle]
@@ -226,7 +245,6 @@ class plotTimeSeries(wx.Panel):
 
         self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
         self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
-
 
     def _setColor(self, color):
         """Set figure and canvas colours to be the same.
@@ -261,9 +279,14 @@ class plotTimeSeries(wx.Panel):
             else:
                 curraxis = self.axislist[oneSeries.axisTitle]
                 self.lines.append(
-                    curraxis.plot_date([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                       self.format, color=oneSeries.color, xdate=True, tz=None, antialiased=True,
-                                       label=oneSeries.plotTitle))
+                    curraxis.plot_date(
+                        [x[1] for x in oneSeries.dataTable],
+                        [x[0] for x in oneSeries.dataTable],
+                        self.format, color=oneSeries.color,
+                        xdate=True, tz=None, antialiased=True,
+                        label=oneSeries.plotTitle
+                    )
+                )
 
             self.setDateBound(oneSeries.dataTable[1][1], oneSeries.dataTable[-1][1])
 
@@ -288,11 +311,11 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
-        self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(25)
+        self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
 
+        plt.gcf().autofmt_xdate()
 
         self.canvas.draw()
-
 
     def setEdit(self, id):
         self.editseriesID = id
@@ -343,6 +366,7 @@ class plotTimeSeries(wx.Panel):
 
     def callback(self, verts):
         seldatetimes = [(matplotlib.dates.num2date(x[0]).replace(tzinfo=None)).replace(microsecond=0) for x in verts]
+
         print seldatetimes
 
 

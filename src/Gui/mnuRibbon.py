@@ -226,7 +226,7 @@ class mnuRibbon(RB.RibbonBar):
         self.bindEvents()
         Publisher.subscribe(self.toggleEditButtons, ("EnableEditButtons"))
         Publisher.subscribe(self.enableButtons, ("EnablePlotButtons"))
-        Publisher.subscribe(self.resetDateRange, ("resetdate"))
+        Publisher.subscribe(self.resetDateRange, "resetdate")
 
 
     def __init__(self, parent, id, name):
@@ -295,7 +295,7 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onFullDate(self, event):
-        Publisher.sendMessage("onDateChanged", date=datetime.datetime.now(), time="full")
+        Publisher.sendMessage("onDateFull")
 
     def onDateChanged(self, event):
         #logger.fatal("%s" % (type(self.dpEndDate.GetValue())))
@@ -314,6 +314,7 @@ class mnuRibbon(RB.RibbonBar):
         # check conditions
         logger.debug("startDate: %s" % (startDate))
         logger.debug("endDate: %s" % (endDate))
+
         if startDate.date() <= endDate.date():
             endDate = endDate.replace(hour=11, minute=59, second=59)
         else:

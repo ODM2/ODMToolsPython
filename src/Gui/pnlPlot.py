@@ -67,6 +67,8 @@ class pnlPlot(fnb.FlatNotebook):
         self.AddPage(self.pltSum, 'Summary')
 
         Publisher.subscribe(self.onDateChanged, ("onDateChanged"))
+        Publisher.subscribe(self.onDateFull, ("onDateFull"))
+
         Publisher.subscribe(self.onPlotType, ("onPlotType"))
         Publisher.subscribe(self.onShowLegend, ("onShowLegend"))
         Publisher.subscribe(self.onNumBins, ("onNumBins"))
@@ -104,10 +106,13 @@ class pnlPlot(fnb.FlatNotebook):
     def onDateChanged(self, startDate, endDate):
         self.pltTS.onDateChanged(startDate, endDate)
 
+    # Reset the date to the full date
+    def onDateFull(self):
+        self.pltTS.onDateFull()
+
     def onPlotType(self, event, ptype):
         self.pltTS.onPlotType(ptype)
         self.pltProb.onPlotType(ptype)
-
 
     def onShowLegend(self, event, isVisible):
         self.pltTS.onShowLegend(isVisible)
@@ -160,6 +165,10 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltProb.clear()
         self.pltBox.clear()
         self.pltTS.clear()
+
+        # Set title of TimeSeries to default
+        self.pltTS.timeSeries.set_title("No Data To Plot")
+
         self._seriesPlotInfo = None
 
     ##    def get_edit_metadata(self)

@@ -1,7 +1,7 @@
 import textwrap
 
 import wx
-import matplotlib
+import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 
@@ -29,7 +29,6 @@ class plotHist(wx.Panel):
 
         self.figure = Figure()
         self.plot = self.figure.add_subplot(111)
-
 
         self.plot.set_title("No Data To Plot")
 
@@ -97,11 +96,22 @@ class plotHist(wx.Panel):
                 "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
 
             self.hist.append(
-                self.plots[i - 1].hist([x[0] for x in oneSeries.dataTable], bins=self.bins, normed=False, facecolor='g',
-                                       alpha=0.75, label=oneSeries.siteName + " " + oneSeries.variableName))
+                self.plots[i - 1].hist(
+                    [x[0] for x in oneSeries.dataTable], bins=self.bins, normed=False, facecolor='g',
+                                       alpha=0.75, label=oneSeries.siteName + " " + oneSeries.variableName
+                )
+            )
             i += 1
 
-        #self.figure.autofmt_xdate()
+        left  = 0.125  # the left side of the subplots of the figure
+        right = 0.9    # the right side of the subplots of the figure
+        bottom = 0.1   # the bottom of the subplots of the figure
+        top = 0.9      # the top of the subplots of the figure
+        wspace = 0.5   # the amount of width reserved for blank space between subplots
+        hspace = 0.5   # the amount of height reserved for white space between subplots
+        self.figure.subplots_adjust(
+            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+        )
 
         self.canvas.draw()
 

@@ -104,15 +104,13 @@ class frmDBConfig(wx.Dialog):
 
         self.boxConnection = wx.StaticBox(id=wxID_FRAME1BOXCONNECTION,
                                           label=u'Microsoft SQL Server', name=u'boxConnection',
-                                          parent=self.pnlConnection, pos=wx.Point(8, 8), size=wx.Size(432,
-                                                                                                      152), style=0)
+                                          parent=self.pnlConnection, pos=wx.Point(8, 8), size=wx.Size(432, 152), style=0)
 
         # ----------------------------
 
         self.lblServer = wx.StaticText(id=wxID_FRMDBCONFIGLBLSERVER,
                                        label=u'Server Address:', name=u'lblServer',
-                                       parent=self.pnlConnection, pos=wx.Point(64, 40), size=wx.Size(79,
-                                                                                                     16), style=0)
+                                       parent=self.pnlConnection, pos=wx.Point(64, 40), size=wx.Size(79, 16), style=0)
 
         self.txtServer = wx.TextCtrl(id=wxID_FRAME1TXTSERVER, name=u'txtServer',
                                      parent=self.pnlConnection, pos=wx.Point(160, 32),
@@ -120,18 +118,15 @@ class frmDBConfig(wx.Dialog):
 
         self.lblDBName = wx.StaticText(id=wxID_FRAME1LBLDBNAME,
                                        label=u'Database Name:', name=u'lblDBName',
-                                       parent=self.pnlConnection, pos=wx.Point(64, 72), size=wx.Size(81,
-                                                                                                     13), style=0)
+                                       parent=self.pnlConnection, pos=wx.Point(64, 72), size=wx.Size(81, 13), style=0)
 
         self.txtDBName = wx.TextCtrl(id=wxID_FRMDBCONFIGTXTDBNAME,
-                                     name=u'txtDBName', parent=self.pnlConnection, pos=wx.Point(160,
-                                                                                                64),
+                                     name=u'txtDBName', parent=self.pnlConnection, pos=wx.Point(160, 64),
                                      size=wx.Size(248, 21), style=0, value=u'')
 
         self.lblUser = wx.StaticText(id=wxID_FRAME1LBLUSER,
                                      label=u'User ID:', name=u'lblUser',
-                                     parent=self.pnlConnection, pos=wx.Point(64, 104), size=wx.Size(76,
-                                                                                                    13), style=0)
+                                     parent=self.pnlConnection, pos=wx.Point(64, 104), size=wx.Size(76, 13), style=0)
 
         self.txtUser = wx.TextCtrl(id=wxID_FRMDBCONFIGTXTUSER, name=u'txtUser',
                                    parent=self.pnlConnection, pos=wx.Point(160, 96),
@@ -140,8 +135,7 @@ class frmDBConfig(wx.Dialog):
 
         self.lblPass = wx.StaticText(id=wxID_FRMDBCONFIGLBLPASS,
                                      label=u'Password:', name=u'lblPass',
-                                     parent=self.pnlConnection, pos=wx.Point(56, 136), size=wx.Size(86,
-                                                                                                    13), style=0)
+                                     parent=self.pnlConnection, pos=wx.Point(56, 136), size=wx.Size(86, 13), style=0)
 
         self.txtPass = wx.TextCtrl(id=wxID_FRAME1TXTPASS, name=u'txtPass',
                                    parent=self.pnlConnection, pos=wx.Point(160, 128),
@@ -159,17 +153,11 @@ class frmDBConfig(wx.Dialog):
             self.txtUser.SetValue(conn['user'])
 
     def BindActions(self):
-        self.btnSave.Bind(wx.EVT_BUTTON, self.OnBtnSave,
-                          id=wxID_FRMDBCONFIGBTNSAVE)
-
-        self.btnCancel.Bind(wx.EVT_BUTTON, self.OnBtnCancel,
-                            id=wxID_FRMDBCONFIGBTNCANCEL)
-
-        self.btnTest.Bind(wx.EVT_BUTTON, self.OnBtnTest,
-                          id=wxID_FRMDBCONFIGBTNTEST)
+        self.btnSave.Bind(wx.EVT_BUTTON, self.OnBtnSave, id=wxID_FRMDBCONFIGBTNSAVE)
+        self.btnCancel.Bind(wx.EVT_BUTTON, self.OnBtnCancel, id=wxID_FRMDBCONFIGBTNCANCEL)
+        self.btnTest.Bind(wx.EVT_BUTTON, self.OnBtnTest, id=wxID_FRMDBCONFIGBTNTEST)
 
     def OnBtnTest(self, event):
-
         conn_dict = self._GetFieldValues()
 
         message = ""
@@ -187,8 +175,8 @@ class frmDBConfig(wx.Dialog):
                 message = "This connection is invalid"
                 wx.MessageBox(message, 'Test Connection', wx.OK | wx.ICON_ERROR)
         else:
-            message = "Unable to test connection due to insufficient data"
-            wx.MessageBox(message, 'Insufficient Data', wx.OK | wx.ICON_EXCLAMATION)
+            message = "Please enter valid connection information"
+            wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
 
 
     def OnBtnSave(self, event):
