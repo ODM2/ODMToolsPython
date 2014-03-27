@@ -377,7 +377,9 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditFlag(self, event):
         add_flag = frmFlagValues(self)
-        if add_flag.ShowModal() == wx.ID_OK:
+        val = add_flag.ShowModal()
+        logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
+        if val == 5101:#wx.ID_OK:
             self.parent.getRecordService().flag(add_flag.GetValue())
             Publisher.sendMessage(("updateValues"), event=event)
         add_flag.Destroy()

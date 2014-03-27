@@ -22,7 +22,7 @@ class EditService():
             self._session_factory = SessionFactory(connection_string, debug)
             self._series_service = SeriesService(connection_string, debug)
         elif (factory is not None):
-            #TODO code has changed to no longer use a session factory, refactor so it is correct
+            #TODO code has changed to no longer use a session factory, refactor so it is correct SR
             self._session_factory = factory
             service_manager = ServiceManager()
             self._series_service = service_manager.get_series_service()
@@ -221,8 +221,7 @@ class EditService():
     def get_qcl(self, qcl_id):
         return self._series_service.get_qcl_by_id(qcl_id)
 
-    def get_qcl(self, qcl_id):
-        return self._series_service.get_qcl_by_id(qcl_id)
+
 
     def get_method(self, method_id):
         return self._series_service.get_method_by_id(method_id)

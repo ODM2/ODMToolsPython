@@ -88,6 +88,8 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
         self._init_sizers()
 
+#TODO fix that points are outlined in black after making changes use  (editPoint.set_edgecolors(c)?)  SR
+
 
     def changePlotSelection(self, sellist=None, datetime_list=None):
 
@@ -98,8 +100,10 @@ class plotTimeSeries(wx.Panel):
             if len(sellist)>0:
                 #list of True False
                 self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
+
+
             else:
-                #TODO convert datetime list to TF list
+                #TODO convert datetime list to TF list SR
                 tflist=[False] *len(self.editCurve.dataTable)
                 logger.debug("list {list}, type:{type}".format(list=sorted(datetime_list), type=type(datetime_list[0])))
                 logger.debug("table entry: {table}, type{type}".format(table=[x[1] for x in self.editCurve.dataTable],type=type(self.editCurve.dataTable[0][1])))
@@ -160,6 +164,7 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.legend_ = None
 
         plt.gcf().autofmt_xdate()
+        plt.gci()
         self.canvas.draw()
 
 
@@ -240,7 +245,7 @@ class plotTimeSeries(wx.Panel):
 
         self.selectedlist = self.parent.record_service.get_filter_list()
         self.editPoint = curraxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                          s=20, c=['k' if x == 0 else 'r' for x in self.selectedlist])
+                                          s=30, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none')
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
 
         self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
@@ -374,7 +379,7 @@ class plotTimeSeries(wx.Panel):
 
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
-        self.changeSelection(sellist=ind, datetime_list= [x.replace(microsecond=0)for x in seldatetimes] )
+        self.changeSelection(sellist=ind, datetime_list= seldatetimes)
 
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)

@@ -117,7 +117,7 @@ class frmFlagValues(wx.Dialog):
 
     def __init__(self, parent):
          #create cv service
-        service_man=parent.parent.GetDBService()
+        service_man=parent.parent.getDBService()
         self.cv_service = service_man.get_cv_service()
         #populate dropdown id-code
         self.qualchoices ={x.code +"-"+x.description:x.id for x in self.cv_service.get_qualifiers()}

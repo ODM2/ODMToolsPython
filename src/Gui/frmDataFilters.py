@@ -245,7 +245,8 @@ class frmDataFilter(wx.Dialog):
           if self.txtVChangeThresh.GetValue():
             self.recordService.value_change_threshold(float(self.txtVChangeThresh.GetValue()))
 
-        Publisher.sendMessage("changePlotSelection", sellist=self.recordService.get_filter_list())
+        Publisher.sendMessage("changeSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
+        Publisher.sendMessage("changeTableSelection", sellist=self.recordService.get_filter_list(), datetime_list= [])
 
 
     def setDates(self):

@@ -32,6 +32,7 @@ class pnlDataTable(wx.Panel):
 
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
+        self.myOlv.handleStandardKeys =True
 
         self.currentItem = 0
 
@@ -88,36 +89,47 @@ class pnlDataTable(wx.Panel):
         logger.debug("dates %s" %  [x[3] for x in self.currentItem])
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot
-        selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
+        #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
         Publisher.sendMessage(("changeSelection"), sellist=[], datetime_list=[x[3] for x in self.currentItem])
 
     def onKeyPress(self, event):
         # check for Ctrl+A
         keycode = event.GetKeyCode()
+        logger.debug("keycode %s" % keycode)
         if keycode == 1:
             logger.debug("OnKeyPress! Ctrl+A was pressed")
             self.myOlv.SelectAll()
             self.currentItem = self.myOlv.GetSelectedObjects()
+            logger.debug("itemtype %s" % type(self.currentItem))
+
             if len(self.currentItem) > 0:
                 print "self.currentItem: ", self.currentItem
                 print "len: ", len(self.currentItem)
 
-        selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
-        self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
-        Publisher.sendMessage(("changeSelection"), sellist= [], datetime_list=[x[3] for x in self.currentItem] )
+            #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
+            self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
+            Publisher.sendMessage(("changeSelection"), sellist= [], datetime_list=[x[3] for x in self.currentItem] )
 
-    def onChangeSelection(self, sellist=None, datetime_list= None):
+
+    def onChangeSelection(self, sellist=[], datetime_list= []):
+        objlist=[]
+        isfirstselected = False
         if len(sellist)>0:
-            objlist=[]
-
             for i in range(len(sellist)):
                 if sellist[i]:
-                    objlist.append(self.myOlv.GetObjectAt(i))
-            self.myOlv.SelectObjects(objlist, deselectOthers=True)
-        else:
-            dtlist= None
-            self.myOlv.SelectObjects(dtlist, deselectOthers=True)
+                    if not isfirstselected:
+                        self.myOlv.SelectObject(self.myOlv.GetObjectAt(i), deselectOthers=True, ensureVisible =True)
+                        isfirstselected=True
 
+                    objlist.append(self.myOlv.GetObjectAt(i))
+                    self.myOlv.SelectObjects(objlist, deselectOthers=False)  #, ensureVisible =True
+        else:
+            self.myOlv.GetObjects()
+        #filter(by date)
+        #getfilteredobjects
+        #removefilter
+        #Select Objects
+        self.myOlv.SelectObjects(objlist, deselectOthers=True)  #, ensureVisible =True
         self.myOlv.SetFocus()
 
     def stopEdit(self):
