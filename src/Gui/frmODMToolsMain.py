@@ -139,7 +139,6 @@ class frmODMToolsMain(wx.Frame):
                                          name=u'txtPython', parent=self,
                                          size=wx.Size(200, 200))
 
-
         ############ Docking ###################
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)

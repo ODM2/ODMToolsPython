@@ -88,7 +88,7 @@ class PlotBox(wx.Panel):
             wrap, text = self.textSize(count)
             self.plots[i - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
             self.plots[i - 1].set_ylabel(
-                "\n".join(textwrap.wrap(oneSeries.variableName + "(" + oneSeries.variableUnits + ")", wrap)))
+                "\n".join(textwrap.wrap(oneSeries.variableName + " (" + oneSeries.variableUnits + ")", wrap)))
             self.plots[i - 1].set_title(
                 "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
 
@@ -126,15 +126,23 @@ class PlotBox(wx.Panel):
 
             i += 1
 
-        left  = 0.125  # the left side of the subplots of the figure
-        right = 0.9    # the right side of the subplots of the figure
-        bottom = 0.1   # the bottom of the subplots of the figure
-        top = 0.9      # the top of the subplots of the figure
-        wspace = 0.5   # the amount of width reserved for blank space between subplots
-        hspace = 0.5   # the amount of height reserved for white space between subplots
-        self.figure.subplots_adjust(
-            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
-        )
+            left  = 0.125  # the left side of the subplots of the figure
+            right = 0.9    # the right side of the subplots of the figure
+            bottom = 0.21   # the bottom of the subplots of the figure
+            top = .9      # the top of the subplots of the figure
+            wspace = 0.8   # the amount of width reserved for blank space between subplots
+            hspace = 0.8   # the amount of height reserved for white space between subplots
+            self.figure.subplots_adjust(
+                left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+            )
+
+        #self.figure.autofmt_xdate()
+
+        #plt.xticks(rotation=30, size='small')
+        #plt.margins(0.2)
+        # Tweak spacing to prevent clipping of tick-labels
+        #plt.subplots_adjust(bottom=0.55)
+
         self.canvas.draw()
 
 

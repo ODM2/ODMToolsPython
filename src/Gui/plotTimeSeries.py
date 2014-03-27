@@ -36,8 +36,7 @@ class plotTimeSeries(wx.Panel):
         self._init_coll_boxSizer1_Items(self.boxSizer1)
         self.SetSizer(self.boxSizer1)
 
-    def _init_plot(self):
-        self.timeSeries = host_subplot(111, axes_class=AA.Axes)
+    def init_plot(self):
         self.timeSeries.plot([], [])
         self.timeSeries.set_title("No Data To Plot")
         self.canvas = FigCanvas(self, -1, plt.gcf())
@@ -50,7 +49,8 @@ class plotTimeSeries(wx.Panel):
         self.parent = parent
 
         #init Plot
-        self._init_plot()
+        self.timeSeries = host_subplot(111, axes_class=AA.Axes)
+        self.init_plot()
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
@@ -147,7 +147,6 @@ class plotTimeSeries(wx.Panel):
         Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
         # Modify the plot to reflect the new Date Time
         Publisher.sendMessage("onDateChanged", startDate=self.maxStart, endDate=self.maxEnd)
-
 
     def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
@@ -329,7 +328,6 @@ class plotTimeSeries(wx.Panel):
             self.updatePlot()
             # print self.editCurve
 
-
     def setUpYAxis(self):
         self.axislist = {}
         left = 0
@@ -371,10 +369,7 @@ class plotTimeSeries(wx.Panel):
 
     def callback(self, verts):
         seldatetimes = [(matplotlib.dates.num2date(x[0]).replace(tzinfo=None)).replace(microsecond=0) for x in verts]
-
         print seldatetimes
-
-
         #self.parent.record_service.select_points(datetime_list=seldatetimes)
 
         p = path.Path(verts)
