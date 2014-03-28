@@ -88,9 +88,6 @@ class frmODMToolsMain(wx.Frame):
                           style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
                              False, u'Tahoma'))
-        #Publisher.subscribe(self.addPlot, ("add.NewPlot"))
-        #Publisher.subscribe(self.addEdit, ("edit.NewPlot"))
-        Publisher.subscribe(self.onDocking, ("adjust.Docking"))
 
         Publisher.subscribe(self.onDocking, ("adjust.Docking"))
         Publisher.subscribe(self.onPlotSelection, ("select.Plot"))

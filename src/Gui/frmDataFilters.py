@@ -201,6 +201,8 @@ class frmDataFilter(wx.Dialog):
         elif event.Id ==wxID_FRMDATAFILTERTXTVCHANGETHRESH:
             self.rbVChangeThresh.SetValue(True)
 
+        event.Skip()
+
 
     def onBtnClearButton(self, event):
         self.setDates()
@@ -212,13 +214,16 @@ class frmDataFilter(wx.Dialog):
         self.recordService.reset_filter()
 
         Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
+        event.Skip()
 
     def onBtnOKButton(self, event):
         if not self.is_applied:
             self.onBtnApplyButton(event)
+        event.Skip()
         self.Close()
 
     def onBtnCancelButton(self, event):
+        event.Skip()
         self.Close()
 
     def onBtnApplyButton(self, event):
@@ -247,7 +252,7 @@ class frmDataFilter(wx.Dialog):
 
         Publisher.sendMessage("changeSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
         Publisher.sendMessage("changeTableSelection", sellist=self.recordService.get_filter_list(), datetime_list= [])
-
+        event.Skip()
 
     def setDates(self):
       dateAfter = self.recordService.get_series_points()[0][2]

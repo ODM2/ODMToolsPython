@@ -4,7 +4,7 @@ import logging
 
 import wx
 import wx.grid
-from ObjectListView import ColumnDefn, FastObjectListView
+from ObjectListView import ColumnDefn, FastObjectListView, Filter
 from wx.lib.pubsub import pub as Publisher
 
 from common.logger import LoggerTool
@@ -68,6 +68,8 @@ class pnlDataTable(wx.Panel):
 
     def onRefresh(self, e):
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
+        self.myOlv.SelectObject(self.myOlv.GetObjectAt(0), deselectOthers=True, ensureVisible =True)
+
 
     def clear(self):
         self.memDB= None
@@ -120,16 +122,25 @@ class pnlDataTable(wx.Panel):
                     if not isfirstselected:
                         self.myOlv.SelectObject(self.myOlv.GetObjectAt(i), deselectOthers=True, ensureVisible =True)
                         isfirstselected=True
-
                     objlist.append(self.myOlv.GetObjectAt(i))
-                    self.myOlv.SelectObjects(objlist, deselectOthers=False)  #, ensureVisible =True
+                self.myOlv.SelectObjects(objlist, deselectOthers=False)  #, ensureVisible =True
         else:
-            self.myOlv.GetObjects()
-        #filter(by date)
-        #getfilteredobjects
-        #removefilter
-        #Select Objects
-        self.myOlv.SelectObjects(objlist, deselectOthers=True)  #, ensureVisible =True
+            #TODO Select by DateTime        #filter(by date),        #getfilteredobjects,        #removefilter,        #Select Objects
+            for dateval in datetime_list:
+                logger.debug("filter: %s" % dateval.strftime("%Y-%m-%d %H:%M:%S"))
+                self.myOlv.SetFilter(Filter.TextSearch(self.myOlv, text=dateval.strftime("%Y-%m-%d %H:%M:%S")))
+                logger.debug("filteredobject: %s" % self.myOlv.GetFilteredObjects())
+                if not isfirstselected:
+                    self.myOlv.SelectObject(self.myOlv.GetFilteredObjects()[0], deselectOthers=True, ensureVisible =True)
+                    isfirstselected =True
+                objlist.append(self.myOlv.GetFilteredObjects()[0])
+            self.myOlv.SelectObjects(objlist, deselectOthers=False)
+                #self.myOlv.SelectObject(self.myOlv.GetFilteredObjects(), deselectOthers=False)
+
+
+
+        #self.myOlv.SelectObjects(objlist, deselectOthers=True)  #, ensureVisible =True
+
         self.myOlv.SetFocus()
 
     def stopEdit(self):

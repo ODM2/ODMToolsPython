@@ -88,9 +88,6 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
         self._init_sizers()
 
-#TODO fix that points are outlined in black after making changes use  (editPoint.set_edgecolors(c)?)  SR
-
-
     def changePlotSelection(self, sellist=None, datetime_list=None):
 
         # k black,    # r red
@@ -100,13 +97,8 @@ class plotTimeSeries(wx.Panel):
             if len(sellist)>0:
                 #list of True False
                 self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
-
-
             else:
-                #TODO convert datetime list to TF list SR
                 tflist=[False] *len(self.editCurve.dataTable)
-                logger.debug("list {list}, type:{type}".format(list=sorted(datetime_list), type=type(datetime_list[0])))
-                logger.debug("table entry: {table}, type{type}".format(table=[x[1] for x in self.editCurve.dataTable],type=type(self.editCurve.dataTable[0][1])))
                 for i in range(len(self.editCurve.dataTable)):
                     if self.editCurve.dataTable[i][1] in datetime_list:
                         tflist[i] = True
@@ -115,13 +107,17 @@ class plotTimeSeries(wx.Panel):
             self.canvas.draw()
 
 
-    def changeSelection(self, sellist=None, datetime_list=None):
+    def changeSelection(self, sellist=[], datetime_list=[]):
+        logger.debug("datetimelist: {list}".format(list=sorted(datetime_list)))
+        logger.debug("sellist: {list}".format(list=sellist))
+
         self.changePlotSelection(sellist, datetime_list)
         if len(sellist)>0:
             self.parent.record_service.select_points_tf(sellist)
-            Publisher.sendMessage(("changeTableSelection"), sellist=sellist)
+            Publisher.sendMessage(("changeTableSelection"), sellist=sellist, datetime_list = [])
         else:
             self.parent.record_service.select_points(datetime_list=datetime_list)
+            Publisher.sendMessage(("changeTableSelection"), sellist= [], datetime_list= datetime_list)
 
 
     def onDateChanged(self, startDate, endDate):
@@ -368,13 +364,19 @@ class plotTimeSeries(wx.Panel):
 
 
     def callback(self, verts):
-        seldatetimes = [(matplotlib.dates.num2date(x[0]).replace(tzinfo=None)).replace(microsecond=0) for x in verts]
-        print seldatetimes
-        #self.parent.record_service.select_points(datetime_list=seldatetimes)
+
 
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
-        self.changeSelection(sellist=ind, datetime_list= seldatetimes)
+
+        #seldatetimes = [(matplotlib.dates.num2date(x[0]).replace(tzinfo=None)).replace(microsecond=0) for x in verts]
+        seldatetimes= []
+        for i in range(len(ind)):
+            if ind[i]:
+                seldatetimes.append(self.editCurve.dataTable[i][1])
+        print seldatetimes
+
+        self.changeSelection(sellist=[], datetime_list= seldatetimes)
 
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)

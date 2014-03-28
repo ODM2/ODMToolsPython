@@ -298,13 +298,6 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.sendMessage("onDateFull")
 
     def onDateChanged(self, event):
-        #logger.fatal("%s" % (type(self.dpEndDate.GetValue())))
-        #logger.fatal("%s" % (dir(self.dpEndDate.GetValue())))
-        #logger.fatal("%s" % (self.dpEndDate.GetValue()))
-
-        #logger.fatal("%s" % (type(self.dpStartDate.GetValue())))
-        #logger.fatal("%s" % (dir(self.dpStartDate.GetValue())))
-        #logger.fatal("min: %s" % (self.dpStartDate.GetValue().Minute))
 
         date=self.dpStartDate.GetValue()
         startDate = datetime.datetime(date.Year, date.Month + 1, date.Day, 0, 0, 0)
