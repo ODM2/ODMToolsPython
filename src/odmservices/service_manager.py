@@ -25,7 +25,6 @@ class ServiceManager():
                 line = line.split()
 
                 if len(line) >= 5:
-                    print "lineSize: ", len(line)
                     line_dict = {}
 
                     line_dict['engine'] = line[0]

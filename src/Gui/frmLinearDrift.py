@@ -26,7 +26,9 @@ class frmLinearDrift(wx.Dialog):
         self.lblMessage = wx.StaticText(id=wxID_FRMLINEARDRIFTLBLMESSAGE,
               label=u'Enter a negative value to move points down. \nEnter a positive value to move points up.',
               name=u'lblMessage', parent=self, pos=wx.Point(16, 8),
-              size=wx.Size(248, 26), style=0)
+              #size=wx.Size(248, 26), style=0
+              size=wx.Size(248, 30), style=0
+        )
 
         self.txtFinalGapValue = wx.TextCtrl(id=wxID_FRMLINEARDRIFTTXTFINALGAPVALUE,
               name=u'txtFinalGapValue', parent=self, pos=wx.Point(100, 40),

@@ -44,7 +44,7 @@ class EditService():
             self._connection = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
             tmpCursor = self._connection.cursor()
             self.init_table(tmpCursor)
-            tmpCursor.executemany("INSERT INTO DataValuesEdit VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", DataValues)
+            tmpCursor.executemany("INSERT INTO DataValues VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", DataValues)
 
         self._connection.commit()
         self._cursor = self._connection.cursor()
@@ -53,7 +53,7 @@ class EditService():
 
     def _populate_series(self):
         # [(ID, value, datetime), ...]
-        self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValuesEdit ORDER BY LocalDateTime")
+        self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
 
         self._series_points = results
@@ -238,7 +238,7 @@ class EditService():
     def change_value(self, value, operator):
         filtered_points = self.get_filtered_points()
         tmp_filter_list = self._filter_list
-        query = "UPDATE DataValuesEdit SET DataValue = "
+        query = "UPDATE DataValues SET DataValue = "
         if operator == '+':
             query += " DataValue + %s " % (value)
 
@@ -262,14 +262,14 @@ class EditService():
 
     def add_points(self, points):
         logger.debug(points)
-        query = "INSERT INTO DataValuesEdit (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
+        query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
         query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         self._cursor.executemany(query, points)
         self._populate_series()
 
     def delete_points(self):
-        query = "DELETE FROM DataValuesEdit WHERE ValueID IN ("
+        query = "DELETE FROM DataValues WHERE ValueID IN ("
         filtered_points = self.get_filtered_points()
         num_filtered_points = len(filtered_points)
         if num_filtered_points > 0:
@@ -308,7 +308,7 @@ class EditService():
                 new_val = f_a + ((b - a) / (c - a)) * (f_c - f_a)
                 point_id = self._series_points[i][0]
                 update_list.append((new_val, point_id))
-            query = "UPDATE DataValuesEdit SET DataValue = ? WHERE ValueID = ?"
+            query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
             self._cursor.executemany(query, update_list)
 
         self._populate_series()
@@ -334,7 +334,7 @@ class EditService():
                 # y_n = y_0 + G(x_i / x_l)
                 new_val = point[1] + gap_width * (x_i / x_l)
                 update_list.append((new_val, point[0]))
-            query = "UPDATE DataValuesEdit SET DataValue = ? WHERE ValueID = ?"
+            query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
             self._cursor.executemany(query, update_list)
 
             self._populate_series()
@@ -367,7 +367,7 @@ class EditService():
 
     def flag(self, qualifier_id):
         filtered_points = self.get_filtered_points()
-        query = "UPDATE DataValuesEdit SET QualifierID = %s WHERE ValueID = ?" % (qualifier_id)
+        query = "UPDATE DataValues SET QualifierID = %s WHERE ValueID = ?" % (qualifier_id)
         self._cursor.executemany(query, [(str(x[0]),) for x in filtered_points])
 
     ###################
@@ -384,21 +384,21 @@ class EditService():
 
         if var is not None:
             logger.debug(var.id)
-            self._cursor.execute("UPDATE DataValuesEdit SET VariableID = %s" % (var.id))
+            self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
             is_new_series = True
         if method is not None:
             logger.debug(method.id)
-            self._cursor.execute("UPDATE DataValuesEdit SET MethodID = %s" % (method.id))
+            self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
             is_new_series = True
         # check that the code is not zero
         #if qcl is not None and qcl.code != 0:
         if qcl is not None:
-            self._cursor.execute("UPDATE DataValuesEdit SET QualityControlLevelID = %s" % (qcl.id))
+            self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
             is_new_series = True
         #else:
         #    raise ValueError("Quality Control Level cannot be zero")
 
-        self._cursor.execute("SELECT * FROM DataValuesEdit ORDER BY LocalDateTime")
+        self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
 
         # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID,
@@ -495,7 +495,7 @@ class EditService():
         return dv
 
     def init_table(self, cursor):
-        cursor.execute("""CREATE TABLE DataValuesEdit
+        cursor.execute("""CREATE TABLE DataValues
                 (ValueID INTEGER NOT NULL,
                 DataValue FLOAT NOT NULL,
                 ValueAccuracy FLOAT,

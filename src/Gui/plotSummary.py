@@ -3,8 +3,9 @@
 import wx
 import wx.grid
 
-[wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY, 
+[wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY,
 ] = [wx.NewId() for _init_ctrls in range(2)]
+
 
 class plotSummary(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -23,13 +24,13 @@ class plotSummary(wx.Panel):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Panel.__init__(self, id=wxID_PLOTSUMMARY, name=u'plotSummary',
-              parent=prnt, pos=wx.Point(747, 267), size=wx.Size(437, 477),
-              style=wx.TAB_TRAVERSAL)
+                          parent=prnt, pos=wx.Point(747, 267), size=wx.Size(437, 477),
+                          style=wx.TAB_TRAVERSAL)
         self.SetClientSize(wx.Size(421, 439))
 
         self.grdSummary = wx.grid.Grid(id=wxID_PLOTSUMMARYGRDSUMMARY,
-              name=u'grdSummary', parent=self, pos=wx.Point(0, 0),
-              size=wx.Size(421, 439), style=wx.HSCROLL | wx.VSCROLL)
+                                       name=u'grdSummary', parent=self, pos=wx.Point(0, 0),
+                                       size=wx.Size(421, 439), style=wx.HSCROLL | wx.VSCROLL)
         self.grdSummary.SetLabel(u'')
         self.grdSummary.EnableEditing(False)
         self.initPlot()
@@ -38,14 +39,13 @@ class plotSummary(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.clear()
         for oneSeries in seriesPlotInfo.getSeriesInfo():
-            self.addCol( oneSeries)
-            
+            self.addCol(oneSeries)
 
 
     def clear(self):
-        if self.grdSummary.GetNumberCols()>0:
-        # for col in range(self.grdSummary.GetNumberCols())
-            self.grdSummary.DeleteCols(pos = 0, numCols = self.grdSummary.GetNumberCols(),  updateLabels = True)
+        if self.grdSummary.GetNumberCols() > 0:
+            # for col in range(self.grdSummary.GetNumberCols())
+            self.grdSummary.DeleteCols(pos=0, numCols=self.grdSummary.GetNumberCols(), updateLabels=True)
 
     # def addPlot(self, cursor, series, Filter):
 
@@ -55,15 +55,15 @@ class plotSummary(wx.Panel):
     #     count = self.grdSummary.GetNumberCols()
     #     self.grdSummary.SetColLabelValue(count-1, series.site_name +"-"+ series.variable_name)
     #     self.fillValues(cursor, series, Filter, count-1)
-        
+
     # def removePlot(self, id):
     #     #loop through each column and find position
     #     # self.grdSummary.
     #     self.grdSummary.DeleteCols(pos = 0, numCols = 1,  updateLabels = True)
-        
+
     def initPlot(self):
-        self.grdSummary.AutoSize()    
-        self.grdSummary.CreateGrid (15,0) 
+        self.grdSummary.AutoSize()
+        self.grdSummary.CreateGrid(15, 0)
         self.grdSummary.SetRowLabelSize(160)
         self.grdSummary.SetRowLabelValue(0, "Series ID")
         self.grdSummary.SetRowLabelValue(1, "# of Observations")
@@ -80,47 +80,38 @@ class plotSummary(wx.Panel):
         self.grdSummary.SetRowLabelValue(12, "(Median) 50%")
         self.grdSummary.SetRowLabelValue(13, "75%")
         self.grdSummary.SetRowLabelValue(14, "90%")
-        
-    def addCol(self, series) :
 
-        self.grdSummary.AppendCols(numCols = 1, updateLabels = True)
-        col = self.grdSummary.GetNumberCols()-1
-        self.grdSummary.SetColLabelValue(col, series.siteName +"-"+ series.variableName)
-    #     self.fillValues(cursor, series, Filter, count-1)
+    def addCol(self, series):
+
+        self.grdSummary.AppendCols(numCols=1, updateLabels=True)
+        col = self.grdSummary.GetNumberCols() - 1
+        self.grdSummary.SetColLabelValue(col, series.siteName + "-" + series.variableName)
+        #     self.fillValues(cursor, series, Filter, count-1)
 
 
         stats = series.statistics
-        count = stats.NumberofObservations 
-        self.grdSummary.SetCellValue(0, col, repr(series.seriesID)) 
-        self.grdSummary.SetCellValue(1, col, repr(count))        
+        count = stats.NumberofObservations
+        self.grdSummary.SetCellValue(0, col, repr(series.seriesID))
+        self.grdSummary.SetCellValue(1, col, repr(count))
         self.grdSummary.SetCellValue(2, col, repr(stats.NumberofCensoredObservations))
-        self.grdSummary.SetCellValue(3, col, repr(stats.ArithemticMean))  
-
+        self.grdSummary.SetCellValue(3, col, repr(stats.ArithemticMean))
 
         if count > 0:
-            self.grdSummary.SetCellValue(4, col,  repr(stats.GeometricMean))
-            self.grdSummary.SetCellValue(5, col, repr(stats.Maximum))  
-            self.grdSummary.SetCellValue(6, col, repr(stats.Minimum)) 
-            self.grdSummary.SetCellValue(7, col, repr(stats.StandardDeviation))  
+            self.grdSummary.SetCellValue(4, col, repr(stats.GeometricMean))
+            self.grdSummary.SetCellValue(5, col, repr(stats.Maximum))
+            self.grdSummary.SetCellValue(6, col, repr(stats.Minimum))
+            self.grdSummary.SetCellValue(7, col, repr(stats.StandardDeviation))
             self.grdSummary.SetCellValue(8, col, repr(stats.CoefficientofVariation))
 
 
             ##Percentiles
-            self.grdSummary.SetCellValue(10, col, repr(stats.Percentile10))  
+            self.grdSummary.SetCellValue(10, col, repr(stats.Percentile10))
             self.grdSummary.SetCellValue(11, col, repr(stats.Percentile25))
-            self.grdSummary.SetCellValue(12, col, repr(stats.Percentile50))   
+            self.grdSummary.SetCellValue(12, col, repr(stats.Percentile50))
 
-            self.grdSummary.SetCellValue(13, col, repr(stats.Percentile75))        
+            self.grdSummary.SetCellValue(13, col, repr(stats.Percentile75))
             self.grdSummary.SetCellValue(14, col, repr(stats.Percentile90))
 
-
-
-
-
-
-
-
-        
 
     def __init__(self, parent, id, pos, size, style, name):
         self._init_ctrls(parent)

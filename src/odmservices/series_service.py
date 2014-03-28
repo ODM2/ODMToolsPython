@@ -1,6 +1,6 @@
+import logging
 
 from sqlalchemy import distinct
-
 
 from odmdata import SessionFactory
 from odmdata import Site
@@ -14,11 +14,11 @@ from odmdata import Sample
 from odmdata import Method
 from odmdata import QualityControlLevel
 from odmdata import ODMVersion
-
 from common.logger import LoggerTool
-import logging
+
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 class SeriesService():
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
@@ -145,7 +145,8 @@ class SeriesService():
         # Save As case
         elif not isSave:
             if doesExist:
-                logger.debug("There is already an existing file with this information. Please select 'Save' to overwrite")
+                logger.debug(
+                    "There is already an existing file with this information. Please select 'Save' to overwrite")
                 return False
             else:
                 self._edit_session.add(series)

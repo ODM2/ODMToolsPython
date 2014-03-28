@@ -523,14 +523,11 @@ class pnlSeriesSelector(wx.Panel):
     def onTableSeriesListItemSelected(self, event):
 
         self.selectForPlot(event.m_itemIndex)
-        logger.debug("Checked: %s\n" % (x for x in self.tableSeries.getChecked()))
+        #logger.debug("Checked: %s\n" % (x for x in self.tableSeries.getChecked()))
 
         isActive = False
         if len(self.tableSeries.getChecked()) > 0:
             isActive = True
-        elif len(self.tableSeries.getChecked()) == 0:
-            Publisher.sendMessage("clearPlot")
-
 
         Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=isActive)
         event.Skip()
@@ -539,16 +536,19 @@ class pnlSeriesSelector(wx.Panel):
         if len(self.tableSeries.getChecked()) == 0: pass
 
     def selectForPlot(self, selIndex):
-        logger.debug("self.tableseries.InnerList: %s" % (''.join(map(str, self.tableSeries.innerList))))
-        sid = self.tableSeries.innerList[selIndex][0]
+        #logger.debug("self.tableseries.InnerList: %s" % (''.join(map(str, self.tableSeries.innerList))))
+        sid = self.tableSeries.subList[selIndex][0]
         logger.debug("sid: %s" % (sid))
         if not self.tableSeries.IsItemChecked(selIndex):
             Publisher.sendMessage("removePlot", seriesID=sid)
-            self.tableSeries.innerList[selIndex][-1] = False
+            self.tableSeries.enableCheck(selIndex, False)
+            #self.tableSeries.subList[selIndex][-1] = False
         else:
             #set isselected value to True
-            self.tableSeries.innerList[selIndex][-1] = True
-            self.parent.Parent.addPlot(self.memDB, sid)
+            if self.tableSeries.enableCheck(selIndex, True):
+                #self.tableSeries.subList[selIndex][-1] = True
+                self.parent.Parent.addPlot(self.memDB, sid)
+
 
         self.Refresh()
 

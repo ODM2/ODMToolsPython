@@ -369,7 +369,7 @@ class plotTimeSeries(wx.Panel):
 
     def callback(self, verts):
         seldatetimes = [(matplotlib.dates.num2date(x[0]).replace(tzinfo=None)).replace(microsecond=0) for x in verts]
-        print seldatetimes
+        #print seldatetimes
         #self.parent.record_service.select_points(datetime_list=seldatetimes)
 
         p = path.Path(verts)
