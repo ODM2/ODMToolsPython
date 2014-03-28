@@ -40,8 +40,6 @@ class pnlDataTable(wx.Panel):
         sizer_2.Add(self.myOlv, 1, wx.ALL|wx.EXPAND, 4)
         self.SetSizer(sizer_2)
 
-
-
         self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected )
         self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
 
@@ -54,8 +52,7 @@ class pnlDataTable(wx.Panel):
     def init(self, memDB, record_service):
         self.memDB = memDB
         self.record_service = record_service
-
-        self.myOlv.SetColumns(ColumnDefn(x, valueGetter=i, minimumWidth=40) for x, i in self.memDB.getEditColumns())
+        self.myOlv.SetColumns(ColumnDefn(x.strip(), align="left", valueGetter=i, width=-1) for x, i in self.memDB.getEditColumns())
 
         #####table Settings
         self.myOlv.useAlternateBackColors = True
@@ -88,7 +85,7 @@ class pnlDataTable(wx.Panel):
         #for i in self.currentItem:
             #logger.debug("index: %s" % (i[3]))
 
-        logger.debug("dates %s" %  [x[3] for x in self.currentItem])
+        logger.debug("dates %s" % [x[3] for x in self.currentItem])
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot
         #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
@@ -104,9 +101,9 @@ class pnlDataTable(wx.Panel):
             self.currentItem = self.myOlv.GetSelectedObjects()
             logger.debug("itemtype %s" % type(self.currentItem))
 
-            if len(self.currentItem) > 0:
-                print "self.currentItem: ", self.currentItem
-                print "len: ", len(self.currentItem)
+            if len(self.currentItem) > 0: pass
+                #print "self.currentItem: ", self.currentItem
+                #print "len: ", len(self.currentItem)
 
             #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
             self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])

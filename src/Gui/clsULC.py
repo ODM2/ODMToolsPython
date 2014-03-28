@@ -1,18 +1,23 @@
+import logging
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
 ##used for Series Selector
+from common.logger import LoggerTool
 
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class clsULC(ULC.UltimateListCtrl):
     def __init__(self, *args, **kwargs):
         self.modelObjects = []
-        self.innerList = []
+        self.subList = []
         self.columns = []
         self.filter = None
         self.useAlternateBackColors = True
         self.evenRowsBackColor = "White"  #wx.Colour(240, 248, 255) # ALICE BLUE
         self.oddRowsBackColor = "SlateGray"  #wx.Colour(255, 250, 205) # LEMON CHIFFON
         self.cursor = None
+        self.checkCount = 0
         # wx.ListCtrl.__init__(self, *args, **kwargs)
         ULC.UltimateListCtrl.__init__(self, *args, **kwargs)
 
@@ -61,16 +66,16 @@ class clsULC(ULC.UltimateListCtrl):
     # remaining values after filtering
     def _buildInnerList(self):
         if self.filter:
-            self.innerList = self.filter(self.modelObjects)
+            self.subList = self.filter(self.modelObjects)
         else:
-            self.innerList = self.modelObjects
+            self.subList = self.modelObjects
 
 
     def repopulateList(self):
         self.DeleteAllItems()
         self._buildInnerList()
 
-        for series in self.innerList:
+        for series in self.subList:
             ind = self.GetItemCount()
 
             self.Append([False] + series[:-1])
@@ -87,7 +92,7 @@ class clsULC(ULC.UltimateListCtrl):
         return self.GetFirstSelected()
 
     def getObjectAt(self, index):
-        return self.innerList[index]
+        return self.subList[index]
 
     # 	def GetObjectAt(self, index):
     # 	# """
@@ -107,10 +112,36 @@ class clsULC(ULC.UltimateListCtrl):
         #returns a list of the checked ids
         return [x[0] for x in self.modelObjects if x[-1]]
 
-    def checkItem(self, index):
-        self.innerList[index][-1] = 1
+    # Return True if the number selected is less than 5
+    # Return False if the box isn't checked
+    def enableCheck(self, id, isChecked):
+        # Keeping adding
+        if self.checkCount < 5 and isChecked:
+            self.subList[id][-1] = isChecked
+            self.checkCount += 1
+            logger.debug("CheckCount: %d" % (self.checkCount))
+            return True
+        # Uncheck series case
+        elif not isChecked:
+            self.subList[id][-1] = isChecked
+            self.checkCount -= 1
+            logger.debug("CheckCount: %d" % (self.checkCount))
+            return False
+
+        # Trying to check but reached max
+        else:
+            # uncheck it visibly
+            self.checkItem(id, isChecked=False)
+            logger.debug("CheckCount: %d" % (self.checkCount))
+            return False
+
+
+
+    # check visibly on SeriesSelector Gui
+    def checkItem(self, index, isChecked=True, sendEvent=False):
+        self.subList[index][-1] = 1
         # TODO clsUCL object has no attribute 'getItem'
-        self._mainWin.CheckItem(self.getItem(index, 0), True, False)
+        self._mainWin.CheckItem(self.GetItem(index, 0), isChecked, sendEvent)
 
 
     def getColumnText(self, index, colid):
@@ -135,7 +166,7 @@ class clsULC(ULC.UltimateListCtrl):
         return self.filter
 
     def getFilteredObjects(self):
-        return self.innerList
+        return self.subList
 
     def setFilter(self, filter):
         self.filter = filter

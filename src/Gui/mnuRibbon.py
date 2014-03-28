@@ -224,9 +224,8 @@ class mnuRibbon(RB.RibbonBar):
         self.SetActivePageByIndex(self.CurrPage)
 
         self.bindEvents()
-        Publisher.subscribe(self.toggleEditButtons, ("EnableEditButtons"))
-        Publisher.subscribe(self.enableButtons, ("EnablePlotButtons"))
-        Publisher.subscribe(self.resetDateRange, "resetdate")
+        self.initPubSub()
+
 
 
     def __init__(self, parent, id, name):
@@ -280,6 +279,12 @@ class mnuRibbon(RB.RibbonBar):
         ###Ribbon Event
         self.Bind(RB.EVT_RIBBONBAR_PAGE_CHANGED, self.onFileMenu, id=wxID_PANEL1)
 
+    def initPubSub(self):
+        Publisher.subscribe(self.toggleEditButtons, "EnableEditButtons")
+        Publisher.subscribe(self.enableButtons, "EnablePlotButtons")
+        Publisher.subscribe(self.resetDateRange, "resetdate")
+        Publisher.subscribe(self.updateSeriesCurrentDateTime, "updateSeriesCurrentDateTime")
+
     def onFileMenu(self, event):
         if not self.GetActivePage() == 0:
             self.CurrPage = self.GetActivePage()
@@ -296,6 +301,20 @@ class mnuRibbon(RB.RibbonBar):
 
     def onFullDate(self, event):
         Publisher.sendMessage("onDateFull")
+
+    def updateSeriesCurrentDateTime(self, seriesInfoList):
+        #print "size: ", len(seriesInfoList), dir(seriesInfoList), type(seriesInfoList)
+        for item in seriesInfoList:
+            logger.debug("B: SeriesInfo.startDate: %s" % (item.startDate) )
+            logger.debug("B: SeriesInfo.endDate: %s" % (item.endDate) )
+
+            item.startDate = self.dpStartDate.GetValue()
+            item.endDate = self.dpEndDate.GetValue()
+
+            logger.debug("A: SeriesInfo.startDate: %s" % (item.startDate) )
+            logger.debug("A: SeriesInfo.endDate: %s" % (item.endDate) )
+
+
 
     def onDateChanged(self, event):
 

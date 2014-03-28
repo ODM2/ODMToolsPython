@@ -136,7 +136,7 @@ class PlotBox(wx.Panel):
                 left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
             )
 
-        #self.figure.autofmt_xdate()
+        self.figure.autofmt_xdate()
 
         #plt.xticks(rotation=30, size='small')
         #plt.margins(0.2)

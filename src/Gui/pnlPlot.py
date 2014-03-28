@@ -102,11 +102,19 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltHist.changeNumOfBins(numBins)
 
     def onDateChanged(self, startDate, endDate):
-        self.pltTS.onDateChanged(startDate, endDate)
+        self._seriesPlotInfo.updateDateRange(startDate, endDate)
+        self.redrawPlots()
+       # self.pltTS.onDateChanged(startDate, endDate)
+
+
+ #   def onDateChanged(self, startDate, endDate):
+ #       self.pltTS.onDateChanged(startDate, endDate)
 
     # Reset the date to the full date
     def onDateFull(self):
-        self.pltTS.onDateFull()
+        self._seriesPlotInfo.updateDateRange()
+        self.redrawPlots()
+        #self.pltTS.onDateFull()
 
     def onPlotType(self, event, ptype):
         self.pltTS.onPlotType(ptype)
@@ -138,7 +146,19 @@ class pnlPlot(fnb.FlatNotebook):
 
         self._seriesPlotInfo.update(seriesID, True)
         self.selectedSerieslist.append(seriesID)
+        #print "seriesPlotInfo!", type(self._seriesPlotInfo), dir(self._seriesPlotInfo)
 
+        #s = self._seriesPlotInfo.getSeriesInfo()
+
+        #logger.debug("B: SeriesInfo.startDate: %s" % (s[0].startDate) )
+        #logger.debug("B: SeriesInfo.endDate: %s" % (s[0].endDate) )
+
+        Publisher.sendMessage("updateSeriesCurrentDateTime", seriesInfoList=self._seriesPlotInfo.getSeriesInfo())
+        #logger.debug("A: SeriesInfo.startDate: %s" % (s[0].startDate) )
+        #logger.debug("A: SeriesInfo.endDate: %s" % (s[0].endDate) )
+        self.redrawPlots()
+
+    def redrawPlots(self):
         self.pltSum.Plot(self._seriesPlotInfo)
         self.pltProb.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)

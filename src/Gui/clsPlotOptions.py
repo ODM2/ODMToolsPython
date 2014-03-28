@@ -1,4 +1,7 @@
 import math
+from Bio.Wise.dnal import Statistics
+import datetime
+
 import numpy
 
 
@@ -40,6 +43,11 @@ class OneSeriesPlotInfo(object):
 
         self.seriesID = None
         self.series = None
+        self.noDataValue= ""
+
+        self.startDate = None
+        self.endDate = None
+
         self.dataTable = None  # link to sql database
         # self.cursor=None
         self.siteName = ""
@@ -63,6 +71,7 @@ class OneSeriesPlotInfo(object):
         return self.plotOptions
 
 
+
 class SeriesPlotInfo(object):
     # self._siteDisplayColumn = ""
 
@@ -84,7 +93,6 @@ class SeriesPlotInfo(object):
     def updateEditSeries(self):
         if self.editID in self._seriesInfos:
             self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-
 
     def isPlotted(self, sid):
         if int(sid) in self._seriesInfos:
@@ -110,7 +118,6 @@ class SeriesPlotInfo(object):
             return self._seriesInfos[self.editID]
         else:
             return None
-
 
     def count(self):
         return len(self._seriesInfos)
@@ -141,7 +148,6 @@ class SeriesPlotInfo(object):
             return None
 
     def getSeriesInfo(self):
-
         lst = []  #of length len(seriesInfos)
 
         for key in self.getSeriesIDs():
@@ -157,8 +163,15 @@ class SeriesPlotInfo(object):
 
                 seriesID = key
                 series = self.memDB.series_service.get_series_by_id(seriesID)
-                strStartDate = series.begin_date_time  #self._plotOptions._startDateTime
-                strEndDate = series.end_date_time  #self._plotOptions._endDateTime#+1 day - 1 millisecond
+
+                startDate = datetime.datetime(series.begin_date_time.year, series.begin_date_time.month, series.begin_date_time.day, 0, 0, 0)# series.begin_date_time
+                print "StartDate:", startDate, type(startDate)
+                # #self._plotOptions._startDateTime
+
+                endDate = datetime.datetime(series.end_date_time.year, series.end_date_time.month, series.end_date_time.day, 0, 0, 0)#series.end_date_time  #self._plotOptions
+                print "EndDate:", endDate
+
+                # ._endDateTime#+1 day - 1 millisecond
                 variableName = series.variable_name
                 unitsName = series.variable_units_name
                 siteName = series.site_name
@@ -167,24 +180,26 @@ class SeriesPlotInfo(object):
                 if self.editID == seriesID:
                     data = self.memDB.getEditDataValuesforGraph()
                 else:
-                    data = self.memDB.getDataValuesforGraph(seriesID, repr(noDataValue),
-                                                            strStartDate.strftime('%y-%m-%d %H:%M:%S'),
-                                                            strEndDate.strftime('%y-%m-%d %H:%M:%S'))
-
+                    data = self.memDB.getDataValuesforGraph(seriesID, repr(noDataValue), startDate, endDate)
                 seriesInfo.seriesID = seriesID
                 seriesInfo.series = series
-                seriesInfo.dataTable = data
+
+                seriesInfo.startDate = startDate
+                seriesInfo.endDate = endDate
                 seriesInfo.dataType = dataType
                 seriesInfo.siteName = siteName
                 seriesInfo.variableName = variableName
                 seriesInfo.variableUnits = unitsName
                 seriesInfo.plotTitle = siteName + " " + variableName
                 seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
-                seriesInfo.Probability = Probability(data)
-                seriesInfo.statistics = Statistics(data, self._plotOptions.useCensoredData)
-                seriesInfo.BoxWhisker = BoxWhisker(data, self._plotOptions.boxWhiskerMethod)
+                seriesInfo.noDataValue = noDataValue
+                seriesInfo.dataTable = data
+                self.build(seriesInfo)
+
             else:
-                seriesinfo = self._seriesInfos[key]
+                seriesInfo = self._seriesInfos[key]
+                #print "seriesInfo.startDate ", seriesInfo.startDate
+                #print "seriesInfo.endDate ", seriesInfo.endDate
 
             i = len(lst)
             if self.editID == seriesInfo.seriesID:
@@ -196,6 +211,22 @@ class SeriesPlotInfo(object):
                 seriesInfo.color = self._plotOptions.colorList[i % len(self._plotOptions.colorList)]
             lst.append(seriesInfo)
         return lst
+
+    def build(self, seriesInfo):
+        data = seriesInfo.dataTable
+        seriesInfo.Probability = Probability(data)
+        seriesInfo.statistics = Statistics(data, self._plotOptions.useCensoredData)
+        seriesInfo.BoxWhisker = BoxWhisker(data, self._plotOptions.boxWhiskerMethod)
+
+    def updateDateRange(self, startDate=None, endDate=None):
+        for key in self.getSeriesIDs():
+            seriesInfo = self._seriesInfos[key]
+            if startDate:
+                data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, startDate, endDate)
+            else:
+                data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate, seriesInfo.endDate)
+            seriesInfo.dataTable = data
+            self.build(seriesInfo)
 
 
 class Statistics(object):
@@ -261,7 +292,7 @@ class BoxWhisker(object):
 
         data = [[x[0] for x in dataTable if x[1].month in (1, 2, 3)],
                 [x[0] for x in dataTable if x[1].month in (4, 5, 6)],
-                [x[0] for x in dataTable if x[1].month in (6, 7, 8)],
+                [x[0] for x in dataTable if x[1].month in (7, 8, 9)],
                 [x[0] for x in dataTable if x[1].month in (10, 11, 12)]]
         self.intervals["Seasonally"] = BoxWhiskerPlotInfo("Seasonally", data, ['Winter', 'Spring', 'Summer', 'Fall'],
                                                           self.calcConfInterval(data))

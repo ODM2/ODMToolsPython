@@ -71,4 +71,4 @@ class DataValue(Base):
 			self.quality_control_level_id]
 
 	def __repr__(self):
-		return "<DataValue('%s', '%s')>" % (self.data_value, self.local_date_time)
+		return "<DataValue('%s', '%s', '%s')>" % (self.data_value, self.local_date_time, self.value_accuracy)

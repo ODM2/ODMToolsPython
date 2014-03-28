@@ -364,8 +364,6 @@ class plotTimeSeries(wx.Panel):
 
 
     def callback(self, verts):
-
-
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
 
