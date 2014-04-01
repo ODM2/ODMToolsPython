@@ -1,5 +1,4 @@
 import math
-from Bio.Wise.dnal import Statistics
 import datetime
 
 import numpy
@@ -164,12 +163,10 @@ class SeriesPlotInfo(object):
                 seriesID = key
                 series = self.memDB.series_service.get_series_by_id(seriesID)
 
-                startDate = datetime.datetime(series.begin_date_time.year, series.begin_date_time.month, series.begin_date_time.day, 0, 0, 0)# series.begin_date_time
-                print "StartDate:", startDate, type(startDate)
-                # #self._plotOptions._startDateTime
 
-                endDate = datetime.datetime(series.end_date_time.year, series.end_date_time.month, series.end_date_time.day, 0, 0, 0)#series.end_date_time  #self._plotOptions
-                print "EndDate:", endDate
+                startDate = series.begin_date_time  # #self._plotOptions._startDateTime
+                endDate= series.end_date_time  #self._plotOptions
+
 
                 # ._endDateTime#+1 day - 1 millisecond
                 variableName = series.variable_name
@@ -345,7 +342,18 @@ class BoxWhisker(object):
 
 
     def indivConfInter(self, data):
-        if len(data) > 0:
+        if type(data) is float:
+            med = numpy.median(data)
+            mean = numpy.mean(data)
+            stdDev = math.sqrt(numpy.var(data))
+            ci95low = mean - 10 * (1.96 * (stdDev / math.sqrt(1)))
+            ci95up = mean + 10 * (1.96 * (stdDev / math.sqrt(1)))
+
+            cl95low = med - (1.96 * (stdDev / math.sqrt(1)))
+            cl95up = med + (1.96 * (stdDev / math.sqrt(1)))
+
+            return [med, mean, ci95low, ci95up, cl95low, cl95up]
+        elif len(data) > 0:
             med = numpy.median(data)
             mean = numpy.mean(data)
             stdDev = math.sqrt(numpy.var(data))
