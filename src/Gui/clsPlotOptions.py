@@ -56,7 +56,7 @@ class OneSeriesPlotInfo(object):
         self.plotOptions = None
         self.BoxWhisker = None
         self.Probability = None
-        self.statistics = None
+        self.Statistics = None
         self.plotTitle = None
 
         self.color = "Black"
@@ -162,10 +162,11 @@ class SeriesPlotInfo(object):
 
                 seriesID = key
                 series = self.memDB.series_service.get_series_by_id(seriesID)
+                #print "series date: ", type(series.begin_date_time)
 
 
-                startDate = series.begin_date_time  # #self._plotOptions._startDateTime
-                endDate= series.end_date_time  #self._plotOptions
+                startDate = series.begin_date_time  # self._plotOptions._startDateTime
+                endDate = series.end_date_time  # self._plotOptions
 
 
                 # ._endDateTime#+1 day - 1 millisecond
@@ -212,7 +213,7 @@ class SeriesPlotInfo(object):
     def build(self, seriesInfo):
         data = seriesInfo.dataTable
         seriesInfo.Probability = Probability(data)
-        seriesInfo.statistics = Statistics(data, self._plotOptions.useCensoredData)
+        seriesInfo.Statistics = Statistics(data, self._plotOptions.useCensoredData)
         seriesInfo.BoxWhisker = BoxWhisker(data, self._plotOptions.boxWhiskerMethod)
 
     def updateDateRange(self, startDate=None, endDate=None):

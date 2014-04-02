@@ -35,8 +35,8 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
  wxID_RIBBONVIEWSERIES, wxID_RIBBONVIEWCONSOLE, wxID_RIBBONVIEWSCRIPT,
  wxID_RIBBONPLOTBLANKBTN, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE,
  wxID_FRAME1SPINCTRL1, wxID_RIBBONEDITFILTER, wxID_RIBBONEDITRECORD,
- wxID_RIBBONEDITLINFILTER
-] = [wx.NewId() for _init_ctrls in range(41)]
+ wxID_RIBBONEDITLINFILTER, wxID_RIBBONPLOTDATEAPPLY
+] = [wx.NewId() for _init_ctrls in range(42)]
 
 ## #################################
 ## Build Menu and Toolbar 
@@ -138,11 +138,16 @@ class mnuRibbon(RB.RibbonBar):
         self.dpEndDate.SetLabel(repr(wx.DateTimeFromDMY(1, 04, 2008, 0, 0, 0)))
         self.dpEndDate.SetToolTipString(u'End Date')
 
+        self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEAPPLY, "Apply",
+                                                wx.Bitmap(g_util.resource_path(
+                                                    "images" + g_util.slash() + "date_setting.png")), "")
+
         self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEFULL, "Full Date Range",
                                                 wx.Bitmap(g_util.resource_path(
                                                     "images" + g_util.slash() + "full_date_range.png")), "")
 
         self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
+        self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY,False)
         self.dpEndDate.Enabled = False
         self.dpStartDate.Enabled = False
 
@@ -254,9 +259,10 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onShowLegend, id=wxID_RIBBONPLOTTSLEGEND)
 
         ###date changed
-        self.Bind(wx.EVT_DATE_CHANGED, self.onDateChanged, id=wxID_ENDDPDATE)
-        self.Bind(wx.EVT_DATE_CHANGED, self.onDateChanged, id=wxID_STARTDPDATE)
+        #self.Bind(wx.EVT_DATE_CHANGED, self.onDateChanged, id=wxID_ENDDPDATE)
+        #self.Bind(wx.EVT_DATE_CHANGED, self.onDateChanged, id=wxID_STARTDPDATE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onFullDate, id=wxID_RIBBONPLOTDATEFULL)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onDateChanged, id = wxID_RIBBONPLOTDATEAPPLY)
 
         ###Add event  to edit tab
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onExecuteScript, id=wxID_RIBBONEDITSCRIPTEXECUTE)
@@ -283,7 +289,7 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.subscribe(self.toggleEditButtons, "EnableEditButtons")
         Publisher.subscribe(self.enableButtons, "EnablePlotButtons")
         Publisher.subscribe(self.resetDateRange, "resetdate")
-        Publisher.subscribe(self.updateSeriesCurrentDateTime, "updateSeriesCurrentDateTime")
+        #Publisher.subscribe(self.updateSeriesCurrentDateTime, "updateSeriesCurrentDateTime")
 
     def onFileMenu(self, event):
         if not self.GetActivePage() == 0:
@@ -340,8 +346,9 @@ class mnuRibbon(RB.RibbonBar):
         end = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
         self.dpEndDate.SetRange(start, end)
         self.dpStartDate.SetRange(start, end)
-        self.dpEndDate.SetValue(end)
-        self.dpStartDate.SetValue(start)
+        #self.dpEndDate.SetValue(end)
+        #self.dpStartDate.SetValue(start)
+
 
 
     def onLineDrift(self, event):
@@ -529,6 +536,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
+            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
             self.spnBins.Enabled = False
             self.dpEndDate.Enabled = False
             self.dpStartDate.Enabled = False
@@ -539,6 +547,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, True)
+            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, True)
             self.spnBins.Enabled = False
             self.dpEndDate.Enabled = True
             self.dpStartDate.Enabled = True
@@ -550,6 +559,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
             self.spnBins.Enabled = True
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
+            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
             self.dpEndDate.Enabled = False
             self.dpStartDate.Enabled = False
 
@@ -560,6 +570,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, True)
             self.spnBins.Enabled = False
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
+            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
             self.dpEndDate.Enabled = False
             self.dpStartDate.Enabled = False
 
@@ -570,6 +581,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
             self.spnBins.Enabled = False
             self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
+            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
             self.dpEndDate.Enabled = False
             self.dpStartDate.Enabled = False
 

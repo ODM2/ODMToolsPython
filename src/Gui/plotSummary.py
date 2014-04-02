@@ -89,7 +89,7 @@ class plotSummary(wx.Panel):
         #     self.fillValues(cursor, series, Filter, count-1)
 
 
-        stats = series.statistics
+        stats = series.Statistics
         count = stats.NumberofObservations
         self.grdSummary.SetCellValue(0, col, repr(series.seriesID))
         self.grdSummary.SetCellValue(1, col, repr(count))

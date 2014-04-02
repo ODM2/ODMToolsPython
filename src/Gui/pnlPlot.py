@@ -153,7 +153,7 @@ class pnlPlot(fnb.FlatNotebook):
         #logger.debug("B: SeriesInfo.startDate: %s" % (s[0].startDate) )
         #logger.debug("B: SeriesInfo.endDate: %s" % (s[0].endDate) )
 
-        Publisher.sendMessage("updateSeriesCurrentDateTime", seriesInfoList=self._seriesPlotInfo.getSeriesInfo())
+        #Publisher.sendMessage("updateSeriesCurrentDateTime", seriesInfoList=self._seriesPlotInfo.getSeriesInfo())
         #logger.debug("A: SeriesInfo.startDate: %s" % (s[0].startDate) )
         #logger.debug("A: SeriesInfo.endDate: %s" % (s[0].endDate) )
         self.redrawPlots()

@@ -127,6 +127,7 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
 
     def setDateBound(self, start, end):
+        logger.debug("start: %s end: %s type: %s"%(start, end, type(start)))
         if start > self.maxStart:
             self.startDate = self.maxStart = start
         if end < self.maxEnd:
@@ -288,7 +289,8 @@ class plotTimeSeries(wx.Panel):
                     )
                 )
 
-            self.setDateBound(oneSeries.dataTable[1][1], oneSeries.dataTable[-1][1])
+            self.setDateBound(oneSeries.startDate, oneSeries.endDate)
+
 
         if count > 1:
             # self.timeSeries.set_title("Multiple Series plotted")
@@ -306,7 +308,7 @@ class plotTimeSeries(wx.Panel):
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
-        self.timeSeries.set_xlabel("Date Time")
+        self.timeSeries.set_xlabel("Date")
 
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)
