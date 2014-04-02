@@ -236,7 +236,7 @@ class Statistics(object):
             dataValues = [x[0] for x in dataTable if x[2] == 'nc']
         data = sorted(dataValues)
         count = self.NumberofObservations = len(data)
-        self.NumberofCensoredObservations = [x[2] for x in dataTable].count('nc')  #self.cursor.fetchone()[0]
+        self.NumberofCensoredObservations = len(data)-[x[2] for x in dataTable].count('nc')  #self.cursor.fetchone()[0]
         self.ArithemticMean = round(numpy.mean(data), 5)
 
         sumval = 0

@@ -47,19 +47,7 @@ class plotSummary(wx.Panel):
             # for col in range(self.grdSummary.GetNumberCols())
             self.grdSummary.DeleteCols(pos=0, numCols=self.grdSummary.GetNumberCols(), updateLabels=True)
 
-    # def addPlot(self, cursor, series, Filter):
 
-    #     # series=Values[1]
-
-    #     self.grdSummary.AppendCols(numCols = 1, updateLabels = True)
-    #     count = self.grdSummary.GetNumberCols()
-    #     self.grdSummary.SetColLabelValue(count-1, series.site_name +"-"+ series.variable_name)
-    #     self.fillValues(cursor, series, Filter, count-1)
-
-    # def removePlot(self, id):
-    #     #loop through each column and find position
-    #     # self.grdSummary.
-    #     self.grdSummary.DeleteCols(pos = 0, numCols = 1,  updateLabels = True)
 
     def initPlot(self):
         self.grdSummary.AutoSize()

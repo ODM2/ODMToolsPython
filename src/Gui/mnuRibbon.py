@@ -528,6 +528,11 @@ class mnuRibbon(RB.RibbonBar):
 
         Publisher.sendMessage(("adjust.Docking"), value=value)
         event.Skip()
+    def enableDateSelection(self, isActive):
+        self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, isActive)
+        self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, isActive)
+        self.dpEndDate.Enabled = isActive
+        self.dpStartDate.Enabled = isActive
 
     def enableButtons(self, plot, isActive):
 
@@ -535,22 +540,16 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
             self.spnBins.Enabled = False
-            self.dpEndDate.Enabled = False
-            self.dpStartDate.Enabled = False
+            self.enableDateSelection(False)
 
         ##tims series or probability
         elif plot == 0 or plot == 1:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, True)
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, True)
             self.spnBins.Enabled = False
-            self.dpEndDate.Enabled = True
-            self.dpStartDate.Enabled = True
+            self.enableDateSelection( True)
 
         ##HIstogram
         elif plot == 2:
@@ -558,10 +557,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
             self.spnBins.Enabled = True
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
-            self.dpEndDate.Enabled = False
-            self.dpStartDate.Enabled = False
+            self.enableDateSelection(True)
 
         ##Box Plot
         elif plot == 3:
@@ -569,10 +565,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, True)
             self.spnBins.Enabled = False
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
-            self.dpEndDate.Enabled = False
-            self.dpStartDate.Enabled = False
+            self.enableDateSelection(True)
 
         #Summary
         elif plot == 4:
@@ -580,10 +573,7 @@ class mnuRibbon(RB.RibbonBar):
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTBOXTYPE, False)
             self.spnBins.Enabled = False
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
-            self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
-            self.dpEndDate.Enabled = False
-            self.dpStartDate.Enabled = False
+            self.enableDateSelection(True)
 
 
     # TODO change states when points are selected rather than all at once
@@ -602,3 +592,5 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITADDPOINT, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, state)
+
+        self.enableDateSelection(not(state))
