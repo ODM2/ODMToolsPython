@@ -16,7 +16,7 @@ import plotSummary
 import plotHistogram
 import plotBoxWhisker
 import plotProbability
-from clsPlotOptions import PlotOptions, SeriesPlotInfo
+from clsPlotOptions import SeriesPlotInfo
 
 import logging
 from common.logger import LoggerTool
@@ -132,8 +132,7 @@ class pnlPlot(fnb.FlatNotebook):
     def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
         if not self._seriesPlotInfo:
-            options = PlotOptions("Both", 0, False, False, True)
-            self._seriesPlotInfo = SeriesPlotInfo(memDB, options)
+            self._seriesPlotInfo = SeriesPlotInfo(memDB)
         self.editID = seriesID
         self._seriesPlotInfo.setEditSeries(self.editID)
         self.pltTS.setEdit(self.editID)
@@ -141,21 +140,11 @@ class pnlPlot(fnb.FlatNotebook):
     def addPlot(self, memDB, seriesID):
 
         if not self._seriesPlotInfo:
-            options = PlotOptions("Both", 0, False, False, True)
-            self._seriesPlotInfo = SeriesPlotInfo(memDB, options)
+            self._seriesPlotInfo = SeriesPlotInfo(memDB)
 
         self._seriesPlotInfo.update(seriesID, True)
         self.selectedSerieslist.append(seriesID)
-        #print "seriesPlotInfo!", type(self._seriesPlotInfo), dir(self._seriesPlotInfo)
 
-        #s = self._seriesPlotInfo.getSeriesInfo()
-
-        #logger.debug("B: SeriesInfo.startDate: %s" % (s[0].startDate) )
-        #logger.debug("B: SeriesInfo.endDate: %s" % (s[0].endDate) )
-
-        #Publisher.sendMessage("updateSeriesCurrentDateTime", seriesInfoList=self._seriesPlotInfo.getSeriesInfo())
-        #logger.debug("A: SeriesInfo.startDate: %s" % (s[0].startDate) )
-        #logger.debug("A: SeriesInfo.endDate: %s" % (s[0].endDate) )
         self.redrawPlots()
 
     def redrawPlots(self):

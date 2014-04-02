@@ -95,10 +95,10 @@ class plotHist(wx.Panel):
             self.plots[i - 1].set_title(
                 "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
 
-            print "oneSeries.dataTable:", oneSeries.dataTable
+            #print "oneSeries.dataTable:", oneSeries.dataTable
             self.hist.append(
                 self.plots[i - 1].hist(
-                    [x[0] for x in oneSeries.dataTable], bins=self.bins, normed=False, facecolor=oneSeries.plotcolor,
+                    [x[0] for x in oneSeries.dataTable], bins=self.bins, normed=False, facecolor=oneSeries.color,
                                        alpha=0.75, label=oneSeries.siteName + " " + oneSeries.variableName
                 )
             )

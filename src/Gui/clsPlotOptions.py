@@ -4,36 +4,22 @@ import datetime
 import numpy
 
 
-class PlotOptions(object):
-    # def enum( **enums):
-    #     return type('Enum', (), enums)
+#class PlotOptions(object):
 
-    # TimeSeriesType= enum('Both'=3, 'Line'=2, 'Point'=1, 'None'=0)
-    # BoxWhiskerType = enum('Monthly'=0, 'Seasonal'= 2, 'Yearly'=3, 'Overall'=4)
-
-
-
-
-    def __init__(self, TSMethod, color, showLegend, useCensoredData, isPlotCensored):
-        self.colorList = ['blue', 'green', 'red', 'cyan', 'orange', 'magenta', 'yellow', 'teal', 'purple']
-
-        self.timeSeriesMethod = TSMethod
-        self.isPlotCensored = isPlotCensored
-        self.plotColor = self.colorList[color]
-        self.showLegend = showLegend
-        self.useCensoredData = useCensoredData
-
-        self.numBins = 25
-        self.binWidth = 1.5
-
-        # self.timeSeriesMethod ="Both"
-        self.boxWhiskerMethod = "Monthly"
-
-        self.displayFullDate = True
-        self._startDateTime = None
-        self._endDateTime = None
-        self._startDateLimit = None
-        self._endDateLimit = None
+    # def __init__(self, TSMethod, showLegend, useCensoredData):
+    #
+    #
+    #     self.timeSeriesMethod = TSMethod
+    #     self.showLegend = showLegend
+    #     self.useCensoredData = useCensoredData
+    #
+    #     self.numBins = 25
+    #     self.binWidth = 1.5
+    #
+    #     # self.timeSeriesMethod ="Both"
+    #     self.boxWhiskerMethod = "Monthly"
+    #
+    #     self.displayFullDate = True
 
 
 class OneSeriesPlotInfo(object):
@@ -53,34 +39,34 @@ class OneSeriesPlotInfo(object):
         self.variableName = ""
         self.dataType = ""
         self.variableUnits = ""
-        self.plotOptions = None
         self.BoxWhisker = None
         self.Probability = None
         self.Statistics = None
         self.plotTitle = None
+        self.numBins = 25
+        self.binWidth = 1.5
+        self.boxWhiskerMethod = "Monthly"
+        self.useCensoredData = False
 
-        self.color = "Black"
+        self.color = ""
 
         #edit functions
         self.edit = False
+        #the color the plot should be when not editing
         self.plotcolor = None
-
-
-    def getPlotOptions(self):
-        return self.plotOptions
 
 
 
 class SeriesPlotInfo(object):
     # self._siteDisplayColumn = ""
 
-    def __init__(self, memDB, plotOptions):  #siteDisplayColumn,
-        # self._siteDisplayColumn = siteDisplayColumn
-        self._plotOptions = plotOptions
+    def __init__(self, memDB):
+
         #memDB is a connection to the memory_database
         self.memDB = memDB
         self._seriesInfos = {}
         self.editID = None
+        self.colorList = ['blue', 'green', 'red', 'cyan', 'orange', 'magenta', 'yellow', 'teal', 'purple']
 
     def setEditSeries(self, seriesID):
         self.editID = int(seriesID)
@@ -128,12 +114,13 @@ class SeriesPlotInfo(object):
             ## add dictionary entry with no data
             self._seriesInfos[e] = None
 
+
     # def Update(self):
     #     for key, value in enumerate(self._seriesInfos):
     #         self._seriesInfos[key]=None
 
     def setBoxInterval(self, title):
-        self._plotOptions.boxWhiskerMethod = title
+        self._seriesInfos.boxWhiskerMethod = title
         for key, value in self._seriesInfos.items():
             value.BoxWhisker.setInterval(title)
 
@@ -165,11 +152,11 @@ class SeriesPlotInfo(object):
                 #print "series date: ", type(series.begin_date_time)
 
 
-                startDate = series.begin_date_time  # self._plotOptions._startDateTime
-                endDate = series.end_date_time  # self._plotOptions
+                startDate = series.begin_date_time
+                endDate = series.end_date_time
 
 
-                # ._endDateTime#+1 day - 1 millisecond
+
                 variableName = series.variable_name
                 unitsName = series.variable_units_name
                 siteName = series.site_name
@@ -203,18 +190,18 @@ class SeriesPlotInfo(object):
             if self.editID == seriesInfo.seriesID:
                 #set color to black for editing
                 seriesInfo.edit = True
-                seriesInfo.plotcolor = self._plotOptions.colorList[i % len(self._plotOptions.colorList)]
+                seriesInfo.plotcolor = self.colorList[i % len(self.colorList)]
                 seriesInfo.color = "Black"
             else:
-                seriesInfo.color = self._plotOptions.colorList[i % len(self._plotOptions.colorList)]
+                seriesInfo.color = self.colorList[i % len(self.colorList)]
             lst.append(seriesInfo)
         return lst
 
     def build(self, seriesInfo):
         data = seriesInfo.dataTable
         seriesInfo.Probability = Probability(data)
-        seriesInfo.Statistics = Statistics(data, self._plotOptions.useCensoredData)
-        seriesInfo.BoxWhisker = BoxWhisker(data, self._plotOptions.boxWhiskerMethod)
+        seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData)
+        seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod)
 
     def updateDateRange(self, startDate=None, endDate=None):
         for key in self.getSeriesIDs():

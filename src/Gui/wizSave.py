@@ -317,36 +317,58 @@ class wizSave(wx.wizard.Wizard):
         Site, Variable, Method, Source, QCL= self.get_metadata()
         #if qcl exits use its its
 
-        if self.series_service.qcl_exists(QCL):
-            if QCL==self.currSeries.quality_control_level:
-                QCL=None
+        if QCL.code == 0:
+            val = wx.MessageBox('Download completed', "you are overwriting an level 0 dataset, which is usually reserved"
+                                                       " for raw data are you sure you want to save?", wx.OK | wx.ICON_INFORMATION)
+
+
+        #if QCL.code == 0:
+        #     #TODO MessageBox "you are overwriting an level 0 dataset, which is usually reserved for raw data
+        #     #  are you sure you want to save?"
+        #     val = wx.MessageBox('Download completed', "you are overwriting an level 0 dataset, which is usually reserved"
+        #                                               " for raw data are you sure you want to save?", wx.OK | wx.ICON_INFORMATION)
+        #
+        #     if val == wx.OK:
+        #         #TODO Message Box "this action cannot be changed are you sure, you are sure you want to save?"
+        #         val2 = wx.MessageBox('Download completed',"this action cannot be changed are you sure, you are sure "
+        #                                                  "you want to save?", wx.OK | wx.ICON_INFORMATION)
+        #         if val2 != wx.OK:
+        #closeSuccessful = False
+        #             break
+        #     else: closeSuccessful = False
+        closeSuccessful = False
+        if closeSuccessful:
+            if self.series_service.qcl_exists(QCL):
+                if QCL==self.currSeries.quality_control_level:
+                    QCL=None
+                else:
+                    QCL = self.record_service.get_qcl(QCL)
             else:
-                QCL = self.record_service.get_qcl(QCL)
-        else:
-            QCL=self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
+                QCL=self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
 
-        #if variable exists use its id
-        if self.series_service.variable_exists(Variable):
-            if Variable==self.currSeries.variable:
-                Variable= None
+            #if variable exists use its id
+            if self.series_service.variable_exists(Variable):
+                if Variable==self.currSeries.variable:
+                    Variable= None
+                else:
+                    Variable = self.record_service.get_variable(Variable)
             else:
-                Variable = self.record_service.get_variable(Variable)
-        else:
-            Variable=self.record_service.create_variable(Variable)
-        #if method exists use its id
-        if self.series_service.method_exists(Method):
-            if Method==self.currSeries.method:
-                Method=None
+                Variable=self.record_service.create_variable(Variable)
+            #if method exists use its id
+            if self.series_service.method_exists(Method):
+                if Method==self.currSeries.method:
+                    Method=None
+                else:
+                    Method = self.record_service.get_method(Method)
             else:
-                Method = self.record_service.get_method(Method)
-        else:
-            Method=self.record_service.create_method(Method)
+                Method=self.record_service.create_method(Method)
 
-        # initiate either "Save as" or "Save"
-        if self.page1.pnlIntroduction.rbSave.GetValue():
-            self.record_service.save(Variable, Method, QCL, True)
-        else:
-            self.record_service.save(Variable, Method, QCL, False)
-            Publisher.sendMessage("refreshSeries")
+            # initiate either "Save as" or "Save"
+            if self.page1.pnlIntroduction.rbSave.GetValue():
+                self.record_service.save(Variable, Method, QCL, True)
+            else:
+                self.record_service.save(Variable, Method, QCL, False)
+                Publisher.sendMessage("refreshSeries")
 
-
+            self.Close()
+            event.Skip()

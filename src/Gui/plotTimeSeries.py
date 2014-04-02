@@ -288,7 +288,7 @@ class plotTimeSeries(wx.Panel):
                         label=oneSeries.plotTitle
                     )
                 )
-
+#TODO set date value in table?
             self.setDateBound(oneSeries.startDate, oneSeries.endDate)
 
 
