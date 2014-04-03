@@ -39,7 +39,8 @@ class plotTimeSeries(wx.Panel):
     def init_plot(self):
         self.timeSeries.plot([], [])
         self.timeSeries.set_title("No Data To Plot")
-        self.canvas = FigCanvas(self, -1, plt.gcf())
+
+        self.canvas = FigCanvas(self, -1, plt.figure(1))
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
                                     False, u'Tahoma'))
         self.isShowLegendEnabled = False
@@ -74,6 +75,7 @@ class plotTimeSeries(wx.Panel):
         self.tooltip.SetDelay(0)
 
         #init lists
+        #self.lines = {}
         self.lines = []
         self.axislist = {}
         self.curveindex = -1
@@ -108,8 +110,8 @@ class plotTimeSeries(wx.Panel):
 
 
     def changeSelection(self, sellist=[], datetime_list=[]):
-        logger.debug("datetimelist: {list}".format(list=sorted(datetime_list)))
-        logger.debug("sellist: {list}".format(list=sellist))
+        #logger.debug("datetimelist: {list}".format(list=sorted(datetime_list)))
+        #logger.debug("sellist: {list}".format(list=sellist))
 
         self.changePlotSelection(sellist, datetime_list)
         if len(sellist)>0:
@@ -127,7 +129,7 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
 
     def setDateBound(self, start, end):
-        logger.debug("start: %s end: %s type: %s"%(start, end, type(start)))
+        #logger.debug("start: %s end: %s type: %s"%(start, end, type(start)))
         if start > self.maxStart:
             self.startDate = self.maxStart = start
         if end < self.maxEnd:
@@ -139,7 +141,7 @@ class plotTimeSeries(wx.Panel):
         Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
 
     def onDateFull(self):
-        logger.debug("Date: %s, %s" % (self.maxStart, self.maxEnd))
+        #logger.debug("Date: %s, %s" % (self.maxStart, self.maxEnd))
         # Resets the Date Time field
         Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
         # Modify the plot to reflect the new Date Time
@@ -149,18 +151,19 @@ class plotTimeSeries(wx.Panel):
         # print self.timeSeries.show_legend
         if isVisible:
             self.isShowLegendEnabled = True
-            logger.debug("IsVisible")
+            #logger.debug("IsVisible")
             plt.subplots_adjust(bottom=.1 + .1)
-            self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -0.16),
-                                   ncol=2, fancybox=True, prop=self.fontP)
+            leg = self.timeSeries.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
+            leg.get_frame().set_alpha(.5)
+            leg.draggable(state=True)
         else:
             self.isShowLegendEnabled = False
-            logger.debug("IsNotVisible")
+            #logger.debug("IsNotVisible")
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
         plt.gcf().autofmt_xdate()
-        plt.gci()
+        #plt.gci()
         self.canvas.draw()
 
 
@@ -177,9 +180,10 @@ class plotTimeSeries(wx.Panel):
             m = 'o'
 
         format = ls + m
-        for line, i in zip(self.lines, range(len(self.lines))):
+        for line, i in zip(self.lines.values(), range(len(self.lines))):
             if not (i == self.curveindex):
                 plt.setp(line, linestyle=ls, marker=m)
+
 
         plt.gcf().autofmt_xdate()
         self.canvas.draw()
@@ -265,9 +269,8 @@ class plotTimeSeries(wx.Panel):
     def updatePlot(self):
         self.clear()
         count = self.seriesPlotInfo.count()
-        self.lines = []
-
         self.setUpYAxis()
+        self.lines = []
 
         for oneSeries in self.seriesPlotInfo.getSeriesInfo():
             #is this the series to be edited
@@ -289,6 +292,19 @@ class plotTimeSeries(wx.Panel):
                     )
                 )
 
+                '''
+                # adding plot
+                #if not oneSeries.seriesID in self.lines:
+                curraxis = self.axislist[oneSeries.axisTitle]
+                self.lines[oneSeries.seriesID] = curraxis.plot_date(
+                    [x[1] for x in oneSeries.dataTable],
+                    [x[0] for x in oneSeries.dataTable],
+                    self.format, color=oneSeries.color,
+                    xdate=True, tz=None, antialiased=True,
+                    label=oneSeries.plotTitle
+                )
+                '''
+
             self.setDateBound(oneSeries.startDate, oneSeries.endDate)
 
 
@@ -304,7 +320,7 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.set_title("")
             self.timeSeries.legend_ = None
         else:
-            self.timeSeries.set_title(oneSeries.plotTitle)
+            self.timeSeries.set_title(oneSeries.siteName)
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
@@ -318,6 +334,27 @@ class plotTimeSeries(wx.Panel):
         plt.gcf().autofmt_xdate()
 
         self.canvas.draw()
+    '''
+    def removePlot(self, oneSeries):
+
+        curraxis = self.axislist[oneSeries.axisTitle]
+
+        if oneSeries.seriesID in self.lines:
+            # unplot from timeseries
+            for l in curraxis.lines:
+                if l.get_label() == oneSeries.plotTitle:
+                    curraxis.lines.remove(l)
+                    self.setUpYAxis()
+                    # remove key from dict
+                    del self.lines[oneSeries.seriesID]
+
+            #curraxis.lines.remove(self.lines[seriesId])
+
+
+
+            self.canvas.draw()
+    '''
+
 
     def setEdit(self, id):
         self.editseriesID = id
@@ -374,7 +411,7 @@ class plotTimeSeries(wx.Panel):
         for i in range(len(ind)):
             if ind[i]:
                 seldatetimes.append(self.editCurve.dataTable[i][1])
-        print seldatetimes
+        #print seldatetimes
 
         self.changeSelection(sellist=[], datetime_list= seldatetimes)
 

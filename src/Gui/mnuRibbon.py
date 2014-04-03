@@ -147,11 +147,9 @@ class mnuRibbon(RB.RibbonBar):
                                                     "images" + g_util.slash() + "full_date_range.png")), "")
 
         self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, False)
-        self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY,False)
+        self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, False)
         self.dpEndDate.Enabled = False
         self.dpStartDate.Enabled = False
-
-
 
         #-------------------------------------------------------------------------------
         editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit",
@@ -433,7 +431,6 @@ class mnuRibbon(RB.RibbonBar):
 
     def onShowLegend(self, event):
         Publisher.sendMessage(("onShowLegend"), event=event, isVisible=event.IsChecked())
-
         event.Skip()
 
     def onClose(self, event):

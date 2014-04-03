@@ -538,7 +538,7 @@ class pnlSeriesSelector(wx.Panel):
     def selectForPlot(self, selIndex):
         #logger.debug("self.tableseries.InnerList: %s" % (''.join(map(str, self.tableSeries.innerList))))
         sid = self.tableSeries.subList[selIndex][0]
-        logger.debug("sid: %s" % (sid))
+        #logger.debug("sid: %s" % (sid))
         if not self.tableSeries.IsItemChecked(selIndex):
             Publisher.sendMessage("removePlot", seriesID=sid)
             self.tableSeries.enableCheck(selIndex, False)

@@ -15,7 +15,7 @@ class PlotOptions(object):
 
 
     def __init__(self, TSMethod, color, showLegend, useCensoredData, isPlotCensored):
-        self.colorList = ['blue', 'green', 'red', 'cyan', 'orange', 'magenta', 'yellow', 'teal', 'purple']
+        self.colorList = ['blue', 'green', 'cyan', 'orange', 'magenta', 'yellow', 'teal', 'purple', 'red']
 
         self.timeSeriesMethod = TSMethod
         self.isPlotCensored = isPlotCensored
@@ -178,7 +178,7 @@ class SeriesPlotInfo(object):
                 if self.editID == seriesID:
                     data = self.memDB.getEditDataValuesforGraph()
                 else:
-                    data = self.memDB.getDataValuesforGraph(seriesID, repr(noDataValue), startDate, endDate)
+                    data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, startDate, endDate)
                 seriesInfo.seriesID = seriesID
                 seriesInfo.series = series
 
@@ -188,7 +188,7 @@ class SeriesPlotInfo(object):
                 seriesInfo.siteName = siteName
                 seriesInfo.variableName = variableName
                 seriesInfo.variableUnits = unitsName
-                seriesInfo.plotTitle = siteName + " " + variableName
+                seriesInfo.plotTitle = "Site: " + siteName + "\nVarName: " + variableName + "\nQCL: " + series.quality_control_level_code
                 seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
                 seriesInfo.noDataValue = noDataValue
                 seriesInfo.dataTable = data

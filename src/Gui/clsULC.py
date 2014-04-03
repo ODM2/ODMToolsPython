@@ -18,6 +18,7 @@ class clsULC(ULC.UltimateListCtrl):
         self.oddRowsBackColor = "SlateGray"  #wx.Colour(255, 250, 205) # LEMON CHIFFON
         self.cursor = None
         self.checkCount = 0
+        self.checkLimit = 6
         # wx.ListCtrl.__init__(self, *args, **kwargs)
         ULC.UltimateListCtrl.__init__(self, *args, **kwargs)
 
@@ -116,16 +117,16 @@ class clsULC(ULC.UltimateListCtrl):
     # Return False if the box isn't checked
     def enableCheck(self, id, isChecked):
         # Keeping adding
-        if self.checkCount < 5 and isChecked:
+        if self.checkCount < self.checkLimit and isChecked:
             self.subList[id][-1] = isChecked
             self.checkCount += 1
-            logger.debug("CheckCount: %d" % (self.checkCount))
+            #logger.debug("CheckCount: %d" % (self.checkCount))
             return True
         # Uncheck series case
         elif not isChecked:
             self.subList[id][-1] = isChecked
             self.checkCount -= 1
-            logger.debug("CheckCount: %d" % (self.checkCount))
+            #logger.debug("CheckCount: %d" % (self.checkCount))
             return False
 
         # Trying to check but reached max

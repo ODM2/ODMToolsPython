@@ -51,12 +51,12 @@ class MemoryDatabase(object):
         self.cursor.execute(sql)  
         return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]
 
-    def getDataValuesforGraph(self, seriesID, strNoDataValue, StartDate=None, EndDate=None):
+    def getDataValuesforGraph(self, seriesID, noDataValue, StartDate=None, EndDate=None):
         series = self.series_service.get_series_by_id(seriesID)
         DataValues = [
             (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'), dv.local_date_time.strftime('%Y') )
             for dv in series.data_values
-            if dv.data_value != strNoDataValue if dv.local_date_time >= StartDate if dv.local_date_time <= EndDate
+            if dv.data_value != noDataValue if dv.local_date_time >= StartDate if dv.local_date_time <= EndDate
         ]
         return DataValues
 
