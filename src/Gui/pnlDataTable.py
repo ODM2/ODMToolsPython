@@ -80,12 +80,12 @@ class pnlDataTable(wx.Panel):
         #     self.selectedpoints.Add(event.m_itemIndex)
 
         self.currentItem = event.GetEventObject().GetSelectedObjects()
-        logger.debug("OnItemSelected: %s\n" % (self.currentItem))
-        logger.debug("size %d" % len(self.currentItem))
+        #logger.debug("OnItemSelected: %s\n" % (self.currentItem))
+        #logger.debug("size %d" % len(self.currentItem))
         #for i in self.currentItem:
             #logger.debug("index: %s" % (i[3]))
 
-        logger.debug("dates %s" % [x[3] for x in self.currentItem])
+        #logger.debug("dates %s" % [x[3] for x in self.currentItem])
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot
         #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
@@ -96,7 +96,7 @@ class pnlDataTable(wx.Panel):
         keycode = event.GetKeyCode()
         logger.debug("keycode %s" % keycode)
         if keycode == 1:
-            logger.debug("OnKeyPress! Ctrl+A was pressed")
+            #logger.debug("OnKeyPress! Ctrl+A was pressed")
             self.myOlv.SelectAll()
             self.currentItem = self.myOlv.GetSelectedObjects()
             logger.debug("itemtype %s" % type(self.currentItem))
@@ -124,9 +124,9 @@ class pnlDataTable(wx.Panel):
         else:
             #TODO Select by DateTime        #filter(by date),        #getfilteredobjects,        #removefilter,        #Select Objects
             for dateval in datetime_list:
-                logger.debug("filter: %s" % dateval.strftime("%Y-%m-%d %H:%M:%S"))
+                #logger.debug("filter: %s" % dateval.strftime("%Y-%m-%d %H:%M:%S"))
                 self.myOlv.SetFilter(Filter.TextSearch(self.myOlv, text=dateval.strftime("%Y-%m-%d %H:%M:%S")))
-                logger.debug("filteredobject: %s" % self.myOlv.GetFilteredObjects())
+                #logger.debug("filteredobject: %s" % self.myOlv.GetFilteredObjects())
                 if not isfirstselected:
                     self.myOlv.SelectObject(self.myOlv.GetFilteredObjects()[0], deselectOthers=True, ensureVisible =True)
                     isfirstselected =True

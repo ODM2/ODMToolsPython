@@ -1,12 +1,14 @@
 # This class is intended for users to simplify console interaction
 
-from wx.lib.pubsub import pub as Publisher
-from odmservices import ServiceManager
-from odmdata import Qualifier
 import datetime
 
-class ConsoleTools(object):
+from wx.lib.pubsub import pub as Publisher
 
+from odmservices import ServiceManager
+from odmdata import Qualifier
+
+
+class ConsoleTools(object):
     def __init__(self, ribbon, record_service=None):
         self._edit_error = "no series selected for editing"
         self._add_point_req_error = "A required field was left empty"
@@ -15,7 +17,6 @@ class ConsoleTools(object):
         self._ribbon = ribbon
         self._record_service = record_service
 
-    
 
     ################
     # Set methods
@@ -72,7 +73,7 @@ class ConsoleTools(object):
     def get_filtered_points(self):
         if self._record_service:
             return self._record_service.get_filtered_points()
-    
+
     ################
     # Edit methods
     ################
@@ -82,12 +83,15 @@ class ConsoleTools(object):
             self._record_service.change_value(value, operator)
             self.refresh_plot()
 
-    def add_point(self, data_value, value_accuracy, local_datetime, utc_offset, datetime_utc, offset_value, offset_type, censor_code, qualifier_code, lab_sample_code):
+    def add_point(self, data_value, value_accuracy, local_datetime, utc_offset, datetime_utc, offset_value, offset_type,
+                  censor_code, qualifier_code, lab_sample_code):
         if (data_value == None or local_datetime == None or utc_offset == None or
-            datetime_utc == None or censor_code == None or censor_code == ""):
+                    datetime_utc == None or censor_code == None or censor_code == ""):
             return "Error adding point: %s" % (self._add_point_req_error)
 
-        point = (data_value, value_accuracy, local_datetime, utc_offset, datetime_utc, offset_value, offset_type, censor_code, qualifier_code, lab_sample_code)
+        point = (
+        data_value, value_accuracy, local_datetime, utc_offset, datetime_utc, offset_value, offset_type, censor_code,
+        qualifier_code, lab_sample_code)
         point_list = []
         point_list.append(point)
         if self._record_service:
@@ -98,11 +102,11 @@ class ConsoleTools(object):
         for point in point_list:
             #data_value, local_datetime, utc_offset, datetime_utc, censor_code
             if (point[0] == None or point[2] == None or point[3] == None or
-                point[4] == None or point[7] == None or point[7] == ""):
+                        point[4] == None or point[7] == None or point[7] == ""):
                 return "Error adding point: %s" % (self._add_point_req_error)
 
             if (type(point[2]) is not datetime or
-                type(point[4]) is not datetime):
+                        type(point[4]) is not datetime):
                 return "Error adding point: %s" % (self._add_point_format_error)
 
         if self._record_service:
@@ -114,7 +118,7 @@ class ConsoleTools(object):
             self._record_service.flag(qualifier_id)
             self.refresh_plot()
 
-    def select_points(self, id_list=[], datetime_list=[] ):
+    def select_points(self, id_list=[], datetime_list=[]):
         if self._record_service:
             self._record_service.select_points(id_list, datetime_list)
             self.refresh_plot()
@@ -171,7 +175,7 @@ class ConsoleTools(object):
     def export_series_data(self, series_id, filename):
         serv_man = ServiceManager()
         export_service = serv_man.get_export_service()
-        export_service.export_series_data(series_id, filename, True,True,True,True,True,True,True)
+        export_service.export_series_data(series_id, filename, True, True, True, True, True, True, True)
 
     def export_series_metadata(self, series_id, filename):
         serv_man = ServiceManager()

@@ -1,7 +1,6 @@
 import textwrap
 
 import wx
-import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
@@ -81,13 +80,15 @@ class plotProb(wx.Panel):
         # print self.timeSeries.show_legend
         if isVisible:
             plt.subplots_adjust(bottom=.1 + .1)
-            self.plot.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-                             ncol=2, prop=self.fontP)
+            leg = self.plot.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
+            leg.get_frame().set_alpha(.5)
+            leg.draggable(state=True)
 
         else:
             plt.subplots_adjust(bottom=.1)
             self.plot.legend_ = None
         # self.timeSeries.plot(legend= not isVisible)
+        #plt.gcf().autofmt_xdate()
         self.canvas.draw()
 
 
@@ -120,12 +121,11 @@ class plotProb(wx.Panel):
 
         if count > 1:
             plt.subplots_adjust(bottom=.1 + .1)
-            self.plot.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-                             ncol=2, prop=self.fontP)
-
+            self.plot.legend(loc='upper center', ncol=2, prop=self.fontP)
         else:
             plt.subplots_adjust(bottom=.1)
             self.plot.legend_ = None
+
         self.canvas.draw()
 
 
@@ -161,12 +161,13 @@ class plotProb(wx.Panel):
         x = range(len(self.Xaxis))
         self.plot.set_xlabel("Cumulative Frequency < Stated Value %")
         self.plot.set_ylabel(
-            "\n".join(textwrap.wrap(self.Series.variable_name + "(" + self.Series.variable_units_name + ")", 50)))
+            "\n".join(textwrap.wrap(self.Series.variable_name + " (" + self.Series.variable_units_name + ")", 50)))
         self.plot.set_title("\n".join(textwrap.wrap(self.Series.site_name + " " + self.Series.variable_name, 55)))
 
         self.plot = self.figure.add_subplot(111)
         self.lines = self.plot.plot(self.Xaxis, self.Yaxis, 'bs')
 
+        #self.figure.autofmt_xdate()
         self.setXaxis()
         self.canvas.draw()
 

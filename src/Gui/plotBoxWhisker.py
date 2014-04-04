@@ -99,7 +99,7 @@ class PlotBox(wx.Panel):
             cl = oneSeries.BoxWhisker.currinterval.confint
             mean = oneSeries.BoxWhisker.currinterval.means
             ci = oneSeries.BoxWhisker.currinterval.conflimit
-            bp = self.plots[i - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-gs", notch=True,
+            bp = self.plots[i - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True,
                                            bootstrap=5000, conf_intervals=cl)
 
 
@@ -118,7 +118,7 @@ class PlotBox(wx.Panel):
             plt.setp(bp['medians'], color='k', linestyle='-')
             plt.setp(bp['boxes'], color='GREY', linestyle='-')
             plt.setp(bp['caps'], color='k')
-            plt.setp(bp['fliers'], markersize=3.5)
+            plt.setp(bp['fliers'], markersize=3.5, color=oneSeries.color)
 
             # self.plot.set_ybound(min(data),max(data))
             self.plots[i - 1].set_autoscale_on(True)
@@ -136,7 +136,7 @@ class PlotBox(wx.Panel):
                 left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
             )
 
-        self.figure.autofmt_xdate()
+        #self.figure.autofmt_xdate()
 
         #plt.xticks(rotation=30, size='small')
         #plt.margins(0.2)

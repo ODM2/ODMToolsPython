@@ -70,16 +70,17 @@ class pnlPlot(fnb.FlatNotebook):
         self.selectedSerieslist = []
         self._seriesPlotInfo = None
         self.editID = None
+        self.legendVisible = False
 
     def initPubSub(self):
-        Publisher.subscribe(self.onDateChanged, ("onDateChanged"))
-        Publisher.subscribe(self.onDateFull, ("onDateFull"))
-        Publisher.subscribe(self.onPlotType, ("onPlotType"))
-        Publisher.subscribe(self.onShowLegend, ("onShowLegend"))
-        Publisher.subscribe(self.onNumBins, ("onNumBins"))
-        Publisher.subscribe(self.onRemovePlot, ("removePlot"))
-        Publisher.subscribe(self.onChangeSelection, ("changeSelection"))
-        Publisher.subscribe(self.onUpdateValues, ("updateValues"))
+        Publisher.subscribe(self.onDateChanged, "onDateChanged")
+        Publisher.subscribe(self.onDateFull, "onDateFull")
+        Publisher.subscribe(self.onPlotType, "onPlotType")
+        Publisher.subscribe(self.onShowLegend, "onShowLegend")
+        Publisher.subscribe(self.onNumBins, "onNumBins")
+        Publisher.subscribe(self.onRemovePlot, "removePlot")
+        Publisher.subscribe(self.onChangeSelection, "changeSelection")
+        Publisher.subscribe(self.onUpdateValues, "updateValues")
         Publisher.subscribe(self.clear, "clearPlot")
 
     def onUpdateValues(self, event):
@@ -91,8 +92,12 @@ class pnlPlot(fnb.FlatNotebook):
     def onRemovePlot(self, seriesID):
 
         # self.selectedSerieslist.remove(seriesID)
+        #tempseries= self._seriesPlotInfo.getSeries(seriesID)
         self._seriesPlotInfo.update(seriesID, False)
         self.pltTS.Plot(self._seriesPlotInfo)
+        #self.pltTS.removePlot(tempseries)
+        self.onShowLegend(event=None, isVisible=self.legendVisible)
+
         self.pltSum.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)
         self.pltHist.Plot(self._seriesPlotInfo)
@@ -104,11 +109,11 @@ class pnlPlot(fnb.FlatNotebook):
     def onDateChanged(self, startDate, endDate):
         self._seriesPlotInfo.updateDateRange(startDate, endDate)
         self.redrawPlots()
-       # self.pltTS.onDateChanged(startDate, endDate)
+        # self.pltTS.onDateChanged(startDate, endDate)
 
 
- #   def onDateChanged(self, startDate, endDate):
- #       self.pltTS.onDateChanged(startDate, endDate)
+        #   def onDateChanged(self, startDate, endDate):
+        #       self.pltTS.onDateChanged(startDate, endDate)
 
     # Reset the date to the full date
     def onDateFull(self):
@@ -123,6 +128,7 @@ class pnlPlot(fnb.FlatNotebook):
     def onShowLegend(self, event, isVisible):
         self.pltTS.onShowLegend(isVisible)
         self.pltProb.onShowLegend(isVisible)
+        self.legendVisible = isVisible
 
     def stopEdit(self):
         self._seriesPlotInfo.stopEditSeries()
@@ -145,15 +151,21 @@ class pnlPlot(fnb.FlatNotebook):
         self._seriesPlotInfo.update(seriesID, True)
         self.selectedSerieslist.append(seriesID)
 
+
         self.redrawPlots()
 
     def redrawPlots(self):
+
+
         self.pltSum.Plot(self._seriesPlotInfo)
         self.pltProb.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)
         self.pltHist.Plot(self._seriesPlotInfo)
 
         self.pltTS.Plot(self._seriesPlotInfo)
+
+        self.onShowLegend(event=None, isVisible=self.legendVisible)
+
 
     #     self.PlotGraph()
     def selectPlot(self, value):
