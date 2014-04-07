@@ -265,6 +265,7 @@ class wizSave(wx.wizard.Wizard):
             variable =self.currSeries.variable
         site = self.currSeries.site
         source = self.currSeries.source
+        logger.debug("site: %s, variable: %s, method: %s, source: %s, qcl: %s"% (site.id,variable.id, method.id, source.id, qcl.id))
         return site, variable, method, source, qcl
 
     def __init__(self, parent, service_man, record_service):
@@ -316,10 +317,24 @@ class wizSave(wx.wizard.Wizard):
     def on_wizard_finished(self, event):
         Site, Variable, Method, Source, QCL= self.get_metadata()
         #if qcl exits use its its
+        closeSuccessful = False
+        if QCL.id == 0:
+            val = wx.MessageBox("You are overwriting an level 0 dataset, which is usually reserved for raw data.\n"
+                                "Are you sure you want to save?",
+                                'Are you Sure?',
+                                wx.YES_NO | wx.ICON_QUESTION)
+            if val == 2:
+                logger.debug("user selected yes to save a level 0 dataset")
+                val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure, you are sure?\n",
+                                      'Are you REALLY sure?',
+                                      wx.YES_NO | wx.ICON_QUESTION)
+                if val_2 ==2:
+                    closeSuccessful =True
 
-        if QCL.code == 0:
-            val = wx.MessageBox( "you are overwriting an level 0 dataset, which is usually reserved for raw data are you "
-                                 "sure you want to save?", 'Download completed', wx.YES_NO | wx.ICON_INFORMATION)
+        else:
+            closeSuccessful = True
+
+
 
 
         #if QCL.code == 0:
@@ -336,7 +351,8 @@ class wizSave(wx.wizard.Wizard):
         #closeSuccessful = False
         #             break
         #     else: closeSuccessful = False
-        closeSuccessful = False
+
+
         if closeSuccessful:
             if self.series_service.qcl_exists(QCL):
                 if QCL==self.currSeries.quality_control_level:
