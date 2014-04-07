@@ -548,6 +548,11 @@ class pnlSeriesSelector(wx.Panel):
             if self.tableSeries.enableCheck(selIndex, True):
                 #self.tableSeries.subList[selIndex][-1] = True
                 self.parent.Parent.addPlot(self.memDB, sid)
+            else:
+                logger.debug("series was not checked")
+                val_2 = wx.MessageBox("Visualization is limited to 6 series.",
+                                      "Can't add plot",
+                                      wx.OK| wx.ICON_INFORMATION)
 
 
         self.Refresh()
