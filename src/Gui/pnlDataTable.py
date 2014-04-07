@@ -120,7 +120,7 @@ class pnlDataTable(wx.Panel):
                         self.myOlv.SelectObject(self.myOlv.GetObjectAt(i), deselectOthers=True, ensureVisible =True)
                         isfirstselected=True
                     objlist.append(self.myOlv.GetObjectAt(i))
-                self.myOlv.SelectObjects(objlist, deselectOthers=False)  #, ensureVisible =True
+            self.myOlv.SelectObjects(objlist, deselectOthers=False)  #, ensureVisible =True
         else:
             #TODO Select by DateTime        #filter(by date),        #getfilteredobjects,        #removefilter,        #Select Objects
             for dateval in datetime_list:

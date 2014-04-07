@@ -417,7 +417,7 @@ class plotTimeSeries(wx.Panel):
                 seldatetimes.append(self.editCurve.dataTable[i][1])
         #print seldatetimes
 
-        self.changeSelection(sellist=[], datetime_list= seldatetimes)
+        self.changeSelection(sellist=ind, datetime_list= seldatetimes)
 
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)

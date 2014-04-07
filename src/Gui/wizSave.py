@@ -318,20 +318,20 @@ class wizSave(wx.wizard.Wizard):
         #if qcl exits use its its
 
         if QCL.code == 0:
-            val = wx.MessageBox('Download completed', "you are overwriting an level 0 dataset, which is usually reserved"
-                                                       " for raw data are you sure you want to save?", wx.OK | wx.ICON_INFORMATION)
+            val = wx.MessageBox( "you are overwriting an level 0 dataset, which is usually reserved for raw data are you "
+                                 "sure you want to save?", 'Download completed', wx.YES_NO | wx.ICON_INFORMATION)
 
 
         #if QCL.code == 0:
         #     #TODO MessageBox "you are overwriting an level 0 dataset, which is usually reserved for raw data
         #     #  are you sure you want to save?"
-        #     val = wx.MessageBox('Download completed', "you are overwriting an level 0 dataset, which is usually reserved"
-        #                                               " for raw data are you sure you want to save?", wx.OK | wx.ICON_INFORMATION)
+        #     val = wx.MessageBox('Are you Sure?', "you are overwriting an level 0 dataset, which is usually reserved"
+        #                                               " for raw data are you sure you want to save?",  wx.YES_NO | wx.ICON_INFORMATION)
         #
         #     if val == wx.OK:
         #         #TODO Message Box "this action cannot be changed are you sure, you are sure you want to save?"
-        #         val2 = wx.MessageBox('Download completed',"this action cannot be changed are you sure, you are sure "
-        #                                                  "you want to save?", wx.OK | wx.ICON_INFORMATION)
+        #         val2 = wx.MessageBox('Are you Sure?',"this action cannot be changed are you sure, you are sure "
+        #                                                  "you want to save?",  wx.YES_NO | wx.ICON_INFORMATION)
         #         if val2 != wx.OK:
         #closeSuccessful = False
         #             break
