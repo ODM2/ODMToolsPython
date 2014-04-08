@@ -1,16 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
+
 
 class SessionFactory():
-	def __init__(self, connection_string, echo):
-		self.engine = create_engine(connection_string, encoding='utf-8', echo=echo)
+    def __init__(self, connection_string, echo):
+        self.engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600)
 
-		# Create session maker
-		self.Session = sessionmaker(bind=self.engine)
+        # Create session maker
+        self.Session = sessionmaker(bind=self.engine)
 
-	def get_session(self):
-		return self.Session()
+    def get_session(self):
+        return self.Session()
 
-	def __repr__(self):
-		return "<SessionFactory('%s')>" % (self.engine)
+    def __repr__(self):
+        return "<SessionFactory('%s')>" % (self.engine)

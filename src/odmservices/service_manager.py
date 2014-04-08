@@ -1,4 +1,6 @@
+import logging
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
+from common.logger import LoggerTool
 
 import utilities as util
 from series_service import SeriesService
@@ -6,6 +8,10 @@ from cv_service import CVService
 from edit_service import EditService
 from record_service import RecordService
 from export_service import ExportService
+
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class ServiceManager():
@@ -23,6 +29,7 @@ class ServiceManager():
                 break
             else:
                 line = line.split()
+                logger.debug(line)
 
                 if len(line) >= 5:
                     line_dict = {}

@@ -1,12 +1,16 @@
 #Boa:Frame:frmDBConfig
+import logging
 import sqlalchemy
 from sqlalchemy.exc import DBAPIError
 
 import wx
+from common.logger import LoggerTool
 
 import frmODMToolsMain
 from odmservices.service_manager import ServiceManager
 
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 def create(parent, service_manager, is_main):
     return frmDBConfig(parent, service_manager, is_main=is_main)
@@ -154,14 +158,30 @@ class frmDBConfig(wx.Dialog):
 
     def OnBtnTest(self, event):
         conn_dict = self._GetFieldValues()
+        self.validateInput(conn_dict)
 
+    def OnBtnSave(self, event):
+        conn_dict = self._GetFieldValues()
+        result = self.validateInput(conn_dict)
+
+        if result:
+            self.SetReturnCode(wx.ID_OK)
+            self.service_manager.add_connection(conn_dict)
+            self.Destroy()
+
+    def OnBtnCancel(self, event):
+        self.SetReturnCode(wx.ID_CANCEL)
+        self.Destroy()
+
+    def validateInput(self, conn_dict):
         message = ""
-        if conn_dict['user'] and conn_dict['password']  and conn_dict['address'] and conn_dict['db']:
+        if conn_dict['user'] and conn_dict['password'] and conn_dict['address'] and conn_dict['db']:
             if self.service_manager.test_connection(conn_dict):
                 try:
                     if self.service_manager.get_db_version(conn_dict) == '1.1.1':
                         message = "This connection is valid"
                         wx.MessageBox(message, 'Test Connection', wx.OK)
+                        return True
                 except DBAPIError:
                     message = "Please check the credentials and " \
                               "ensure that the database is accessible"
@@ -172,19 +192,8 @@ class frmDBConfig(wx.Dialog):
         else:
             message = "Please enter valid connection information"
             wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
+        return False
 
-
-    def OnBtnSave(self, event):
-        conn_dict = self._GetFieldValues()
-
-        self.service_manager.add_connection(conn_dict)
-
-        self.Close()
-        self.Destroy()
-
-    def OnBtnCancel(self, e):
-        self.Close()
-        self.Destroy()
 
     # Returns a dictionary of the database values entered in the form
     def _GetFieldValues(self):

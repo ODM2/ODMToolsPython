@@ -179,12 +179,12 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.close()
 
     def clear(self):
-        self.pltTS.init_plot()
+        #self.pltTS.init_plot()
         self.pltSum.clear()
         self.pltHist.clear()
         self.pltProb.clear()
         self.pltBox.clear()
-        #self.pltTS.clear()
+        self.pltTS.clear()
 
         # Set title of TimeSeries to default
         #self.pltTS.timeSeries.set_title("No Data To Plot")

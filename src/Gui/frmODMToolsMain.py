@@ -216,7 +216,13 @@ class frmODMToolsMain(wx.Frame):
     def onChangeDBConn(self, event):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
-        if value == 5101:
+
+        print "Value: ", value
+        #print "wxID_FRMDBCONFIGBTNSAVE: ", db_config._init_ctrls[2] #wxID_FRMDBCONFIGBTNSAVE
+        #print "wxID_FRMDBCONFIGBTNCANCEL: ", db_config._init_ctrls[3] #wxID_FRMDBCONFIGBTNCANCEL
+        #print "wxID_FRMDBCONFIGBTNTEST: ", db_config._init_ctrls[4] #wxID_FRMDBCONFIGBTNTEST
+
+        if value == wx.ID_OK:
             #reset Series Selector
             self.createService()
             self.pnlSelector.resetDB(self.sc)
@@ -224,6 +230,8 @@ class frmODMToolsMain(wx.Frame):
             self.pnlPlot.clear()
             #clear table
             self.dataTable.clear()
+
+
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
