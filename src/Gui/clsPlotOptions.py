@@ -122,6 +122,7 @@ class SeriesPlotInfo(object):
     #         self._seriesInfos[key]=None
 
     def setBoxInterval(self, title):
+        # TODO AttributeError: 'dict' object has no attribute 'boxWhiskerMethod'
         self._seriesInfos.boxWhiskerMethod = title
         for key, value in self._seriesInfos.items():
             value.BoxWhisker.setInterval(title)
@@ -153,11 +154,8 @@ class SeriesPlotInfo(object):
                 series = self.memDB.series_service.get_series_by_id(seriesID)
                 #print "series date: ", type(series.begin_date_time)
 
-
                 startDate = series.begin_date_time
                 endDate = series.end_date_time
-
-
 
                 variableName = series.variable_name
                 unitsName = series.variable_units_name

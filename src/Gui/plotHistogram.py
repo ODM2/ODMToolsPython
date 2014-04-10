@@ -1,7 +1,6 @@
 import textwrap
 
 import wx
-import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 
@@ -92,27 +91,30 @@ class plotHist(wx.Panel):
             self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL,
                                         False, u'Tahoma'))
 
-            self.plots[i - 1].set_title(
-                "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
+            #self.plots[i - 1].set_title(
+            # "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
+            self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
+
 
             #print "oneSeries.dataTable:", oneSeries.dataTable
-            self.hist.append(
-                self.plots[i - 1].hist(
+            self.hist.append(self.plots[i - 1].hist(
                     [x[0] for x in oneSeries.dataTable], bins=self.bins, normed=False, facecolor=oneSeries.color,
-                                       alpha=0.75, label=oneSeries.siteName + " " + oneSeries.variableName
+                    alpha=0.75, label=oneSeries.siteName + " " + oneSeries.variableName
                 )
             )
             i += 1
 
-        left  = 0.125  # the left side of the subplots of the figure
-        right = 0.9    # the right side of the subplots of the figure
-        bottom = 0.1   # the bottom of the subplots of the figure
-        top = 0.9      # the top of the subplots of the figure
-        wspace = 0.5   # the amount of width reserved for blank space between subplots
-        hspace = 0.5   # the amount of height reserved for white space between subplots
+        left = 0.125  # the left side of the subplots of the figure
+        right = 0.9  # the right side of the subplots of the figure
+        bottom = 0.51  # the bottom of the subplots of the figure
+        top = 1.2  # the top of the subplots of the figure
+        wspace = .8  # the amount of width reserved for blank space between subplots
+        hspace = .8  # the amount of height reserved for white space between subplots
         self.figure.subplots_adjust(
             left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
         )
+
+        self.figure.tight_layout()
 
         self.canvas.draw()
 

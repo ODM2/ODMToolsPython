@@ -1,12 +1,12 @@
 import textwrap
 
 import wx
-from wx.lib.pubsub import pub as Publisher
 import matplotlib
+import matplotlib.pyplot as plt
+from wx.lib.pubsub import pub as Publisher
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-import matplotlib.pyplot as plt
-
+from matplotlib.ticker import *
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 
@@ -48,7 +48,7 @@ class PlotBox(wx.Panel):
         #self.canvas.SetCursor(wx.StockCursor(wx.CURSOR_CROSS))
         #self.canvas.SetScrollbar(wx.HORIZONTAL, 0,5, 1000)
         self.setColor("WHITE")
-        self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
+        self.canvas.SetFont(wx.Font(15, wx.SWISS, wx.NORMAL, wx.NORMAL,
                                     False, u'Tahoma'))
         self.canvas.draw()
         self._init_sizers()
@@ -67,7 +67,7 @@ class PlotBox(wx.Panel):
         return rows, cols
 
     def textSize(self, cells):
-        wrap = 50
+        wrap = 40
         wrap = wrap - (cells * 3)
         text = 20 - cells
         return wrap, text
@@ -85,15 +85,18 @@ class PlotBox(wx.Panel):
         for oneSeries in self.seriesPlotInfo.getSeriesInfo():
             self.plots.append(self.figure.add_subplot(repr(rows) + repr(cols) + repr(i)))
 
+            #print "self.plots: ", [dir(x) for x in self.plots]
+
             wrap, text = self.textSize(count)
             self.plots[i - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
-            self.plots[i - 1].set_ylabel(
-                "\n".join(textwrap.wrap(oneSeries.variableName + " (" + oneSeries.variableUnits + ")", wrap)))
-            self.plots[i - 1].set_title(
-                "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
+            print dir(self.plots[i - 1])
 
-            self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL,
-                                        False, u'Tahoma'))
+            self.plots[i - 1].set_ylabel(
+                "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
+            #self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
+            self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
+
+            self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
 
             med = oneSeries.BoxWhisker.currinterval.medians
             cl = oneSeries.BoxWhisker.currinterval.confint
@@ -112,7 +115,6 @@ class PlotBox(wx.Panel):
             # Plot Median
             self.plots[i - 1].scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
 
-
             # Set Colors of the Box Whisker plot
             plt.setp(bp['whiskers'], color='k', linestyle='-')
             plt.setp(bp['medians'], color='k', linestyle='-')
@@ -124,19 +126,36 @@ class PlotBox(wx.Panel):
             self.plots[i - 1].set_autoscale_on(True)
             self.plots[i - 1].set_xticklabels(oneSeries.BoxWhisker.currinterval.xlabels)
 
+            #majorLocator = MultipleLocator()
+            #autoLocator = AutoLocator()
+            #fixedLocator = FixedLocator()
+            #self.plots[i-1].xaxis.set_major_locator(fixedLocator)
             i += 1
 
-            left  = 0.125  # the left side of the subplots of the figure
-            right = 0.9    # the right side of the subplots of the figure
-            bottom = 0.21   # the bottom of the subplots of the figure
-            top = .9      # the top of the subplots of the figure
-            wspace = 0.8   # the amount of width reserved for blank space between subplots
-            hspace = 0.8   # the amount of height reserved for white space between subplots
-            self.figure.subplots_adjust(
-                left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
-            )
+        plt.setp([x.get_xticklabels() for x in self.plots[0:]], rotation=35)
+        #print "xlabels: ", [dir(x.get_xticklabels()) for x in self.plots[0:]]
 
-        #self.figure.autofmt_xdate()
+        left = 0.125  # the left side of the subplots of the figure
+        right = 0.9  # the right side of the subplots of the figure
+        bottom = 0.51  # the bottom of the subplots of the figure
+        top = 1.2  # the top of the subplots of the figure
+        wspace = .8  # the amount of width reserved for blank space between subplots
+        hspace = .8  # the amount of height reserved for white space between subplots
+        self.figure.subplots_adjust(
+            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+        )
+
+        self.figure.tight_layout()
+
+        #for x in self.plots[0:]:
+        #    print "xticklabels: ", type(x.get_xticklabels), dir(x.get_xticklabels)
+
+        #majorLocator = MultipleLocator(20)
+        #majorFormatter = FormatStrFormatter('%d')
+        #minorLocator   = MultipleLocator(5)
+        #self.plot.xaxis.set_major_locator(majorLocator)
+        #self.plots[i-1].xaxis.set_major_formatter(majorFormatter)
+        #self.plots[i-1].xaxis.set_minor_locator(minorLocator)
 
         #plt.xticks(rotation=30, size='small')
         #plt.margins(0.2)

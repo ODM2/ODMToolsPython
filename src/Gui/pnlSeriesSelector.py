@@ -255,7 +255,6 @@ class pnlSeriesSelector(wx.Panel):
 
         self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
                               id=wxID_PNLSERIESSELECTORtableSeries)
-        self.tableSeries.Bind(ULC.EVT_LIST_ITEM_DESELECTED, self.OnTableSeriesListItemDeselected, id=wxID_PNLSERIESSELECTORtableSeries)
 
         self.tableSeries.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
                               id=wxID_PNLSERIESSELECTORtableSeries)
@@ -313,11 +312,13 @@ class pnlSeriesSelector(wx.Panel):
         # build pop-up menu for right-click display
         self.selectedIndex = event.m_itemIndex
         self.selectedID = self.tableSeries.getColumnText(event.m_itemIndex, 1)
+
         # print self.selectedID
         popup_edit_series = wx.NewId()
         popup_plot_series = wx.NewId()
         popup_export_data = wx.NewId()
         popup_series_refresh = wx.NewId()
+        popup_clear_selected = wx.NewId()
 
         popup_export_metadata = wx.NewId()
         popup_select_all = wx.NewId()
@@ -326,6 +327,8 @@ class pnlSeriesSelector(wx.Panel):
         self.Bind(wx.EVT_MENU, self.onRightPlot, popup_menu.Append(popup_plot_series, 'Plot'))
         self.Bind(wx.EVT_MENU, self.onRightEdit, popup_menu.Append(popup_edit_series, 'Edit'))
         self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
+        self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
+
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))
         self.Bind(wx.EVT_MENU, self.onRightExMeta, popup_menu.Append(popup_export_metadata, 'Export MetaData'))
@@ -387,6 +390,10 @@ class pnlSeriesSelector(wx.Panel):
     # allows user to right-click refresh the Series Selector
     def onRightRefresh(self, event):
         self.refreshSeries()
+        event.Skip()
+
+    def onRightClearSelected(self, event):
+        #self.
         event.Skip()
 
     def refreshSeries(self):
@@ -532,9 +539,6 @@ class pnlSeriesSelector(wx.Panel):
         Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=isActive)
         event.Skip()
 
-    def OnTableSeriesListItemDeselected(self, event):
-        if len(self.tableSeries.getChecked()) == 0: pass
-
     def selectForPlot(self, selIndex):
         #logger.debug("self.tableseries.InnerList: %s" % (''.join(map(str, self.tableSeries.innerList))))
         sid = self.tableSeries.subList[selIndex][0]
@@ -553,8 +557,6 @@ class pnlSeriesSelector(wx.Panel):
                 val_2 = wx.MessageBox("Visualization is limited to 6 series.",
                                       "Can't add plot",
                                       wx.OK| wx.ICON_INFORMATION)
-
-
         self.Refresh()
 
     def selectForEdit(self, seriesID):

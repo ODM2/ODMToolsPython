@@ -127,8 +127,10 @@ class ServiceManager():
         driver = ""
         if conn_dict['engine'] == 'mssql':
             driver = "pyodbc"
-        if conn_dict['engine'] == 'mysql':
+        elif conn_dict['engine'] == 'mysql':
             driver = "pymysql"
+        else:
+            driver = "None"
 
         conn_string = self._connection_format % (
             conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
