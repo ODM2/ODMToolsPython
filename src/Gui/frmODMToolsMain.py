@@ -32,6 +32,8 @@ import mnuRibbon
 import pnlDataTable
 
 from odmconsole import ConsoleTools
+from common.logger import LoggerTool
+import logging
 
 
 def create(parent):
@@ -45,6 +47,8 @@ def create(parent):
     wxID_TXTPYTHONCONSOLE,
 ] = [wx.NewId() for _init_ctrls in range(13)]
 
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
@@ -139,14 +143,21 @@ class frmODMToolsMain(wx.Frame):
         ############ Docking ###################
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)
+
+
+
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
                           Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)))
+
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector").
                           Layer(0).Caption('Series Selector').MinSize(wx.Size(100, 200)))
+
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Show(show=False).Layer(0).MinSize(wx.Size(200, 200)))
+
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-                          Name("Console").Layer(1).Show(show=False))
+                          Name("Console").Layer(0).Show(show=False))
+
 
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot"))
 
@@ -161,6 +172,8 @@ class frmODMToolsMain(wx.Frame):
 
     def onDocking(self, value):
         panedet = self._mgr.GetPane(self.pnlPlot)
+        logger.debug(panedet)
+
         if value == "Table":
             panedet = self._mgr.GetPane(self.dataTable)
         elif value == "Selector":
@@ -174,6 +187,8 @@ class frmODMToolsMain(wx.Frame):
             panedet.Show(show=False)
         else:
             panedet.Show(show=True)
+
+
         self._mgr.Update()
 
     def onPlotSelection(self, value):

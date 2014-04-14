@@ -530,6 +530,7 @@ class mnuRibbon(RB.RibbonBar):
 
         Publisher.sendMessage(("adjust.Docking"), value=value)
         event.Skip()
+
     def enableDateSelection(self, isActive):
         self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEFULL, isActive)
         self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTDATEAPPLY, isActive)

@@ -1,6 +1,7 @@
 import logging
 
 from sqlalchemy import distinct
+import sqlalchemy.exc
 
 from odmdata import SessionFactory
 from odmdata import Site

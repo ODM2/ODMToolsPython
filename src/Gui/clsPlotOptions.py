@@ -158,11 +158,8 @@ class SeriesPlotInfo(object):
                 series = self.memDB.series_service.get_series_by_id(seriesID)
                 #print "series date: ", type(series.begin_date_time)
 
-
                 startDate = series.begin_date_time
                 endDate = series.end_date_time
-
-
 
                 variableName = series.variable_name
                 unitsName = series.variable_units_name
