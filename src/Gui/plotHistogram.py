@@ -32,11 +32,13 @@ class plotHist(wx.Panel):
 
         self.plot.set_title("No Data To Plot")
 
+
         self.canvas = FigCanvas(self, -1, self.figure)
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, True)
         self.toolbar.Realize()
+        self.figure.tight_layout()
 
         self.setColor("WHITE")
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,

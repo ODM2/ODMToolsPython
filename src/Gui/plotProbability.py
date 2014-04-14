@@ -37,10 +37,12 @@ class plotProb(wx.Panel):
         self.plot.plot([], [])
         self.plot.set_title("No Data To Plot")
 
+
         self.canvas = FigCanvas(self, -1, self.figure)
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas)
         self.toolbar.Realize()
+        self.figure.tight_layout()
 
 
         #self.canvas.SetCursor(wx.StockCursor(wx.CURSOR_CROSS))

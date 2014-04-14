@@ -68,12 +68,13 @@ class SeriesPlotInfo(object):
         self.memDB = memDB
         self._seriesInfos = {}
         self.editID = None
-        self.colorList = ['blue', 'green', 'red', 'cyan', 'orange', 'magenta', 'yellow', 'teal', 'purple']
+        self.colorList = ['blue', 'green',  'cyan', 'orange', 'purple',  'yellow', 'magenta', 'teal','red']
 
     def setEditSeries(self, seriesID):
         self.editID = int(seriesID)
         if self.editID in self._seriesInfos:
             self._seriesInfos[self.editID].edit = True
+            self._seriesInfos[self.editID].data = self.memDB.getEditDataValuesforGraph()
             self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
             self._seriesInfos[self.editID].color = "Black"
 
@@ -95,6 +96,10 @@ class SeriesPlotInfo(object):
 
     def stopEditSeries(self):
         if self.editID in self._seriesInfos:
+            self._seriesInfos[self.editID].data = self.memDB.getDataValuesforGraph(self.editID,
+                                                                                   self._seriesInfos[self.editID].noDataValue,
+                                                                                   self._seriesInfos[self.editID].startDate,
+                                                                                   self._seriesInfos[self.editID].endDate)
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
         self.editID = None
@@ -122,7 +127,7 @@ class SeriesPlotInfo(object):
     #         self._seriesInfos[key]=None
 
     def setBoxInterval(self, title):
-        self._seriesInfos.boxWhiskerMethod = title
+
         for key, value in self._seriesInfos.items():
             value.BoxWhisker.setInterval(title)
 

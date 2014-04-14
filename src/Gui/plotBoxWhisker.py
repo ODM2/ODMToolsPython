@@ -35,6 +35,7 @@ class PlotBox(wx.Panel):
         Publisher.subscribe(self.overall, ("box.Overall"))
 
         self.figure = matplotlib.figure.Figure()
+
         self.plot = self.figure.add_subplot(111)
         self.plot.axis([0, 1, 0, 1])  #
         self.plot.set_title("No Data To Plot")
@@ -43,6 +44,7 @@ class PlotBox(wx.Panel):
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, True)
         self.toolbar.Realize()
+        self.figure.tight_layout()
 
 
         #self.canvas.SetCursor(wx.StockCursor(wx.CURSOR_CROSS))

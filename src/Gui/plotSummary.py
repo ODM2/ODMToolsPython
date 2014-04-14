@@ -2,6 +2,7 @@
 
 import wx
 import wx.grid
+from wx.lib import wordwrap
 
 [wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY,
 ] = [wx.NewId() for _init_ctrls in range(2)]
@@ -52,6 +53,7 @@ class plotSummary(wx.Panel):
     def initPlot(self):
         self.grdSummary.AutoSize()
         self.grdSummary.CreateGrid(15, 0)
+
         self.grdSummary.SetRowLabelSize(160)
         self.grdSummary.SetRowLabelValue(0, "Series ID")
         self.grdSummary.SetRowLabelValue(1, "# of Observations")
@@ -69,12 +71,21 @@ class plotSummary(wx.Panel):
         self.grdSummary.SetRowLabelValue(13, "75%")
         self.grdSummary.SetRowLabelValue(14, "90%")
 
+        self.grdSummary.SetColLabelSize(160)
+
     def addCol(self, series):
 
         self.grdSummary.AppendCols(numCols=1, updateLabels=True)
         col = self.grdSummary.GetNumberCols() - 1
-        self.grdSummary.SetColLabelValue(col, series.siteName + "-" + series.variableName)
-        #     self.fillValues(cursor, series, Filter, count-1)
+        self.grdSummary.SetColLabelValue(col, wordwrap.wordwrap( series.siteName + "-" + series.variableName,
+                          self.grdSummary.GetColSize(col),wx.ClientDC(self)))
+
+
+
+        self.grdSummary.AutoSizeColLabelSize(col)
+
+       # self.grdSummary.LabelBackgroundColour(series.color)
+
 
 
         stats = series.Statistics
@@ -99,6 +110,8 @@ class plotSummary(wx.Panel):
 
             self.grdSummary.SetCellValue(13, col, repr(stats.Percentile75))
             self.grdSummary.SetCellValue(14, col, repr(stats.Percentile90))
+        for i in range(self.grdSummary.GetNumberRows()):
+            self.grdSummary.SetCellAlignment(i,col,wx.ALIGN_RIGHT, wx.ALIGN_CENTER)
 
 
     def __init__(self, parent, id, pos, size, style, name):

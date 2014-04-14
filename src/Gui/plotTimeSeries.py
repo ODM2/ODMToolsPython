@@ -64,6 +64,7 @@ class plotTimeSeries(wx.Panel):
 
         self.format = '-o'
         self._setColor("WHITE")
+        plt.tight_layout()
 
         #init hover tooltip
 
@@ -180,7 +181,7 @@ class plotTimeSeries(wx.Panel):
             m = 'o'
 
         format = ls + m
-        for line, i in zip(self.lines.values(), range(len(self.lines))):
+        for line, i in zip(self.lines, range(len(self.lines))):
             if not (i == self.curveindex):
                 plt.setp(line, linestyle=ls, marker=m)
 
@@ -241,11 +242,13 @@ class plotTimeSeries(wx.Panel):
         self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
-                                                         label=oneSeries.plotTitle)
+                                                         label=oneSeries.plotTitle, zorder =10)
 
         self.selectedlist = self.parent.record_service.get_filter_list()
+
         self.editPoint = curraxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                          s=30, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none')
+                                          s=20, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none',
+                                          zorder=11, marker='p')
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
 
         self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
@@ -265,6 +268,9 @@ class plotTimeSeries(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
         self.updatePlot()
+        #plt.margins(ymargin = .5, xmargin= .5)
+        #plt.margins(tight = True)
+
 
     def updatePlot(self):
         self.clear()
@@ -288,7 +294,7 @@ class plotTimeSeries(wx.Panel):
                         [x[0] for x in oneSeries.dataTable],
                         self.format, color=oneSeries.color,
                         xdate=True, tz=None, antialiased=True,
-                        label=oneSeries.plotTitle
+                        label=oneSeries.plotTitle,
                     )
                 )
 
