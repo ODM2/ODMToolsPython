@@ -22,13 +22,14 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 ########################################################################
 class QCLPage(wiz.WizardPageSimple):
-    def __init__(self, parent, title, service_man):
+    def __init__(self, parent, title, service_man, qcl):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
         self.SetSizer(sizer)
+        self.qcl = qcl
 
         title = wx.StaticText(self, -1, title)
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
@@ -36,19 +37,24 @@ class QCLPage(wiz.WizardPageSimple):
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
         self.panel=pnlQCL.pnlQCL(self, id=wxID_PNLINTRO, name=u'pnlQCL',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),
-              style=wx.TAB_TRAVERSAL, sm = service_man)
+              style=wx.TAB_TRAVERSAL, sm = service_man, qcl = qcl)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
         series_service  = service_man.get_series_service()
         self._init_data(series_service)
 
     def _init_data(self, series):
         qcl=series.get_all_qcls()
-        for q in qcl:
+        index = 0
+        for q, i  in zip(qcl, range(len(qcl))):
             num_items = self.panel.lstQCL.GetItemCount()
             self.panel.lstQCL.InsertStringItem(num_items, str(q.code))
             self.panel.lstQCL.SetStringItem(num_items, 1, str(q.definition))
             self.panel.lstQCL.SetStringItem(num_items, 2, str(q.explanation))
             self.panel.lstQCL.SetStringItem(num_items, 3 , str(q.id))
+            if q.code == self.qcl.code:
+                index = i
+        self.panel.lstQCL.Focus(index)
+        self.panel.lstQCL.Select(index)
 
 
 
@@ -61,6 +67,7 @@ class VariablePage(wiz.WizardPageSimple):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
         self.SetSizer(sizer)
+        self.variable = var
 
         title = wx.StaticText(self, -1, title)
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
@@ -75,7 +82,8 @@ class VariablePage(wiz.WizardPageSimple):
 
     def _init_data(self, series_service):
         vars=series_service.get_all_variables()
-        for v in vars:
+        index = 0
+        for v, i  in zip(vars, range(len(vars))):
             num_items = self.panel.lstVariable.GetItemCount()
             self.panel.lstVariable.InsertStringItem(num_items, str(v.code))
             self.panel.lstVariable.SetStringItem(num_items, 1, str(v.name))
@@ -91,15 +99,21 @@ class VariablePage(wiz.WizardPageSimple):
             self.panel.lstVariable.SetStringItem(num_items, 11, str(v.no_data_value))
             self.panel.lstVariable.SetStringItem(num_items, 12, str(v.id))
 
+            if v.code == self.variable.code:
+                index = i
+        self.panel.lstVariable.Focus(index)
+        self.panel.lstVariable.Select(index)
+
 ########################################################################
 class MethodPage(wiz.WizardPageSimple):
-    def __init__(self, parent, title,service_man):
+    def __init__(self, parent, title,service_man, method):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
         self.SetSizer(sizer)
+        self.method = method
 
         title = wx.StaticText(self, -1, title)
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
@@ -107,18 +121,26 @@ class MethodPage(wiz.WizardPageSimple):
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
         self.panel=pnlMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),
-              style=wx.TAB_TRAVERSAL,sm = service_man)
+              style=wx.TAB_TRAVERSAL,sm = service_man, method = method)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
         series_service = service_man.get_series_service()
         self._init_data(series_service)
 
     def _init_data(self, series):
         meth=series.get_all_methods()
-        for m in meth:
+        index = 0
+        for m, i  in zip(meth, range(len(meth))):
             num_items = self.panel.lstMethods.GetItemCount()
             self.panel.lstMethods.InsertStringItem(num_items, str(m.description))
             self.panel.lstMethods.SetStringItem(num_items, 1, str(m.link))
             self.panel.lstMethods.SetStringItem(num_items, 2, str(m.id))
+
+            if m.description == self.method.description:
+                index = i
+
+
+        self.panel.lstMethods.Focus(index)
+        self.panel.lstMethods.Select(index)
 
 
 
@@ -277,8 +299,8 @@ class wizSave(wx.wizard.Wizard):
 
         self.page1 = IntroPage(self, "Intro")
 
-        self.page2 = MethodPage(self, "Method", service_man)
-        self.page3 = QCLPage(self, "Quality Control Level", service_man)
+        self.page2 = MethodPage(self, "Method", service_man, self.currSeries.method)
+        self.page3 = QCLPage(self, "Quality Control Level", service_man, self.currSeries.quality_control_level)
         self.page4 = VariablePage(self, "Variable", service_man, self.currSeries.variable)
         self.page5 = SummaryPage(self, "Summary", service_man)
 

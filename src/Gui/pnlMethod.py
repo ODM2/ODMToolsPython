@@ -55,6 +55,7 @@ class pnlMethod(wx.Panel):
               name='lstMethods', parent=self, pos=wx.Point(16, 48),
               size=wx.Size(392, 152), style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
 
+
         self.lstMethods.InsertColumn(0, 'Description')
         self.lstMethods.InsertColumn(1, 'Link')
         self.lstMethods.InsertColumn(2, 'id')
@@ -64,8 +65,11 @@ class pnlMethod(wx.Panel):
         self.lstMethods.Enable(False)
 
 
-    def __init__(self, parent, id, pos, size, style, name, sm):
+
+
+    def __init__(self, parent, id, pos, size, style, name, sm, method):
         self.series_service = sm.get_series_service()
+        self.prev_val = method
         self._init_ctrls(parent)
 
     def OnRbGenerateRadiobutton(self, event):
@@ -109,6 +113,8 @@ class pnlMethod(wx.Panel):
             index = self.lstMethods.GetFirstSelected()
             logger.debug(self.lstMethods.GetItem(index,-1).GetText())
             m= self.series_service.get_method_by_description(self.lstMethods.GetItem(index,-1).GetText())
+
+
 
         elif self.rbCreateNew.Value:
             m.description = self.txtMethodDescrip.Value()

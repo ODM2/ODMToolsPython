@@ -65,6 +65,8 @@ class pnlVariable(wx.Panel):
         self.lstVariable.SetColumnWidth(1, 100)
         self.lstVariable.SetColumnWidth(12,0)
 
+
+
         self.lstVariable.Bind(wx.EVT_LIST_ITEM_SELECTED,
               self.OnListCtrl1ListItemSelected, id=wxID_PNLVARIABLELSTVARIABLE)
 
@@ -76,7 +78,7 @@ class pnlVariable(wx.Panel):
         self.txtNewVar.Enable(False)
 
     def __init__(self, parent, id, pos, size, style, name, sm, var):
-        self.prev_var= var
+        self.prev_val= var
         self.service_man = sm
         self.series_service = sm.get_series_service()
         self._init_ctrls(parent)
@@ -94,7 +96,7 @@ class pnlVariable(wx.Panel):
     def OnRbCreateRadiobutton(self, event):
         self.lstVariable.Enable(False)
 
-        create_Var = frmCreateVariable.frmCreateVariable(self, self.service_man, self.prev_var)
+        create_Var = frmCreateVariable.frmCreateVariable(self, self.service_man, self.prev_val)
         create_Var.ShowModal()
         # if cancelled return to previous radio button
         # else enable text box and enter the text info.
@@ -108,7 +110,7 @@ class pnlVariable(wx.Panel):
 
         v =  Variable()
         if self.rbCurrent.Value:
-            v= self.prev_var
+            v= self.prev_val
         elif self.rbSelect.Value:
             index = self.lstVariable.GetFirstSelected()
             logger.debug(self.lstVariable.GetItem(index,-1).GetText())
