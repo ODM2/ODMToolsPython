@@ -39,6 +39,7 @@ import logging
 def create(parent):
     return frmODMToolsMain(parent)
 
+
 [
     wxID_ODMTOOLS, wxID_ODMTOOLSCHECKLISTBOX2, wxID_ODMTOOLSCOMBOBOX1,
     wxID_ODMTOOLSCOMBOBOX2, wxID_ODMTOOLSCOMBOBOX4, wxID_ODMTOOLSCOMBOBOX5,
@@ -49,6 +50,7 @@ def create(parent):
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
@@ -129,12 +131,15 @@ class frmODMToolsMain(wx.Frame):
 
 
         ############# Script & Console ###############
-        self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE,
-                                                       size=wx.Size(500, 800), style=0)
+        self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200), style=0)
+
+        #self.txtPythonConsole = wx.py.shell.Shell(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(500, 800), parent=self.pnlDocking)
 
         # Console tools object for usability
         self.console_tools = ConsoleTools(self._ribbon)
         self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
+
+        print "Stuff: ", dir(self.txtPythonConsole)
 
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT,
                                          name=u'txtPython', parent=self,
@@ -144,23 +149,47 @@ class frmODMToolsMain(wx.Frame):
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)
 
+        self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane()
+                          .Name("Plot").Caption("Plot").MaximizeButton(True))
 
-        self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
-                          Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Position(1).MinimizeButton(True))
+        self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right()
+                          .Name("Table").Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200))
+                          .Position(1).MinimizeButton(True))
 
-        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-                         .Caption('Series Selector').Show(show=True).MinSize(wx.Size(100, 200)).Row(2).Position(0).MinimizeButton(True))
+        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Caption('Series Selector').
+                          Name("Selector").Show(show=True).MinSize(wx.Size(200, 200)).MinimizeButton(True)
+                          .Position(1).CloseButton(False).Bottom())  #, target=self._mgr.GetPane("Script"))
 
-        self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
-                          Name("Script").Show(show=False).MinSize(wx.Size(200, 200)).Position(1).MinimizeButton(True), target=self._mgr.GetPane("Selector") )
+        self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Bottom().Caption('Script').
+                          Name("Script").Show(show=True).Right().MinimizeButton(True)
+                          .Position(1).CloseButton(False))#, target=self._mgr.GetPane("Selector"))
 
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-                          Name("Console").Show(show=False).MinimizeButton(True).Position(2), target=self._mgr.GetPane("Selector"))
+                          Name("Console").Show(show=True).MinSize(wx.Size(200, 200)).Right().MinimizeButton(True)
+                          .Layer(1).Position(1).CloseButton(False), target=self._mgr.GetPane("Script"))
+
+
+
+
+
+        #print "panes: ", self._mgr.GetAllPanes()
+
+        #self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
+        #       .Caption('Series Selector').Show(show=True).MinSize(wx.Size(100, 200)).Position(2).MinimizeButton(True))
+
+        #self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
+        #                  Name("Script").Show(show=False).MinSize(wx.Size(200, 200)).Position(2).MinimizeButton(True),
+        #                  target=self._mgr.GetPane("Selector"))
+
+        #self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
+        #              Name("Console").Show(show=False).MinimizeButton(True).Position(2),
+        #              target=self._mgr.GetPane("Selector"))
+
 
         #panedet = self._mgr.GetPane(self.pnlSelector)#.SetSelection(0)
         #print dir(panedet)
 
-        self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot").MaximizeButton(True))
+
 
         self.loadDockingSettings()
 
@@ -173,7 +202,6 @@ class frmODMToolsMain(wx.Frame):
 
     def onDocking(self, value):
         panedet = self._mgr.GetPane(self.pnlPlot)
-        logger.debug(panedet)
 
         if value == "Table":
             panedet = self._mgr.GetPane(self.dataTable)
@@ -188,7 +216,6 @@ class frmODMToolsMain(wx.Frame):
             panedet.Show(show=False)
         else:
             panedet.Show(show=True)
-
 
         self._mgr.Update()
 
@@ -246,7 +273,6 @@ class frmODMToolsMain(wx.Frame):
             self.pnlPlot.clear()
             #clear table
             self.dataTable.clear()
-
 
 
     def createService(self):
