@@ -152,23 +152,23 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane()
                           .Name("Plot").Caption("Plot").MaximizeButton(True))
 
-<<<<<<< HEAD
-        self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
-                          Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
-                          Position(1).MinimizeButton(True))
 
-        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-                         .Caption('Series Selector').MinSize(wx.Size(100, 200)).Movable().Floatable().
-                          Position(0).MinimizeButton(True))
+        #self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
+        #                  Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
+        #                  Position(1).MinimizeButton(True))
 
-        self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
-                          Name("Script").MinSize(wx.Size(200, 200)).Movable().Floatable().MinimizeButton(True),
-                          target=self._mgr.GetPane("Selector") )
+        #self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
+         #                .Caption('Series Selector').MinSize(wx.Size(100, 200)).Movable().Floatable().
+          #                Position(0).MinimizeButton(True))
 
-        self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-                          Name("Console").MinimizeButton(True).Movable().Floatable(),
-                          target=self._mgr.GetPane("Selector"))
-=======
+        #self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
+        #                  Name("Script").MinSize(wx.Size(200, 200)).Movable().Floatable().MinimizeButton(True),
+        #                  target=self._mgr.GetPane("Selector") )
+
+        #self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
+        #                  Name("Console").MinimizeButton(True).Movable().Floatable(),
+        #                  target=self._mgr.GetPane("Selector"))
+
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right()
                           .Name("Table").Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200))
                           .Position(1).MinimizeButton(True))
@@ -202,12 +202,9 @@ class frmODMToolsMain(wx.Frame):
         #              Name("Console").Show(show=False).MinimizeButton(True).Position(2),
         #              target=self._mgr.GetPane("Selector"))
 
->>>>>>> 922fc586d14d71d932d627936d697145e475b6f7
-
         #panedet = self._mgr.GetPane(self.pnlSelector)#.SetSelection(0)
         #print dir(panedet)
 
-<<<<<<< HEAD
         for note in self._mgr.GetNotebooks():
             note.SetSelection(1)
 
@@ -215,9 +212,7 @@ class frmODMToolsMain(wx.Frame):
         pane= self._mgr.GetPane(self.pnlSelector)
 
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot").MaximizeButton(True))
-=======
 
->>>>>>> 922fc586d14d71d932d627936d697145e475b6f7
 
         self.loadDockingSettings()
 
