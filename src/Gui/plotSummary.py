@@ -34,8 +34,22 @@ class plotSummary(wx.Panel):
                                        size=wx.Size(421, 439), style=wx.HSCROLL | wx.VSCROLL)
         self.grdSummary.SetLabel(u'')
         self.grdSummary.EnableEditing(False)
+        self.grdSummary.Bind( wx.EVT_LIST_COL_END_DRAG, self.onListColEndDrag )
+        self.grdSummary.Bind( wx.EVT_LIST_COL_BEGIN_DRAG, self.onListColEndDrag )
+        self.grdSummary.Bind( wx.EVT_LIST_COL_CLICK, self.onListColEndDrag )
+        self.grdSummary.Bind( wx.EVT_LIST_COL_DRAGGING, self.onListColEndDrag )
+        self.grdSummary.Bind( wx.EVT_LIST_COL_END_DRAG, self.onListColEndDrag )
+
         self.initPlot()
         self._init_sizers()
+
+    def onListColEndDrag(self, event):
+        #print "column drag event: ", dir(event)
+        col= 1
+        label = self.grdSummary.GetColLabelValue(col).strip('\n')
+        self.grdSummary.SetColLabelValue(col, wordwrap.wordwrap( label,
+                          self.grdSummary.GetColSize(col),wx.ClientDC(self)))
+        event.Skip()
 
     def Plot(self, seriesPlotInfo):
         self.clear()

@@ -134,6 +134,8 @@ class pnlPlot(fnb.FlatNotebook):
         self._seriesPlotInfo.stopEditSeries()
         self.editID = None
         self.pltTS.stopEdit()
+        self.redrawPlots()
+
 
     def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
@@ -142,6 +144,7 @@ class pnlPlot(fnb.FlatNotebook):
         self.editID = seriesID
         self._seriesPlotInfo.setEditSeries(self.editID)
         self.pltTS.setEdit(self.editID)
+        self.redrawPlots()
 
     def addPlot(self, memDB, seriesID):
 

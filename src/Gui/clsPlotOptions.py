@@ -70,20 +70,12 @@ class SeriesPlotInfo(object):
         self.editID = None
         self.colorList = ['blue', 'green',  'cyan', 'orange', 'purple',  'yellow', 'magenta', 'teal','red']
 
-    def setEditSeries(self, seriesID):
-        self.editID = int(seriesID)
-        if self.editID in self._seriesInfos:
-            self._seriesInfos[self.editID].edit = True
-            self._seriesInfos[self.editID].data = self.memDB.getEditDataValuesforGraph()
-            self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
-            self._seriesInfos[self.editID].color = "Black"
 
-    def updateEditSeries(self):
-        if self.editID in self._seriesInfos:
-            self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+
+
 
     def isPlotted(self, sid):
-        if int(sid) in self._seriesInfos:
+        if int(sid) in self._seriesInfos.keys():
             return True
         else:
             return False
@@ -94,8 +86,21 @@ class SeriesPlotInfo(object):
         else:
             return None
 
+    def setEditSeries(self, seriesID):
+        self.editID = int(seriesID)
+        #self.memDB.initEditValues(self.editID)
+        if self.editID in self._seriesInfos.keys():
+            self._seriesInfos[self.editID].edit = True
+            self._seriesInfos[self.editID].data = self.memDB.getEditDataValuesforGraph()
+            self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
+            self._seriesInfos[self.editID].color = "Black"
+
+    def updateEditSeries(self):
+        if self.editID in self._seriesInfos.keys():
+            self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+
     def stopEditSeries(self):
-        if self.editID in self._seriesInfos:
+        if self.editID in self._seriesInfos.keys():
             self._seriesInfos[self.editID].data = self.memDB.getDataValuesforGraph(self.editID,
                                                                                    self._seriesInfos[self.editID].noDataValue,
                                                                                    self._seriesInfos[self.editID].startDate,
@@ -103,10 +108,11 @@ class SeriesPlotInfo(object):
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
         self.editID = None
+        #self.memDB.stopEdit()
 
 
     def getEditSeriesInfo(self):
-        if self.editID and (self.editID in self._seriesInfos):
+        if self.editID and ( self.editID in self._seriesInfos.keys()):
             return self._seriesInfos[self.editID]
         else:
             return None
@@ -204,7 +210,7 @@ class SeriesPlotInfo(object):
     def build(self, seriesInfo):
         data = seriesInfo.dataTable
         seriesInfo.Probability = Probability(data)
-        seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData)
+        seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
         seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod)
 
     def updateDateRange(self, startDate=None, endDate=None):
@@ -219,15 +225,16 @@ class SeriesPlotInfo(object):
 
 
 class Statistics(object):
-    def __init__(self, dataTable, useCensoredData):
-
+    def __init__(self, dataTable, useCensoredData, noDataValue):
+        useCensoredData=True
+        #TODO do we plot censored datavalues
         if useCensoredData:
-            dataValues = [x[0] for x in dataTable]
+            dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         else:
-            dataValues = [x[0] for x in dataTable if x[2] == 'nc']
+            dataValues = [x[0] for x in dataTable if x[2] == 'nc' if x[0] <> noDataValue]
         data = sorted(dataValues)
         count = self.NumberofObservations = len(data)
-        self.NumberofCensoredObservations = len(data)-[x[2] for x in dataTable].count('nc')  #self.cursor.fetchone()[0]
+        self.NumberofCensoredObservations = count-len([x[0] for x in dataTable if x[2] == 'nc'])  #self.cursor.fetchone()[0]
         self.ArithemticMean = round(numpy.mean(data), 5)
 
         sumval = 0

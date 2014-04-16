@@ -36,12 +36,23 @@ class plotProb(wx.Panel):
         self.plot.axis([0, 1, 0, 1])  #
         self.plot.plot([], [])
         self.plot.set_title("No Data To Plot")
+        self.islegendvisible = False
 
 
         self.canvas = FigCanvas(self, -1, self.figure)
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas)
         self.toolbar.Realize()
+
+        left = 0.125  # the left side of the subplots of the figure
+        right = 0.9  # the right side of the subplots of the figure
+        bottom = 0.51  # the bottom of the subplots of the figure
+        top = 1.2  # the top of the subplots of the figure
+        wspace = .8  # the amount of width reserved for blank space between subplots
+        hspace = .8  # the amount of height reserved for white space between subplots
+        self.figure.subplots_adjust(
+            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+        )
         self.figure.tight_layout()
 
 
@@ -72,14 +83,16 @@ class plotProb(wx.Panel):
             m = 's'
         # print plt.setp(self.lines)
         # print(len(self.lines))
-        format = ls + m
+        self.format = ls + m
         for line in self.lines:
             plt.setp(line, linestyle=ls, marker=m)
-
+        if self.islegendvisible:
+            self.onShowLegend(self.islegendvisible)
         self.canvas.draw()
 
     def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
+        self.islegendvisible = isVisible
         if isVisible:
             plt.subplots_adjust(bottom=.1 + .1)
             leg = self.plot.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)

@@ -91,7 +91,7 @@ class PlotBox(wx.Panel):
 
             wrap, text = self.textSize(count)
             self.plots[i - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
-            print dir(self.plots[i - 1])
+            #print dir(self.plots[i - 1])
 
             self.plots[i - 1].set_ylabel(
                 "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
@@ -146,8 +146,8 @@ class PlotBox(wx.Panel):
         self.figure.subplots_adjust(
             left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
         )
-
-        self.figure.tight_layout()
+        if len(self.plots)>0:
+            self.figure.tight_layout()
 
         #for x in self.plots[0:]:
         #    print "xticklabels: ", type(x.get_xticklabels), dir(x.get_xticklabels)

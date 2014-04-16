@@ -116,7 +116,8 @@ class plotHist(wx.Panel):
             left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
         )
 
-        self.figure.tight_layout()
+        if len(self.hist)>0:
+            self.figure.tight_layout()
 
         self.canvas.draw()
 

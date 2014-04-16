@@ -50,6 +50,7 @@ class EditService():
         self._cursor = self._connection.cursor()
 
         self._populate_series()
+        self.reset_filter()
 
     def _populate_series(self):
         # [(ID, value, datetime), ...]
@@ -57,7 +58,7 @@ class EditService():
         results = self._cursor.fetchall()
 
         self._series_points = results
-        self.reset_filter()
+
 
     def _test_filter_previous(self):
         if not self._filter_from_selection:

@@ -146,19 +146,29 @@ class frmODMToolsMain(wx.Frame):
 
 
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
-                          Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Position(1).MinimizeButton(True))
+                          Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
+                          Position(1).MinimizeButton(True))
 
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-                         .Caption('Series Selector').Show(show=True).MinSize(wx.Size(100, 200)).Row(2).Position(0).MinimizeButton(True))
+                         .Caption('Series Selector').MinSize(wx.Size(100, 200)).Movable().Floatable().
+                          Position(0).MinimizeButton(True))
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
-                          Name("Script").Show(show=False).MinSize(wx.Size(200, 200)).Position(1).MinimizeButton(True), target=self._mgr.GetPane("Selector") )
+                          Name("Script").MinSize(wx.Size(200, 200)).Movable().Floatable().MinimizeButton(True),
+                          target=self._mgr.GetPane("Selector") )
 
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-                          Name("Console").Show(show=False).MinimizeButton(True).Position(2), target=self._mgr.GetPane("Selector"))
+                          Name("Console").MinimizeButton(True).Movable().Floatable(),
+                          target=self._mgr.GetPane("Selector"))
 
         #panedet = self._mgr.GetPane(self.pnlSelector)#.SetSelection(0)
         #print dir(panedet)
+
+        for note in self._mgr.GetNotebooks():
+            note.SetSelection(1)
+
+
+        pane= self._mgr.GetPane(self.pnlSelector)
 
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot").MaximizeButton(True))
 
@@ -173,7 +183,7 @@ class frmODMToolsMain(wx.Frame):
 
     def onDocking(self, value):
         panedet = self._mgr.GetPane(self.pnlPlot)
-        logger.debug(panedet)
+
 
         if value == "Table":
             panedet = self._mgr.GetPane(self.dataTable)
@@ -184,8 +194,16 @@ class frmODMToolsMain(wx.Frame):
         elif value == "Console":
             panedet = self._mgr.GetPane(self.txtPythonConsole)
 
+        logger.debug("value is: %s, visible: %s"%(value, panedet.IsShown()))
+        #if panedet.IsMinimized():
+        #    panedet.Maximize()
+        #else:
+        #    panedet.Minimize()
+
+
         if panedet.IsShown():
             panedet.Show(show=False)
+            panedet.Hide()
         else:
             panedet.Show(show=True)
 
@@ -233,7 +251,7 @@ class frmODMToolsMain(wx.Frame):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
 
-        print "Value: ", value
+        #print "Value: ", value
         #print "wxID_FRMDBCONFIGBTNSAVE: ", db_config._init_ctrls[2] #wxID_FRMDBCONFIGBTNSAVE
         #print "wxID_FRMDBCONFIGBTNCANCEL: ", db_config._init_ctrls[3] #wxID_FRMDBCONFIGBTNCANCEL
         #print "wxID_FRMDBCONFIGBTNTEST: ", db_config._init_ctrls[4] #wxID_FRMDBCONFIGBTNTEST

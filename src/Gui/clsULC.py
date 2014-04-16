@@ -16,7 +16,7 @@ class clsULC(ULC.UltimateListCtrl):
         self.useAlternateBackColors = True
         self.evenRowsBackColor = "White"  #wx.Colour(240, 248, 255) # ALICE BLUE
         self.oddRowsBackColor = "SlateGray"  #wx.Colour(255, 250, 205) # LEMON CHIFFON
-        self.cursor = None
+        #self.cursor = None
         self.checkCount = 0
         self.checkLimit = 6
         # wx.ListCtrl.__init__(self, *args, **kwargs)
@@ -25,6 +25,7 @@ class clsULC(ULC.UltimateListCtrl):
 
     def clear(self):
         self.emptyTable()
+        self.checkCount = 0
 
     def setColumns(self, columns):
         # self.columns = columns
@@ -51,13 +52,6 @@ class clsULC(ULC.UltimateListCtrl):
         self.ModelObjects = None
         self.repopulateList()
 
-    # def SetCursor(self, cursor):
-    # 	self.cursor = cursor
-
-    # def RefreshObjects(self):
-    # 	sql = "SELECT * FROM SeriesCatalog"
-    # 	self.cursor.execute(sql)
-    # 	self.SetObjects(self.cursor.fetchall())
 
     def setObjects(self, modelObjects):
         self.modelObjects = modelObjects
@@ -108,6 +102,12 @@ class clsULC(ULC.UltimateListCtrl):
 
     # def RemoveCheckedItem(self, id):
     # 	pass
+    def removeChecked(self):
+        self.checkCount = 0
+        for model in self.modelObjects:
+            if model[-1]:
+                model[-1] = False
+
 
     def getChecked(self):
         #returns a list of the checked ids

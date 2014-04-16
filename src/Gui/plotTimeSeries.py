@@ -64,6 +64,16 @@ class plotTimeSeries(wx.Panel):
 
         self.format = '-o'
         self._setColor("WHITE")
+
+        left = 0.125  # the left side of the subplots of the figure
+        right = 0.9  # the right side of the subplots of the figure
+        bottom = 0.51  # the bottom of the subplots of the figure
+        top = 1.2  # the top of the subplots of the figure
+        wspace = .8  # the amount of width reserved for blank space between subplots
+        hspace = .8  # the amount of height reserved for white space between subplots
+        plt.subplots_adjust(
+            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+        )
         plt.tight_layout()
 
         #init hover tooltip
@@ -180,10 +190,13 @@ class plotTimeSeries(wx.Panel):
             ls = '-'
             m = 'o'
 
-        format = ls + m
+        self.format = ls + m
         for line, i in zip(self.lines, range(len(self.lines))):
             if not (i == self.curveindex):
                 plt.setp(line, linestyle=ls, marker=m)
+
+        if self.isShowLegendEnabled :
+            self.onShowLegend(self.isShowLegendEnabled)
 
 
         plt.gcf().autofmt_xdate()
@@ -247,8 +260,8 @@ class plotTimeSeries(wx.Panel):
         self.selectedlist = self.parent.record_service.get_filter_list()
 
         self.editPoint = curraxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                          s=20, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none',
-                                          zorder=11, marker='p')
+                                          s=35, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none',
+                                          zorder=11, marker='s')# >, <, v, ^,s
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
 
         self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
@@ -440,16 +453,17 @@ class plotTimeSeries(wx.Panel):
     def _onMotion(self, event):
         collisionFound = False
         if event.xdata != None and event.ydata != None:  #mouse is inside the axes
-            for i in xrange(len(self.editCurve.dataTable)):
-                radius = 3
+            if self.editCurve:
+                for i in xrange(len(self.editCurve.dataTable)):
+                    radius = 3
 
-                if abs(event.xdata - self.editCurve.dataTable[i][1].toordinal()) < radius and abs(
-                                event.ydata - self.editCurve.dataTable[i][0]) < radius:
-                    top = tip = '(%s, %f)' % (self.editCurve.dataTable[i][1], self.editCurve.dataTable[i][0])
-                    self.tooltip.SetTip(tip)
-                    self.tooltip.Enable(True)
-                    collisionFound = True
-                    break
+                    if abs(event.xdata - self.editCurve.dataTable[i][1].toordinal()) < radius and abs(
+                                    event.ydata - self.editCurve.dataTable[i][0]) < radius:
+                        top = tip = '(%s, %f)' % (self.editCurve.dataTable[i][1], self.editCurve.dataTable[i][0])
+                        self.tooltip.SetTip(tip)
+                        self.tooltip.Enable(True)
+                        collisionFound = True
+                        break
         if not collisionFound:
             self.tooltip.Enable(False)
 

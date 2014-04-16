@@ -89,15 +89,16 @@ class pnlSeriesSelector(wx.Panel):
     ## Splitter Sizer
     def _init_coll_boxSizer3_Items(self, parent):
         # generated method, don't edit
-        parent.AddWindow(self.cpnlSimple, 0, flag=wx.RIGHT | wx.LEFT | wx.EXPAND)
-        parent.AddWindow(self.tableSeries, 100, flag=wx.EXPAND)
+        parent.AddWindow(self.cpnlSimple, 1, flag=wx.RIGHT | wx.LEFT | wx.EXPAND)
+        parent.AddWindow(self.tableSeries, 99, flag=wx.EXPAND)
 
     ## Panel Sizer
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
-        parent.AddSizer(self.pnlRadio, 0, border=7, flag=wx.LEFT | wx.RIGHT | wx.TOP)
-        parent.AddWindow(self.pnlData, 100, border=3, flag=wx.LEFT | wx.RIGHT | wx.EXPAND)
-
+        parent.Add(self.pnlRadio, 10, wx.ALL,5)
+        parent.Add(self.pnlData, 90,  wx.EXPAND,1)
+        #bSizer1.Add( self.pnlData, 90, wx.EXPAND, 5 )
+        #bSizer1.Add( self.pnlOptions, 10, wx.ALL, 1 )
     ## Site Sizer
     def _init_coll_boxSizer4_Items(self, parent):
         # generated method, don't edit
@@ -116,6 +117,7 @@ class pnlSeriesSelector(wx.Panel):
     def _init_coll_boxSizer6_Items(self, parent):
         parent.AddWindow(self.pnlSite, 50, flag=wx.EXPAND)
         parent.AddWindow(self.pnlVar, 50, flag=wx.EXPAND)
+
         # parent.AddSizer(self.boxSizer4, 0, border=5, flag=wx.EXPAND)
         # parent.AddSizer(self.boxSizer2, 0, border=5, flag=wx.EXPAND)
 
@@ -277,6 +279,7 @@ class pnlSeriesSelector(wx.Panel):
         self.cbSites.Clear()
         self.siteList = None
         self.varList = None
+        self.tableSeries.removeChecked()
 
         self.initTableSeries()
         self.initSVBoxes()

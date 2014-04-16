@@ -29,7 +29,7 @@ class ServiceManager():
                 break
             else:
                 line = line.split()
-                logger.debug(line)
+                #logger.debug(line)
 
                 if len(line) >= 5:
                     line_dict = {}

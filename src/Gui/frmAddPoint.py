@@ -98,8 +98,8 @@ class frmAddPoint(wx.Dialog):
         self.ot_choice_editor = wx.grid.GridCellChoiceEditor(["<None>"] + self.otchoices.keys(), False)
         self.grdDataValues.SetCellEditor(0, 6, self.ot_choice_editor)
 
-        ccchoices = list(x.term for x in self.service.get_censor_code_cvs())
-        self.cc_choice_editor = wx.grid.GridCellChoiceEditor(ccchoices, False)
+        self.ccchoices = list(x.term for x in self.service.get_censor_code_cvs())
+        self.cc_choice_editor = wx.grid.GridCellChoiceEditor(self.ccchoices, False)
         self.grdDataValues.SetCellEditor(0, 7, self.cc_choice_editor)
 
         # qualchoices
