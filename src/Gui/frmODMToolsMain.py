@@ -40,6 +40,7 @@ def create(parent):
     return frmODMToolsMain(parent)
 
 
+
 [
     wxID_ODMTOOLS, wxID_ODMTOOLSCHECKLISTBOX2, wxID_ODMTOOLSCOMBOBOX1,
     wxID_ODMTOOLSCOMBOBOX2, wxID_ODMTOOLSCOMBOBOX4, wxID_ODMTOOLSCOMBOBOX5,
@@ -71,7 +72,10 @@ class frmODMToolsMain(wx.Frame):
 
         self.createService()
         self._init_ctrls(parent)
+
         self.Refresh()
+
+
 
     #############Entire Form Sizers##########
     def _init_sizers(self):
@@ -131,15 +135,26 @@ class frmODMToolsMain(wx.Frame):
 
 
         ############# Script & Console ###############
-        self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200), style=0)
-
-        #self.txtPythonConsole = wx.py.shell.Shell(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(500, 800), parent=self.pnlDocking)
+        self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200), style=1)
 
         # Console tools object for usability
         self.console_tools = ConsoleTools(self._ribbon)
         self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
+        self.txtPythonConsole.crust.OnSashDClick(event=None)
 
-        print "Stuff: ", dir(self.txtPythonConsole)
+
+        #print "ToolsShown: ", self.txtPythonConsole.crust.ToolsShown()
+
+        #self.txtPythonConsole.ToggleTools()
+        #self.toggleConsoleTools()
+
+        #print "Stuff: ", dir(self.txtPythonConsole)
+        #print "\n\nShell: ", dir(self.txtPythonConsole.shell)
+
+
+        #print "\n\nSettingsMenu: ", dir(self.txtPythonConsole.settingsMenu)
+        #print "\n\noptionsMenu: ", dir(self.txtPythonConsole.optionsMenu)
+        #print "\n\nviewMenu: ", dir(self.txtPythonConsole.viewMenu)
 
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT,
                                          name=u'txtPython', parent=self,
@@ -152,23 +167,24 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane()
                           .Name("Plot").Caption("Plot").MaximizeButton(True))
 
+        self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
+                          Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
+                          Position(1).MinimizeButton(True))
 
-        #self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
-        #                  Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
-        #                  Position(1).MinimizeButton(True))
+        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
+                          .Caption('Series Selector').MinSize(wx.Size(50, 200)).Movable().Floatable().
+                          Position(0).MinimizeButton(True).CloseButton(False))
 
-        #self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-         #                .Caption('Series Selector').MinSize(wx.Size(100, 200)).Movable().Floatable().
-          #                Position(0).MinimizeButton(True))
+        self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
+                          Name("Script").Movable().Floatable().Right()
+                          .MinimizeButton(True).CloseButton(False),
+                          target=self._mgr.GetPane("Selector"))
 
-        #self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
-        #                  Name("Script").MinSize(wx.Size(200, 200)).Movable().Floatable().MinimizeButton(True),
-        #                  target=self._mgr.GetPane("Selector") )
+        self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
+                          Name("Console").MinimizeButton(True).Movable().Floatable().CloseButton(False),
+                          target=self._mgr.GetPane("Selector"))
 
-        #self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-        #                  Name("Console").MinimizeButton(True).Movable().Floatable(),
-        #                  target=self._mgr.GetPane("Selector"))
-
+        '''
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right()
                           .Name("Table").Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200))
                           .Position(1).MinimizeButton(True))
@@ -186,7 +202,7 @@ class frmODMToolsMain(wx.Frame):
                           .Layer(1).Position(1).CloseButton(False), target=self._mgr.GetPane("Script"))
 
 
-
+        '''
 
 
         #print "panes: ", self._mgr.GetAllPanes()
@@ -208,11 +224,7 @@ class frmODMToolsMain(wx.Frame):
         for note in self._mgr.GetNotebooks():
             note.SetSelection(1)
 
-
-        pane= self._mgr.GetPane(self.pnlSelector)
-
-        self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot").MaximizeButton(True))
-
+        pane = self._mgr.GetPane(self.pnlSelector)
 
         self.loadDockingSettings()
 
@@ -223,9 +235,9 @@ class frmODMToolsMain(wx.Frame):
         self._init_sizers()
         self._ribbon.Realize()
 
+
     def onDocking(self, value):
         panedet = self._mgr.GetPane(self.pnlPlot)
-
 
         if value == "Table":
             panedet = self._mgr.GetPane(self.dataTable)
@@ -236,19 +248,13 @@ class frmODMToolsMain(wx.Frame):
         elif value == "Console":
             panedet = self._mgr.GetPane(self.txtPythonConsole)
 
-        logger.debug("value is: %s, visible: %s"%(value, panedet.IsShown()))
-        #if panedet.IsMinimized():
-        #    panedet.Maximize()
-        #else:
-        #    panedet.Minimize()
-
-
         if panedet.IsShown():
             panedet.Show(show=False)
             panedet.Hide()
         else:
             panedet.Show(show=True)
 
+        self.txtPythonConsole.crust.OnSashDClick(event=None)
         self._mgr.Update()
 
     def onPlotSelection(self, value):
@@ -348,5 +354,8 @@ if __name__ == '__main__':
     app = wx.App(False)
     frame = create(None)
     frame.Show()
+
+    import wx.lib.inspection
+    wx.lib.inspection.InspectionTool().Show()
 
     app.MainLoop()
