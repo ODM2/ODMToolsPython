@@ -158,8 +158,6 @@ class pnlPlot(fnb.FlatNotebook):
         self.redrawPlots()
 
     def redrawPlots(self):
-
-
         self.pltSum.Plot(self._seriesPlotInfo)
         self.pltProb.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)

@@ -90,16 +90,15 @@ class pnlSeriesSelector(wx.Panel):
     ## Splitter Sizer
     def _init_coll_boxSizer3_Items(self, parent):
         # generated method, don't edit
-        parent.AddWindow(self.cpnlSimple, 1, flag=wx.RIGHT | wx.LEFT | wx.EXPAND)
-        parent.AddWindow(self.tableSeries, 99, flag=wx.EXPAND)
+        parent.AddWindow(self.cpnlSimple, 0, flag=wx.RIGHT | wx.LEFT | wx.EXPAND)
+        parent.AddWindow(self.tableSeries, 100, flag=wx.EXPAND)
 
     ## Panel Sizer
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
-        parent.Add(self.pnlRadio, 10, wx.ALL,5)
-        parent.Add(self.pnlData, 90,  wx.EXPAND,1)
-        #bSizer1.Add( self.pnlData, 90, wx.EXPAND, 5 )
-        #bSizer1.Add( self.pnlOptions, 10, wx.ALL, 1 )
+        parent.AddSizer(self.pnlRadio, 0, border=7, flag=wx.LEFT | wx.RIGHT | wx.TOP)
+        parent.AddWindow(self.pnlData, 100, border=3, flag=wx.LEFT | wx.RIGHT | wx.EXPAND)
+
     ## Site Sizer
     def _init_coll_boxSizer4_Items(self, parent):
         # generated method, don't edit
@@ -118,7 +117,6 @@ class pnlSeriesSelector(wx.Panel):
     def _init_coll_boxSizer6_Items(self, parent):
         parent.AddWindow(self.pnlSite, 50, flag=wx.EXPAND)
         parent.AddWindow(self.pnlVar, 50, flag=wx.EXPAND)
-
         # parent.AddSizer(self.boxSizer4, 0, border=5, flag=wx.EXPAND)
         # parent.AddSizer(self.boxSizer2, 0, border=5, flag=wx.EXPAND)
 
@@ -280,7 +278,6 @@ class pnlSeriesSelector(wx.Panel):
         self.cbSites.Clear()
         self.siteList = None
         self.varList = None
-        self.tableSeries.removeChecked()
 
         self.initTableSeries()
         self.initSVBoxes()
@@ -332,7 +329,7 @@ class pnlSeriesSelector(wx.Panel):
         self.Bind(wx.EVT_MENU, self.onRightPlot, popup_menu.Append(popup_plot_series, 'Plot'))
         self.Bind(wx.EVT_MENU, self.onRightEdit, popup_menu.Append(popup_edit_series, 'Edit'))
         self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
-        #self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
+        self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
 
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))
