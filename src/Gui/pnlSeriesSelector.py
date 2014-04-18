@@ -568,7 +568,7 @@ class pnlSeriesSelector(wx.Panel):
     def getSelectedIndex(self):
         return self.tableSeries.getSelection()
     def getSelectedID(self):
-        return self.tableSeries.getColumnText(self.selectedIndex, 1)
+        return self.tableSeries.getColumnText(self.tableSeries.getSelection(), 1)
 
     def selectForEdit(self):
         isSelected = False

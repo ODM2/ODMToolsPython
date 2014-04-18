@@ -224,6 +224,7 @@ class frmODMToolsMain(wx.Frame):
 
     def addEdit(self, event):
         isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
+        print seriesID
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
                                                                       connection=memDB.conn)
