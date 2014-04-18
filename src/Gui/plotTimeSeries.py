@@ -281,8 +281,7 @@ class plotTimeSeries(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
         self.updatePlot()
-        #plt.margins(ymargin = .5, xmargin= .5)
-        #plt.margins(tight = True)
+
 
 
     def updatePlot(self):

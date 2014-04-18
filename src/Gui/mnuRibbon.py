@@ -35,8 +35,8 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
  wxID_RIBBONVIEWSERIES, wxID_RIBBONVIEWCONSOLE, wxID_RIBBONVIEWSCRIPT,
  wxID_RIBBONPLOTBLANKBTN, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE,
  wxID_FRAME1SPINCTRL1, wxID_RIBBONEDITFILTER, wxID_RIBBONEDITRECORD,
- wxID_RIBBONEDITLINFILTER, wxID_RIBBONPLOTDATEAPPLY
-] = [wx.NewId() for _init_ctrls in range(42)]
+ wxID_RIBBONEDITLINFILTER, wxID_RIBBONPLOTDATEAPPLY,wxID_RIBBONEDITRESETFILTER
+] = [wx.NewId() for _init_ctrls in range(43)]
 
 ## #################################
 ## Build Menu and Toolbar 
@@ -160,9 +160,9 @@ class mnuRibbon(RB.RibbonBar):
         self.main_bar = RB.RibbonButtonBar(main_panel)
         self.main_bar.AddSimpleButton(wxID_RIBBONEDITSERIES, "Edit Series",
                                       bitmap=wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "edit.png")),
-                                      help_string="", kind=0x4)
+                                      help_string="", kind=0x4)#kind sets the button to be a True or False
 
-        self.main_bar.AddSimpleButton(wxID_RIBBONEDITRESTORE, "Restore",
+        self.main_bar.AddSimpleButton(wxID_RIBBONEDITRESTORE, "Restore Series",
                                       wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "restore.png")), "")
         self.main_bar.AddSimpleButton(wxID_RIBBONEDITSAVE, "Save",
                                       wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "save_data.png")), "")
@@ -176,6 +176,9 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar = RB.RibbonButtonBar(edit_panel)
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITFILTER, "Filter Points",
                                       wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "filter_list.png")),
+                                      "")
+        self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRESETFILTER, "Reset Filter",
+                                      wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "undo.png")),
                                       "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITCHGVALUE, "Change Value",
                                       wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "edit_view.png")), "")
@@ -253,7 +256,7 @@ class mnuRibbon(RB.RibbonBar):
         ###Dropdownbox events
         self.Bind(RB.EVT_RIBBONBUTTONBAR_DROPDOWN_CLICKED, self.onPlotTypeDropdown, id=wxID_RIBBONPLOTTSTYPE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_DROPDOWN_CLICKED, self.onBoxTypeDropdown, id=wxID_RIBBONPLOTBOXTYPE)
-        self.Bind(wx.EVT_SPINCTRL, self.o, id=wxID_FRAME1SPINCTRL1)
+        self.Bind(wx.EVT_SPINCTRL, self.onBinChanged, id=wxID_FRAME1SPINCTRL1)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onShowLegend, id=wxID_RIBBONPLOTTSLEGEND)
 
         ###date changed
@@ -269,6 +272,7 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onSave, id=wxID_RIBBONEDITSAVE)
 
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditFilter, id=wxID_RIBBONEDITFILTER)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onResetFilter, id = wxID_RIBBONEDITRESETFILTER)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditChangeValue, id=wxID_RIBBONEDITCHGVALUE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditInterpolate, id=wxID_RIBBONEDITINTEROPOLATE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditFlag, id=wxID_RIBBONEDITFLAG)
@@ -347,6 +351,11 @@ class mnuRibbon(RB.RibbonBar):
         #self.dpEndDate.SetValue(end)
         #self.dpStartDate.SetValue(start)
 
+    def onResetFilter(self, event):
+        recordService=self.parent.getRecordService()
+        recordService.reset_filter()
+        Publisher.sendMessage("changeSelection", sellist=recordService.get_filter_list(), datetime_list=None)
+        Publisher.sendMessage("changeTableSelection", sellist=recordService.get_filter_list(), datetime_list=None)
 
 
     def onLineDrift(self, event):
@@ -378,7 +387,7 @@ class mnuRibbon(RB.RibbonBar):
     def onEditFilter(self, event):
         logger.debug("Entered!")
         data_filter = frmDataFilter(self, self.parent.getRecordService())
-        self.filterlist = data_filter.ShowModal()
+        data_filter.ShowModal()
         data_filter.Destroy()
         event.Skip()
 
@@ -426,11 +435,13 @@ class mnuRibbon(RB.RibbonBar):
     def onEditSeries(self, event):
         if event.IsChecked():
             Publisher.sendMessage(("selectEdit"), event=event)
+            #self.parent.addEdit()
         else:
-            self.parent.stopEdit()
+            Publisher.sendMessage(("stopEdit"), event=event)
+            #self.parent.stopEdit()
         event.Skip()
 
-    def o(self, event):
+    def onBinChanged(self, event):
         Publisher.sendMessage(("onNumBins"), numBins=event.Selection)
         event.Skip()
 

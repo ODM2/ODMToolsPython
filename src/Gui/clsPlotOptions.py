@@ -75,7 +75,7 @@ class SeriesPlotInfo(object):
 
 
     def isPlotted(self, sid):
-        if int(sid) in self._seriesInfos.keys():
+        if int(sid) in self._seriesInfos:
             return True
         else:
             return False
@@ -87,32 +87,40 @@ class SeriesPlotInfo(object):
             return None
 
     def setEditSeries(self, seriesID):
+
         self.editID = int(seriesID)
         #self.memDB.initEditValues(self.editID)
-        if self.editID in self._seriesInfos.keys():
-            self._seriesInfos[self.editID].edit = True
-            self._seriesInfos[self.editID].data = self.memDB.getEditDataValuesforGraph()
-            self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
-            self._seriesInfos[self.editID].color = "Black"
+
+        if self.editID not in self._seriesInfos:
+            self.update(self.editID, True)
+            self.getSeriesInfo()
+        else:
+            self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+
+        self._seriesInfos[self.editID].edit = True
+        self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
+        self._seriesInfos[self.editID].color = "Black"
+
 
     def updateEditSeries(self):
-        if self.editID in self._seriesInfos.keys():
+        if self.editID in self._seriesInfos:
             self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
 
     def stopEditSeries(self):
-        if self.editID in self._seriesInfos.keys():
-            self._seriesInfos[self.editID].data = self.memDB.getDataValuesforGraph(self.editID,
+
+        if self.editID in self._seriesInfos:
+            self._seriesInfos[self.editID].dataTable = self.memDB.getDataValuesforGraph(self.editID,
                                                                                    self._seriesInfos[self.editID].noDataValue,
                                                                                    self._seriesInfos[self.editID].startDate,
                                                                                    self._seriesInfos[self.editID].endDate)
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
         self.editID = None
-        #self.memDB.stopEdit()
+        self.memDB.stopEdit()
 
 
     def getEditSeriesInfo(self):
-        if self.editID and ( self.editID in self._seriesInfos.keys()):
+        if self.editID and (self.editID in self._seriesInfos):
             return self._seriesInfos[self.editID]
         else:
             return None
@@ -120,12 +128,12 @@ class SeriesPlotInfo(object):
     def count(self):
         return len(self._seriesInfos)
 
-    def update(self, e, isselected):
+    def update(self, key, isselected):
         if not isselected:
-            del self._seriesInfos[e]
+            del self._seriesInfos[key]
         else:
             ## add dictionary entry with no data
-            self._seriesInfos[e] = None
+            self._seriesInfos[key] = None
 
 
     # def Update(self):
@@ -141,8 +149,8 @@ class SeriesPlotInfo(object):
         return self._seriesInfos.keys()
 
     def getSeries(self, seriesID):
-        if seriesID in self._seriesInfos:
-            return self._seriesInfos[seriesID]
+        if int(seriesID) in self._seriesInfos:
+            return self._seriesInfos[int(seriesID)]
         else:
             return None
 
@@ -185,7 +193,7 @@ class SeriesPlotInfo(object):
                 seriesInfo.siteName = siteName
                 seriesInfo.variableName = variableName
                 seriesInfo.variableUnits = unitsName
-                seriesInfo.plotTitle = "Site: " + siteName + "\nVarName: " + variableName + "\nQCL: " + series.quality_control_level_code
+                seriesInfo.plotTitle = "Site: " + siteName + "VarName: " + variableName + "QCL: " + series.quality_control_level_code
                 seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
                 seriesInfo.noDataValue = noDataValue
                 seriesInfo.dataTable = data

@@ -108,6 +108,8 @@ class clsULC(ULC.UltimateListCtrl):
             if model[-1]:
                 model[-1] = False
 
+    def isChecked(self, index):
+        return self.modelObjects[index][-1]
 
     def getChecked(self):
         #returns a list of the checked ids
@@ -143,6 +145,7 @@ class clsULC(ULC.UltimateListCtrl):
         self.subList[index][-1] = 1
         # TODO clsUCL object has no attribute 'getItem'
         self._mainWin.CheckItem(self.GetItem(index, 0), isChecked, sendEvent)
+
 
 
     def getColumnText(self, index, colid):

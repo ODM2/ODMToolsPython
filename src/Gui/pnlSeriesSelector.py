@@ -76,6 +76,7 @@ class pnlSeriesSelector(wx.Panel):
 
         sm = ServiceManager()
         self.export_service = sm.get_export_service()
+        self.selectedIndex = 0
 
     ## Radio Sizer
     ##    def _init_coll_boxSizer5_Items(self, parent):
@@ -267,7 +268,7 @@ class pnlSeriesSelector(wx.Panel):
     #    print "event:", event.m_itemIndex
 
     def initPubSub(self):
-        Publisher.subscribe(self.onEditButton, ("selectEdit"))
+        #Publisher.subscribe(self.onEditButton, ("selectEdit"))
         Publisher.subscribe(self.refreshSeries, "refreshSeries")
 
     def resetDB(self, dbservice):
@@ -291,6 +292,7 @@ class pnlSeriesSelector(wx.Panel):
         self.tableSeries.setColumns(self.memDB.getSeriesColumns())
         self.tableSeries.setObjects(self.memDB.getSeriesCatalog())
         self.tableSeries.EnableSelectionVista(True)
+        self.selectedIndex = 0
 
 
     def initSVBoxes(self):
@@ -387,7 +389,8 @@ class pnlSeriesSelector(wx.Panel):
         event.Skip()
 
     def onRightEdit(self, event):
-        self.selectForEdit(self.tableSeries.getColumnText(self.selectedIndex, 1))
+        #self.selectForEdit(self.tableSeries.getColumnText(self.selectedIndex, 1))
+        Publisher.sendMessage(("selectEdit"), event=event)
         event.Skip()
 
     # allows user to right-click refresh the Series Selector
@@ -562,9 +565,33 @@ class pnlSeriesSelector(wx.Panel):
                                       wx.OK| wx.ICON_INFORMATION)
         self.Refresh()
 
-    def selectForEdit(self, seriesID):
-        self.memDB.initEditValues(seriesID)
-        self.parent.Parent.addEdit(seriesID, self.memDB)
+    def getSelectedIndex(self):
+        return self.tableSeries.getSelection()
+    def getSelectedID(self):
+        return self.tableSeries.getColumnText(self.selectedIndex, 1)
+
+    def selectForEdit(self):
+        isSelected = False
+        if not self.tableSeries.isChecked(self.getSelectedIndex()):
+            if self.tableSeries.enableCheck(self.getSelectedIndex(), True):
+                self.tableSeries.checkItem(self.getSelectedIndex())
+                isSelected = True
+                #self.parent.Parent.addEdit(seriesID, self.memDB)
+
+            else:
+                isSelected = False
+                logger.debug("series was not checked")
+                val_2 = wx.MessageBox("Visualization is limited to 6 series.",
+                                  "Can't add plot",
+                                  wx.OK| wx.ICON_INFORMATION)
+        else:
+            isSelected = True
+        if isSelected:
+            self.memDB.initEditValues(self.getSelectedID())
+            #self.memDB.initEditValues(seriesID)
+            #self.parent.Parent.addEdit(seriesID, self.memDB)
+
+        return isSelected, self.getSelectedID(), self.memDB
 
 
     def stopEdit(self):

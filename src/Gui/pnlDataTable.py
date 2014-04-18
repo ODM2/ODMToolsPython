@@ -121,6 +121,7 @@ class pnlDataTable(wx.Panel):
                         isfirstselected=True
                     objlist.append(self.myOlv.GetObjectAt(i))
             self.myOlv.SelectObjects(objlist, deselectOthers=False)  #, ensureVisible =True
+            self.record_service.select_points_tf(sellist)
         else:
             #TODO Select by DateTime        #filter(by date),        #getfilteredobjects,        #removefilter,        #Select Objects
             for dateval in datetime_list:
@@ -132,6 +133,7 @@ class pnlDataTable(wx.Panel):
                     isfirstselected =True
                 objlist.append(self.myOlv.GetFilteredObjects()[0])
             self.myOlv.SelectObjects(objlist, deselectOthers=False)
+            self.record_service.select_points(datetime_list=datetime_list)
                 #self.myOlv.SelectObject(self.myOlv.GetFilteredObjects(), deselectOthers=False)
 
 

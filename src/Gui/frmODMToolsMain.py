@@ -95,14 +95,7 @@ class frmODMToolsMain(wx.Frame):
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
                              False, u'Tahoma'))
 
-        Publisher.subscribe(self.onDocking, ("adjust.Docking"))
-        Publisher.subscribe(self.onPlotSelection, ("select.Plot"))
-        Publisher.subscribe(self.onExecuteScript, ("execute.script"))
 
-        Publisher.subscribe(self.onExecuteScript, ("execute.script"))
-        Publisher.subscribe(self.onChangeDBConn, ("change.dbConfig"))
-        Publisher.subscribe(self.onSetScriptTitle, ("script.title"))
-        Publisher.subscribe(self.onClose, ("onClose"))
 
 
         ############### Ribbon ###################
@@ -139,7 +132,7 @@ class frmODMToolsMain(wx.Frame):
         self.console_tools = ConsoleTools(self._ribbon)
         self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
 
-        print "Stuff: ", dir(self.txtPythonConsole)
+        #print "Stuff: ", dir(self.txtPythonConsole)
 
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT,
                                          name=u'txtPython', parent=self,
@@ -149,25 +142,6 @@ class frmODMToolsMain(wx.Frame):
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)
 
-        self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane()
-                          .Name("Plot").Caption("Plot").MaximizeButton(True))
-
-
-        #self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
-        #                  Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
-        #                  Position(1).MinimizeButton(True))
-
-        #self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-         #                .Caption('Series Selector').MinSize(wx.Size(100, 200)).Movable().Floatable().
-          #                Position(0).MinimizeButton(True))
-
-        #self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
-        #                  Name("Script").MinSize(wx.Size(200, 200)).Movable().Floatable().MinimizeButton(True),
-        #                  target=self._mgr.GetPane("Selector") )
-
-        #self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-        #                  Name("Console").MinimizeButton(True).Movable().Floatable(),
-        #                  target=self._mgr.GetPane("Selector"))
 
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right()
                           .Name("Table").Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200))
@@ -186,39 +160,26 @@ class frmODMToolsMain(wx.Frame):
                           .Layer(1).Position(1).CloseButton(False), target=self._mgr.GetPane("Script"))
 
 
-
-
-
-        #print "panes: ", self._mgr.GetAllPanes()
-
-        #self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-        #       .Caption('Series Selector').Show(show=True).MinSize(wx.Size(100, 200)).Position(2).MinimizeButton(True))
-
-        #self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
-        #                  Name("Script").Show(show=False).MinSize(wx.Size(200, 200)).Position(2).MinimizeButton(True),
-        #                  target=self._mgr.GetPane("Selector"))
-
-        #self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-        #              Name("Console").Show(show=False).MinimizeButton(True).Position(2),
-        #              target=self._mgr.GetPane("Selector"))
-
-        #panedet = self._mgr.GetPane(self.pnlSelector)#.SetSelection(0)
-        #print dir(panedet)
-
-        for note in self._mgr.GetNotebooks():
-            note.SetSelection(1)
-
-
-        pane= self._mgr.GetPane(self.pnlSelector)
+        #for note in self._mgr.GetNotebooks():
+        #    note.SetSelection(1)
 
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane().Name("Plot").Caption("Plot").MaximizeButton(True))
 
-
         self.loadDockingSettings()
-
         self._mgr.Update()
-
         self.Bind(wx.EVT_CLOSE, self.onClose)
+
+
+
+        Publisher.subscribe(self.onDocking, ("adjust.Docking"))
+        Publisher.subscribe(self.onPlotSelection, ("select.Plot"))
+        Publisher.subscribe(self.onExecuteScript, ("execute.script"))
+        Publisher.subscribe(self.onChangeDBConn, ("change.dbConfig"))
+        Publisher.subscribe(self.onSetScriptTitle, ("script.title"))
+        #.subscribe(self.onSetScriptTitle, ("script.title"))
+        Publisher.subscribe(self.onClose, ("onClose"))
+        Publisher.subscribe(self.addEdit, ("selectEdit"))
+        Publisher.subscribe(self.stopEdit, ("stopEdit"))
 
         self._init_sizers()
         self._ribbon.Realize()
@@ -236,16 +197,10 @@ class frmODMToolsMain(wx.Frame):
         elif value == "Console":
             panedet = self._mgr.GetPane(self.txtPythonConsole)
 
-        logger.debug("value is: %s, visible: %s"%(value, panedet.IsShown()))
-        #if panedet.IsMinimized():
-        #    panedet.Maximize()
-        #else:
-        #    panedet.Minimize()
-
+        #logger.debug("value is: %s, visible: %s"%(value, panedet.IsShown()))
 
         if panedet.IsShown():
             panedet.Show(show=False)
-            panedet.Hide()
         else:
             panedet.Show(show=True)
 
@@ -267,23 +222,26 @@ class frmODMToolsMain(wx.Frame):
             scriptPane.Restore()
         self._mgr.Update()
 
-    def addEdit(self, seriesID, memDB):
-
-        self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
+    def addEdit(self, event):
+        isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
+        if isSelected:
+            self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
                                                                       connection=memDB.conn)
-        self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
-        self.dataTable.init(memDB, self.record_service)
-        self._ribbon.toggleEditButtons(True)
+            self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+            self.dataTable.init(memDB, self.record_service)
+            self._ribbon.toggleEditButtons(True)
 
-        # set record service for console
-        self.console_tools.set_record_service(self.record_service)
+            # set record service for console
+            self.console_tools.set_record_service(self.record_service)
 
-    def stopEdit(self):
-        self.pnlPlot.stopEdit()
-        self.dataTable.stopEdit()
+    def stopEdit(self, event):
+
         self.pnlSelector.stopEdit()
+        self.dataTable.stopEdit()
+        self.pnlPlot.stopEdit()
         self.record_service = None
         self._ribbon.toggleEditButtons(False)
+
 
     def getRecordService(self):
         return self.record_service
