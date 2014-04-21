@@ -77,6 +77,7 @@ class pnlSeriesSelector(wx.Panel):
         sm = ServiceManager()
         self.export_service = sm.get_export_service()
         self.selectedIndex = 0
+        self.isEditing = False
 
     ## Radio Sizer
     ##    def _init_coll_boxSizer5_Items(self, parent):
@@ -566,13 +567,15 @@ class pnlSeriesSelector(wx.Panel):
         return self.tableSeries.getSelection()
     def getSelectedID(self):
         return self.tableSeries.getColumnText(self.tableSeries.getSelection(), 1)
-
+    def isEditing(self):
+        return self.isEditing
     def selectForEdit(self):
         isSelected = False
         if not self.tableSeries.isChecked(self.getSelectedIndex()):
             if self.tableSeries.enableCheck(self.getSelectedIndex(), True):
                 self.tableSeries.checkItem(self.getSelectedIndex())
                 isSelected = True
+
                 #self.parent.Parent.addEdit(seriesID, self.memDB)
 
             else:
@@ -584,6 +587,7 @@ class pnlSeriesSelector(wx.Panel):
         else:
             isSelected = True
         if isSelected:
+            self.isEditing=isSelected
             self.memDB.initEditValues(self.getSelectedID())
             #self.memDB.initEditValues(seriesID)
             #self.parent.Parent.addEdit(seriesID, self.memDB)

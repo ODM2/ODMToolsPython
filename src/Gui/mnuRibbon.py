@@ -418,6 +418,8 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
+    def onPushEdit(self):
+        print ""
 
     def onEditSeries(self, event):
         if event.IsChecked():
