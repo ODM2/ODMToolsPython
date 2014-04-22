@@ -133,7 +133,6 @@ class frmODMToolsMain(wx.Frame):
 
         self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE, showInterpIntro=False,
                                                        size=wx.Size(200, 200), style=wx.NO_BORDER)
-        self.txtPythonConsole.SetStatusText(myIntroText)
         wx.CallAfter(self._postStartup)
 
         # Console tools object for usability
@@ -323,8 +322,7 @@ if __name__ == '__main__':
     frame = create(None)
     frame.Show()
 
-    import wx.lib.inspection
-
-    wx.lib.inspection.InspectionTool().Show()
+    #import wx.lib.inspection
+    #wx.lib.inspection.InspectionTool().Show()
 
     app.MainLoop()
