@@ -24,10 +24,12 @@ class RecordService():
         if self._record:
             self._script("edit_service.data_gaps(%s, '%s')\n" % (value, time_period), 'black')
 
+
     def value_change_threshold(self, value):
         self._edit_service.value_change_threshold(value)
         if self._record:
             self._script("edit_service.value_change_threshold(%s)\n" % (value), 'black')
+
 
     def toggle_filter_previous(self):
         self._edit_service.toggle_filter_previous()

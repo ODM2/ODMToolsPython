@@ -4,40 +4,46 @@
 # source: Dietrich  16NOV2008
 # http://www.python-forum.org/pythonforum/viewtopic.php?f=2&t=10065#
 
+import keyword
+
 import wx
 import wx.stc as stc
-import keyword
+
 
 if wx.Platform == '__WXMSW__':
     # for Windows
     faces = {
         'times': 'Times New Roman',
-        'mono' : 'Courier New',
+        'mono': 'Courier New',
         # try temporary switch to mono
-        'helv' : 'Courier New',
+        'helv': 'Courier New',
         #'helv' : 'Arial'
-        'other' : 'Comic Sans MS',
-        'size'  : 10,
-        'size2' : 8,
+        'other': 'Comic Sans MS',
+        'size': 10,
+        'size2': 8,
     }
 else:
     faces = {
         'times': 'Times',
-        'mono' : 'Courier',
-        'helv' : 'Helvetica',
+        'mono': 'Courier',
+        'helv': 'Helvetica',
         'other': 'new century schoolbook',
-        'size' : 12,
+        'size': 12,
         'size2': 10,
     }
+
 
 class highlightSTC(stc.StyledTextCtrl):
     """
     Set up for folding and Python highlighting
     """
+
     def __init__(self, parent):
         stc.StyledTextCtrl.__init__(self, parent, wx.ID_ANY)
         self.parent = parent
-        self.nonPrintKeys = (27,306,307,308,310,311,312,313,314,315,316,317,322,340,341,342,343,344,345,346,347,348,349,365,366,367,393,395)
+        self.nonPrintKeys = (
+        27, 306, 307, 308, 310, 311, 312, 313, 314, 315, 316, 317, 322, 340, 341, 342, 343, 344, 345, 346, 347, 348,
+        349, 365, 366, 367, 393, 395)
 
         # use Python code highlighting
         self.SetLexer(stc.STC_LEX_PYTHON)
@@ -63,19 +69,19 @@ class highlightSTC(stc.StyledTextCtrl):
 
         # fold markers use square headers
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPEN,
-            stc.STC_MARK_BOXMINUS, "white", "#808080")
+                          stc.STC_MARK_BOXMINUS, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDER,
-            stc.STC_MARK_BOXPLUS, "white", "#808080")
+                          stc.STC_MARK_BOXPLUS, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDERSUB,
-            stc.STC_MARK_VLINE, "white", "#808080")
+                          stc.STC_MARK_VLINE, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDERTAIL,
-            stc.STC_MARK_LCORNER, "white", "#808080")
+                          stc.STC_MARK_LCORNER, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEREND,
-            stc.STC_MARK_BOXPLUSCONNECTED, "white", "#808080")
+                          stc.STC_MARK_BOXPLUSCONNECTED, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPENMID,
-            stc.STC_MARK_BOXMINUSCONNECTED, "white", "#808080")
+                          stc.STC_MARK_BOXMINUSCONNECTED, "white", "#808080")
         self.MarkerDefine(stc.STC_MARKNUM_FOLDERMIDTAIL,
-            stc.STC_MARK_TCORNER, "white", "#808080")
+                          stc.STC_MARK_TCORNER, "white", "#808080")
 
         # bind some events
         self.Bind(stc.EVT_STC_UPDATEUI, self.onUpdateUI)
@@ -86,76 +92,76 @@ class highlightSTC(stc.StyledTextCtrl):
         # global default styles for all languages
         # set default font
         self.StyleSetSpec(stc.STC_STYLE_DEFAULT,
-            "face:%(helv)s,size:%(size)d" % faces)
+                          "face:%(helv)s,size:%(size)d" % faces)
         # set default background color
         white = '#FFFFFF'
         self.StyleSetBackground(style=stc.STC_STYLE_DEFAULT,
-            back=white)
+                                back=white)
         # reset all to be like the default
         self.StyleClearAll()
 
         # more global default styles for all langauges
         self.StyleSetSpec(stc.STC_STYLE_LINENUMBER,
-            "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
+                          "back:#C0C0C0,face:%(helv)s,size:%(size2)d" % faces)
         self.StyleSetSpec(stc.STC_STYLE_CONTROLCHAR,
-            "face:%(other)s" % faces)
+                          "face:%(other)s" % faces)
         self.StyleSetSpec(stc.STC_STYLE_BRACELIGHT,
-            "fore:#FFFFFF,back:#0000FF,bold")
+                          "fore:#FFFFFF,back:#0000FF,bold")
         self.StyleSetSpec(stc.STC_STYLE_BRACEBAD,
-            "fore:#000000,back:#FF0000,bold")
+                          "fore:#000000,back:#FF0000,bold")
 
         # Make the Python styles
         # default
         self.StyleSetSpec(stc.STC_P_DEFAULT,
-            "fore:#000000,face:%(helv)s,size:%(size)d" % faces)
+                          "fore:#000000,face:%(helv)s,size:%(size)d" % faces)
         # comments
         self.StyleSetSpec(stc.STC_P_COMMENTLINE,
-            "fore:#007F00,face:%(other)s,size:%(size)d" % faces)
+                          "fore:#007F00,face:%(other)s,size:%(size)d" % faces)
         # number
         self.StyleSetSpec(stc.STC_P_NUMBER,
-            "fore:#007F7F,size:%(size)d" % faces)
+                          "fore:#007F7F,size:%(size)d" % faces)
         # string
         self.StyleSetSpec(stc.STC_P_STRING,
-            "fore:#7F007F,face:%(helv)s,size:%(size)d" % faces)
+                          "fore:#7F007F,face:%(helv)s,size:%(size)d" % faces)
         # single quoted string
         self.StyleSetSpec(stc.STC_P_CHARACTER,
-            "fore:#7F007F,face:%(helv)s,size:%(size)d" % faces)
+                          "fore:#7F007F,face:%(helv)s,size:%(size)d" % faces)
         # keyword
         self.StyleSetSpec(stc.STC_P_WORD,
-            "fore:#00007F,bold,size:%(size)d" % faces)
+                          "fore:#00007F,bold,size:%(size)d" % faces)
         # triple quotes
         self.StyleSetSpec(stc.STC_P_TRIPLE,
-            "fore:#7F0000,size:%(size)d" % faces)
+                          "fore:#7F0000,size:%(size)d" % faces)
         # triple double quotes
         self.StyleSetSpec(stc.STC_P_TRIPLEDOUBLE,
-            "fore:#7F0000,size:%(size)d" % faces)
+                          "fore:#7F0000,size:%(size)d" % faces)
         # class name definition
         self.StyleSetSpec(stc.STC_P_CLASSNAME,
-            "fore:#0000FF,bold,underline,size:%(size)d" % faces)
+                          "fore:#0000FF,bold,underline,size:%(size)d" % faces)
         # function or method name definition
         self.StyleSetSpec(stc.STC_P_DEFNAME,
-            "fore:#007F7F,bold,size:%(size)d" % faces)
+                          "fore:#007F7F,bold,size:%(size)d" % faces)
         # operators
         self.StyleSetSpec(stc.STC_P_OPERATOR,
-            "bold,size:%(size)d" % faces)
+                          "bold,size:%(size)d" % faces)
         # identifiers
         self.StyleSetSpec(stc.STC_P_IDENTIFIER,
-            "fore:#000000,face:%(helv)s,size:%(size)d" % faces)
+                          "fore:#000000,face:%(helv)s,size:%(size)d" % faces)
         # comment-blocks
         self.StyleSetSpec(stc.STC_P_COMMENTBLOCK,
-            "fore:#7F7F7F,size:%(size)d" % faces)
+                          "fore:#7F7F7F,size:%(size)d" % faces)
         # end of line where string is not closed
         self.StyleSetSpec(stc.STC_P_STRINGEOL,
-            "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d" % faces)
+                          "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d" % faces)
 
 
         # register some images for use in the AutoComplete box
         self.RegisterImage(1,
-            wx.ArtProvider.GetBitmap(wx.ART_TIP, size=(16,16)))
+                           wx.ArtProvider.GetBitmap(wx.ART_TIP, size=(16, 16)))
         self.RegisterImage(2,
-            wx.ArtProvider.GetBitmap(wx.ART_NEW, size=(16,16)))
+                           wx.ArtProvider.GetBitmap(wx.ART_NEW, size=(16, 16)))
         self.RegisterImage(3,
-            wx.ArtProvider.GetBitmap(wx.ART_COPY, size=(16,16)))
+                           wx.ArtProvider.GetBitmap(wx.ART_COPY, size=(16, 16)))
 
     def onKeyPressed(self, e):
         if self.CallTipActive():
@@ -197,7 +203,7 @@ class highlightSTC(stc.StyledTextCtrl):
             charBefore = self.GetCharAt(caretPos - 1)
             styleBefore = self.GetStyleAt(caretPos - 1)
         # check before
-        if charBefore and chr(charBefore) in "[]{}()"\
+        if charBefore and chr(charBefore) in "[]{}()" \
                 and styleBefore == stc.STC_P_OPERATOR:
             braceAtCaret = caretPos - 1
         # check after
@@ -205,7 +211,7 @@ class highlightSTC(stc.StyledTextCtrl):
             charAfter = self.GetCharAt(caretPos)
             styleAfter = self.GetStyleAt(caretPos)
 
-            if charAfter and chr(charAfter) in "[]{}()"\
+            if charAfter and chr(charAfter) in "[]{}()" \
                     and styleAfter == stc.STC_P_OPERATOR:
                 braceAtCaret = caretPos
         if braceAtCaret >= 0:
@@ -222,7 +228,7 @@ class highlightSTC(stc.StyledTextCtrl):
                 self.foldAll()
             else:
                 lineClicked = self.LineFromPosition(e.GetPosition())
-                if self.GetFoldLevel(lineClicked) &\
+                if self.GetFoldLevel(lineClicked) & \
                         stc.STC_FOLDLEVELHEADERFLAG:
                     if e.GetShift():
                         self.SetFoldexpanded(lineClicked, True)
@@ -243,7 +249,7 @@ class highlightSTC(stc.StyledTextCtrl):
         expanding = True
         # find out if folding or unfolding
         for lineNum in range(lineCount):
-            if self.GetFoldLevel(lineNum) &\
+            if self.GetFoldLevel(lineNum) & \
                     stc.STC_FOLDLEVELHEADERFLAG:
                 expanding = not self.GetFoldexpanded(lineNum)
                 break;
@@ -251,8 +257,8 @@ class highlightSTC(stc.StyledTextCtrl):
         while lineNum < lineCount:
             level = self.GetFoldLevel(lineNum)
             if level & stc.STC_FOLDLEVELHEADERFLAG and \
-                (level & STC_FOLDLEVELNUMBERMASK) ==\
-                    stc.STC_FOLDLEVELBASE:
+                            (level & STC_FOLDLEVELNUMBERMASK) == \
+                            stc.STC_FOLDLEVELBASE:
                 if expanding:
                     self.SetFoldexpanded(lineNum, True)
                     lineNum = self.expand(lineNum, True)

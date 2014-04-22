@@ -6,16 +6,17 @@ from wx.lib.pubsub import pub as Publisher
 from highlightSTC import highlightSTC
 
 
-ID_NEW=101
-ID_OPEN=102
-ID_SAVE=103
-ID_SAVE_AS=104
-ID_EXECUTE_BUTTON=300
-ID_EXECUTE_SELECTION_BUTTON=301
-ID_EXECUTE_LINE_BUTTON=302
+ID_NEW = 101
+ID_OPEN = 102
+ID_SAVE = 103
+ID_SAVE_AS = 104
+ID_EXECUTE_BUTTON = 300
+ID_EXECUTE_SELECTION_BUTTON = 301
+ID_EXECUTE_LINE_BUTTON = 302
+
 
 class pnlScript(wx.Frame):
-    def __init__(self, parent, id=wx.ID_ANY, name="", pos=(0,0), size=(200, 200)):
+    def __init__(self, parent, id=wx.ID_ANY, name="", pos=(0, 0), size=(200, 200)):
         super(pnlScript, self).__init__(parent, id, name=name, pos=pos, size=size, style=0)
         self.console = parent.txtPythonConsole
         self.control = highlightSTC(self)
@@ -173,7 +174,7 @@ class pnlScript(wx.Frame):
             self.control.StyleSetForeground(style, wx.NamedColour(c))
 
             free += 1
-            if free >31:
+            if free > 31:
                 free = 0
             self._free = free
             return style
@@ -188,9 +189,9 @@ class pnlScript(wx.Frame):
         style = self.getStyle(c)
         lenText = len(text.encode('utf8'))
         end = self.control.GetLength()
-##        self.control.DocumentEnd()
+        ##        self.control.DocumentEnd()
         self.control.AppendText(text)
-##        self.control.AddStyledText(text)
+        ##        self.control.AddStyledText(text)
         self.control.StartStyling(end, 31)
         self.control.SetStyling(lenText, style)
         self.control.EnsureCaretVisible()
