@@ -1,16 +1,15 @@
 #Boa:Frame:frmDBConfig
 import logging
-import sqlalchemy
-from sqlalchemy.exc import DBAPIError
 
+from sqlalchemy.exc import DBAPIError
 import wx
+
 from common.logger import LoggerTool
 
-import frmODMToolsMain
-from odmservices.service_manager import ServiceManager
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 def create(parent, service_manager, is_main):
     return frmDBConfig(parent, service_manager, is_main=is_main)
@@ -82,7 +81,7 @@ class frmDBConfig(wx.Dialog):
         self.dbComboBox = wx.ComboBox(choices=["Microsoft SQL Server", "MySQL"], id=wxID_FRMDBCONFIGdbComboBox,
                                       name='dbComboBox', parent=self.pnlMain, pos=wx.Point(121, 10),
                                       size=wx.Size(326, 21), style=0,
-                                      value=u'Microsoft SQL Server')
+                                      value=u'')
         # self.dbComboBox.SetLabel(u'Microsoft SQL Server')
 
         self.btnTest = wx.Button(id=wxID_FRMDBCONFIGBTNTEST,
@@ -103,7 +102,8 @@ class frmDBConfig(wx.Dialog):
 
         self.boxConnection = wx.StaticBox(id=wxID_FRAME1BOXCONNECTION,
                                           label=u'Microsoft SQL Server', name=u'boxConnection',
-                                          parent=self.pnlConnection, pos=wx.Point(8, 8), size=wx.Size(432, 152), style=0)
+                                          parent=self.pnlConnection, pos=wx.Point(8, 8), size=wx.Size(432, 152),
+                                          style=0)
 
         # ----------------------------
 
@@ -143,10 +143,9 @@ class frmDBConfig(wx.Dialog):
         self.set_field_values()
         self.BindActions()
 
-
     def set_field_values(self):
         conn = self.service_manager.get_current_connection()
-        if conn != None:
+        if conn is not None:
             self.txtServer.SetValue(conn['address'])
             self.txtDBName.SetValue(conn['db'])
             self.txtUser.SetValue(conn['user'])
@@ -162,33 +161,39 @@ class frmDBConfig(wx.Dialog):
 
     def OnBtnSave(self, event):
         conn_dict = self._GetFieldValues()
-        result = self.validateInput(conn_dict)
+        result = self.validateInput(conn_dict, False)
 
-        if result:
-            self.SetReturnCode(wx.ID_OK)
-            self.service_manager.add_connection(conn_dict)
-            self.Destroy()
+        #if result:
+        #    self.SetReturnCode(wx.ID_OK)
+        #    self.service_manager.add_connection(conn_dict)
+        #    self.Destroy()
 
     def OnBtnCancel(self, event):
         self.SetReturnCode(wx.ID_CANCEL)
         self.Destroy()
 
-    def validateInput(self, conn_dict):
+    def validateInput(self, conn_dict, test=True):
         message = ""
-        if conn_dict['user'] and conn_dict['password'] and conn_dict['address'] and conn_dict['db']:
-            if self.service_manager.test_connection(conn_dict):
-                try:
-                    if self.service_manager.get_db_version(conn_dict) == '1.1.1':
-                        message = "This connection is valid"
-                        wx.MessageBox(message, 'Test Connection', wx.OK)
-                        return True
-                except DBAPIError:
-                    message = "Please check the credentials and " \
-                              "ensure that the database is accessible"
-                    wx.MessageBox(message, 'Login Unsuccessful', wx.OK | wx.ICON_ERROR)
+        if conn_dict['user'] and conn_dict['password'] and conn_dict['address'] \
+                and conn_dict['db'] and conn_dict['engine']:
+            if test:
+                if self.service_manager.test_connection(conn_dict):
+                    try:
+                        if self.service_manager.get_db_version(conn_dict) == '1.1.1':
+                            message = "This connection is valid"
+                            wx.MessageBox(message, 'Test Connection', wx.OK)
+                            return True
+                    except DBAPIError:
+                        message = "Please check the credentials and " \
+                                  "ensure that the database is accessible"
+                        wx.MessageBox(message, 'Login Unsuccessful', wx.OK | wx.ICON_ERROR)
+                else:
+                    message = "This connection is invalid"
+                    wx.MessageBox(message, 'Test Connection', wx.OK | wx.ICON_ERROR)
             else:
-                message = "This connection is invalid"
-                wx.MessageBox(message, 'Test Connection', wx.OK | wx.ICON_ERROR)
+                self.SetReturnCode(wx.ID_OK)
+                self.service_manager.add_connection(conn_dict)
+                self.Destroy()
         else:
             message = "Please enter valid connection information"
             wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
@@ -210,7 +215,6 @@ class frmDBConfig(wx.Dialog):
         conn_dict['password'] = self.txtPass.GetValue()
         conn_dict['address'] = self.txtServer.GetValue()
         conn_dict['db'] = self.txtDBName.GetValue()
-
         return conn_dict
 
 

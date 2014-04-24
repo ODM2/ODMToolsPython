@@ -155,19 +155,20 @@ class frmODMToolsMain(wx.Frame):
 
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
                           .Caption('Series Selector').MinSize(wx.Size(50, 200)).Movable().Floatable().
-                          Position(0).MinimizeButton(True).CloseButton(False))
+                          Position(0).MinimizeButton(True).CloseButton(True))
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Movable().Floatable().Right()
                           .MinimizeButton(True).FloatingSize(size=(600, 800)).CloseButton(
-            False).Float().FloatingPosition(pos=(self.Position)).Show(
+            True).Float().FloatingPosition(pos=(self.Position)).Show(
             show=False).Hide())  #, target=self._mgr.GetPane("Selector"))
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(600, 800)).MinimizeButton(
-            True).Movable().Floatable().CloseButton(False).Float().Show(
+            True).Movable().Floatable().CloseButton(True).Float().Show(
             show=False).Hide())  #, target=self._mgr.GetPane("Selector"))
 
-        self.loadDockingSettings()
+        ## TODO Fix loadingDockingSettings as it doesn't load it correctly.
+        #self.loadDockingSettings()
 
         self._mgr.Update()
         self.Bind(wx.EVT_CLOSE, self.onClose)
@@ -271,6 +272,11 @@ class frmODMToolsMain(wx.Frame):
             self.pnlSelector.resetDB(self.sc)
             #clear all plots
             self.pnlPlot.clear()
+            # reset check count in clsULC
+            self.pnlSelector.tableSeries.checkCount = 0
+            # clear the filters for the table series
+            self.pnlSelector.tableSeries.clearFilter()
+
             #clear table
             self.dataTable.clear()
 
