@@ -287,7 +287,7 @@ class BoxWhisker(object):
 
 
         data = [x[0] for x in dataTable if x[0] <> noDataValue]
-        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data, [''], self.calcConfInterval(data))
+        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data, [''], self.calcConfInterval([data,]))
 
         years = sorted(list(set([x[4] for x in dataTable])))
         data = []
@@ -329,7 +329,7 @@ class BoxWhisker(object):
         confint = []
         conflimit = []
         means = []
-        if len(PlotData) > 12:
+        '''if len(PlotData) > 12:
             vals = self.indivConfInter(PlotData)
             medians.append(vals[0])
             means.append(vals[1])
@@ -337,14 +337,14 @@ class BoxWhisker(object):
             confint.append((vals[2], vals[3]))
             # print vals
 
-        else:
-            for data in PlotData:
-                vals = self.indivConfInter(data)
-                medians.append(vals[0])
-                means.append(vals[1])
-                conflimit.append((vals[4], vals[5]))
-                confint.append((vals[2], vals[3]))
-                # print vals
+        else:'''
+        for data in PlotData:
+            vals = self.indivConfInter(data)
+            medians.append(vals[0])
+            means.append(vals[1])
+            conflimit.append((vals[4], vals[5]))
+            confint.append((vals[2], vals[3]))
+            # print vals
 
         return medians, conflimit, means, confint
 
