@@ -158,7 +158,7 @@ class mnuRibbon(RB.RibbonBar):
         main_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Main", wx.NullBitmap, wx.DefaultPosition,
                                     wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         self.main_bar = RB.RibbonButtonBar(main_panel)
-        self.main_bar.AddSimpleButton(wxID_RIBBONEDITSERIES, "Edit Series",
+        self.editbutton=self.main_bar.AddSimpleButton(wxID_RIBBONEDITSERIES, "Edit Series",
                                       bitmap=wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "edit.png")),
                                       help_string="", kind=0x4)#kind sets the button to be a True or False
 
@@ -177,7 +177,7 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITFILTER, "Filter Points",
                                       wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "filter_list.png")),
                                       "")
-        self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRESETFILTER, "Reset Filter",
+        self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRESETFILTER, "Reset Selection",
                                       wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "undo.png")),
                                       "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITCHGVALUE, "Change Value",
@@ -421,14 +421,19 @@ class mnuRibbon(RB.RibbonBar):
     def onPushEdit(self):
         print ""
 
-    def onEditSeries(self, event):
+    def onEditSeries(self, event=None):
+        logger.debug(dir(event))
+
         if event.IsChecked():
             Publisher.sendMessage(("selectEdit"), event=event)
+
             #self.parent.addEdit()
         else:
             Publisher.sendMessage(("stopEdit"), event=event)
             #self.parent.stopEdit()
-        event.Skip()
+        if True:
+            event.Checked=False
+            event.Skip()
 
     def onBinChanged(self, event):
         Publisher.sendMessage(("onNumBins"), numBins=event.Selection)

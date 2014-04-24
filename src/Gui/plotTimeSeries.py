@@ -63,6 +63,7 @@ class plotTimeSeries(wx.Panel):
         self.fontP.set_size('x-small')
 
         self.format = '-o'
+        self.alpha=1
         self._setColor("WHITE")
 
         left = 0.125  # the left side of the subplots of the figure
@@ -128,9 +129,11 @@ class plotTimeSeries(wx.Panel):
         if len(sellist)>0:
             self.parent.record_service.select_points_tf(sellist)
             Publisher.sendMessage(("changeTableSelection"), sellist=sellist, datetime_list = [])
+
         else:
             self.parent.record_service.select_points(datetime_list=datetime_list)
             Publisher.sendMessage(("changeTableSelection"), sellist= [], datetime_list= datetime_list)
+
 
 
     def onDateChanged(self, startDate, endDate):
@@ -218,6 +221,7 @@ class plotTimeSeries(wx.Panel):
         self.lassoAction = None
         self.hoverAction = None
         self.xys = None
+        self.alpha=1
 
         self.curveindex = -1
         self.editCurve = None
@@ -225,6 +229,8 @@ class plotTimeSeries(wx.Panel):
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.updatePlot()
         self.editseriesID = -1
+
+
 
     def updateValues(self):
         # self.addEdit(self.editCursor, self.editSeries, self.editDataFilter)
@@ -255,13 +261,13 @@ class plotTimeSeries(wx.Panel):
         self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
-                                                         label=oneSeries.plotTitle, zorder =10)
+                                                         label=oneSeries.plotTitle, zorder =10, alpha=1)
 
         self.selectedlist = self.parent.record_service.get_filter_list()
 
         self.editPoint = curraxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
                                           s=35, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none',
-                                          zorder=11, marker='s')# >, <, v, ^,s
+                                          zorder=11, marker='s', alpha=1)# >, <, v, ^,s
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
 
         self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
@@ -307,6 +313,7 @@ class plotTimeSeries(wx.Panel):
                         self.format, color=oneSeries.color,
                         xdate=True, tz=None, antialiased=True,
                         label=oneSeries.plotTitle,
+                        alpha = self.alpha,
                     )
                 )
 
@@ -380,6 +387,7 @@ class plotTimeSeries(wx.Panel):
 
     def setEdit(self, id):
         self.editseriesID = id
+        self.alpha = .5
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
             self.updatePlot()
