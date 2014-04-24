@@ -30,7 +30,7 @@ class OneSeriesPlotInfo(object):
 
         self.seriesID = None
         self.series = None
-        self.noDataValue= ""
+        self.noDataValue= -9999
 
         self.startDate = None
         self.endDate = None
@@ -217,9 +217,9 @@ class SeriesPlotInfo(object):
 
     def build(self, seriesInfo):
         data = seriesInfo.dataTable
-        seriesInfo.Probability = Probability(data)
+        seriesInfo.Probability = Probability(data, seriesInfo.noDataValue)
         seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
-        seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod)
+        seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
     def updateDateRange(self, startDate=None, endDate=None):
         for key in self.getSeriesIDs():
@@ -277,42 +277,43 @@ class Statistics(object):
 
 
 class BoxWhisker(object):
-    def __init__(self, dataTable, method):
+    def __init__(self, dataTable, method, noDataValue):
 
         self.intervals = {}
         self.method = method
+
         # for x in dataTable:
         #     print x, x[3]
 
 
-        data = [x[0] for x in dataTable]
+        data = [x[0] for x in dataTable if x[0] <> noDataValue]
         self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data, [''], self.calcConfInterval(data))
 
         years = sorted(list(set([x[4] for x in dataTable])))
         data = []
         for y in years:
-            data.append([x[0] for x in dataTable if x[4] == y])
+            data.append([x[0] for x in dataTable if x[4] == y if x[0] <> noDataValue])
         self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", data, years, self.calcConfInterval(data))
 
-        data = [[x[0] for x in dataTable if x[1].month in (1, 2, 3)],
-                [x[0] for x in dataTable if x[1].month in (4, 5, 6)],
-                [x[0] for x in dataTable if x[1].month in (7, 8, 9)],
-                [x[0] for x in dataTable if x[1].month in (10, 11, 12)]]
+        data = [[x[0] for x in dataTable if x[1].month in (1, 2, 3) if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month in (4, 5, 6) if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month in (7, 8, 9) if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month in (10, 11, 12) if x[0] <> noDataValue]]
         self.intervals["Seasonally"] = BoxWhiskerPlotInfo("Seasonally", data, ['Winter', 'Spring', 'Summer', 'Fall'],
                                                           self.calcConfInterval(data))
 
-        data = [[x[0] for x in dataTable if x[1].month == 1],
-                [x[0] for x in dataTable if x[1].month == 2],
-                [x[0] for x in dataTable if x[1].month == 3],
-                [x[0] for x in dataTable if x[1].month == 4],
-                [x[0] for x in dataTable if x[1].month == 5],
-                [x[0] for x in dataTable if x[1].month == 6],
-                [x[0] for x in dataTable if x[1].month == 7],
-                [x[0] for x in dataTable if x[1].month == 8],
-                [x[0] for x in dataTable if x[1].month == 9],
-                [x[0] for x in dataTable if x[1].month == 10],
-                [x[0] for x in dataTable if x[1].month == 11],
-                [x[0] for x in dataTable if x[1].month == 12]]
+        data = [[x[0] for x in dataTable if x[1].month == 1 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 2 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 3 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 4 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 5 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 6 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 7 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 8 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 9 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 10 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 11 if x[0] <> noDataValue],
+                [x[0] for x in dataTable if x[1].month == 12 if x[0] <> noDataValue]]
         self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", data,
                                                        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep',
                                                         'Oct', 'Nov', 'Dec'], self.calcConfInterval(data))
@@ -376,7 +377,7 @@ class BoxWhisker(object):
 
 
 class BoxWhiskerPlotInfo(object):
-    def __init__(self, title, data, xLabels, dets):
+    def __init__(self, title, data,  xLabels, dets):
         self.title = title
         self.data = data
         self.xlabels = xLabels
@@ -388,8 +389,8 @@ class BoxWhiskerPlotInfo(object):
 
 
 class Probability(object):
-    def __init__(self, dataTable):
-        dataValues = [x[0] for x in dataTable]
+    def __init__(self, dataTable, noDataValue):
+        dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         self.curFreq = None
         self.Xaxis = []
         self.Yaxis = sorted(dataValues)

@@ -100,7 +100,7 @@ class plotHist(wx.Panel):
 
             #print "oneSeries.dataTable:", oneSeries.dataTable
             self.hist.append(self.plots[i - 1].hist(
-                    [x[0] for x in oneSeries.dataTable], bins=self.bins, normed=False, facecolor=oneSeries.color,
+                    [x[0] for x in oneSeries.dataTable if x[0] <> oneSeries.noDataValue], bins=self.bins, normed=False, facecolor=oneSeries.color,
                     alpha=0.75, label=oneSeries.siteName + " " + oneSeries.variableName
                 )
             )
