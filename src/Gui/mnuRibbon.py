@@ -260,8 +260,6 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onShowLegend, id=wxID_RIBBONPLOTTSLEGEND)
 
         ###date changed
-        #self.Bind(wx.EVT_DATE_CHANGED, self.onDateChanged, id=wxID_ENDDPDATE)
-        #self.Bind(wx.EVT_DATE_CHANGED, self.onDateChanged, id=wxID_STARTDPDATE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onFullDate, id=wxID_RIBBONPLOTDATEFULL)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onDateChanged, id = wxID_RIBBONPLOTDATEAPPLY)
 
@@ -329,13 +327,24 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.sendMessage("onDateChanged", startDate=startDate, endDate=endDate)
         event.Skip()
 
-    def resetDateRange(self, startDate, endDate):
-        start = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
-        end = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
-        self.dpEndDate.SetRange(start, end)
-        self.dpStartDate.SetRange(start, end)
-        #self.dpEndDate.SetValue(end)
-        #self.dpStartDate.SetValue(start)
+    def resetDateRange(self, startDate, endDate, currStart= None, currEnd=None):
+        maxStart = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
+        maxEnd = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
+
+        self.dpStartDate.SetRange(maxStart, maxEnd)
+        if currStart:
+            self.dpStartDate.SetValue(wx.DateTimeFromDMY(currStart.day, currStart.month - 1, currStart.year))
+        else:
+            self.dpEndDate.SetValue(self.maxStart)
+
+
+        self.dpEndDate.SetRange(maxStart, maxEnd)
+        if currEnd:
+            self.dpEndDate.SetValue(wx.DateTimeFromDMY(currEnd.day, currEnd.month - 1, currEnd.year))
+        else:
+            self.dpEndDate.SetValue(self.maxEnd)
+
+
 
     def onResetFilter(self, event):
         recordService=self.parent.getRecordService()

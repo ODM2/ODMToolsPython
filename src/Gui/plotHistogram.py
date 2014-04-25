@@ -99,11 +99,12 @@ class plotHist(wx.Panel):
 
 
             #print "oneSeries.dataTable:", oneSeries.dataTable
-            self.hist.append(self.plots[i - 1].hist(
-                    [x[0] for x in oneSeries.dataTable if x[0] <> oneSeries.noDataValue], bins=self.bins, normed=False, facecolor=oneSeries.color,
-                    alpha=0.75, label=oneSeries.siteName + " " + oneSeries.variableName
+            if len(oneSeries.dataTable) >0:
+                self.hist.append(self.plots[i - 1].hist(
+                        [x[0] for x in oneSeries.dataTable if x[0] <> oneSeries.noDataValue], bins=self.bins, normed=False, facecolor=oneSeries.color,
+                        label=oneSeries.siteName + " " + oneSeries.variableName
+                    )
                 )
-            )
             i += 1
 
         left = 0.125  # the left side of the subplots of the figure

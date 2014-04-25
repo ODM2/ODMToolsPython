@@ -128,9 +128,10 @@ class plotProb(wx.Panel):
                 self.plot.set_ylabel("\n".join(textwrap.wrap(oneSeries.axisTitle, 50)))
                 self.plot.set_title("\n".join(textwrap.wrap(oneSeries.plotTitle, 55)))
 
-            self.lines.append(
-                self.plot.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
-                               label=oneSeries.plotTitle))
+            if len(oneSeries.dataTable) >0:
+                self.lines.append(
+                    self.plot.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
+                                   label=oneSeries.plotTitle))
 
         self.setXaxis()
 

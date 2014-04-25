@@ -69,10 +69,22 @@ class SeriesPlotInfo(object):
         self._seriesInfos = {}
         self.editID = None
         self.colorList = ['blue', 'green',  'cyan', 'orange', 'purple',  'yellow', 'magenta', 'teal','red']
+        self.startDate = datetime.datetime(2100, 12, 31)
+        self.endDate= datetime.datetime(1800, 01, 01)
+        self.currentStart=self.startDate
+        self.currentEnd=self.editID
+        self.isSubsetted = False
 
 
 
+    def getDates(self):
+        return self.startDate, self.endDate, self.currentStart, self.currentEnd
 
+    def setCurrentStart(self, start):
+        self.currentStart = start
+
+    def setCurrentEnd(self, end):
+        self.currentEnd= end
 
     def isPlotted(self, sid):
         if int(sid) in self._seriesInfos:
@@ -175,6 +187,16 @@ class SeriesPlotInfo(object):
                 startDate = series.begin_date_time
                 endDate = series.end_date_time
 
+                if endDate > self.endDate:
+                    self.endDate = endDate
+                if startDate < self.startDate:
+                    self.startDate = startDate
+
+                if not self.isSubsetted:
+                    self.currentStart = self.startDate
+                    self.currentEnd = self.endDate
+
+
                 variableName = series.variable_name
                 unitsName = series.variable_units_name
                 siteName = series.site_name
@@ -183,7 +205,8 @@ class SeriesPlotInfo(object):
                 if self.editID == seriesID:
                     data = self.memDB.getEditDataValuesforGraph()
                 else:
-                    data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, startDate, endDate)
+                    #using current variable keeps the series subsetted
+                    data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
                 seriesInfo.seriesID = seriesID
                 seriesInfo.series = series
 
@@ -197,7 +220,10 @@ class SeriesPlotInfo(object):
                 seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
                 seriesInfo.noDataValue = noDataValue
                 seriesInfo.dataTable = data
+                #Tests to see if any values were returned for the given daterange
+                #if data is not None:
                 self.build(seriesInfo)
+
 
             else:
                 seriesInfo = self._seriesInfos[key]
@@ -221,14 +247,27 @@ class SeriesPlotInfo(object):
         seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
         seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
+
+
     def updateDateRange(self, startDate=None, endDate=None):
+        self.currentStart = startDate
+        self.currentEnd=endDate
         for key in self.getSeriesIDs():
             seriesInfo = self._seriesInfos[key]
             if startDate:
                 data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, startDate, endDate)
+                self.isSubsetted=True
+                self.currentStart = startDate
+                self.currentEnd=endDate
             else:
+                #this returns the series to its full daterange
                 data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate, seriesInfo.endDate)
+                self.isSubsetted = False
+                self.currentStart = self.startDate
+                self.currentEnd = self.endDate
+
             seriesInfo.dataTable = data
+            #Tests to see if any values were returned for the given daterange
             self.build(seriesInfo)
 
 

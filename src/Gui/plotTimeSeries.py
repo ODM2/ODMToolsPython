@@ -97,8 +97,7 @@ class plotTimeSeries(wx.Panel):
         self.lassoAction = None
         self.hoverAction = None
 
-        self.maxStart = datetime.datetime(1900, 01, 01, 0, 0, 0)
-        self.maxEnd = datetime.datetime.now()
+
         self.canvas.draw()
         self._init_sizers()
 
@@ -136,30 +135,6 @@ class plotTimeSeries(wx.Panel):
 
 
 
-    def onDateChanged(self, startDate, endDate):
-        self.startDate = startDate
-        self.endDate = endDate
-        self.timeSeries.axis.axes.set_xbound(startDate, endDate)
-        self.canvas.draw()
-
-    def setDateBound(self, start, end):
-        #logger.debug("start: %s end: %s type: %s"%(start, end, type(start)))
-        if start > self.maxStart:
-            self.startDate = self.maxStart = start
-        if end < self.maxEnd:
-            self.endDate = self.maxEnd = end
-
-        #logger.debug("self.maxStart: %s" % (self.maxStart))
-        #logger.debug("self.maxEnd: %s" % (self.maxEnd))
-
-        Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
-
-    def onDateFull(self):
-        #logger.debug("Date: %s, %s" % (self.maxStart, self.maxEnd))
-        # Resets the Date Time field
-        Publisher.sendMessage("resetdate", startDate=self.maxStart, endDate=self.maxEnd)
-        # Modify the plot to reflect the new Date Time
-        Publisher.sendMessage("onDateChanged", startDate=self.maxStart, endDate=self.maxEnd)
 
     def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
@@ -305,17 +280,18 @@ class plotTimeSeries(wx.Panel):
                 self.drawEditPlot(oneSeries)
 
             else:
-                curraxis = self.axislist[oneSeries.axisTitle]
-                self.lines.append(
-                    curraxis.plot_date(
-                        [x[1] for x in oneSeries.dataTable],
-                        [x[0] for x in oneSeries.dataTable],
-                        self.format, color=oneSeries.color,
-                        xdate=True, tz=None, antialiased=True,
-                        label=oneSeries.plotTitle,
-                        alpha = self.alpha,
+                if oneSeries.dataTable is not None:
+                    curraxis = self.axislist[oneSeries.axisTitle]
+                    self.lines.append(
+                        curraxis.plot_date(
+                            [x[1] for x in oneSeries.dataTable],
+                            [x[0] for x in oneSeries.dataTable],
+                            self.format, color=oneSeries.color,
+                            xdate=True, tz=None, antialiased=True,
+                            label=oneSeries.plotTitle,
+                            alpha = self.alpha,
+                        )
                     )
-                )
 
                 #TODO set date value in table?
 
@@ -334,7 +310,7 @@ class plotTimeSeries(wx.Panel):
                 '''
 
 
-            self.setDateBound(oneSeries.startDate, oneSeries.endDate)
+
 
 
         if count > 1:

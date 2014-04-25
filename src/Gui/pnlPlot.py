@@ -94,14 +94,7 @@ class pnlPlot(fnb.FlatNotebook):
         # self.selectedSerieslist.remove(seriesID)
         #tempseries= self._seriesPlotInfo.getSeries(seriesID)
         self._seriesPlotInfo.update(seriesID, False)
-        self.pltTS.Plot(self._seriesPlotInfo)
-        #self.pltTS.removePlot(tempseries)
-        self.onShowLegend(event=None, isVisible=self.legendVisible)
-
-        self.pltSum.Plot(self._seriesPlotInfo)
-        self.pltBox.Plot(self._seriesPlotInfo)
-        self.pltHist.Plot(self._seriesPlotInfo)
-        self.pltProb.Plot(self._seriesPlotInfo)
+        self.redrawPlots()
 
     def onNumBins(self, numBins):
         self.pltHist.changeNumOfBins(numBins)
@@ -119,7 +112,6 @@ class pnlPlot(fnb.FlatNotebook):
     def onDateFull(self):
         self._seriesPlotInfo.updateDateRange()
         self.redrawPlots()
-        #self.pltTS.onDateFull()
 
     def onPlotType(self, event, ptype):
         self.pltTS.onPlotType(ptype)
@@ -166,6 +158,8 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.Plot(self._seriesPlotInfo)
 
         self.onShowLegend(event=None, isVisible=self.legendVisible)
+        maxStart,maxEnd, currStart,currEnd = self._seriesPlotInfo.getDates()
+        Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart= currStart, currEnd=currEnd)
 
 
     #     self.PlotGraph()

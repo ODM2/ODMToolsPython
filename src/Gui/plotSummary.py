@@ -54,7 +54,8 @@ class plotSummary(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.clear()
         for oneSeries in seriesPlotInfo.getSeriesInfo():
-            self.addCol(oneSeries)
+            if len(oneSeries.dataTable) >0:
+                self.addCol(oneSeries)
 
 
     def clear(self):

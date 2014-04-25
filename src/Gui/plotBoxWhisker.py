@@ -80,59 +80,15 @@ class PlotBox(wx.Panel):
 
     def updatePlot(self):
         self.clear()
-        count = self.seriesPlotInfo.count()
-        rows, cols = self.gridSize(count)
-        self.plots = []
+
+        rows, cols = self.gridSize(self.seriesPlotInfo.count())
         i = 1
+        self.plots = []
+
         for oneSeries in self.seriesPlotInfo.getSeriesInfo():
-            self.plots.append(self.figure.add_subplot(repr(rows) + repr(cols) + repr(i)))
-
-            #print "self.plots: ", [dir(x) for x in self.plots]
-
-            wrap, text = self.textSize(count)
-            self.plots[i - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
-            #print dir(self.plots[i - 1])
-
-            self.plots[i - 1].set_ylabel(
-                "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
-            #self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
-            self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
-
-            self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
-
-            med = oneSeries.BoxWhisker.currinterval.medians
-            cl = oneSeries.BoxWhisker.currinterval.confint
-            mean = oneSeries.BoxWhisker.currinterval.means
-            ci = oneSeries.BoxWhisker.currinterval.conflimit
-            bp = self.plots[i - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True,
-                                           bootstrap=5000, conf_intervals=cl)
-
-
-            # Plot Mean and its confidence interval
-            for x in range(len(mean)):
-                self.plots[i - 1].vlines(x + 1, ci[x][0], ci[x][1], color='r', linestyle="solid")
-            self.plots[i - 1].scatter([range(1, len(mean) + 1)], mean, marker='o', c='r', s=10)
-
-
-            # Plot Median
-            self.plots[i - 1].scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
-
-            # Set Colors of the Box Whisker plot
-            plt.setp(bp['whiskers'], color='k', linestyle='-')
-            plt.setp(bp['medians'], color='k', linestyle='-')
-            plt.setp(bp['boxes'], color='GREY', linestyle='-')
-            plt.setp(bp['caps'], color='k')
-            plt.setp(bp['fliers'], markersize=3.5, color=oneSeries.color)
-
-            # self.plot.set_ybound(min(data),max(data))
-            self.plots[i - 1].set_autoscale_on(True)
-            self.plots[i - 1].set_xticklabels(oneSeries.BoxWhisker.currinterval.xlabels)
-
-            #majorLocator = MultipleLocator()
-            #autoLocator = AutoLocator()
-            #fixedLocator = FixedLocator()
-            #self.plots[i-1].xaxis.set_major_locator(fixedLocator)
-            i += 1
+            if len(oneSeries.dataTable) >0:
+                self._createPlot(oneSeries,rows, cols, i)
+                i += 1
 
         plt.setp([x.get_xticklabels() for x in self.plots[0:]], rotation=35)
         #print "xlabels: ", [dir(x.get_xticklabels()) for x in self.plots[0:]]
@@ -149,22 +105,57 @@ class PlotBox(wx.Panel):
         if len(self.plots)>0:
             self.figure.tight_layout()
 
-        #for x in self.plots[0:]:
-        #    print "xticklabels: ", type(x.get_xticklabels), dir(x.get_xticklabels)
 
-        #majorLocator = MultipleLocator(20)
-        #majorFormatter = FormatStrFormatter('%d')
-        #minorLocator   = MultipleLocator(5)
-        #self.plot.xaxis.set_major_locator(majorLocator)
-        #self.plots[i-1].xaxis.set_major_formatter(majorFormatter)
-        #self.plots[i-1].xaxis.set_minor_locator(minorLocator)
-
-        #plt.xticks(rotation=30, size='small')
-        #plt.margins(0.2)
-        # Tweak spacing to prevent clipping of tick-labels
-        #plt.subplots_adjust(bottom=0.55)
 
         self.canvas.draw()
+    def _createPlot(self, oneSeries, rows, cols, index):
+
+        count = self.seriesPlotInfo.count()
+
+        self.plots.append(self.figure.add_subplot(repr(rows) + repr(cols) + repr(index)))
+
+        #print "self.plots: ", [dir(x) for x in self.plots]
+
+        wrap, text = self.textSize(count)
+        self.plots[index - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
+        #print dir(self.plots[i - 1])
+
+        self.plots[index - 1].set_ylabel(
+            "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
+        #self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
+        self.plots[index - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
+
+        self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+
+        med = oneSeries.BoxWhisker.currinterval.medians
+        cl = oneSeries.BoxWhisker.currinterval.confint
+        mean = oneSeries.BoxWhisker.currinterval.means
+        ci = oneSeries.BoxWhisker.currinterval.conflimit
+        bp = self.plots[index - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True,
+                                       bootstrap=5000, conf_intervals=cl)
+
+
+        # Plot Mean and its confidence interval
+        for x in range(len(mean)):
+            self.plots[index - 1].vlines(x + 1, ci[x][0], ci[x][1], color='r', linestyle="solid")
+        self.plots[index - 1].scatter([range(1, len(mean) + 1)], mean, marker='o', c='r', s=10)
+
+
+        # Plot Median
+        self.plots[index - 1].scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
+
+        # Set Colors of the Box Whisker plot
+        plt.setp(bp['whiskers'], color='k', linestyle='-')
+        plt.setp(bp['medians'], color='k', linestyle='-')
+        plt.setp(bp['boxes'], color='GREY', linestyle='-')
+        plt.setp(bp['caps'], color='k')
+        plt.setp(bp['fliers'], markersize=3.5, color=oneSeries.color)
+
+        # self.plot.set_ybound(min(data),max(data))
+        self.plots[index - 1].set_autoscale_on(True)
+        self.plots[index - 1].set_xticklabels(oneSeries.BoxWhisker.currinterval.xlabels)
+
+
 
 
     def setColor(self, color):
