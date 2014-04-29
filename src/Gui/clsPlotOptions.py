@@ -216,7 +216,7 @@ class SeriesPlotInfo(object):
                 seriesInfo.siteName = siteName
                 seriesInfo.variableName = variableName
                 seriesInfo.variableUnits = unitsName
-                seriesInfo.plotTitle = "Site: " + siteName + "VarName: " + variableName + "QCL: " + series.quality_control_level_code
+                seriesInfo.plotTitle = "Site: " + siteName + "\nVarName: " + variableName + "\nQCL: " + series.quality_control_level_code
                 seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
                 seriesInfo.noDataValue = noDataValue
                 seriesInfo.dataTable = data

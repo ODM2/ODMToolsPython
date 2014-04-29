@@ -5,9 +5,12 @@
 # http://www.python-forum.org/pythonforum/viewtopic.php?f=2&t=10065#
 
 import keyword
+import logging
 
 import wx
 import wx.stc as stc
+
+from common.logger import LoggerTool
 
 
 if wx.Platform == '__WXMSW__':
@@ -32,6 +35,9 @@ else:
         'size2': 10,
     }
 
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 class highlightSTC(stc.StyledTextCtrl):
     """
@@ -42,8 +48,8 @@ class highlightSTC(stc.StyledTextCtrl):
         stc.StyledTextCtrl.__init__(self, parent, wx.ID_ANY)
         self.parent = parent
         self.nonPrintKeys = (
-        27, 306, 307, 308, 310, 311, 312, 313, 314, 315, 316, 317, 322, 340, 341, 342, 343, 344, 345, 346, 347, 348,
-        349, 365, 366, 367, 393, 395)
+            27, 306, 307, 308, 310, 311, 312, 313, 314, 315, 316, 317, 322, 340, 341, 342, 343, 344, 345, 346, 347, 348,
+            349, 365, 366, 367, 393, 395)
 
         # use Python code highlighting
         self.SetLexer(stc.STC_LEX_PYTHON)
@@ -53,9 +59,11 @@ class highlightSTC(stc.StyledTextCtrl):
         self.SetProperty("fold", "1")
         self.SetMargins(0, 0)
         self.SetViewWhiteSpace(False)
-        self.SetEdgeMode(stc.STC_EDGE_BACKGROUND)
-        self.SetEdgeColumn(78)
-        self.SetCaretForeground("blue")
+
+        #self.SetEdgeMode(stc.STC_EDGE_BACKGROUND)
+        #self.SetEdgeColumn(78)
+
+        self.SetCaretForeground("BLUE")
 
         # setup a margin to hold the fold markers
         self.SetMarginType(2, stc.STC_MARGIN_SYMBOL)
@@ -65,7 +73,7 @@ class highlightSTC(stc.StyledTextCtrl):
 
         # line numbers in the margin
         self.SetMarginType(1, stc.STC_MARGIN_NUMBER)
-        self.SetMarginWidth(1, 25)
+        self.SetMarginWidth(1, 24)
 
         # fold markers use square headers
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPEN,
@@ -109,7 +117,6 @@ class highlightSTC(stc.StyledTextCtrl):
                           "fore:#FFFFFF,back:#0000FF,bold")
         self.StyleSetSpec(stc.STC_STYLE_BRACEBAD,
                           "fore:#000000,back:#FF0000,bold")
-
         # Make the Python styles
         # default
         self.StyleSetSpec(stc.STC_P_DEFAULT,
@@ -153,8 +160,6 @@ class highlightSTC(stc.StyledTextCtrl):
         # end of line where string is not closed
         self.StyleSetSpec(stc.STC_P_STRINGEOL,
                           "fore:#000000,face:%(mono)s,back:#E0C0E0,eol,size:%(size)d" % faces)
-
-
         # register some images for use in the AutoComplete box
         self.RegisterImage(1,
                            wx.ArtProvider.GetBitmap(wx.ART_TIP, size=(16, 16)))
@@ -193,6 +198,8 @@ class highlightSTC(stc.StyledTextCtrl):
                 self.parent.newKeyPressed()
 
     def onUpdateUI(self, e):
+        self.Colourise(0, -1)
+
         """update the user interface"""
         # check for matching braces
         braceAtCaret = -1

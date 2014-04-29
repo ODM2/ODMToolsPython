@@ -142,6 +142,8 @@ class frmODMToolsMain(wx.Frame):
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,
                                          size=wx.Size(200, 200))
 
+        #logger.debug("Script: %s" % dir(self.txtPythonScript))
+
         ############ Docking ###################
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)
@@ -279,7 +281,6 @@ class frmODMToolsMain(wx.Frame):
 
             #clear table
             self.dataTable.clear()
-
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()

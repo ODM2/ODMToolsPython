@@ -1,7 +1,14 @@
+import logging
+from common.logger import LoggerTool
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 class RecordService():
     # Script header (imports etc.) will be set up in Main when record is clicked.
     def __init__(self, script, edit_service, connection_string, record=False):
         self._script = script
+        logger.debug(dir(self._script))
         self._edit_service = edit_service
         self._connection_string = connection_string
         self._record = record
@@ -171,3 +178,4 @@ class RecordService():
         self._script("series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')
         self._script("## To run commands from the python console uncomment and run the following command ##\n", 'black')
         self._script("#edit_service = Tools\n", 'black')
+

@@ -431,7 +431,7 @@ class mnuRibbon(RB.RibbonBar):
         print ""
 
     def onEditSeries(self, event=None):
-        logger.debug(dir(event))
+        #logger.debug(dir(event))
 
         if event.IsChecked():
             Publisher.sendMessage(("selectEdit"), event=event)

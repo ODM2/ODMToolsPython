@@ -152,7 +152,6 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.legend_ = None
 
         plt.gcf().autofmt_xdate()
-        #plt.gci()
         self.canvas.draw()
 
 
