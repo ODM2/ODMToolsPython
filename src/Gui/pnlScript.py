@@ -14,6 +14,7 @@ ID_EXECUTE_BUTTON = 300
 ID_EXECUTE_SELECTION_BUTTON = 301
 ID_EXECUTE_LINE_BUTTON = 302
 
+wildcard = "Python source (*.py)|*.py| " #All files (*.*)|*.*"
 
 class pnlScript(wx.Frame):
     def __init__(self, parent, id=wx.ID_ANY, name="", pos=(0, 0), size=(200, 200)):
@@ -79,7 +80,7 @@ class pnlScript(wx.Frame):
         Publisher.sendMessage(("script.title"), title="Editing a new file")
 
     def OnOpen(self, e):
-        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.*", wx.OPEN)
+        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.OPEN | wx.CHANGE_DIR | wx.MULTIPLE )
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
@@ -107,7 +108,7 @@ class pnlScript(wx.Frame):
 
 
     def OnSaveAs(self, e):
-        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.*", wx.SAVE | wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.SAVE | wx.OVERWRITE_PROMPT)
         if dlg.ShowModal() == wx.ID_OK:
             saved_text = self.control.GetText()
 

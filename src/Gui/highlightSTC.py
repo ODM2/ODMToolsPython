@@ -71,6 +71,9 @@ class highlightSTC(stc.StyledTextCtrl):
         self.SetMarginSensitive(2, True)
         self.SetMarginWidth(2, 12)
 
+        # Indentation is now 4 spaces instead of 8
+        self.SetIndent(4)
+
         # line numbers in the margin
         self.SetMarginType(1, stc.STC_MARGIN_NUMBER)
         self.SetMarginWidth(1, 24)

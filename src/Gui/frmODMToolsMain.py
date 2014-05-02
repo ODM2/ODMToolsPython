@@ -153,20 +153,20 @@ class frmODMToolsMain(wx.Frame):
 
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
                           Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
-                          Position(1).MinimizeButton(True))
+                          Position(1).MinimizeButton(True).MaximizeButton(True))
 
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
                           .Caption('Series Selector').MinSize(wx.Size(50, 200)).Movable().Floatable().
-                          Position(0).MinimizeButton(True).CloseButton(True))
+                          Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True))
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Movable().Floatable().Right()
-                          .MinimizeButton(True).FloatingSize(size=(600, 800)).CloseButton(
+                          .MinimizeButton(True).MaximizeButton(True).FloatingSize(size=(600, 800)).CloseButton(
             True).Float().FloatingPosition(pos=(self.Position)).Show(
             show=False).Hide())  #, target=self._mgr.GetPane("Selector"))
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(600, 800)).MinimizeButton(
-            True).Movable().Floatable().CloseButton(True).Float().Show(
+            True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float().Show(
             show=False).Hide())  #, target=self._mgr.GetPane("Selector"))
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.

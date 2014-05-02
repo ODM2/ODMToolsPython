@@ -183,7 +183,13 @@ class plotTimeSeries(wx.Panel):
         lines = []
         for key, ax in self.axislist.items():
             ax.clear()
+        self.axislist = {}
             # self.stopEdit()
+        print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
+        plt.cla()
+        self.timeSeries.plot([], [])
+
+
 
     def stopEdit(self):
         self.clear()
@@ -329,6 +335,8 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.legend_ = None
 
         self.timeSeries.set_xlabel("Date")
+
+        self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.startDate, self.seriesPlotInfo.endDate]))
 
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)

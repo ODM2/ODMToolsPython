@@ -72,7 +72,7 @@ class SeriesPlotInfo(object):
         self.startDate = datetime.datetime(2100, 12, 31)
         self.endDate= datetime.datetime(1800, 01, 01)
         self.currentStart=self.startDate
-        self.currentEnd=self.editID
+        self.currentEnd=self.endDate
         self.isSubsetted = False
 
 
@@ -85,6 +85,23 @@ class SeriesPlotInfo(object):
 
     def setCurrentEnd(self, end):
         self.currentEnd= end
+
+    def resetDates(self):
+        self.startDate = datetime.datetime(2100, 12, 31)
+        self.endDate = datetime.datetime(1800, 01, 01)
+        #self.currentStart = self.startDate
+        #self.currentEnd = self.endDate
+        self.isSubsetted = False
+        for key in self.getSeriesIDs():
+            start = self._seriesInfos[key].startDate
+            end = self._seriesInfos[key].endDate
+
+            if start < self.startDate:
+                self.startDate = start
+
+            if end > self.endDate:
+                self.endDate = end
+
 
     def isPlotted(self, sid):
         if int(sid) in self._seriesInfos:
@@ -143,6 +160,7 @@ class SeriesPlotInfo(object):
     def update(self, key, isselected):
         if not isselected:
             del self._seriesInfos[key]
+            self.resetDates()
         else:
             ## add dictionary entry with no data
             self._seriesInfos[key] = None
