@@ -185,7 +185,7 @@ class plotTimeSeries(wx.Panel):
             ax.clear()
         self.axislist = {}
             # self.stopEdit()
-        print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
+        #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
         plt.cla()
         self.timeSeries.plot([], [])
 
