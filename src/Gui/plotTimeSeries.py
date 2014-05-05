@@ -336,7 +336,7 @@ class plotTimeSeries(wx.Panel):
 
         self.timeSeries.set_xlabel("Date")
 
-        self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.startDate, self.seriesPlotInfo.endDate]))
+        self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)

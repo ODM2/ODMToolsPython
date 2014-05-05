@@ -19,7 +19,7 @@ This material is based on work supported by the National Science Foundation Gran
 
 Running From Source on Windows
 -------------------
-Install the following software/libraries. Unfortunately this is currently a manual process. 
+Install the following software/libraries. 
 
 +	[Python-2.7 32 bit](http://www.python.org/download/releases/2.7.3/)
 +	[Wxpython-2.9.4](http://www.wxpython.org/download.php)
@@ -30,11 +30,10 @@ Install the following software/libraries. Unfortunately this is currently a manu
 +	[Numpy-1.6.2](http://www.scipy.org/Download)
 +	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/)
 
-Once you have all the dependencies installed, run the main application by doing 
+Once you have all the dependencies installed, run the main application:
     
     python src/Gui/frmODMToolsMain.py
 
-Please let us know if you have any problems!
 
 Copying and License
 ----------------------------
