@@ -32,6 +32,7 @@ class pnlSummary(wx.Panel):
               size=wx.Size(423, 319), style=wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT)
 
 
+
         self._init_sizers()
 
     def __init__(self, parent, id, size, style, name, sm, pos= (0,0)):

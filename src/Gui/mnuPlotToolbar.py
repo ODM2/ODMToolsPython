@@ -4,6 +4,8 @@ import wx
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 
 import gui_utils as g_util
+from matplotlib.widgets import Lasso
+from matplotlib import path
 
 
 class MyCustomToolbar(NavigationToolbar): 
@@ -11,6 +13,7 @@ class MyCustomToolbar(NavigationToolbar):
     ON_CUSTOM_LEFT  = wx.NewId()
     ON_CUSTOM_RIGHT = wx.NewId()
     ON_CUSTOM_SEL   = wx.NewId()
+    ON_LASSO_SELECT = wx.NewId()
 
     # rather than copy and edit the whole (rather large) init function, we run
     # the super-classes init function as usual, then go back and delete the
@@ -22,29 +25,46 @@ class MyCustomToolbar(NavigationToolbar):
         if (not multPlots):
             CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 7
             self.DeleteToolByPos(CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION)
+        self._button_pressed
             
 
         self.AddSimpleTool(self.ON_CUSTOM_LEFT, 
                            wx.Bitmap(os.path.join(g_util.resource_path("images"), "scroll_left.png")),
-                           'Pan to the left', 'Pan graph to the left')
+                           ' Pan to the left', 'Pan graph to the left')
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
         self.AddSimpleTool(self.ON_CUSTOM_RIGHT, 
                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "scroll_right.png")),
                            'Pan to the right', 'Pan graph to the right')
         wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
-        
+        self.selectbutton= self.AddSimpleTool(self.ON_LASSO_SELECT,
+                           wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "select.png")),
+                           'Lasso Select', 'Select datavalues from the graph', isToggle=True)
 
-        self.SetToolBitmapSize(wx.Size(16, 16))        
+        wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self._onLassoSelect)
+
+        self.lassoAction = None
+        self.selectbutton.Enable(False)
+        self.SetToolBitmapSize(wx.Size(16, 16))
+
         self.Realize()
-    def editSeries(self):
+
+    def editSeries(self, xys, edit):
         #enable select button
-        # self.selectbutton.Enable(True)
+        self.xys = xys
+        self.editCurve=edit
+        self.selectbutton.Enable(True)
         self.Realize()
 
     def stopEdit(self):
-       #disable select button
-        # self.selectbutton.Enable(False)
+
+        self.canvas.mpl_disconnect(self.lassoAction)
+        self.xys = None
+        self.editCurve=None
+        self.lassoAction = None
+            #disable select button
+        self.selectbutton.Enable(False)
         self.Realize()
+
 
     # in theory this should never get called, because we delete the toolbar
     #  button that calls it. but in case it does get called (e.g. if there
@@ -77,6 +97,40 @@ class MyCustomToolbar(NavigationToolbar):
         print "select points button"
         # self.canvas.mpl_connect('button_press_event', onclick)
         pass
+
+    def _onLassoSelect(self, event):
+        #print dir(event)
+        if event.Checked():
+            self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
+        else:
+            self.canvas.mpl_disconnect(self.lassoAction)
+            self.lassoAction = None
+
+
+    def _onPress(self, event):
+       # if self.canvas.widgetlock.locked(): return
+        if event.inaxes is None: return
+        self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
+        # acquire a lock on the widget drawing
+        #self.canvas.widgetlock(self.lasso)
+
+
+    def callback(self, verts):
+        p = path.Path(verts)
+        ind = p.contains_points(self.xys)
+
+        seldatetimes= []
+        for i in range(len(ind)):
+            if ind[i]:
+                seldatetimes.append(self.editCurve.dataTable[i][1])
+       # print seldatetimes
+
+        self._parent.changeSelection(sellist=[], datetime_list= seldatetimes)
+
+        self.canvas.draw_idle()
+        #self.canvas.widgetlock.release(self.lasso)
+        del self.lasso
+
 
 
 

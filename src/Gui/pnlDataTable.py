@@ -112,7 +112,8 @@ class pnlDataTable(wx.Panel):
         else:
             #logger.debug(datetime_list)
             objs = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
-            self.myOlv.SelectObject(objs[0], deselectOthers=True, ensureVisible=True)
+            if len(objs)>0:
+                self.myOlv.SelectObject(objs[0], deselectOthers=True, ensureVisible=True)
             #logger.debug(objs)
             self.myOlv.SelectObjects(objs, deselectOthers=True)
             
