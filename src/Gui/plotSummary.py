@@ -39,16 +39,15 @@ class plotSummary(wx.Panel):
         self.grdSummary.Bind( wx.EVT_LIST_COL_CLICK, self.onListColEndDrag )
         self.grdSummary.Bind( wx.EVT_LIST_COL_DRAGGING, self.onListColEndDrag )
         self.grdSummary.Bind( wx.EVT_LIST_COL_END_DRAG, self.onListColEndDrag )
+        self.grdSummary.Bind(wx.grid.EVT_GRID_COL_SIZE, self.onListColEndDrag)
 
         self.initPlot()
         self._init_sizers()
 
     def onListColEndDrag(self, event):
-        #print "column drag event: ", dir(event)
-        col= 1
-        label = self.grdSummary.GetColLabelValue(col).strip('\n')
-        self.grdSummary.SetColLabelValue(col, wordwrap.wordwrap( label,
-                          self.grdSummary.GetColSize(col),wx.ClientDC(self)))
+        col= event.GetRowOrCol()
+        label=' '.join(self.grdSummary.GetColLabelValue(col).split())
+        self.setColLabel(col, label)
         event.Skip()
 
     def Plot(self, seriesPlotInfo):
@@ -63,6 +62,10 @@ class plotSummary(wx.Panel):
             # for col in range(self.grdSummary.GetNumberCols())
             self.grdSummary.DeleteCols(pos=0, numCols=self.grdSummary.GetNumberCols(), updateLabels=True)
 
+
+    def setColLabel(self, col, label):
+        self.grdSummary.SetColLabelValue(col, wordwrap.wordwrap(label,
+                          self.grdSummary.GetColSize(col), wx.ClientDC(self), breakLongWords=False))
 
 
     def initPlot(self):
@@ -92,8 +95,8 @@ class plotSummary(wx.Panel):
 
         self.grdSummary.AppendCols(numCols=1, updateLabels=True)
         col = self.grdSummary.GetNumberCols() - 1
-        self.grdSummary.SetColLabelValue(col, wordwrap.wordwrap( series.siteName + "-" + series.variableName,
-                          self.grdSummary.GetColSize(col),wx.ClientDC(self)))
+        self.setColLabel(col, series.siteName + "-" + series.variableName)
+
 
 
 

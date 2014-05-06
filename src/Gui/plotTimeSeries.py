@@ -208,6 +208,7 @@ class plotTimeSeries(wx.Panel):
         # self.RefreshPlot()
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.updatePlot()
+        self.toolbar.stopEdit()
         self.editseriesID = -1
 
 
@@ -249,8 +250,8 @@ class plotTimeSeries(wx.Panel):
                                           s=35, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none',
                                           zorder=11, marker='s', alpha=1)# >, <, v, ^,s
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
-
-        self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
+        self.toolbar.editSeries(self.xys, self.editCurve)
+        self.lassoAction =None #self.canvas.mpl_connect('button_press_event', self._onPress)
         self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
 
     def _setColor(self, color):
