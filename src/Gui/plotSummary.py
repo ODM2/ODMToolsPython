@@ -95,7 +95,7 @@ class plotSummary(wx.Panel):
 
         self.grdSummary.AppendCols(numCols=1, updateLabels=True)
         col = self.grdSummary.GetNumberCols() - 1
-        self.setColLabel(col, series.siteName + "-" + series.variableName)
+        self.setColLabel(col, series.siteName + "- " + series.variableName)
 
 
 

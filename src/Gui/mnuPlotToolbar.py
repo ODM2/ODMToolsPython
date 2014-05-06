@@ -30,7 +30,7 @@ class MyCustomToolbar(NavigationToolbar):
 
         self.AddSimpleTool(self.ON_CUSTOM_LEFT, 
                            wx.Bitmap(os.path.join(g_util.resource_path("images"), "scroll_left.png")),
-                           'Pan to the left', 'Pan graph to the left')
+                           ' Pan to the left', 'Pan graph to the left')
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
         self.AddSimpleTool(self.ON_CUSTOM_RIGHT, 
                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "scroll_right.png")),
@@ -99,7 +99,12 @@ class MyCustomToolbar(NavigationToolbar):
         pass
 
     def _onLassoSelect(self, event):
-        self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
+        #print dir(event)
+        if event.Checked():
+            self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
+        else:
+            self.canvas.mpl_disconnect(self.lassoAction)
+            self.lassoAction = None
 
 
     def _onPress(self, event):
@@ -118,7 +123,7 @@ class MyCustomToolbar(NavigationToolbar):
         for i in range(len(ind)):
             if ind[i]:
                 seldatetimes.append(self.editCurve.dataTable[i][1])
-        print seldatetimes
+       # print seldatetimes
 
         self._parent.changeSelection(sellist=[], datetime_list= seldatetimes)
 
