@@ -138,6 +138,7 @@ class frmODMToolsMain(wx.Frame):
         # Console tools object for usability
         self.console_tools = ConsoleTools(self._ribbon)
         self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,
                                          size=wx.Size(200, 200))

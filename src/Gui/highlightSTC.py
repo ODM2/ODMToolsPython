@@ -77,6 +77,7 @@ class highlightSTC(stc.StyledTextCtrl):
         # line numbers in the margin
         self.SetMarginType(1, stc.STC_MARGIN_NUMBER)
         self.SetMarginWidth(1, 24)
+        self.SetWrapMode(True)
 
         # fold markers use square headers
         self.MarkerDefine(stc.STC_MARKNUM_FOLDEROPEN,

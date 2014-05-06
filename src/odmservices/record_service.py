@@ -8,7 +8,7 @@ class RecordService():
     # Script header (imports etc.) will be set up in Main when record is clicked.
     def __init__(self, script, edit_service, connection_string, record=False):
         self._script = script
-        logger.debug(dir(self._script))
+        #logger.debug(dir(self._script))
         self._edit_service = edit_service
         self._connection_string = connection_string
         self._record = record
@@ -51,7 +51,8 @@ class RecordService():
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
             #print [x[2] for x in self._edit_service.get_filtered_points()]
-            self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
+            #self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
+            self._script("edit_service.select_points({id}, {list})\n".format(id=id_list, list=[x[2] for x in self._edit_service.get_filtered_points()]))
             #print self._edit_service.get_filtered_points()
 
 
