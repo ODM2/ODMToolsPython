@@ -34,11 +34,6 @@ class plotSummary(wx.Panel):
                                        size=wx.Size(421, 439), style=wx.HSCROLL | wx.VSCROLL)
         self.grdSummary.SetLabel(u'')
         self.grdSummary.EnableEditing(False)
-        self.grdSummary.Bind( wx.EVT_LIST_COL_END_DRAG, self.onListColEndDrag )
-        self.grdSummary.Bind( wx.EVT_LIST_COL_BEGIN_DRAG, self.onListColEndDrag )
-        self.grdSummary.Bind( wx.EVT_LIST_COL_CLICK, self.onListColEndDrag )
-        self.grdSummary.Bind( wx.EVT_LIST_COL_DRAGGING, self.onListColEndDrag )
-        self.grdSummary.Bind( wx.EVT_LIST_COL_END_DRAG, self.onListColEndDrag )
         self.grdSummary.Bind(wx.grid.EVT_GRID_COL_SIZE, self.onListColEndDrag)
 
         self.initPlot()
@@ -69,7 +64,7 @@ class plotSummary(wx.Panel):
 
 
     def initPlot(self):
-        self.grdSummary.AutoSize()
+        #self.grdSummary.AutoSize()
         self.grdSummary.CreateGrid(15, 0)
 
         self.grdSummary.SetRowLabelSize(160)
@@ -88,8 +83,10 @@ class plotSummary(wx.Panel):
         self.grdSummary.SetRowLabelValue(12, "(Median) 50%")
         self.grdSummary.SetRowLabelValue(13, "75%")
         self.grdSummary.SetRowLabelValue(14, "90%")
+        self.grdSummary.CanDragRowSize()
+        self.grdSummary.CanDragColSize()
+        self.grdSummary.ColLabelSize=160
 
-        self.grdSummary.SetColLabelSize(160)
 
     def addCol(self, series):
 
@@ -98,13 +95,9 @@ class plotSummary(wx.Panel):
         self.setColLabel(col, series.siteName + "- " + series.variableName)
 
 
+        #self.grdSummary.AutoSizeColLabelSize(col)
 
-
-        self.grdSummary.AutoSizeColLabelSize(col)
-
-       # self.grdSummary.LabelBackgroundColour(series.color)
-
-
+       #
 
         stats = series.Statistics
         count = stats.NumberofObservations

@@ -121,6 +121,9 @@ class RecordService():
     def get_filter_list(self):
         return self._edit_service.get_filter_list()
 
+    def get_filtered_dates(self):
+        return self._edit_service.get_filtered_dates()
+
     def get_selection_groups(self):
         return self._edit_service.get_selection_groups()
 

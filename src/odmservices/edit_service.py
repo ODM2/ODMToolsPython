@@ -215,6 +215,10 @@ class EditService():
 
         return tmp
 
+    def get_filtered_dates(self):
+
+        return [x[2] for x in self.get_filtered_points()]
+
     def get_filter_list(self):
         #true or false list the length of the entire series. true indicate the point is selected
         return self._filter_list

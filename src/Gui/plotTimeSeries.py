@@ -102,9 +102,7 @@ class plotTimeSeries(wx.Panel):
         self._init_sizers()
 
     def changePlotSelection(self, sellist=None, datetime_list=None):
-
         # k black,    # r red
-
         # needs to have graph first
         if self.editPoint:
             if len(sellist)>0:
@@ -268,6 +266,10 @@ class plotTimeSeries(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
         self.updatePlot()
+        #clears all of the previous zooming and sets the current view as
+        # the new home(first view)
+        self.toolbar._views.clear()
+        self.toolbar.push_current()
 
 
 

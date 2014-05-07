@@ -25,26 +25,32 @@ class MyCustomToolbar(NavigationToolbar):
         if (not multPlots):
             CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 7
             self.DeleteToolByPos(CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION)
-        self._button_pressed
+
+
+
             
 
-        self.AddSimpleTool(self.ON_CUSTOM_LEFT, 
+        self.AddSimpleTool(self.ON_CUSTOM_LEFT,
                            wx.Bitmap(os.path.join(g_util.resource_path("images"), "scroll_left.png")),
                            ' Pan to the left', 'Pan graph to the left')
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
-        self.AddSimpleTool(self.ON_CUSTOM_RIGHT, 
+        self.AddSimpleTool(self.ON_CUSTOM_RIGHT,
                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "scroll_right.png")),
                            'Pan to the right', 'Pan graph to the right')
         wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
-        self.selectbutton= self.AddSimpleTool(self.ON_LASSO_SELECT,
+
+        if allowselect:
+            self.selectbutton= self.AddSimpleTool(self.ON_LASSO_SELECT,
                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "select.png")),
                            'Lasso Select', 'Select datavalues from the graph', isToggle=True)
 
-        wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self._onLassoSelect)
+            wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self._onLassoSelect)
+            self.lassoAction = None
+            self.selectbutton.Enable(False)
 
-        self.lassoAction = None
-        self.selectbutton.Enable(False)
+
         self.SetToolBitmapSize(wx.Size(16, 16))
+
 
         self.Realize()
 
@@ -99,8 +105,15 @@ class MyCustomToolbar(NavigationToolbar):
         pass
 
     def _onLassoSelect(self, event):
-        #print dir(event)
+        print dir(event)
+        if self._ids_zoom != []:
+            for zoom_id in self._ids_zoom:
+                self.canvas
+                self.canvas.mpl_disconnect(zoom_id)
+        self.release(event)
+
         if event.Checked():
+            self.mode = 'lasso'
             self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
         else:
             self.canvas.mpl_disconnect(self.lassoAction)
@@ -108,7 +121,10 @@ class MyCustomToolbar(NavigationToolbar):
 
 
     def _onPress(self, event):
-       # if self.canvas.widgetlock.locked(): return
+
+        # if self.canvas.widgetlock.locked(): return
+        print event.button
+
         if event.inaxes is None: return
         self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
         # acquire a lock on the widget drawing

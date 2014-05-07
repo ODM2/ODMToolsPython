@@ -6,7 +6,11 @@ from wx.lib.pubsub import pub as Publisher
 
 from odmservices import ServiceManager
 from odmdata import Qualifier
+from common.logger import LoggerTool
+import logging
 
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class ConsoleTools(object):
     def __init__(self, ribbon, record_service=None):
@@ -187,5 +191,7 @@ class ConsoleTools(object):
     # UI methods
     ###############
     def refresh_plot(self):
-        Publisher.sendMessage(("changePlotSelection"), sellist=self._record_service.get_filter_list())
-        Publisher.sendMessage(("updateValues"), event=None)
+        Publisher.sendMessage("updateValues", event=None)
+        logger.debug( "get filtered dates: %s" % self._record_service.get_filtered_dates())
+        Publisher.sendMessage("changePlotSelection", sellist = [], datetime_list=self._record_service.get_filtered_dates())
+        Publisher.sendMessage("changeTableSelection", sellist= [], datetime_list=self._record_service.get_filtered_dates())
