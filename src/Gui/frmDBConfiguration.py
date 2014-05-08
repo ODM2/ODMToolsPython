@@ -1,9 +1,14 @@
 #Boa:Frame:frmDBConfig
+
 import logging
 
 from sqlalchemy.exc import DBAPIError
 import wx
-
+import os
+import sys
+this_file = os.path.realpath(__file__)
+directory = os.path.dirname(os.path.dirname(this_file))
+sys.path.append(directory)
 from common.logger import LoggerTool
 
 

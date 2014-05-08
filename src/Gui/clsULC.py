@@ -7,6 +7,7 @@ from common.logger import LoggerTool
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
+
 class clsULC(ULC.UltimateListCtrl):
     def __init__(self, *args, **kwargs):
         self.modelObjects = []
@@ -79,8 +80,7 @@ class clsULC(ULC.UltimateListCtrl):
             #if item isSelected is true check the box when drawing the row
             if series[-1] == 1:
                 self._mainWin.CheckItem(self.GetItem(ind, 0), True, False)
-        #self.Select(0, True)
-
+                #self.Select(0, True)
 
 
     def getSelection(self):
@@ -140,13 +140,11 @@ class clsULC(ULC.UltimateListCtrl):
             return False
 
 
-
     # check visibly on SeriesSelector Gui
     def checkItem(self, index, isChecked=True, sendEvent=False):
         self.subList[index][-1] = 1
         # TODO clsUCL object has no attribute 'getItem'
         self._mainWin.CheckItem(self.GetItem(index, 0), isChecked, sendEvent)
-
 
 
     def getColumnText(self, index, colid):
@@ -245,6 +243,7 @@ class clsULC(ULC.UltimateListCtrl):
         else:
             return None
 
+
 class TextSearch(object):
     def __init__(self, objectListView, columns=(), text=""):
 
@@ -267,9 +266,9 @@ class TextSearch(object):
         def _containsText(modelObject):
 
             for col in cols:
-                logging.debug("text to find" , textToFind)
-                if textToFind == self.objectListView.getStringValue(modelObject=modelObject,
-                                                                    col=col).lower():  #col.GetStringValue(modelObject).lower():
+                logging.debug("text to find", textToFind)
+                if textToFind == self.objectListView.getStringValue(
+                        modelObject=modelObject, col=col).lower():  #col.GetStringValue(modelObject).lower():
                     return True
             return False
 
@@ -282,7 +281,6 @@ class TextSearch(object):
 class Chain(object):
     def __init__(self, *filters):
         self.filters = filters
-
 
     def __call__(self, modelObjects):
         for filter in self.filters:

@@ -329,8 +329,9 @@ class pnlSeriesSelector(wx.Panel):
         popup_menu = wx.Menu()
         self.Bind(wx.EVT_MENU, self.onRightPlot, popup_menu.Append(popup_plot_series, 'Plot'))
         self.Bind(wx.EVT_MENU, self.onRightEdit, popup_menu.Append(popup_edit_series, 'Edit'))
-        self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
-        self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
+        # TODO @jmeline will refresh and clear selected as an enhancement
+        #self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
+        #self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
 
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))

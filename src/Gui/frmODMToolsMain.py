@@ -54,6 +54,24 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
+        self._init_database()
+        self.createService()
+        self._init_ctrls(parent)
+        self.Refresh()
+
+    #############Entire Form Sizers##########
+    def _init_sizers(self):
+        # generated method, don't edit
+        self.s = wx.BoxSizer(wx.VERTICAL)
+        self._init_s_Items(self.s)
+        self.SetSizer(self.s)
+
+    def _init_s_Items(self, parent):
+        # generated method, don't edit
+        parent.AddWindow(self._ribbon, 0, wx.EXPAND)
+        parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
+
+    def _init_database(self):
         self.service_manager = ServiceManager()
         self.record_service = None
         conn_dict = self.service_manager.get_current_connection()
@@ -68,25 +86,6 @@ class frmODMToolsMain(wx.Frame):
                           'Database Version Incompatible', wx.OK)
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
-
-        self.createService()
-        self._init_ctrls(parent)
-
-        self.Refresh()
-
-
-    #############Entire Form Sizers##########
-    def _init_sizers(self):
-        # generated method, don't edit
-        self.s = wx.BoxSizer(wx.VERTICAL)
-        self._init_s_Items(self.s)
-        self.SetSizer(self.s)
-
-    def _init_s_Items(self, parent):
-        # generated method, don't edit
-        parent.AddWindow(self._ribbon, 0, wx.EXPAND)
-        parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
-
 
     ###################### Form ################
     def _init_ctrls(self, prnt):
@@ -260,6 +259,7 @@ class frmODMToolsMain(wx.Frame):
     def getRecordService(self):
         return self.record_service
 
+    #@profile
     def onChangeDBConn(self, event):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
@@ -270,18 +270,20 @@ class frmODMToolsMain(wx.Frame):
         #print "wxID_FRMDBCONFIGBTNTEST: ", db_config._init_ctrls[4] #wxID_FRMDBCONFIGBTNTEST
 
         if value == wx.ID_OK:
-            #reset Series Selector
-            self.createService()
             self.pnlSelector.resetDB(self.sc)
             #clear all plots
             self.pnlPlot.clear()
-            # reset check count in clsULC
-            self.pnlSelector.tableSeries.checkCount = 0
             # clear the filters for the table series
             self.pnlSelector.tableSeries.clearFilter()
-
             #clear table
             self.dataTable.clear()
+            #reset Series Selector
+            self.createService()
+            # reset check count in clsULC
+            self.pnlSelector.tableSeries.checkCount = 0
+
+
+
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
