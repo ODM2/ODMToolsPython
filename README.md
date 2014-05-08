@@ -8,6 +8,22 @@ ODMTools is a python application for managing observational data using the Obser
 ##Developmental Releases
 +	[Windows Installer](https://github.com/UCHIC/ODMToolsPython/releases/tag/win_v0.1_exp)
 
+Running From Source on Windows
+-------------------
+Install the following software/libraries. 
+
++	[Python-2.7.6 32 bit](https://www.python.org/download/releases/2.7.6)
++	[wxPython-3.0.0.0](http://www.wxpython.org/download.php)
++	[Sqlalchemy-0.9.4](https://pypi.python.org/pypi/SQLAlchemy/0.9.4)
++   [Pyodbc-3.0.7](http://code.google.com/p/pyodbc/downloads/list) 
++	[PyMySQL-0.6.2](https://github.com/petehunt/PyMySQL/)
++	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/downloads)
++	[Numpy-1.8.0](http://www.scipy.org/Download)
++	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/v1.2/ObjectListView-1.2-without-graphics.zip/download)
+
+Once you have all the dependencies installed, run the main application:
+    
+    python src/gui/frmODMToolsMain.py
 
 Sponsors
 ---------
@@ -16,24 +32,6 @@ This project is receiving or has received support from a number of agencies and 
 ![iUTAH](/doc/images/iutah_eu_horz_sm.png)    ![CUAHSI](/doc/images/cuahsi_logo_sm.gif)    ![NSF](/doc/images/nsf.gif)
 
 This material is based on work supported by the National Science Foundation Grant EPS 1208732 awarded to Utah State University.  Additional support was previously provided by National Science Foundation grant EAR 0622374.  Any opinions, findings, and conclusions or recommendations expressed are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
-
-Running From Source on Windows
--------------------
-Install the following software/libraries. 
-
-+	[Python-2.7 32 bit](http://www.python.org/download/releases/2.7.3/)
-+	[Wxpython-2.9.4](http://www.wxpython.org/download.php)
-+	[Sqlalchemy-7.9](http://pypi.python.org/pypi/SQLAlchemy/0.7.9)
-+   [Pyodbc-3.0.6](http://code.google.com/p/pyodbc/downloads/list) 
-+	[PyMySQL](https://github.com/petehunt/PyMySQL/)
-+	[Matplotlib-1.1.1](https://github.com/matplotlib/matplotlib/downloads)
-+	[Numpy-1.6.2](http://www.scipy.org/Download)
-+	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/)
-
-Once you have all the dependencies installed, run the main application:
-    
-    python src/Gui/frmODMToolsMain.py
-
 
 Copying and License
 ----------------------------
