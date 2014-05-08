@@ -65,9 +65,7 @@ class pnlDataTable(wx.Panel):
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def onRefresh(self, e):
-        objs= self.myOlv.GetSelectedObjects()
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
-        self.myOlv.SelectObjects(objs, deselectOthers=True)
 
 
     def clear(self):
