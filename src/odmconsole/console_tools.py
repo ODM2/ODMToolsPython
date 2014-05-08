@@ -1,16 +1,17 @@
 # This class is intended for users to simplify console interaction
 
 import datetime
+import logging
 
 from wx.lib.pubsub import pub as Publisher
 
 from odmservices import ServiceManager
 from odmdata import Qualifier
 from common.logger import LoggerTool
-import logging
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 class ConsoleTools(object):
     def __init__(self, ribbon, record_service=None):
@@ -94,8 +95,9 @@ class ConsoleTools(object):
             return "Error adding point: %s" % (self._add_point_req_error)
 
         point = (
-        data_value, value_accuracy, local_datetime, utc_offset, datetime_utc, offset_value, offset_type, censor_code,
-        qualifier_code, lab_sample_code)
+            data_value, value_accuracy, local_datetime, utc_offset, datetime_utc, offset_value, offset_type,
+            censor_code,
+            qualifier_code, lab_sample_code)
         point_list = []
         point_list.append(point)
         if self._record_service:
@@ -192,6 +194,7 @@ class ConsoleTools(object):
     ###############
     def refresh_plot(self):
         Publisher.sendMessage("updateValues", event=None)
-        logger.debug( "get filtered dates: %s" % self._record_service.get_filtered_dates())
-        Publisher.sendMessage("changePlotSelection", sellist = [], datetime_list=self._record_service.get_filtered_dates())
-        Publisher.sendMessage("changeTableSelection", sellist= [], datetime_list=self._record_service.get_filtered_dates())
+        Publisher.sendMessage("changePlotSelection", sellist=[],
+                              datetime_list=self._record_service.get_filtered_dates())
+        Publisher.sendMessage("changeTableSelection", sellist=[],
+                              datetime_list=self._record_service.get_filtered_dates())

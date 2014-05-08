@@ -10,6 +10,9 @@ import logging
 import wx
 import wx.stc as stc
 
+from wx.lib.pubsub import pub as Publisher
+
+
 from common.logger import LoggerTool
 
 
@@ -99,6 +102,7 @@ class highlightSTC(stc.StyledTextCtrl):
         self.Bind(stc.EVT_STC_UPDATEUI, self.onUpdateUI)
         self.Bind(stc.EVT_STC_MARGINCLICK, self.onMarginClick)
         self.Bind(wx.EVT_KEY_DOWN, self.onKeyPressed)
+        self.Bind(stc.EVT_STC_MODIFIED, self.onModified)
 
         # make some general styles
         # global default styles for all languages
@@ -172,6 +176,9 @@ class highlightSTC(stc.StyledTextCtrl):
         self.RegisterImage(3,
                            wx.ArtProvider.GetBitmap(wx.ART_COPY, size=(16, 16)))
 
+        Publisher.subscribe(self.onScroll, "scroll")
+
+
     def onKeyPressed(self, e):
         if self.CallTipActive():
             self.CallTipCancel()
@@ -200,6 +207,11 @@ class highlightSTC(stc.StyledTextCtrl):
             e.Skip()
             if key not in self.nonPrintKeys:
                 self.parent.newKeyPressed()
+
+    def onModified(self, e):
+        pass
+    def onScroll(self):
+        self.GotoLine(self.Length * 50)
 
     def onUpdateUI(self, e):
         self.Colourise(0, -1)

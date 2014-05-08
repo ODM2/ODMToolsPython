@@ -230,8 +230,6 @@ class plotTimeSeries(wx.Panel):
             self.canvas.draw()
         Publisher.sendMessage("refreshTable", e=None)
         # self.parent.parent.dataTable.Refresh()
-
-
         plt.gcf().autofmt_xdate()
         self.canvas.draw()
 
