@@ -286,6 +286,7 @@ class EditService():
             self._cursor.execute(query)
 
             self._populate_series()
+            self.reset_filter()
 
     def interpolate(self):
         tmp_filter_list = self._filter_list

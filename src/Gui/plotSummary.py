@@ -51,6 +51,15 @@ class plotSummary(wx.Panel):
             if len(oneSeries.dataTable) >0:
                 self.addCol(oneSeries)
 
+    def resizeLabel(self):
+        numlines= -99
+        #get the maximum number of lines
+        for col in range(self.grdSummary.GetNumberCols()):
+            val= self.grdSummary.GetColLabelValue(col).count('\n')+1
+            if val> numlines:
+                numlines = val
+
+        self.grdSummary.ColLabelSize=numlines*16#(16 is the number of pixels per line)
 
     def clear(self):
         if self.grdSummary.GetNumberCols() > 0:
@@ -61,7 +70,7 @@ class plotSummary(wx.Panel):
     def setColLabel(self, col, label):
         self.grdSummary.SetColLabelValue(col, wordwrap.wordwrap(label,
                           self.grdSummary.GetColSize(col), wx.ClientDC(self), breakLongWords=False))
-
+        self.resizeLabel()
 
     def initPlot(self):
         #self.grdSummary.AutoSize()
@@ -83,9 +92,8 @@ class plotSummary(wx.Panel):
         self.grdSummary.SetRowLabelValue(12, "(Median) 50%")
         self.grdSummary.SetRowLabelValue(13, "75%")
         self.grdSummary.SetRowLabelValue(14, "90%")
-        self.grdSummary.CanDragRowSize()
-        self.grdSummary.CanDragColSize()
-        self.grdSummary.ColLabelSize=160
+
+        #self.grdSummary.ColLabelSize=160
 
 
     def addCol(self, series):
