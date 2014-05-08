@@ -161,8 +161,7 @@ class MyCustomToolbar(NavigationToolbar):
     def on_toggle_pan_zoom(self, event):
         """
         Called when pan or zoom is toggled.
-        We need to manually untoggle user-defined tools.
-
+            Toggles off Lasso and disconnects it from the canvas
         event -- button_press_event
 
         """
