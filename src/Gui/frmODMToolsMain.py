@@ -357,9 +357,9 @@ class frmODMToolsMain(wx.Frame):
                     elif isinstance(item, wx.Dialog):
                         item.Destroy()
                     item.Close()
-
         #logger.debug("Have I closed all but my main window?: %s" % (isinstance(wx.GetTopLevelWindows()[0], self.__class__)))
         self.Destroy()
+
         wx.GetApp().ExitMainLoop()
 
     def _postStartup(self):

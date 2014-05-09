@@ -155,7 +155,6 @@ class MyCustomToolbar(NavigationToolbar):
             Lasso Tool Handler
             event -- button_press_event
         """
-        logger.debug("%s" % (__name__))
 
         if event.Checked():
             self.untoggle_mpl_tools()
@@ -169,9 +168,7 @@ class MyCustomToolbar(NavigationToolbar):
         Called when pan or zoom is toggled.
             Toggles off Lasso and disconnects it from the canvas
         event -- button_press_event
-
         """
-        logger.debug("%s" % (__name__))
         if event.Checked():
             self.ToggleTool(self.ON_LASSO_SELECT, False)
             self.canvas.mpl_disconnect(self.lassoAction)
