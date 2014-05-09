@@ -270,38 +270,36 @@ class frmODMToolsMain(wx.Frame):
         #print "wxID_FRMDBCONFIGBTNTEST: ", db_config._init_ctrls[4] #wxID_FRMDBCONFIGBTNTEST
 
         if value == wx.ID_OK:
-            with Timer() as t:
-                # reset Database
-                self.pnlSelector.resetDB(self.sc)
-            logger.info("resetDB: %d" % t.interval )
 
-            with Timer() as t:
-                #clear all plots
-                self.pnlPlot.clear()
-            logger.info("pnlPlot.clear(): %d" % t.interval)
-
-            with Timer() as t:
-                # clear the filters for the table series
-                self.pnlSelector.tableSeries.clearFilter()
-            logger.info("pnlSelector.tableSeries.clearFilter(): %d" % t.interval)
-
-            with Timer() as t:
-                #clear table
-                self.dataTable.clear()
-            logger.info("dataTable.clear(): %d" % t.interval)
-
-            with Timer() as t:
+            #with Timer() as t:
                 #reset Series Selector
-                self.createService()
-            logger.info("createService(): %d" % t.interval)
+            self.createService()
+            #logger.debug("createService(): %d" % t.interval)
 
-            with Timer() as t:
+            #with Timer() as t:
+                # reset Database
+            self.pnlSelector.resetDB(self.sc)
+            #logger.debug("resetDB: %d" % t.interval )
+
+            #with Timer() as t:
+                #clear all plots
+            self.pnlPlot.clear()
+            #logger.debug("pnlPlot.clear(): %d" % t.interval)
+
+            #with Timer() as t:
+                # clear the filters for the table series
+            self.pnlSelector.tableSeries.clearFilter()
+            #logger.debug("pnlSelector.tableSeries.clearFilter(): %d" % t.interval)
+
+            #with Timer() as t:
+                #clear table
+            self.dataTable.clear()
+            #logger.debug("dataTable.clear(): %d" % t.interval)
+
+            #with Timer() as t:
                 # reset check count in clsULC
-                self.pnlSelector.tableSeries.checkCount = 0
-            logger.info("checkCount: %d" % t.interval)
-
-
-
+            self.pnlSelector.tableSeries.checkCount = 0
+            #logger.debug("checkCount: %d" % t.interval)
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
@@ -328,6 +326,10 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.LoadPerspective(f.read(), True)
 
     def onClose(self, event):
+        """
+            Closes ODMTools Python
+            Closes AUI Manager then closes MainWindow
+        """
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
@@ -336,11 +338,35 @@ class frmODMToolsMain(wx.Frame):
         except:
             print "error saving docking data"
         self._mgr.UnInit()
-        # delete the frame
-        self.Destroy()
 
+        # IMPORTANT! if wx.TaskBarIcons exist, it will keep mainloop running
+
+        windowsRemaining = len(wx.GetTopLevelWindows())
+        if windowsRemaining > 0:
+            import wx.lib.agw.aui.framemanager as aui
+            #logger.debug("Windows left to close: %d" % windowsRemaining)
+            for item in wx.GetTopLevelWindows():
+                #logger.debug("Windows %s" % item)
+                if not isinstance(item, self.__class__):
+                    if isinstance(item, aui.AuiFloatingFrame):
+                        item.Destroy()
+                    elif isinstance(item, aui.AuiSingleDockingGuide):
+                        item.Destroy()
+                    elif isinstance(item, aui.AuiDockingHintWindow):
+                        item.Destroy()
+                    elif isinstance(item, wx.Dialog):
+                        item.Destroy()
+                    item.Close()
+
+        #logger.debug("Have I closed all but my main window?: %s" % (isinstance(wx.GetTopLevelWindows()[0], self.__class__)))
+        self.Destroy()
+        wx.GetApp().ExitMainLoop()
 
     def _postStartup(self):
+        """
+            Called after MainLoop is initialized
+                Hides Python Console Tools
+        """
         if self.txtPythonConsole.ToolsShown():
             self.txtPythonConsole.ToggleTools()
 

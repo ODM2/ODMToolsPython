@@ -1,12 +1,16 @@
 import os
 
 import wx
+import logging
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 from matplotlib.widgets import Lasso
 from matplotlib import path
+from common.logger import LoggerTool
 
 import gui_utils as g_util
 
+tools = LoggerTool()
+logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class MyCustomToolbar(NavigationToolbar):
     ON_CUSTOM_LEFT = wx.NewId()
@@ -151,6 +155,8 @@ class MyCustomToolbar(NavigationToolbar):
             Lasso Tool Handler
             event -- button_press_event
         """
+        logger.debug("%s" % (__name__))
+
         if event.Checked():
             self.untoggle_mpl_tools()
             self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
@@ -165,6 +171,7 @@ class MyCustomToolbar(NavigationToolbar):
         event -- button_press_event
 
         """
+        logger.debug("%s" % (__name__))
         if event.Checked():
             self.ToggleTool(self.ON_LASSO_SELECT, False)
             self.canvas.mpl_disconnect(self.lassoAction)

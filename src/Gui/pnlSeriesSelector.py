@@ -1,26 +1,19 @@
-#Boa:FramePanel:pnlSeriesSelector
 import logging
 import os
 
 import wx
-
-
-
-# import wx.lib.agw.ultimatelistctrl as ULC
-# from ObjectListView import ObjectListView, ColumnDefn, Filter
-
+import wx.lib.agw.ultimatelistctrl as ULC
 from wx.lib.pubsub import pub as Publisher
 
-# from ObjectListView import Filter
-import wx.lib.agw.ultimatelistctrl as ULC
+import frmQueryBuilder
 from common.logger import LoggerTool
+
 
 try:
     from agw import pycollapsiblepane as PCP
 except ImportError:  # if it's not there locally, try the wxPython lib.
     import wx.lib.agw.pycollapsiblepane as PCP
 from clsULC import clsULC, TextSearch, Chain
-import frmQueryBuilder
 
 from odmdata import MemoryDatabase
 from odmservices import ServiceManager
@@ -173,7 +166,8 @@ class pnlSeriesSelector(wx.Panel):
                                          pos=wx.Point(193, 0), size=wx.Size(104, 20), style=0)
 
         self.rbAll.SetValue(True)
-        self.rbAll.Bind(wx.EVT_RADIOBUTTON, self.onRbAllRadiobutton, id=wxID_FRAME1RBALL)
+        #self.rbAll.Bind(wx.EVT_RADIOBUTTON, self.onRbAllRadiobutton, id=wxID_FRAME1RBALL)
+        wx.EVT_RADIOBUTTON(self, self.rbAll.Id, self.onRbAllRadiobutton)
         self.rbSimple.Bind(wx.EVT_RADIOBUTTON, self.onRbSimpleRadiobutton, id=wxID_FRAME1RBSIMPLE)
         self.rbAdvanced.Bind(wx.EVT_RADIOBUTTON, self.onRbAdvancedRadiobutton, id=wxID_FRAME1RBADVANCED)
         self.rbAdvanced.Enable(False)
@@ -272,27 +266,49 @@ class pnlSeriesSelector(wx.Panel):
 
     def resetDB(self, dbservice):
 
+        if not self.rbAll.GetValue():
+            wx.PostEvent(
+                self.GetEventHandler(),
+                wx.PyCommandEvent(wx.EVT_RADIOBUTTON.typeId, self.rbAll.Id)
+            )
+            self.rbAll.SetValue(True)
+
         #####INIT DB Connection
+        #with Timer() as t:
         self.dbservice = dbservice
+        #logger.debug("self.dbservice = dbservice: %d" % t.interval)
+
+        #with Timer() as t:
         #self.tableSeries.clear()
         self.cbVariables.Clear()
         self.cbSites.Clear()
-
-        if not self.rbAll.GetValue():
-            self.rbAll.SetValue(True)
+        #logger.debug("clear cbVariables & cbSites: %d" % t.interval)
 
         self.siteList = None
         self.varList = None
 
+        #with Timer() as t:
         self.initTableSeries()
-        self.initSVBoxes()
+        #logger.debug("self.initTableSeries(): %d" % t.interval)
 
+        #with Timer() as t:
+        self.initSVBoxes()
+        #logger.debug("self.initSVBoxes(): %d" % t.interval)
+
+        #with Timer() as t:
         self.Layout()
+        #logger.debug("self.Layout(): %d" % t.interval)
 
     def initTableSeries(self):
+        #with Timer() as t:
         self.memDB = MemoryDatabase(self.dbservice)
+        #logger.debug("self.memDB = MemoryDatabase(self.dbservice): %d" % t.interval)
+
+        #with Timer() as t:
         self.tableSeries.setColumns(self.memDB.getSeriesColumns())
         self.tableSeries.setObjects(self.memDB.getSeriesCatalog())
+        #logger.debug("setColumns & Objects: %d" % t.interval)
+
         self.tableSeries.EnableSelectionVista(True)
         self.selectedIndex = 0
 
@@ -366,6 +382,7 @@ class pnlSeriesSelector(wx.Panel):
         #Hide top panel
         ##        if self.splitter.IsSplit():
         ##            self.splitter.Unsplit(self.pnlSimple)
+        logger.debug("onRbAllRadioButton called! ")
         self.cpnlSimple.Collapse(True)
         self.Layout()
         # self.splitter.SetSashPosition(1)
@@ -565,15 +582,18 @@ class pnlSeriesSelector(wx.Panel):
                 logger.debug("series was not checked")
                 val_2 = wx.MessageBox("Visualization is limited to 6 series.",
                                       "Can't add plot",
-                                      wx.OK| wx.ICON_INFORMATION)
+                                      wx.OK | wx.ICON_INFORMATION)
         self.Refresh()
 
     def getSelectedIndex(self):
         return self.tableSeries.getSelection()
+
     def getSelectedID(self):
         return self.tableSeries.getColumnText(self.tableSeries.getSelection(), 1)
+
     def isEditing(self):
         return self.isEditing
+
     def selectForEdit(self):
         isSelected = False
         if not self.tableSeries.isChecked(self.getSelectedIndex()):
@@ -587,12 +607,12 @@ class pnlSeriesSelector(wx.Panel):
                 isSelected = False
                 logger.debug("series was not checked")
                 val_2 = wx.MessageBox("Visualization is limited to 6 series.",
-                                  "Can't add plot",
-                                  wx.OK| wx.ICON_INFORMATION)
+                                      "Can't add plot",
+                                      wx.OK | wx.ICON_INFORMATION)
         else:
             isSelected = True
         if isSelected:
-            self.isEditing=isSelected
+            self.isEditing = isSelected
             self.memDB.initEditValues(self.getSelectedID())
             #self.memDB.initEditValues(seriesID)
             #self.parent.Parent.addEdit(seriesID, self.memDB)
