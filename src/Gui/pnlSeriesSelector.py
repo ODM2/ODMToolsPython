@@ -277,6 +277,7 @@ class pnlSeriesSelector(wx.Panel):
         #self.tableSeries.clear()
         self.cbVariables.Clear()
         self.cbSites.Clear()
+
         if not self.rbAll.GetValue():
             self.rbAll.SetValue(True)
 

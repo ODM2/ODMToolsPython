@@ -349,8 +349,12 @@ class mnuRibbon(RB.RibbonBar):
     def onResetFilter(self, event):
         recordService=self.parent.getRecordService()
         recordService.reset_filter()
-        Publisher.sendMessage("changeSelection", sellist=recordService.get_filter_list(), datetime_list=None)
-        Publisher.sendMessage("changeTableSelection", sellist=recordService.get_filter_list(), datetime_list=None)
+        self.redrawPlotTable()
+
+    def redrawPlotTable(self):
+        recordService=self.parent.getRecordService()
+        Publisher.sendMessage("changeSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
+        Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
 
 
     def onLineDrift(self, event):
@@ -420,6 +424,7 @@ class mnuRibbon(RB.RibbonBar):
         if val == 2:#wx.ID_YES:
             self.parent.getRecordService().delete_points()
             Publisher.sendMessage(("updateValues"), event=event)
+        self.redrawPlotTable()
         event.Skip()
 
     def onRestore(self, event):

@@ -101,21 +101,21 @@ class pnlDataTable(wx.Panel):
 
     def onChangeSelection(self, sellist=[], datetime_list=[]):
         objlist = []
+        #self.myOlv.SelectObject(None, deselectOthers=True)
         if len(sellist) > 0:
             for i in range(len(sellist)):
                 if sellist[i]:
                     objlist.append(self.myOlv.GetObjectAt(i))
-            self.myOlv.SelectObject(objlist[0], deselectOthers=True, ensureVisible=True)
-            self.myOlv.SelectObjects(objlist, deselectOthers=True)  #, ensureVisible =True
-
         else:
             #logger.debug(datetime_list)
-            objs = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
-            if len(objs)>0:
-                self.myOlv.SelectObject(objs[0], deselectOthers=True, ensureVisible=True)
-            #logger.debug(objs)
-            self.myOlv.SelectObjects(objs, deselectOthers=True)
-            
+            objlist = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
+
+        if len(objlist)>0:
+            self.myOlv.SelectObject(objlist[0], deselectOthers=True, ensureVisible=True)
+        #logger.debug(objs)
+        self.myOlv.SelectObjects(objlist, deselectOthers=True)
+
+
 
     def stopEdit(self):
         self.clear()

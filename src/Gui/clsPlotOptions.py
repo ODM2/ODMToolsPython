@@ -89,9 +89,8 @@ class SeriesPlotInfo(object):
     def resetDates(self):
         self.startDate = datetime.datetime(2100, 12, 31)
         self.endDate = datetime.datetime(1800, 01, 01)
-        #self.currentStart = self.startDate
-        #self.currentEnd = self.endDate
-        self.isSubsetted = False
+
+        #self.isSubsetted = False
         for key in self.getSeriesIDs():
             start = self._seriesInfos[key].startDate
             end = self._seriesInfos[key].endDate
@@ -101,6 +100,12 @@ class SeriesPlotInfo(object):
 
             if end > self.endDate:
                 self.endDate = end
+
+        if not self.isSubsetted:
+            self.currentStart = self.startDate
+            self.currentEnd = self.endDate
+
+
 
 
     def isPlotted(self, sid):
