@@ -383,6 +383,7 @@ class EditService():
     def restore(self):
         self._connection.rollback()
         self._populate_series()
+        self.reset_filter()
 
     def save(self, var=None, method=None, qcl=None, isSave=False):
         dvs = []

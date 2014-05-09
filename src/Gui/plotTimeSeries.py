@@ -264,10 +264,10 @@ class plotTimeSeries(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
         self.updatePlot()
-        #clears all of the previous zooming and sets the current view as
-        # the new home(first view)
+        # resets the home view - will remove any previous zooming
         self.toolbar._views.clear()
-        self.toolbar.push_current()
+        self.toolbar._positions.clear()
+        self.toolbar._update_view()
 
 
 
@@ -336,6 +336,7 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.legend_ = None
 
         self.timeSeries.set_xlabel("Date")
+
 
         self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 

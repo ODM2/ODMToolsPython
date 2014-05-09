@@ -105,15 +105,7 @@ class MyCustomToolbar(NavigationToolbar):
         pass
 
     def _onLassoSelect(self, event):
-        print dir(event)
-        if self._ids_zoom != []:
-            for zoom_id in self._ids_zoom:
-                self.canvas
-                self.canvas.mpl_disconnect(zoom_id)
-        self.release(event)
-
         if event.Checked():
-            self.mode = 'lasso'
             self.lassoAction = self.canvas.mpl_connect('button_press_event', self._onPress)
         else:
             self.canvas.mpl_disconnect(self.lassoAction)
