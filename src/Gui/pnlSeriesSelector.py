@@ -311,6 +311,7 @@ class pnlSeriesSelector(wx.Panel):
 
         self.tableSeries.EnableSelectionVista(True)
         self.selectedIndex = 0
+        self.tableSeries.Select(0)
 
 
     def initSVBoxes(self):
@@ -596,6 +597,7 @@ class pnlSeriesSelector(wx.Panel):
 
     def selectForEdit(self):
         isSelected = False
+
         if not self.tableSeries.isChecked(self.getSelectedIndex()):
             if self.tableSeries.enableCheck(self.getSelectedIndex(), True):
                 self.tableSeries.checkItem(self.getSelectedIndex())
