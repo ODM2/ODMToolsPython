@@ -49,6 +49,7 @@ class OneSeriesPlotInfo(object):
         self.binWidth = 1.5
         self.boxWhiskerMethod = "Monthly"
         self.useCensoredData = False
+        self.yrange=0
 
         self.color = ""
 
@@ -56,6 +57,7 @@ class OneSeriesPlotInfo(object):
         self.edit = False
         #the color the plot should be when not editing
         self.plotcolor = None
+        self.timeRadius= None
 
 
 
@@ -153,6 +155,8 @@ class SeriesPlotInfo(object):
         self.memDB.stopEdit()
 
 
+
+
     def getEditSeriesInfo(self):
         if self.editID and (self.editID in self._seriesInfos):
             return self._seriesInfos[self.editID]
@@ -243,6 +247,9 @@ class SeriesPlotInfo(object):
                 seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
                 seriesInfo.noDataValue = noDataValue
                 seriesInfo.dataTable = data
+                seriesInfo.timeRadius = self.setTimeRadius(series)
+                yvals = [y[0] for y in data]
+                seriesInfo.yrange = max(yvals)-min(yvals)
                 #Tests to see if any values were returned for the given daterange
                 #if data is not None:
                 self.build(seriesInfo)
@@ -270,6 +277,20 @@ class SeriesPlotInfo(object):
         seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
         seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
+
+
+    def setTimeRadius(self, series):
+        ts = series.time_support
+        if ts ==0:  ts = 1
+
+        if series.time_units_name == 'second':
+            return ts/2
+        elif series.time_units_name == 'minute':
+            return ts/2 *60 #convert minutes to seconds
+        elif series.time_units_name == 'hour':
+            return ts/2 *120 #120 converts hours to seconds
+        else:
+            return 43200 #12 hours in seconds
 
 
     def updateDateRange(self, startDate=None, endDate=None):

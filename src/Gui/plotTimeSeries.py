@@ -9,8 +9,6 @@ import mpl_toolkits.axisartist as AA
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
 from matplotlib.font_manager import FontProperties
-from matplotlib.widgets import Lasso
-from matplotlib import path
 from wx.lib.pubsub import pub as Publisher
 
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
@@ -94,7 +92,6 @@ class plotTimeSeries(wx.Panel):
         self.editseriesID = -1
         self.editCurve = None
         self.editPoint =None
-        self.lassoAction = None
         self.hoverAction = None
 
 
@@ -194,9 +191,8 @@ class plotTimeSeries(wx.Panel):
         self.selectedlist = None
         self.editPoint = None
         self.lman = None
-        self.canvas.mpl_disconnect(self.lassoAction)
+
         self.canvas.mpl_disconnect(self.hoverAction)
-        self.lassoAction = None
         self.hoverAction = None
         self.xys = None
         self.alpha=1
@@ -235,7 +231,7 @@ class plotTimeSeries(wx.Panel):
 
     def drawEditPlot(self, oneSeries):
         curraxis = self.axislist[oneSeries.axisTitle]
-        self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
+        self.lines[self.curveindex] =line= curraxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
                                                          label=oneSeries.plotTitle, zorder =10, alpha=1)
@@ -247,7 +243,8 @@ class plotTimeSeries(wx.Panel):
                                           zorder=11, marker='s', alpha=1)# >, <, v, ^,s
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
-        self.lassoAction =None #self.canvas.mpl_connect('button_press_event', self._onPress)
+        self.timeradius = self.editCurve.timeRadius
+        self.radius = self.editCurve.yrange/10
         self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
 
     def _setColor(self, color):
@@ -299,8 +296,8 @@ class plotTimeSeries(wx.Panel):
                         )
                     )
 
-                #TODO set date value in table?
 
+                #TODO set date value in table?
 
                 '''
                 # adding plot
@@ -373,8 +370,10 @@ class plotTimeSeries(wx.Panel):
     def setEdit(self, id):
         self.editseriesID = id
         self.alpha = .5
+
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
+
             self.updatePlot()
             # print self.editCurve
 
@@ -417,41 +416,25 @@ class plotTimeSeries(wx.Panel):
             self.axislist[axis] = newAxis
 
 
-    def callback(self, verts):
-        p = path.Path(verts)
-        ind = p.contains_points(self.xys)
 
-        #seldatetimes = [(matplotlib.dates.num2date(x[0]).replace(tzinfo=None)).replace(microsecond=0) for x in verts]
-        seldatetimes= []
-        for i in range(len(ind)):
-            if ind[i]:
-                seldatetimes.append(self.editCurve.dataTable[i][1])
-        #print seldatetimes
-
-        self.changeSelection(sellist=[], datetime_list= seldatetimes)
-
-        self.canvas.draw_idle()
-        self.canvas.widgetlock.release(self.lasso)
-        del self.lasso
-
-
-    def _onPress(self, event):
-        if self.canvas.widgetlock.locked(): return
-        if event.inaxes is None: return
-        self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
-        # acquire a lock on the widget drawing
-        self.canvas.widgetlock(self.lasso)
 
     def _onMotion(self, event):
         collisionFound = False
+
         if event.xdata != None and event.ydata != None:  #mouse is inside the axes
             if self.editCurve:
                 for i in xrange(len(self.editCurve.dataTable)):
-                    radius = 3
 
-                    if abs(event.xdata - self.editCurve.dataTable[i][1].toordinal()) < radius and abs(
-                                    event.ydata - self.editCurve.dataTable[i][0]) < radius:
+
+                    #if abs(event.xdata - matplotlib.dates.date2num(self.editCurve.dataTable[i][1])) < radius and abs(
+                    #                event.ydata - self.editCurve.dataTable[i][0]) < radius:
+
+                    if abs(event.ydata - self.editCurve.dataTable[i][0]) < self.radius and \
+                                    abs((matplotlib.dates.num2date(event.xdata).replace(tzinfo = None) -
+                                             self.editCurve.dataTable[i][1]).total_seconds()) < self.timeradius:
+
                         top = tip = '(%s, %f)' % (self.editCurve.dataTable[i][1], self.editCurve.dataTable[i][0])
+
                         self.tooltip.SetTip(tip)
                         self.tooltip.Enable(True)
                         collisionFound = True
