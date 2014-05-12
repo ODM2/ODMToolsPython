@@ -238,6 +238,7 @@ class frmODMToolsMain(wx.Frame):
     def addEdit(self, event):
         isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
         #print seriesID
+
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
                                                                           connection=memDB.conn)
@@ -247,12 +248,16 @@ class frmODMToolsMain(wx.Frame):
 
             # set record service for console
             self.console_tools.set_record_service(self.record_service)
+            Publisher.sendMessage("setEdit", isEdit=True)
+        else:
+            Publisher.sendMessage("setEdit", isEdit=False)
 
     def stopEdit(self, event):
 
         self.pnlSelector.stopEdit()
         self.dataTable.stopEdit()
         self.pnlPlot.stopEdit()
+        Publisher.sendMessage("toggleEdit", checked=False)
         self.record_service = None
         self._ribbon.toggleEditButtons(False)
 
@@ -263,6 +268,7 @@ class frmODMToolsMain(wx.Frame):
     def onChangeDBConn(self, event):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
+
 
         #print "Value: ", value
         #print "wxID_FRMDBCONFIGBTNSAVE: ", db_config._init_ctrls[2] #wxID_FRMDBCONFIGBTNSAVE

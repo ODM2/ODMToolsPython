@@ -289,6 +289,8 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.subscribe(self.toggleEditButtons, "EnableEditButtons")
         Publisher.subscribe(self.enableButtons, "EnablePlotButtons")
         Publisher.subscribe(self.resetDateRange, "resetdate")
+        Publisher.subscribe(self.onToggleEdit, "toggleEdit")
+        Publisher.subscribe(self.setEdit, "setEdit")
         #Publisher.subscribe(self.updateSeriesCurrentDateTime, "updateSeriesCurrentDateTime")
 
     def onFileMenu(self, event):
@@ -432,22 +434,27 @@ class mnuRibbon(RB.RibbonBar):
         Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
-    def onPushEdit(self):
-        print ""
+
+    def onToggleEdit(self, checked =True):
+        self.main_bar.ToggleButton(self.editbutton.id, checked)
+
+    def setEdit(self, isEdit):
+        self.isEdit = isEdit
 
     def onEditSeries(self, event=None):
         #logger.debug(dir(event))
 
         if event.IsChecked():
-            Publisher.sendMessage(("selectEdit"), event=event)
-
+             Publisher.sendMessage("selectEdit", event=event)
+             logging.debug("is editing: %s"% self.isEdit)
+             if not self.isEdit:
+                 self.onToggleEdit(False)
             #self.parent.addEdit()
         else:
             Publisher.sendMessage(("stopEdit"), event=event)
             #self.parent.stopEdit()
-        if True:
-            event.Checked=False
-            event.Skip()
+
+        event.Skip()
 
     def onBinChanged(self, event):
         Publisher.sendMessage(("onNumBins"), numBins=event.Selection)
@@ -606,8 +613,10 @@ class mnuRibbon(RB.RibbonBar):
         self.main_bar.EnableButton(wxID_RIBBONEDITSAVE, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITFILTER, state)
 
+
         # when points are selected
         self.edit_bar.EnableButton(wxID_RIBBONEDITLINFILTER, state)
+        self.edit_bar.EnableButton(wxID_RIBBONEDITRESETFILTER, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITCHGVALUE, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITINTEROPOLATE, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITFLAG, state)

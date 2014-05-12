@@ -412,6 +412,8 @@ class pnlSeriesSelector(wx.Panel):
     def onRightEdit(self, event):
         #self.selectForEdit(self.tableSeries.getColumnText(self.selectedIndex, 1))
         Publisher.sendMessage(("selectEdit"), event=event)
+        if self.isEditing:
+            Publisher.sendMessage("toggleEdit", checked=True)
         event.Skip()
 
     # allows user to right-click refresh the Series Selector
@@ -612,13 +614,14 @@ class pnlSeriesSelector(wx.Panel):
                                       "Can't add plot",
                                       wx.OK | wx.ICON_INFORMATION)
         else:
+            #series is already checked
             isSelected = True
         if isSelected:
-            self.isEditing = isSelected
             self.memDB.initEditValues(self.getSelectedID())
             #self.memDB.initEditValues(seriesID)
             #self.parent.Parent.addEdit(seriesID, self.memDB)
 
+        self.isEditing = isSelected
         return isSelected, self.getSelectedID(), self.memDB
 
 

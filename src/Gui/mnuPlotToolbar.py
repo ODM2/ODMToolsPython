@@ -36,24 +36,25 @@ class MyCustomToolbar(NavigationToolbar):
                            wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "scroll_right.png")),
                            'Pan to the right', 'Pan graph to the right')
 
-        # Get the ids for the existing tools
-        self.pan_tool = self.FindById(self.wx_ids['Pan'])
-        self.zoom_tool = self.FindById(self.wx_ids['Zoom'])
-        wx.EVT_TOOL(self, self.zoom_tool.Id, self.on_toggle_pan_zoom)
-        wx.EVT_TOOL(self, self.pan_tool.Id, self.on_toggle_pan_zoom)
+
 
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
         wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
 
         if allowselect:
-            self.selectbutton = self.AddSimpleTool(self.ON_LASSO_SELECT,
+            self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT,
                                                    wx.Bitmap(
                                                        g_util.resource_path("images" + g_util.slash() + "select.png")),
                                                    'Lasso Select', 'Select datavalues from the graph', isToggle=True)
 
             wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self.on_toggle_lasso_tool)
+            # Get the ids for the existing tools
+            self.pan_tool = self.FindById(self.wx_ids['Pan'])
+            self.zoom_tool = self.FindById(self.wx_ids['Zoom'])
+            wx.EVT_TOOL(self, self.zoom_tool.Id, self.on_toggle_pan_zoom)
+            wx.EVT_TOOL(self, self.pan_tool.Id, self.on_toggle_pan_zoom)
             self.lassoAction = None
-            self.selectbutton.Enable(False)
+            self.select_tool.Enable(False)
 
         self.SetToolBitmapSize(wx.Size(16, 16))
 
@@ -63,7 +64,7 @@ class MyCustomToolbar(NavigationToolbar):
         #enable select button
         self.xys = xys
         self.editCurve = edit
-        self.selectbutton.Enable(True)
+        self.select_tool.Enable(True)
         self.Realize()
 
     def stopEdit(self):
@@ -73,8 +74,10 @@ class MyCustomToolbar(NavigationToolbar):
         self.editCurve = None
         self.lassoAction = None
         #disable select button
-        self.selectbutton.Enable(False)
+        self.select_tool.Enable(False)
         self.Realize()
+        #untoggle lasso button
+        self.ToggleTool(self.select_tool.Id, False)
 
 
     # in theory this should never get called, because we delete the toolbar

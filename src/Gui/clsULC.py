@@ -116,7 +116,7 @@ class clsULC(ULC.UltimateListCtrl):
         #returns a list of the checked ids
         return [x[0] for x in self.modelObjects if x[-1]]
 
-    # Return True if the number selected is less than 5
+    # Return True if the number selected is less than 6
     # Return False if the box isn't checked
     def enableCheck(self, id, isChecked):
         # Keeping adding
@@ -136,6 +136,7 @@ class clsULC(ULC.UltimateListCtrl):
         else:
             # uncheck it visibly
             self.checkItem(id, isChecked=False)
+            self.subList[id][-1] = False
             logger.debug("CheckCount: %d" % (self.checkCount))
             return False
 
