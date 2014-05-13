@@ -3,6 +3,7 @@ import os
 
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
+from clsSeriesTable import clsSeriesTable
 from wx.lib.pubsub import pub as Publisher
 
 import frmQueryBuilder
@@ -242,12 +243,12 @@ class pnlSeriesSelector(wx.Panel):
 
         ### New Stuff ##################################################################################################
 
-        self.tableSeriesTable = FastObjectListView(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
-                                                   name=u'tableSeriesTable', size=wx.Size(903, 108), pos=wx.Point(5,10),
-                                                   style=wx.TAB_TRAVERSAL)
+        self.tableSeriesTable = clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
+                                                   name=u'tableSeriesTable', size=wx.Size(903, 108), pos=wx.Point(5,5),
+                                                   style=wx.LC_REPORT | wx.TAB_TRAVERSAL | wx.SUNKEN_BORDER)
         self.tableSeriesTable.SetEmptyListMsg("No Database Loaded")
         self.tableSeriesTable.handleStandardKeys = True
-        self.tableSeriesTable.Refresh()
+
 
         ################################################################################################################
         self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeriesTest,
@@ -318,12 +319,12 @@ class pnlSeriesSelector(wx.Panel):
         #logger.debug("self.memDB = MemoryDatabase(self.dbservice): %d" % t.interval)
 
         self.tableSeriesTable.SetColumns(
-            ColumnDefn(x.strip(), align="left", valueGetter=i, width=-1)
+            ColumnDefn(x.strip(), align="center", minimumWidth=100, valueGetter=i, width=-1)
             for x, i in self.memDB.getSeriesCatelogColumns()
         )
-
+        self.tableSeriesTable.CreateCheckStateColumn()
         self.tableSeriesTable.SetObjects(self.memDB.getSeriesCatalog())
-
+        #self.tableSeriesTable.RepopulateList()
         #with Timer() as t:
         #self.tableSeries.setColumns(self.memDB.getSeriesColumns())
         #self.tableSeries.setObjects(self.memDB.getSeriesCatalog())
