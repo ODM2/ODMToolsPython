@@ -4,7 +4,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODMTools"
-#define MyAppVersion "0.1"
+#define MyAppVersion "v1.0-beta"
 #define MyAppURL "https://github.com/UCHIC/ODMToolsPython"
 
 [Setup]
@@ -15,6 +15,7 @@ AppId={{B0DD13A0-C200-4562-B94B-2BEEB1782E3E}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher = iUtah
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
@@ -28,11 +29,11 @@ SolidCompression=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "D:\Dev\ODMToolsBuild\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Dev\ODMTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\WinPython-32bit-2.7.5.3\python-2.7.5\pythonw.exe"; WorkingDir: "{app}"; Parameters: """{app}\ODMToolsPython\src\Gui\frmODMToolsMain.py""";
+Name: "{group}\{#MyAppName}"; Filename: "{app}\Python27_Release\pythonw.exe"; WorkingDir: "{app}"; Parameters: """{app}\ODMToolsPython\src\Gui\frmODMToolsMain.py""";
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
 [Dirs]

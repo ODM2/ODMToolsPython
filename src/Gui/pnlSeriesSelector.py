@@ -181,9 +181,11 @@ class pnlSeriesSelector(wx.Panel):
         ##              size=wx.Size(604, 137), style=wx.NO_BORDER)
         ##        self.splitter.SetMinSize(wx.Size(-1, -1))
 
-        self.cpnlSimple = PCP.PyCollapsiblePane(parent=self.pnlData, label="",
-                                                agwStyle=wx.CP_NO_TLW_RESIZE | wx.CP_GTK_EXPANDER | wx.CP_USE_STATICBOX,
-                                                size=wx.Size(300, 20), pos=wx.Point(0, -20))
+        self.cpnlSimple = wx.CollapsiblePane(self.pnlData, label="",
+                                          style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
+                                          #PCP.PyCollapsiblePane(parent=self.pnlData, label="",
+                                               # agwStyle=wx.CP_NO_TLW_RESIZE | wx.CP_GTK_EXPANDER | wx.CP_USE_STATICBOX,
+                                                #size=wx.Size(300, 20), pos=wx.Point(0, -20))
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.onPaneChanged, self.cpnlSimple)
 
         ## panel for simple filter(top of splitter)
@@ -245,10 +247,8 @@ class pnlSeriesSelector(wx.Panel):
                                   name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),
                                   size=wx.Size(903, 108),
                                   agwStyle=ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT | ULC.ULC_SINGLE_SEL)
-        ##        self.splitter.Initialize(self.tableSeries)
-        self.cpnlSimple.Collapse(True)
-        # self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 1)
 
+        self.cpnlSimple.Collapse(True)
         self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
                               id=wxID_PNLSERIESSELECTORtableSeries)
 
@@ -368,10 +368,7 @@ class pnlSeriesSelector(wx.Panel):
         self.Layout()
 
     def onRbAdvancedRadiobutton(self, event):
-        #open filter window and hide top Panel
-        # self.splitter.SetSashPosition(1)
-        ##        if self.splitter.IsSplit():
-        ##            self.splitter.Unsplit(self.pnlSimple)
+
         self.cpnlSimple.Collapse(True)
         self.Layout()
         series_filter = frmQueryBuilder.frmQueryBuilder(self)
@@ -380,31 +377,23 @@ class pnlSeriesSelector(wx.Panel):
         event.Skip()
 
     def onRbAllRadiobutton(self, event):
-        #Hide top panel
-        ##        if self.splitter.IsSplit():
-        ##            self.splitter.Unsplit(self.pnlSimple)
+
         logger.debug("onRbAllRadioButton called! ")
         self.cpnlSimple.Collapse(True)
         self.Layout()
-        # self.splitter.SetSashPosition(1)
         self.setFilter()
         event.Skip()
 
 
     def onRbSimpleRadiobutton(self, event):
-        #show top Panel
-        ##        if not self.splitter.IsSplit():
-        ##            self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 30)
-        # self.splitter.SetSashPosition(70)
+
         self.cpnlSimple.Expand()
         self.Layout()
         self.setFilter(self.site_code, self.variable_code)
         event.Skip()
 
     def onRightPlot(self, event):
-        # print self.tableSeries.IsItemChecked(self.selectedIndex)
-        # self.tableSeries.GetItem(self.selectedID, 0).Check = True
-        ##        self.tableSeries.GetColumnText(self.selectedIndex, 1).Check = True
+
         self.tableSeries.checkItem(self.selectedIndex)
         self.selectForPlot(self.selectedIndex)
         event.Skip()
