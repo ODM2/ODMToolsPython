@@ -65,6 +65,12 @@ class MemoryDatabase(object):
         self.cursor.execute(sql)    
         return [list(x) for x in self.cursor.fetchall()]
 
+    def getSeriesCatelogColumns(self):
+        sql = "SELECT * FROM SeriesCatalog WHERE 1=0"
+        self.cursor.execute(sql)
+        return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]
+
+        #return (x[0] for (i,x) in enumerate(self.cursor.description))
 
     def getSeriesColumns(self):
         sql = "SELECT * FROM SeriesCatalog WHERE 1=0"
