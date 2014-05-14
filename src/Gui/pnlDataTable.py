@@ -53,7 +53,9 @@ class pnlDataTable(wx.Panel):
         self.memDB = memDB
         self.record_service = record_service
         self.myOlv.SetColumns(
-            ColumnDefn(x.strip(), align="left", valueGetter=i, width=-1) for x, i in self.memDB.getEditColumns())
+            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=100, width=-1)
+            for x, i in self.memDB.getEditColumns()
+        )
 
         #####table Settings
         self.myOlv.useAlternateBackColors = True

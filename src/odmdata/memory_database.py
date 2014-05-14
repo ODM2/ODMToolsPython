@@ -123,9 +123,9 @@ class MemoryDatabase(object):
             s.citation, s.quality_control_level_id, s.quality_control_level_code, s.begin_date_time,
             s.end_date_time, s.begin_date_time_utc, s.end_date_time_utc, s.value_count) for s in self.series_service.get_all_series() ]
         self.cursor.executemany("INSERT INTO SeriesCatalog VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", self.SeriesCatalog)
-        self.cursor.execute("ALTER TABLE SeriesCatalog ADD COLUMN isSelected INTEGER ")
+        #self.cursor.execute("ALTER TABLE SeriesCatalog ADD COLUMN isSelected INTEGER ")
         
-        self.cursor.execute("UPDATE SeriesCatalog SET isSelected=0")
+        #self.cursor.execute("UPDATE SeriesCatalog SET isSelected=0")
         self.conn.commit()
 
     def initDB(self):

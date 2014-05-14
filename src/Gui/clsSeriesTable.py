@@ -41,7 +41,7 @@ class clsSeriesTable(FastObjectListView):
 
         self._PossibleFinishCellEdit()
         modelObject = self.GetObjectAt(rowIndex)
-        print "modelObject", modelObject, " column", column
+        print "modelObject", type(modelObject), dir(modelObject), modelObject, " column", column
         if modelObject is not None:
             column.SetCheckState(modelObject, not column.GetCheckState(modelObject))
 

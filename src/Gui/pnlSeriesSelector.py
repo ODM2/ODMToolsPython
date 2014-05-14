@@ -1,19 +1,15 @@
 import logging
 import os
-
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
+import frmQueryBuilder
+
 from clsSeriesTable import clsSeriesTable
 from wx.lib.pubsub import pub as Publisher
-
-import frmQueryBuilder
 from common.logger import LoggerTool
 from ObjectListView import ColumnDefn, FastObjectListView
-
-
 from clsULC import clsULC, TextSearch, Chain
-
-from odmdata import MemoryDatabase
+from odmdata import MemoryDatabase, series
 from odmservices import ServiceManager
 
 tool = LoggerTool()
@@ -314,26 +310,20 @@ class pnlSeriesSelector(wx.Panel):
         #logger.debug("self.Layout(): %d" % t.interval)
 
     def initTableSeries(self):
-        #with Timer() as t:
         self.memDB = MemoryDatabase(self.dbservice)
-        #logger.debug("self.memDB = MemoryDatabase(self.dbservice): %d" % t.interval)
-
-        self.tableSeriesTable.SetColumns(
-            ColumnDefn(x.strip(), align="center", minimumWidth=100, valueGetter=i, width=-1)
-            for x, i in self.memDB.getSeriesCatelogColumns()
-        )
+        #self.test()
+        seriesColumns = [
+            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value, width=-1)
+            for key, value in series.returnDict().iteritems()
+        ]
+        self.tableSeriesTable.SetColumns(seriesColumns)
         self.tableSeriesTable.CreateCheckStateColumn()
-        self.tableSeriesTable.SetObjects(self.memDB.getSeriesCatalog())
-        #self.tableSeriesTable.RepopulateList()
-        #with Timer() as t:
+        self.tableSeriesTable.SetObjects(self.dbservice.get_all_series())
         #self.tableSeries.setColumns(self.memDB.getSeriesColumns())
         #self.tableSeries.setObjects(self.memDB.getSeriesCatalog())
-        #logger.debug("setColumns & Objects: %d" % t.interval)
-
-        self.tableSeries.EnableSelectionVista(True)
-        self.selectedIndex = 0
+        #self.tableSeries.EnableSelectionVista(True)
+        #self.selectedIndex = 0
         #self.tableSeries.Select(0)
-
 
     def initSVBoxes(self):
 
@@ -638,6 +628,48 @@ class pnlSeriesSelector(wx.Panel):
     def stopEdit(self):
         self.memDB.stopEdit()
 
+    def test(self):
+        from datetime import datetime, time
+        from time import clock, strptime
+
+        self.dataObjects = [
+            Track(title="Zoo Station", artist="U2", size=5.5, album="Achtung Baby", genre="Rock", rating=60,
+                  duration="4:37",
+                  lastPlayed="21/10/2007 5:42"),
+            Track(title="Who's Gonna Ride Your Wild Horses", artist="U2", size=6.3, album="Achtung Baby", genre="Rock",
+                  rating=80, duration="5:17", lastPlayed="9/10/2007 11:32"),
+            Track(title="So Cruel", artist="U2", size=6.9, album="Achtung Baby", genre="Rock", rating=60,
+                  duration="5:49",
+                  lastPlayed="9/10/2007 11:38"),
+            Track(title="The Fly", artist="U2", size=5.4, album="Achtung Baby", genre="Rock", rating=60,
+                  duration="4:29",
+                  lastPlayed="9/10/2007 11:42"),
+            Track(title="Tryin' To Throw Your Arms Around The World", artist="U2", size=4.7, album="Achtung Baby",
+                  genre="Rock",
+                  rating=60, duration="3:53", lastPlayed="9/10/2007 11:46")
+        ]
+        simpleColumns = [
+            ColumnDefn("Title", "left", 160, valueGetter="title", minimumWidth=40,
+                       maximumWidth=200),
+            ColumnDefn("Artist", "left", 150, valueGetter="artist", minimumWidth=40, maximumWidth=200,
+                       autoCompleteCellEditor=True),
+            ColumnDefn("Album", "left", 150, valueGetter="album", maximumWidth=250, isSpaceFilling=True,
+                       autoCompleteCellEditor=True),
+            ColumnDefn("Genre", "left", 60, valueGetter="genre", autoCompleteComboBoxCellEditor=True),
+            ColumnDefn("Size", "right", 60, valueGetter="size"),
+            ColumnDefn("Rating", "center", 60, valueGetter="rating"),
+            ColumnDefn("Duration", "center", 150, valueGetter="duration", stringConverter="%s"),
+            #ColumnDefn("Date Played", "left", 150, valueGetter="dateLastPlayed", stringConverter="%x",
+            #           valueSetter="SetDateLastPlayed"),
+            #ColumnDefn("Last Played", "left", 150, valueGetter="lastPlayed", stringConverter="%x %X", maximumWidth=100),
+            ColumnDefn("Colour", "left", 60, valueGetter="trackColour", minimumWidth=40),
+        ]
+        print "self.dataObjects: ", self.dataObjects
+
+        self.tableSeriesTable.SetColumns(simpleColumns)
+        self.tableSeriesTable.CreateCheckStateColumn(0)
+        self.tableSeriesTable.SetObjects(self.dataObjects)
+
 
 ##########only use this section when testing series selector #############
 if __name__ == '__main__':
@@ -647,3 +679,34 @@ if __name__ == '__main__':
 
     app.MainLoop()
 ##################################################################
+class Track:
+    """
+    A song in some music library
+    """
+    def __init__(self, **kwargs):
+        self.isChecked = False
+        self.attributeNames = kwargs.keys()
+        self.attributeNames.extend(["trackColour", "font", "isChecked"])
+        self.__dict__.update(kwargs)
+
+    def clone(self):
+        "Return a deep copy of this object"
+        d = {}
+        for x in self.attributeNames:
+            d[x] = getattr(self, x, None)
+        return Track(**d)
+
+    def dateLastPlayed(self):
+        "Return just the date that the track was played"
+        return self.lastPlayed.date()
+
+    def SetDateLastPlayed(self, value):
+        "Modify just the date that the track was played. The time is preserved"
+        self.lastPlayed = datetime.combine(value, self.lastPlayed.time())
+
+    def SetFontFace(self, value):
+        "Remember a font to display this object. This really shouldn't be in the model"
+        if value is None or value == "":
+            self.font = None
+        else:
+            self.font = wx.FFont(11, wx.DEFAULT, face=value)
