@@ -103,7 +103,7 @@ class SeriesService():
 
     # Series Catalog methods
     def get_all_series(self):
-        print "1",self._edit_session.query(Series).order_by(Series.id).all()
+        logger.debug("%s" % self._edit_session.query(Series).order_by(Series.id).all())
         return self._edit_session.query(Series).order_by(Series.id).all()
 
     def get_series_by_id(self, series_id):

@@ -241,7 +241,7 @@ class pnlSeriesSelector(wx.Panel):
 
         self.tableSeriesTable = clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
                                                    name=u'tableSeriesTable', size=wx.Size(903, 108), pos=wx.Point(5,5),
-                                                   style=wx.LC_REPORT | wx.TAB_TRAVERSAL | wx.SUNKEN_BORDER)
+                                                   style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         self.tableSeriesTable.SetEmptyListMsg("No Database Loaded")
         self.tableSeriesTable.handleStandardKeys = True
 
@@ -261,10 +261,8 @@ class pnlSeriesSelector(wx.Panel):
         self.cpnlSimple.Collapse(True)
         self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
                               id=wxID_PNLSERIESSELECTORtableSeries)
-
         self.tableSeries.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
                               id=wxID_PNLSERIESSELECTORtableSeries)
-
         self._init_sizers()
 
     #def testBinding(self, event):
