@@ -1,16 +1,18 @@
 import logging
 import os
+
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
-import frmQueryBuilder
-
-from clsSeriesTable import clsSeriesTable
 from wx.lib.pubsub import pub as Publisher
+from ObjectListView import ColumnDefn
+
+import frmQueryBuilder
+from clsSeriesTable import clsSeriesTable, EVT_OVL_CHECK_EVENT
 from common.logger import LoggerTool
-from ObjectListView import ColumnDefn, FastObjectListView
 from clsULC import clsULC, TextSearch, Chain
 from odmdata import MemoryDatabase, series
 from odmservices import ServiceManager
+
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -176,10 +178,10 @@ class pnlSeriesSelector(wx.Panel):
         ##        self.splitter.SetMinSize(wx.Size(-1, -1))
 
         self.cpnlSimple = wx.CollapsiblePane(self.pnlData, label="",
-                                          style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
-                                          #PCP.PyCollapsiblePane(parent=self.pnlData, label="",
-                                               # agwStyle=wx.CP_NO_TLW_RESIZE | wx.CP_GTK_EXPANDER | wx.CP_USE_STATICBOX,
-                                                #size=wx.Size(300, 20), pos=wx.Point(0, -20))
+                                             style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE)
+        #PCP.PyCollapsiblePane(parent=self.pnlData, label="",
+        # agwStyle=wx.CP_NO_TLW_RESIZE | wx.CP_GTK_EXPANDER | wx.CP_USE_STATICBOX,
+        #size=wx.Size(300, 20), pos=wx.Point(0, -20))
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.onPaneChanged, self.cpnlSimple)
 
         ## panel for simple filter(top of splitter)
@@ -240,9 +242,10 @@ class pnlSeriesSelector(wx.Panel):
         ### New Stuff ##################################################################################################
 
         self.tableSeriesTable = clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
-                                                   name=u'tableSeriesTable', size=wx.Size(903, 108), pos=wx.Point(5,5),
-                                                   style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+                                               name=u'tableSeriesTable', size=wx.Size(903, 108), pos=wx.Point(5, 5),
+                                               style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         self.tableSeriesTable.SetEmptyListMsg("No Database Loaded")
+        self.tableSeriesTable.Bind(EVT_OVL_CHECK_EVENT, self.onReadyToPlot)
         self.tableSeriesTable.handleStandardKeys = True
 
 
@@ -308,8 +311,9 @@ class pnlSeriesSelector(wx.Panel):
         #logger.debug("self.Layout(): %d" % t.interval)
 
     def initTableSeries(self):
+        """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
+
         self.memDB = MemoryDatabase(self.dbservice)
-        #self.test()
         seriesColumns = [
             ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value, width=-1)
             for key, value in series.returnDict().iteritems()
@@ -370,10 +374,9 @@ class pnlSeriesSelector(wx.Panel):
         self.tableSeries.PopupMenu(popup_menu)
         event.Skip()
 
-
     def onPaneChanged(self, event=None):
-        if event:
-            print 'wx.EVT_COLLAPSIBLEPANE_CHANGED: %s\n' % event.Collapsed
+        #if event:
+        #    print 'wx.EVT_COLLAPSIBLEPANE_CHANGED: %s\n' % event.Collapsed
         self.Layout()
 
     def onRbAdvancedRadiobutton(self, event):
@@ -392,7 +395,6 @@ class pnlSeriesSelector(wx.Panel):
         self.Layout()
         self.setFilter()
         event.Skip()
-
 
     def onRbSimpleRadiobutton(self, event):
 
@@ -586,6 +588,28 @@ class pnlSeriesSelector(wx.Panel):
                                       wx.OK | wx.ICON_INFORMATION)
         self.Refresh()
 
+    def onReadyToPlot(self, event):
+        """Plots a series selected from the series selector
+
+        :param event: EVT_OVL_CHECK_EVENT type
+        """
+
+        checkedCount = len(self.tableSeriesTable.GetCheckedObjects())
+        Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=(checkedCount > 0))
+
+        object = event.object
+        logger.debug("List of Checked Objects: %s" % (self.tableSeriesTable.GetCheckedObjects()))
+        if not self.tableSeriesTable.IsChecked(object):
+            logger.debug("%s isn't checked: %s" % (object.id, object))
+            Publisher.sendMessage("removePlot", seriesID=object.id)
+        else:
+            logger.debug("%s is checked: %s" % (object.id, object))
+            self.parent.Parent.addPlot(self.memDB, object.id)
+        self.Refresh()
+
+    def onReadyToEdit(self, event):
+        pass
+
     def getSelectedIndex(self):
         return self.tableSeries.getSelection()
 
@@ -604,7 +628,6 @@ class pnlSeriesSelector(wx.Panel):
                 isSelected = True
 
                 #self.parent.Parent.addEdit(seriesID, self.memDB)
-
             else:
                 isSelected = False
                 logger.debug("series was not checked")
@@ -622,52 +645,8 @@ class pnlSeriesSelector(wx.Panel):
         self.isEditing = isSelected
         return isSelected, self.getSelectedID(), self.memDB
 
-
     def stopEdit(self):
         self.memDB.stopEdit()
-
-    def test(self):
-        from datetime import datetime, time
-        from time import clock, strptime
-
-        self.dataObjects = [
-            Track(title="Zoo Station", artist="U2", size=5.5, album="Achtung Baby", genre="Rock", rating=60,
-                  duration="4:37",
-                  lastPlayed="21/10/2007 5:42"),
-            Track(title="Who's Gonna Ride Your Wild Horses", artist="U2", size=6.3, album="Achtung Baby", genre="Rock",
-                  rating=80, duration="5:17", lastPlayed="9/10/2007 11:32"),
-            Track(title="So Cruel", artist="U2", size=6.9, album="Achtung Baby", genre="Rock", rating=60,
-                  duration="5:49",
-                  lastPlayed="9/10/2007 11:38"),
-            Track(title="The Fly", artist="U2", size=5.4, album="Achtung Baby", genre="Rock", rating=60,
-                  duration="4:29",
-                  lastPlayed="9/10/2007 11:42"),
-            Track(title="Tryin' To Throw Your Arms Around The World", artist="U2", size=4.7, album="Achtung Baby",
-                  genre="Rock",
-                  rating=60, duration="3:53", lastPlayed="9/10/2007 11:46")
-        ]
-        simpleColumns = [
-            ColumnDefn("Title", "left", 160, valueGetter="title", minimumWidth=40,
-                       maximumWidth=200),
-            ColumnDefn("Artist", "left", 150, valueGetter="artist", minimumWidth=40, maximumWidth=200,
-                       autoCompleteCellEditor=True),
-            ColumnDefn("Album", "left", 150, valueGetter="album", maximumWidth=250, isSpaceFilling=True,
-                       autoCompleteCellEditor=True),
-            ColumnDefn("Genre", "left", 60, valueGetter="genre", autoCompleteComboBoxCellEditor=True),
-            ColumnDefn("Size", "right", 60, valueGetter="size"),
-            ColumnDefn("Rating", "center", 60, valueGetter="rating"),
-            ColumnDefn("Duration", "center", 150, valueGetter="duration", stringConverter="%s"),
-            #ColumnDefn("Date Played", "left", 150, valueGetter="dateLastPlayed", stringConverter="%x",
-            #           valueSetter="SetDateLastPlayed"),
-            #ColumnDefn("Last Played", "left", 150, valueGetter="lastPlayed", stringConverter="%x %X", maximumWidth=100),
-            ColumnDefn("Colour", "left", 60, valueGetter="trackColour", minimumWidth=40),
-        ]
-        print "self.dataObjects: ", self.dataObjects
-
-        self.tableSeriesTable.SetColumns(simpleColumns)
-        self.tableSeriesTable.CreateCheckStateColumn(0)
-        self.tableSeriesTable.SetObjects(self.dataObjects)
-
 
 ##########only use this section when testing series selector #############
 if __name__ == '__main__':
@@ -677,34 +656,4 @@ if __name__ == '__main__':
 
     app.MainLoop()
 ##################################################################
-class Track:
-    """
-    A song in some music library
-    """
-    def __init__(self, **kwargs):
-        self.isChecked = False
-        self.attributeNames = kwargs.keys()
-        self.attributeNames.extend(["trackColour", "font", "isChecked"])
-        self.__dict__.update(kwargs)
 
-    def clone(self):
-        "Return a deep copy of this object"
-        d = {}
-        for x in self.attributeNames:
-            d[x] = getattr(self, x, None)
-        return Track(**d)
-
-    def dateLastPlayed(self):
-        "Return just the date that the track was played"
-        return self.lastPlayed.date()
-
-    def SetDateLastPlayed(self, value):
-        "Modify just the date that the track was played. The time is preserved"
-        self.lastPlayed = datetime.combine(value, self.lastPlayed.time())
-
-    def SetFontFace(self, value):
-        "Remember a font to display this object. This really shouldn't be in the model"
-        if value is None or value == "":
-            self.font = None
-        else:
-            self.font = wx.FFont(11, wx.DEFAULT, face=value)

@@ -137,9 +137,8 @@ class clsULC(ULC.UltimateListCtrl):
             # uncheck it visibly
             self.checkItem(id, isChecked=False)
             self.subList[id][-1] = False
-            logger.debug("CheckCount: %d" % (self.checkCount))
+            #logger.debug("CheckCount: %d" % (self.checkCount))
             return False
-
 
     # check visibly on SeriesSelector Gui
     def checkItem(self, index, isChecked=True, sendEvent=False):
