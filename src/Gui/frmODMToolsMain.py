@@ -236,7 +236,8 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.Update()
 
     def addEdit(self, event):
-        isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
+        #isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
+        isSelected, seriesID, memDB = self.pnlSelector.onReadyToEdit()
         #print seriesID
 
         if isSelected:

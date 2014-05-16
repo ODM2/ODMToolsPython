@@ -246,6 +246,7 @@ class pnlSeriesSelector(wx.Panel):
                                                style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         self.tableSeriesTable.SetEmptyListMsg("No Database Loaded")
         self.tableSeriesTable.Bind(EVT_OVL_CHECK_EVENT, self.onReadyToPlot)
+        self.tableSeriesTable.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.getSelectedObject)
         self.tableSeriesTable.handleStandardKeys = True
 
 
@@ -415,7 +416,6 @@ class pnlSeriesSelector(wx.Panel):
         if self.isEditing:
             Publisher.sendMessage("toggleEdit", checked=True)
         event.Skip()
-
     # allows user to right-click refresh the Series Selector
     def onRightRefresh(self, event):
         self.refreshSeries()
@@ -607,8 +607,30 @@ class pnlSeriesSelector(wx.Panel):
             self.parent.Parent.addPlot(self.memDB, object.id)
         self.Refresh()
 
-    def onReadyToEdit(self, event):
-        pass
+    def getSelectedObject(self, event):
+        """Capture the currently selected Object to be used for editing
+
+        :param event: wx.EVT_LIST_ITEM_FOCUSED type
+        """
+
+        object = event.GetEventObject().GetSelectedObject()
+        logger.debug("Selected: %s" % object)
+        self.tableSeriesTable.currentlySelectedObject = object
+
+    def onReadyToEdit(self):
+        """Choose a series to edit from the series selector"""
+
+        object = self.tableSeriesTable.currentlySelectedObject
+        if object is not None:
+            if object in self.tableSeriesTable.GetCheckedObjects():
+                self.memDB.initEditValues(object.id)
+                self.isEditing = True
+                return True, object.id, self.memDB
+            else:
+                wx.MessageBox("Visualization is limited to {0} series.".format(self.tableSeriesTable.allowedLimit),
+                              "Can't add plot", wx.OK | wx.ICON_INFORMATION)
+        self.isEditing = False
+        return False, object.id, self.memDB
 
     def getSelectedIndex(self):
         return self.tableSeries.getSelection()

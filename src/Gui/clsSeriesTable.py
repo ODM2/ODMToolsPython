@@ -17,18 +17,21 @@ class clsSeriesTable(FastObjectListView):
     """Max Number of Allowed Plots"""
     allowedLimit = 6
 
+    """Selected Object for editing"""
+    currentlySelectedObject = None
+
+    """User can select using the space bar """
     def SetCheckState(self, modelObject, state):
         """
         This is the same code as the original SetCheckState in ObjectListView but
         has been enhanced to check against an allowed limit
         """
-        print "SetCheckState called!"
+        #print "SetCheckState called!"
 
         if self.checkStateColumn is None:
             return None
         else:
             checkedlen = len(self.GetCheckedObjects())
-            logger.debug("checkedlen: %d <= %d" % (checkedlen, self.allowedLimit))
             if self.GetCheckState(modelObject) is False:
                 if checkedlen < self.allowedLimit:
                     r = self.checkStateColumn.SetCheckState(modelObject, state)
@@ -53,12 +56,13 @@ class clsSeriesTable(FastObjectListView):
 
                     return r
 
+    """User can select series using the mouse to click on check boxes """
     def _HandleLeftDownOnImage(self, rowIndex, subItemIndex):
         """
         This is the same code, just added the original _HandleLeftDownOnImage in ObjectListView but
         has been enhanced to check against an allowed limit
         """
-        print "_HandleLeftDownOnImage called!", rowIndex, " ", subItemIndex
+        #print "_HandleLeftDownOnImage called!", rowIndex, " ", subItemIndex
 
         column = self.columns[subItemIndex]
         if not column.HasCheckState():
