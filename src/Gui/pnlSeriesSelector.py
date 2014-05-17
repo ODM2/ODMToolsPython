@@ -546,6 +546,12 @@ class pnlSeriesSelector(wx.Panel):
         elif (site_code):
             self.tableSeries.setFilter(
                 TextSearch(self.tableSeries, columns=self.tableSeries.columns[2:4], text=site_code))
+
+            #modelObjects = self.tableSeriesTable.GetObjects()
+            #filteredObjects = [x for x in modelObjects if x.site_code == site_code]
+            #self.tableSeriesTable.SetObjects(filteredObjects)
+
+
         elif (var_code):
             self.tableSeries.setFilter(
                 TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], text=var_code))
@@ -626,9 +632,7 @@ class pnlSeriesSelector(wx.Panel):
                 self.memDB.initEditValues(object.id)
                 self.isEditing = True
                 return True, object.id, self.memDB
-            else:
-                wx.MessageBox("Visualization is limited to {0} series.".format(self.tableSeriesTable.allowedLimit),
-                              "Can't add plot", wx.OK | wx.ICON_INFORMATION)
+
         self.isEditing = False
         return False, object.id, self.memDB
 
