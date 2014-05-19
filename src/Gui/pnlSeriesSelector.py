@@ -4,6 +4,7 @@ import os
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
 from wx.lib.pubsub import pub as Publisher
+
 from ObjectListView import ColumnDefn
 
 import frmQueryBuilder
@@ -243,7 +244,7 @@ class pnlSeriesSelector(wx.Panel):
 
         self.tableSeriesTable = clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
                                                name=u'tableSeriesTable', size=wx.Size(903, 108), pos=wx.Point(5, 5),
-                                               style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+                                               style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VIRTUAL)
         self.tableSeriesTable.SetEmptyListMsg("No Database Loaded")
         self.tableSeriesTable.Bind(EVT_OVL_CHECK_EVENT, self.onReadyToPlot)
         self.tableSeriesTable.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.getSelectedObject)
@@ -316,12 +317,14 @@ class pnlSeriesSelector(wx.Panel):
 
         self.memDB = MemoryDatabase(self.dbservice)
         seriesColumns = [
-            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value, width=-1)
+            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value)
             for key, value in series.returnDict().iteritems()
         ]
         self.tableSeriesTable.SetColumns(seriesColumns)
         self.tableSeriesTable.CreateCheckStateColumn()
-        self.tableSeriesTable.SetObjects(self.dbservice.get_all_series())
+        object = self.dbservice.get_all_series()
+        self.tableSeriesTable.SetObjects(object)
+        self.tableSeriesTable.SaveObject(object)
         #self.tableSeries.setColumns(self.memDB.getSeriesColumns())
         #self.tableSeries.setObjects(self.memDB.getSeriesCatalog())
         #self.tableSeries.EnableSelectionVista(True)
@@ -402,6 +405,7 @@ class pnlSeriesSelector(wx.Panel):
         self.cpnlSimple.Expand()
         self.Layout()
         self.setFilter(self.site_code, self.variable_code)
+
         event.Skip()
 
     def onRightPlot(self, event):
@@ -539,30 +543,35 @@ class pnlSeriesSelector(wx.Panel):
         event.Skip()
 
     def setFilter(self, site_code='', var_code='', advfilter=''):
-        if (site_code and var_code):
-            self.siteFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[2:4], text=site_code)
-            self.variableFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], text=var_code)
-            self.tableSeries.setFilter(Chain(self.siteFilter, self.variableFilter))
-        elif (site_code):
-            self.tableSeries.setFilter(
-                TextSearch(self.tableSeries, columns=self.tableSeries.columns[2:4], text=site_code))
 
-            #modelObjects = self.tableSeriesTable.GetObjects()
-            #filteredObjects = [x for x in modelObjects if x.site_code == site_code]
-            #self.tableSeriesTable.SetObjects(filteredObjects)
-
-
-        elif (var_code):
-            self.tableSeries.setFilter(
-                TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], text=var_code))
-        elif (advfilter):
+        if site_code and var_code:
+            self.tableSeries.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', text=site_code, var=var_code))
+            #self.siteFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[2:4], text=site_code)
+            #self.variableFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], var=var_code)
+            #self.tableSeries.setFilter(Chain(self.siteFilter, self.variableFilter))
+        elif site_code:
+            self.tableSeries.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', text=site_code))
+        elif var_code:
+            self.tableSeries.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', var=var_code))
+        elif advfilter:
             self.tableSeries.setFilter(advfilter)
         else:
-            self.tableSeries.clearFilter()
+            self.tableSeriesTable.SetObjects(self.tableSeriesTable.GetModelObjects())
+            return
 
+        self.tableSeriesTable.SetObjects(None)
+        #self.tableSeriesTable.SetEmptyListMsg("Updating Filter... Site/Variable: %s/%s" % (site_code, var_code))
         self.tableSeries.repopulateList()
+        self.tableSeriesTable.SetObjects(self.tableSeries.getFilteredObjects())
 
+
+        #modelObjects = self.tableSeriesTable.GetObjects()
+        #filteredObjects = [x for x in modelObjects if x.site_code == site_code]
+        #self.tableSeriesTable.SetObjects(filteredObjects)
+
+    """ Not using"""
     def onTableSeriesListItemSelected(self, event):
+        logger.fatal("I shouldn't be using this function")
 
         self.selectForPlot(event.m_itemIndex)
         #logger.debug("Checked: %s\n" % (x for x in self.tableSeries.getChecked()))
@@ -574,7 +583,10 @@ class pnlSeriesSelector(wx.Panel):
         Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=isActive)
         event.Skip()
 
+    """ Not using"""
     def selectForPlot(self, selIndex):
+        logger.fatal("I shouldn't be using this function")
+
         #logger.debug("self.tableseries.InnerList: %s" % (''.join(map(str, self.tableSeries.innerList))))
         sid = self.tableSeries.subList[selIndex][0]
         #logger.debug("sid: %s" % (sid))
@@ -636,16 +648,23 @@ class pnlSeriesSelector(wx.Panel):
         self.isEditing = False
         return False, object.id, self.memDB
 
+    """Not using"""
     def getSelectedIndex(self):
+        logger.fatal("I shouldn't be using this function")
         return self.tableSeries.getSelection()
 
+    """Not using"""
     def getSelectedID(self):
+        logger.fatal("I shouldn't be using this function")
         return self.tableSeries.getColumnText(self.tableSeries.getSelection(), 1)
 
     def isEditing(self):
         return self.isEditing
 
+    """Not using"""
     def selectForEdit(self):
+        logger.fatal("I shouldn't be using this function")
+
         isSelected = False
 
         if not self.tableSeries.isChecked(self.getSelectedIndex()):

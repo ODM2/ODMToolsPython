@@ -17,6 +17,9 @@ class clsSeriesTable(FastObjectListView):
     """Max Number of Allowed Plots"""
     allowedLimit = 6
 
+    """List of modelObjects"""
+    _modelObjects = []
+
     """Selected Object for editing"""
     currentlySelectedObject = None
 
@@ -93,6 +96,19 @@ class clsSeriesTable(FastObjectListView):
                     e = OvlCheckEvent(object=modelObject, value=column.GetCheckState(modelObject))
                     wx.PostEvent(self, e)
                     # =============================================================
+
+    def SaveObject(self, object):
+        """Original List of objects is stored while filtering"""
+        self._modelObjects = object
+
+    def GetModelObjects(self):
+        """Returns the original modelobjects
+        To be used for after filtering in order to return to the original list of objects
+
+        :rtype: list of modelObjects
+        """
+        return self._modelObjects if self._modelObjects else []
+
 
 
 
