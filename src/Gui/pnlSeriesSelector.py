@@ -246,9 +246,33 @@ class pnlSeriesSelector(wx.Panel):
                                                name=u'tableSeriesTable', size=wx.Size(903, 108), pos=wx.Point(5, 5),
                                                style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VIRTUAL)
         self.tableSeriesTable.SetEmptyListMsg("No Database Loaded")
+
+        def _rowFormatter(listItem, object):
+            """Handles the formatting of rows for object list view
+            :param: wx.ListCtrl listitem
+            :param: ModelObject object
+
+            :rtype: None
+            """
+            if self.isEditing:
+                if self.tableSeriesTable.editingObject and \
+                                object.id == self.tableSeriesTable.editingObject.id:
+                    listItem.SetTextColour(wx.Colour(255, 0, 255))
+                    # font type: wx.DEFAULT, wx.DECORATIVE, wx.ROMAN, wx.SCRIPT, wx.SWISS, wx.MODERN
+                    # slant: wx.NORMAL, wx.SLANT or wx.ITALIC
+                    # weight: wx.NORMAL, wx.LIGHT or wx.BOLD
+                    #font1 = wx.Font(10, wx.SWISS, wx.ITALIC, wx.NORMAL)
+                    # use additional fonts this way ...
+                    #font1 = wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Comic Sans MS')
+                    listItem.SetFont(
+                        wx.Font(9, family=wx.DECORATIVE, weight=wx.LIGHT, style=wx.NORMAL, face=u'Lucida Console'))
+
+        self.tableSeriesTable.rowFormatter = _rowFormatter
         self.tableSeriesTable.Bind(EVT_OVL_CHECK_EVENT, self.onReadyToPlot)
         self.tableSeriesTable.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.getSelectedObject)
         self.tableSeriesTable.handleStandardKeys = True
+
+
 
 
         ################################################################################################################
@@ -270,8 +294,9 @@ class pnlSeriesSelector(wx.Panel):
                               id=wxID_PNLSERIESSELECTORtableSeries)
         self._init_sizers()
 
-    #def testBinding(self, event):
-    #    print "event:", event.m_itemIndex
+
+
+
 
     def initPubSub(self):
         #Publisher.subscribe(self.onEditButton, ("selectEdit"))
@@ -325,11 +350,7 @@ class pnlSeriesSelector(wx.Panel):
         object = self.dbservice.get_all_series()
         self.tableSeriesTable.SetObjects(object)
         self.tableSeriesTable.SaveObject(object)
-        #self.tableSeries.setColumns(self.memDB.getSeriesColumns())
-        #self.tableSeries.setObjects(self.memDB.getSeriesCatalog())
-        #self.tableSeries.EnableSelectionVista(True)
-        #self.selectedIndex = 0
-        #self.tableSeries.Select(0)
+
 
     def initSVBoxes(self):
 
@@ -638,15 +659,29 @@ class pnlSeriesSelector(wx.Panel):
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector"""
 
-        object = self.tableSeriesTable.currentlySelectedObject
+        ovl = self.tableSeriesTable
+
+        object = ovl.currentlySelectedObject
         if object is not None:
-            if object in self.tableSeriesTable.GetCheckedObjects():
+            if len(ovl.GetCheckedObjects()) <= ovl.allowedLimit:
+                if object not in ovl.GetCheckedObjects():
+                    ovl.ToggleCheck(object)
+
                 self.memDB.initEditValues(object.id)
                 self.isEditing = True
+                ovl.editingObject = object
                 return True, object.id, self.memDB
-
+            else:
+                isSelected = False
+                logger.debug("series was not checked")
+                val_2 = wx.MessageBox("Visualization is limited to 6 series.",
+                                      "Can't add plot",
+                                      wx.OK | wx.ICON_INFORMATION)
         self.isEditing = False
+        ovl.editingObject = None
         return False, object.id, self.memDB
+
+
 
     """Not using"""
     def getSelectedIndex(self):

@@ -20,8 +20,11 @@ class clsSeriesTable(FastObjectListView):
     """List of modelObjects"""
     _modelObjects = []
 
-    """Selected Object for editing"""
+    """Focused Object"""
     currentlySelectedObject = None
+
+    """Object being edited"""
+    editingObject = None
 
     """User can select using the space bar """
     def SetCheckState(self, modelObject, state):
@@ -108,6 +111,8 @@ class clsSeriesTable(FastObjectListView):
         :rtype: list of modelObjects
         """
         return self._modelObjects if self._modelObjects else []
+
+
 
 
 
