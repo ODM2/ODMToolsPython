@@ -50,3 +50,5 @@ setup/Output/setup.exe
 
 *.log
 .idea
+*.png
+*.uml
