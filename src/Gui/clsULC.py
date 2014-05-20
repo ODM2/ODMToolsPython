@@ -148,7 +148,6 @@ class clsULC(ULC.UltimateListCtrl):
         # TODO clsUCL object has no attribute 'getItem'
         self._mainWin.CheckItem(self.GetItem(index, 0), isChecked, sendEvent)
 
-
     def getColumnText(self, index, colid):
         # print self.GetItemData(index)
         item = self.GetItem(index, colid)

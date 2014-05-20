@@ -33,8 +33,9 @@ class pnlDataTable(wx.Panel):
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
         self.myOlv.handleStandardKeys = True
+        self.myOlv.rowFormatter = self._rowFormatter
 
-        self.currentItem = 0
+        self.currentItem = None
 
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_2.Add(self.myOlv, 1, wx.ALL | wx.EXPAND, 4)
@@ -62,29 +63,33 @@ class pnlDataTable(wx.Panel):
         self.myOlv.oddRowsBackColor = "SlateGray"
         self.myOlv.AutoSizeColumns()
 
-
         # self.values = [list(x) for x in self.cursor.fetchall()]
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def onRefresh(self, e):
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
-
     def clear(self):
         self.memDB = None
         self.record_service = None
         self.myOlv.SetObjects(None)
 
-
     def onItemSelected(self, event):
+        """Capture the currently selected Object to be used for editing
+
+        :param event: wx.EVT_LIST_ITEM_FOCUSED type
+        """
 
         self.currentItem = event.GetEventObject().GetSelectedObjects()
+        self.myOlv.RefreshObjects(self.currentItem)
+        #logger.debug("selectedObjects %s" % self.currentItem)
+
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot
         Publisher.sendMessage(("changeSelection"), sellist=[], datetime_list=[x[3] for x in self.currentItem])
 
     def onKeyPress(self, event):
-        # check for Ctrl+A
+        """Checks for when user inputs Ctrl+A"""
         keycode = event.GetKeyCode()
         logger.debug("keycode %s" % keycode)
         if keycode == 1:
@@ -112,12 +117,10 @@ class pnlDataTable(wx.Panel):
             #logger.debug(datetime_list)
             objlist = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
 
-        if len(objlist)>0:
+        if len(objlist) > 0:
             self.myOlv.SelectObject(objlist[0], deselectOthers=True, ensureVisible=True)
         #logger.debug(objs)
         self.myOlv.SelectObjects(objlist, deselectOthers=True)
-
-
 
     def stopEdit(self):
         self.clear()
@@ -126,7 +129,35 @@ class pnlDataTable(wx.Panel):
         idlist = [False] * self.memDB.getEditRowCount()
         for sel in selobjects:
             idlist[self.myOlv.GetIndexOf(sel)] = True
-
         return idlist
+
+    def _rowFormatter(self, listItem, object):
+        """Handles the formatting of rows for object list view
+        :param: wx.ListCtrl listitem
+        :param: ModelObject object
+
+        :rtype: None
+        """
+
+        if self.currentItem and object in self.currentItem:
+
+            #print self.currentItem
+            #listItem.SetTextColour(wx.Colour(25, 25, 112))
+            # font type: wx.DEFAULT, wx.DECORATIVE, wx.ROMAN, wx.SCRIPT, wx.SWISS, wx.MODERN
+            # slant: wx.NORMAL, wx.SLANT or wx.ITALIC
+            # weight: wx.NORMAL, wx.LIGHT or wx.BOLD
+            #font1 = wx.Font(10, wx.SWISS, wx.ITALIC, wx.NORMAL)
+            # use additional fonts this way ...
+            #font1 = wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Comic Sans MS')
+            listItem.SetFont(
+                wx.Font(9, wx.DECORATIVE, wx.ITALIC, wx.BOLD, face=u'Lucida Console'))
+        else:
+            listItem.SetTextColour(wx.Colour())
+            listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+
+
+
+
+
 
 
