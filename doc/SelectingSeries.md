@@ -1,0 +1,5 @@
+When ODM Tools Python opens, the default windows are the Plot (main screen) and the Series Selector (lower portion of screen). The Series Selector is used to filter and select data series for plotting, editing, and export. Note that in ODM, data series are defined as the unique combination of Site+Variable+QCLevel+Method+Source.  
+
+The Series Selector consists of a table with a list of data series and radio buttons to indicate filtering on the series. If the 'All' radio button is selected, all of the data series in the database are shown. Included in the Series Selector table are attributes of the data series including Site information, Variable and Method information, Quality Control Level information, Date range, and number of observations.By default, the table is sorted by the SeriesID, but any of the column headers can be clicked to sort by that column.
+
+To plot any of the series, simply check the corresponding check box on the right of the series in the Series Selector list. Up to six series may be selected for plotting at once. 
