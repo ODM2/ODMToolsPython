@@ -158,7 +158,7 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.Plot(self._seriesPlotInfo)
 
         self.onShowLegend(event=None, isVisible=self.legendVisible)
-        maxStart,maxEnd, currStart,currEnd = self._seriesPlotInfo.getDates()
+        maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart= currStart, currEnd=currEnd)
 
 

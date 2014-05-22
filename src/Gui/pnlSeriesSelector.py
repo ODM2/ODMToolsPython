@@ -223,6 +223,9 @@ class pnlSeriesSelector(wx.Panel):
         self.tableSeriesTable.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
                                    id=wxID_PNLSERIESSELECTORtableSeries)
         self.tableSeriesTable.handleStandardKeys = True
+        self.tableSeriesTable.useAlternateBackColors = True
+        #self.tableSeriesTable.oddRowsBackColor = wx.Colour(143, 188, 188)
+        self.tableSeriesTable.oddRowsBackColor = wx.Colour(191, 217, 217)
 
         ################################################################################################################
         self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeriesTest,
@@ -377,6 +380,8 @@ class pnlSeriesSelector(wx.Panel):
         event.Skip()
 
     def onRightPlot(self, event):
+        object = self.tableSeriesTable.GetSelectedObject()
+        self.tableSeriesTable.ToggleCheck(object)
         self.onReadyToPlot(event)
         event.Skip()
 
@@ -418,12 +423,11 @@ class pnlSeriesSelector(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
 
-            self.selectedIndex = self.tableSeriesTable.GetIndexOf(self.tableSeriesTable.GetSelectedObject())
-            print "Selected Index ", self.selectedIndex
-            series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
-            print "series_id", series_id
+            self.selectedIndex = self.tableSeriesTable.GetSelectedObject().id
+            #series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
+            #print "series_id", series_id
 
-            self.export_service.export_series_metadata(series_id, full_path)
+            self.export_service.export_series_metadata(self.selectedIndex , full_path)
             self.Close()
 
         dlg.Destroy()
@@ -581,7 +585,11 @@ class pnlSeriesSelector(wx.Panel):
         checkedCount = len(self.tableSeriesTable.GetCheckedObjects())
         Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=(checkedCount > 0))
 
-        object = event.object
+        try:
+            object = event.object
+        except:
+            object = self.tableSeriesTable.GetSelectedObject()
+
         #logger.debug("List of Checked Objects: %s" % (self.tableSeriesTable.GetCheckedObjects()))
         if not self.tableSeriesTable.IsChecked(object):
             #logger.debug("%s isn't checked: %s" % (object.id, object))
@@ -691,7 +699,7 @@ class pnlSeriesSelector(wx.Panel):
         """
         if self.tableSeriesTable.editingObject and \
                         object.id == self.tableSeriesTable.editingObject.id:
-            listItem.SetTextColour(wx.Colour(25, 25, 112))
+            #listItem.SetTextColour(wx.Colour(255, 25, 112))
             # font type: wx.DEFAULT, wx.DECORATIVE, wx.ROMAN, wx.SCRIPT, wx.SWISS, wx.MODERN
             # slant: wx.NORMAL, wx.SLANT or wx.ITALIC
             # weight: wx.NORMAL, wx.LIGHT or wx.BOLD
@@ -699,10 +707,10 @@ class pnlSeriesSelector(wx.Panel):
             # use additional fonts this way ...
             #font1 = wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Comic Sans MS')
             listItem.SetFont(
-                wx.Font(8, family=wx.DECORATIVE, weight=wx.LIGHT, style=wx.NORMAL, face=u'Lucida Console'))
+                wx.Font(9, family=wx.DEFAULT, weight=wx.BOLD, style=wx.ITALIC))
         else:
             listItem.SetTextColour(wx.Colour())
-            listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+            listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
 
 ##########only use this section when testing series selector #############
 if __name__ == '__main__':

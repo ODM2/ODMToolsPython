@@ -32,7 +32,7 @@ class pnlDataTable(wx.Panel):
 
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
-        self.myOlv.handleStandardKeys = True
+        #self.myOlv.handleStandardKeys = True
         self.myOlv.rowFormatter = self._rowFormatter
 
         self.currentItem = None
@@ -43,6 +43,7 @@ class pnlDataTable(wx.Panel):
 
         self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
+        self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
 
         Publisher.subscribe(self.onChangeSelection, ("changeTableSelection"))
         Publisher.subscribe(self.onRefresh, ("refreshTable"))
@@ -60,8 +61,9 @@ class pnlDataTable(wx.Panel):
 
         #####table Settings
         self.myOlv.useAlternateBackColors = True
-        self.myOlv.oddRowsBackColor = "SlateGray"
-        self.myOlv.AutoSizeColumns()
+        self.myOlv.oddRowsBackColor = wx.Colour(191, 217, 217)
+        #self.myOlv.oddRowsBackColor = "SlateGray"
+        #self.myOlv.AutoSizeColumns()
 
         # self.values = [list(x) for x in self.cursor.fetchall()]
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
@@ -79,48 +81,31 @@ class pnlDataTable(wx.Panel):
 
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
-
-        self.currentItem = event.GetEventObject().GetSelectedObjects()
-        self.myOlv.RefreshObjects(self.currentItem)
+        #self.currentItem = event.GetEventObject().GetSelectedObjects()
+        self.currentItem = self.myOlv.GetSelectedObjects()
         #logger.debug("selectedObjects %s" % self.currentItem)
 
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot
         Publisher.sendMessage(("changeSelection"), sellist=[], datetime_list=[x[3] for x in self.currentItem])
 
-    def onKeyPress(self, event):
-        """Checks for when user inputs Ctrl+A"""
-        keycode = event.GetKeyCode()
-        logger.debug("keycode %s" % keycode)
-        if keycode == 1:
-            #logger.debug("OnKeyPress! Ctrl+A was pressed")
-            self.myOlv.SelectAll()
-            self.currentItem = self.myOlv.GetSelectedObjects()
-            logger.debug("itemtype %s" % type(self.currentItem))
-
-            if len(self.currentItem) > 0: pass
-            #print "self.currentItem: ", self.currentItem
-            #print "len: ", len(self.currentItem)
-
-            #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
-            self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
-            Publisher.sendMessage(("changeSelection"), sellist=[], datetime_list=[x[3] for x in self.currentItem])
 
     def onChangeSelection(self, sellist=[], datetime_list=[]):
         objlist = []
-        #self.myOlv.SelectObject(None, deselectOthers=True)
         if len(sellist) > 0:
             for i in range(len(sellist)):
                 if sellist[i]:
                     objlist.append(self.myOlv.GetObjectAt(i))
         else:
-            #logger.debug(datetime_list)
             objlist = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
 
         if len(objlist) > 0:
-            self.myOlv.SelectObject(objlist[0], deselectOthers=True, ensureVisible=True)
-        #logger.debug(objs)
+            self.myOlv.SelectObjects(objlist[0], deselectOthers=True)
         self.myOlv.SelectObjects(objlist, deselectOthers=True)
+
+    def onKeyPress(self, evt):
+        """Ignores Keypresses"""
+        pass
 
     def stopEdit(self):
         self.clear()
@@ -138,11 +123,11 @@ class pnlDataTable(wx.Panel):
 
         :rtype: None
         """
+        objects = self.myOlv.GetSelectedObjects()
 
-        if self.currentItem and object in self.currentItem:
+        #if self.currentItem and object in self.currentItem:
+        if objects and object in objects:
 
-            #print self.currentItem
-            #listItem.SetTextColour(wx.Colour(25, 25, 112))
             # font type: wx.DEFAULT, wx.DECORATIVE, wx.ROMAN, wx.SCRIPT, wx.SWISS, wx.MODERN
             # slant: wx.NORMAL, wx.SLANT or wx.ITALIC
             # weight: wx.NORMAL, wx.LIGHT or wx.BOLD
@@ -150,12 +135,31 @@ class pnlDataTable(wx.Panel):
             # use additional fonts this way ...
             #font1 = wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Comic Sans MS')
             listItem.SetFont(
-                wx.Font(9, wx.DECORATIVE, wx.ITALIC, wx.BOLD, face=u'Lucida Console'))
+                wx.Font(9, wx.DECORATIVE, wx.ITALIC, wx.BOLD))
         else:
-            listItem.SetTextColour(wx.Colour())
             listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
 
 
+    '''
+    def onKeyPress(self, event):
+        """Checks for when user inputs Ctrl+A"""
+        keycode = event.GetKeyCode()
+        logger.debug("keycode %s" % keycode)
+        if keycode == 1:
+            #logger.debug("OnKeyPress! Ctrl+A was pressed")
+            self.myOlv.SelectAll()
+            self.currentItem = self.myOlv.GetSelectedObjects()
+            #logger.debug("itemtype %s" % self.currentItem)
+
+            if len(self.currentItem) > 0:
+                pass
+            #print "self.currentItem: ", self.currentItem
+            #print "len: ", len(self.currentItem)
+
+            #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
+            self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
+            Publisher.sendMessage("changeSelection", sellist=[], datetime_list=[x[3] for x in self.currentItem])
+    '''
 
 
 

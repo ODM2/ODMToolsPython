@@ -1,5 +1,4 @@
 import os
-
 import wx
 import logging
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
@@ -135,6 +134,7 @@ class MyCustomToolbar(NavigationToolbar):
         self.canvas.draw_idle()
         #self.canvas.widgetlock.release(self.lasso)
         del self.lasso
+
 
     def untoggle_mpl_tools(self):
         """
