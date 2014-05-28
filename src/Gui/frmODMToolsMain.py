@@ -39,8 +39,6 @@ import logging
 
 def create(parent):
     return frmODMToolsMain(parent)
-
-
 [
     wxID_ODMTOOLS, wxID_ODMTOOLSCHECKLISTBOX2, wxID_ODMTOOLSCOMBOBOX1,
     wxID_ODMTOOLSCOMBOBOX2, wxID_ODMTOOLSCOMBOBOX4, wxID_ODMTOOLSCOMBOBOX5,
