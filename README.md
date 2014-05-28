@@ -9,7 +9,7 @@ ODMTools is a python application for managing observational data using the Obser
 
 ##Releases
 
-+	[Beta v1.0 ] (https://github.com/UCHIC/ODMToolsPython/releases/tag/v1.0-beta)
++	Latest Release: [Beta v1.0 ] (https://github.com/UCHIC/ODMToolsPython/releases/tag/v1.0-beta)
 +	[Developmental v0.1](https://github.com/UCHIC/ODMToolsPython/releases/tag/win_v0.1_exp)
 
 Running From Source on Windows
