@@ -57,6 +57,7 @@ The default behavior is to plot the full date range of the values in a data seri
 ##Plot Tools: Zooming and Panning##
 
 The toolbar at the bottom of the plot window features tools for interacting with the plot, notably zooming and panning. 
+
     -![ZoomButton](images/ZoomButton.png) When the Zoom button is selected, left clicking on the plot and holding the mouse down draws a box around the area to which the plot will zoom. Right clicking and drawing a box will zoom out on the plot. 
     -![PanButton](images/PanButton.png) When the Pan button is selected, clicking and dragging on the plot will pan over the plot. 
     -![PanArrows](images/PanArrows.png) The Right and Left Arrow buttons can be used to pan forward and backward in time. 
