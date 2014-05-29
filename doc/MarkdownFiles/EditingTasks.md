@@ -8,9 +8,8 @@ Points representing individual data values can be selected using the table inter
 
 ![TableSelect](images/TableSelect.png)
 
-To select data points on the plot, use the 'Lasso Select' button in the plot toolbar. With the lasso active, the cursor can be used to draw a shape around points to select them. This can be used to select consecutive points and/or points of similar values. To begin selection, click on the plot window. This will initiate the lasso. Each click of the mouse will define a point on a polygon. Points within the polygon will be selected, indicated by the color changing to red. The corresponding points are highlighted in the table. 
+To select data points on the plot, use the 'Lasso Select' button ![LassoButton](images/LassoButton.png) in the plot toolbar. With the lasso active, the cursor can be used to draw a shape around points to select them. This can be used to select consecutive points and/or points of similar values. To begin selection, click on the plot window. This will initiate the lasso. Each click of the mouse will define a point on a polygon. Points within the polygon will be selected, indicated by the color changing to red. The corresponding points are highlighted in the table. 
 
-![LassoButton](images/LassoButton.png)
 ![LassoSelect](images/LassoSelect.png)
 
 Note that when points are selected and an editing action performed, the points will remain selected until de-selected. This permits multiple actions to be performed on the same set of points (e.g., interpolation and flagging). Also note that if 'Record' is active, all selections and de-selections will be recorded in the Python Script window.
@@ -21,10 +20,13 @@ The editing interface includes filters that select data values based on user-spe
 
 ![Filter](images/Filter.png)
 
-    -*Value Threshold:* This filter is useful for identifying data values that fall outside of an expected range for a variable. Entering a number in the 'Value >' box is used to select all points greater than that value, and entering a number in the 'Value <' box is used to select all points less than that value. Both critera can be used to select a set of points between two values. 
-    -*Data Gaps:* This filter is useful to identify gaps in a data series that may be caused by instrument malfunctions or lost power. With high frequency data, these gaps are often short enough that they are not discovered using a visual inspection. This filter selects points at the beginning and the end of a user-defined gap of time in the data values. A numeric value representing the value of the time interval is entered and the time period units (seconds, minutes, hours, days) are selected from the dropdown.
-    -*Date Range:* This filter is used to isolate data values based on associated date, which is helpful when it is known that a sensor malfunction or an environmental event invalidated data for a certain time period. To use the filter, in the 'Before' and/or 'After' boxes, click on the month/day/year and use the arrow buttons or type. The calendar dropdowns can also be used. The date range permits selection of of data before a specific date, after a specific date, betewen two dates, as well as before a specific date AND after a certain date (i.e., the period between the dates will not be selected). Note that times have not been implemented in the current version, but will be implemented in the future.
-    -*Value Change Threshold:* This filter is useful to identify instances of rapid change in the data values, which may indicate natural occurances or anomalous data values. This filter selects subsequent pairs of points with a value difference greater than the number entered as the criterion. 
+   -*Value Threshold:* This filter is useful for identifying data values that fall outside of an expected range for a variable. Entering a number in the 'Value >' box is used to select all points greater than that value, and entering a number in the 'Value <' box is used to select all points less than that value. Both critera can be used to select a set of points between two values. 
+
+   -*Data Gaps:* This filter is useful to identify gaps in a data series that may be caused by instrument malfunctions or lost power. With high frequency data, these gaps are often short enough that they are not discovered using a visual inspection. This filter selects points at the beginning and the end of a user-defined gap of time in the data values. A numeric value representing the value of the time interval is entered and the time period units (seconds, minutes, hours, days) are selected from the dropdown.
+
+   -*Date Range:* This filter is used to isolate data values based on associated date, which is helpful when it is known that a sensor malfunction or an environmental event invalidated data for a certain time period. To use the filter, in the 'Before' and/or 'After' boxes, click on the month/day/year and use the arrow buttons or type. The calendar dropdowns can also be used. The date range permits selection of of data before a specific date, after a specific date, betewen two dates, as well as before a specific date AND after a certain date (i.e., the period between the dates will not be selected). Note that times have not been implemented in the current version, but will be implemented in the future.
+   
+   -*Value Change Threshold:* This filter is useful to identify instances of rapid change in the data values, which may indicate natural occurances or anomalous data values. This filter selects subsequent pairs of points with a value difference greater than the number entered as the criterion. 
 
 ##De-selecting Points##
 

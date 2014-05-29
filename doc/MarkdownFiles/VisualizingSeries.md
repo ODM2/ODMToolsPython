@@ -56,7 +56,12 @@ The default behavior is to plot the full date range of the values in a data seri
 
 ##Plot Tools: Zooming and Panning##
 
-The toolbar at the bottom of the plot window features tools for interacting with the plot, notably zooming and panning. When the Zoom button ![ZoomButton](images/ZoomButton.png) is selected, left clicking on the plot and holding the mouse down draws a box around the area to which the plot will zoom. Right clicking and drawing a box will zoom out on the plot. When the Pan button ![PanButton](images/PanButton.png) is selected, clicking and dragging on the plot will pan over the plot. The Right and Left Arrow buttons ![PanArrows](images/PanArrows.png) can be used to pan forward and backward in time. The Back and Forward buttons ![Zoom Arrows](images/Zoom Arrows.png) revert to a previous (or subsequent) view if the zooming/panning were changed. The Home button ![HomeButton](images/HomeButton.png) will return to the original, default plot prior to any zooming/panning.
+The toolbar at the bottom of the plot window features tools for interacting with the plot, notably zooming and panning. 
+    -![ZoomButton](images/ZoomButton.png) When the Zoom button is selected, left clicking on the plot and holding the mouse down draws a box around the area to which the plot will zoom. Right clicking and drawing a box will zoom out on the plot. 
+    -![PanButton](images/PanButton.png) When the Pan button is selected, clicking and dragging on the plot will pan over the plot. 
+    -![PanArrows](images/PanArrows.png) The Right and Left Arrow buttons can be used to pan forward and backward in time. 
+    -![Zoom Arrows](images/Zoom Arrows.png) The Back and Forward buttons revert to a previous (or subsequent) view if the zooming/panning were changed. 
+    -![HomeButton](images/HomeButton.png) The Home button will return to the original, default plot prior to any zooming/panning.
 
 ##Summarizing Data Series##
 

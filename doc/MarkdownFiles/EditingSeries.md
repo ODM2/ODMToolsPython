@@ -6,15 +6,11 @@ ODM Tools Python includes functionality to edit data values, add qualifiers to d
 
 The 'Edit' tab is used to perform edits on data series. The visualizations that are created in the 'View' tab will carry over to the 'Edit' tab, and the Series Selector is used to show/hide data series in the plot. This way, multiple data series can still be viewed while edits are made. Only one data series can be edited at a time. To select a series for editing, the series of interest should be the highlighted in the Series Selector. Click on the 'Edit Series' button in the ribbon to begin editing. When a series is in editing mode, a few aspects of the plot change:
 
-    1. The symbology of the series of interest changes from the plot type and color selected in the 'Plot' tab to black squares and lines. The symbology of any additional displayed series are made more subtle.
+   1. The symbology of the series of interest changes from the plot type and color selected in the 'Plot' tab to black squares and lines. The symbology of any additional displayed series are made more subtle. ![EditingSeriesMultiple](images/EditingSeriesMultiple.png)
 
-![EditingSeriesMultiple](images/EditingSeriesMultiple.png)
+   1. The 'No Data' values that were previously hidden are now be plotted. This will often change the zoom level on the plot since large, negative numbers are typically used to indicate 'No Data' (e.g., -9999). ![EditingSeries](images/EditingSeries.png)
 
-    1. The 'No Data' values that were previously hidden are now be plotted. This will often change the zoom level on the plot since large, negative numbers are typically used to indicate 'No Data' (e.g., -9999).
-
-![EditingSeries](images/EditingSeries.png)
-
-    1. If the series selected for editing was not plotted previously, it will automatically be plotted.
+   1. If the series selected for editing was not plotted previously, it will automatically be plotted.
 
 ##Scripting Edits with Python##
 

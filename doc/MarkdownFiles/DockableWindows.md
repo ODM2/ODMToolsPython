@@ -10,7 +10,7 @@ The Plot window is the central, anchor window of the program. Around the plot wi
 Windows be docked centrally with each other, which enables tabbed viewing. Windows can also be left floating by dragging and not attaching to a dock. The blow images show the Python Console window and the Table window docked with tabs and all windows floating.
 
 ![TabbedDocking](images/TabbedDocking.png)
-![FloatingWindows](images/FloatingWindows.png)  
+![Floating](images/Floating.png)  
 
 Windows can be toggled on/off by using the corresponding button in the ribbon. Note that the Plot window can be hidden, but no other window can fill its space. Windows can also be minimized, maximized, or closed by using the icons in the right of the window header.
 
