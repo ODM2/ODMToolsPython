@@ -1,7 +1,7 @@
 ODMToolsPython
 ==============
 
-Get started by visiting the [ODM Tools Documentation] (https://github.com/UCHIC/ODMToolsPython/wiki) page.
+Get started by visiting the [ODM Tools Documentation] (https://github.com/UCHIC/ODMToolsPython/wiki/ODMTools-Python-Documentation) page.
 
 ODMTools is a python application for managing observational data using the Observations Data Model. ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database. ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.
 
