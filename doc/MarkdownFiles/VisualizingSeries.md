@@ -44,9 +44,8 @@ The 'Box Whisker Type' dropdown button in the ribbon changes the time period ove
 
 ###Subplot Option###
 
-When viewing histograms or box and whisker plots with multiple data series, the subplot dimensions can be edited using the 'Subplot' button on the Toolbar (shown below). The subplot configuration box (shown below) consists of sliders that edit the space between and around the subplots. The 'left', 'bottom', 'right', and 'top' sliders adjust the margins around the perimater of the full plot window. The 'wspace' slider adjusts the space between the plots width-wise, and the 'hspace' slider adjusts the space between the plots height-wise. The sliders can be drug to the right to increase margins or to the left to decrease margins. Clicking the 'Reset' button puts the sliders back to the defaults, as indicated by the red lines in the sliders.
+When viewing histograms or box and whisker plots with multiple data series, the subplot dimensions can be edited using the 'Subplot' button ![SubplotButton](images/SubplotButton.png) on the Toolbar. The subplot configuration box (shown below) consists of sliders that edit the space between and around the subplots. The 'left', 'bottom', 'right', and 'top' sliders adjust the margins around the perimater of the full plot window. The 'wspace' slider adjusts the space between the plots width-wise, and the 'hspace' slider adjusts the space between the plots height-wise. The sliders can be drug to the right to increase margins or to the left to decrease margins. Clicking the 'Reset' button puts the sliders back to the defaults, as indicated by the red lines in the sliders.
 
-![SubplotButton](images/SubplotButton.png)
 ![SubplotConfigure](images/SubplotConfigure.png)
 
 ##Restricting the Date Range##
@@ -57,25 +56,7 @@ The default behavior is to plot the full date range of the values in a data seri
 
 ##Plot Tools: Zooming and Panning##
 
-The toolbar at the bottom of the plot window features tools for interacting with the plot, notably zooming and panning. When the Zoom button is selected, left clicking on the plot and holding the mouse down draws a box around the area to which the plot will zoom. Right clicking and drawing a box will zoom out on the plot.
-
-![ZoomButton](images/ZoomButton.png)
-
- When the Pan button is selected, clicking and dragging on the plot will pan over the plot. 
-
-![PanButton](images/PanButton.png)
-
- The Right and Left Arrow buttons can be used to pan forward and backward in time. 
-
-![PanArrows](images/PanArrows.png)
-
- The Back and Forward buttons revert to a previous (or subsequent) view if the zooming/panning were changed.
-
-![Zoom Arrows](images/Zoom Arrows.png)
-
- The Home button will return to the original, default plot prior to any zooming/panning.
-
-![HomeButton](images/HomeButton.png)
+The toolbar at the bottom of the plot window features tools for interacting with the plot, notably zooming and panning. When the Zoom button ![ZoomButton](images/ZoomButton.png) is selected, left clicking on the plot and holding the mouse down draws a box around the area to which the plot will zoom. Right clicking and drawing a box will zoom out on the plot. When the Pan button ![PanButton](images/PanButton.png) is selected, clicking and dragging on the plot will pan over the plot. The Right and Left Arrow buttons ![PanArrows](images/PanArrows.png) can be used to pan forward and backward in time. The Back and Forward buttons ![Zoom Arrows](images/Zoom Arrows.png) revert to a previous (or subsequent) view if the zooming/panning were changed. The Home button ![HomeButton](images/HomeButton.png) will return to the original, default plot prior to any zooming/panning.
 
 ##Summarizing Data Series##
 
@@ -85,6 +66,4 @@ Descriptive statistics are provided for the series selected for plotting and are
 
 ##Saving a Plot##
 
-The plots generated in ODM Tools Python can be exported and saved for use in documents and presentations. To save a plot, click on the 'Save' button in the toolbar. A save dialog will appear to prompting the user to provide the save location, a name for the image, and the file type to save the image as. Supported image types are encapsulated postscript (.eps), LaTeX pgf figure (.pgf), portable document format (.pdf), portable network graphics (.png), postscript (.ps), raw RGBA bitmap (.raw, .rgba), and scalable vector graphics (.svg, .svgz).
-
-![SaveButton](images/SaveButton.png)
+The plots generated in ODM Tools Python can be exported and saved for use in documents and presentations. To save a plot, click on the 'Save' button ![SaveButton](images/SaveButton.png) in the toolbar. A save dialog will appear to prompting the user to provide the save location, a name for the image, and the file type to save the image as. Supported image types are encapsulated postscript (.eps), LaTeX pgf figure (.pgf), portable document format (.pdf), portable network graphics (.png), postscript (.ps), raw RGBA bitmap (.raw, .rgba), and scalable vector graphics (.svg, .svgz).
