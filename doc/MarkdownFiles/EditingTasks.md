@@ -10,6 +10,7 @@ Points representing individual data values can be selected using the table inter
 
 To select data points on the plot, use the 'Lasso Select' button in the plot toolbar. With the lasso active, the cursor can be used to draw a shape around points to select them. This can be used to select consecutive points and/or points of similar values. To begin selection, click on the plot window. This will initiate the lasso. Each click of the mouse will define a point on a polygon. Points within the polygon will be selected, indicated by the color changing to red. The corresponding points are highlighted in the table. 
 
+![LassoButton](images/LassoButton.png)
 ![LassoSelect](images/LassoSelect.png)
 
 Note that when points are selected and an editing action performed, the points will remain selected until de-selected. This permits multiple actions to be performed on the same set of points (e.g., interpolation and flagging). Also note that if 'Record' is active, all selections and de-selections will be recorded in the Python Script window.
@@ -39,7 +40,7 @@ ODM Tools Python allows for the deletion of points from a data series (remember 
 
 ODM Tools Python has built-in functionality to change the values of selected data points by adding, subtracting, multiplying by, or setting equal to a constant value. Applying a constant shift or multiplier may be useful for applying an offset or coefficient to a portion of a data series or adjusting for an incorrectly applied constant in the datalogger program. Setting values equal to a constant is useful when data are invalid and need to be set to 'No Data' value or to some detection limit. To adjust data values, select points using the methods described in the Selecting Points or Filtering Points sections and click on the 'Change Value' button in the ribbon. A dialog box will appear allowing selection of the type of adjustment to make and the constant value to use.
 
-![Delete](images/Delete.png)
+![ChangeValue](images/ChangeValue.png)
 
 ##Interpolate Points##
 
@@ -82,6 +83,7 @@ ODM Tools Python stores all edits in memory until the user commits them to the d
 
  If 'Save' is selected, a summary of the series metadata will be shown. Clicking 'Finish' will prompt several times to verify that the series should actually be overwritten.
 
+![SaveDialogSame](images/SaveDialogSame.png)
 ![SaveDialogConfirm](images/SaveDialogConfirm.png)![SaveDialogConfirm2](images/SaveDialogConfirm2.png)
 
  If 'Save As' is selected, the Save dialog will prompt the user to define metadata information for the data series. Existing information from the database can be used or new entries can be created for the data series being saved.
