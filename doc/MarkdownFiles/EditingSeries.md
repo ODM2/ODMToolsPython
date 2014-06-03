@@ -18,4 +18,4 @@ A powerful capability of ODM Tools Python is the functionality to record the ste
 
 In order to record edits, when editing is active, click on the 'Record' button in the Ribbon. Viewing the Script Editor window is helpful during this process. When the 'Record' button is activated, information on the database connection and data series of interest will automatically be written to the Script Editor. Every time points are selected and tasks are performed, the steps will be added as lines of code to the script editor. The user can also add comments, which should be done by adding # to the front of each line.
 
-Note that the credentials of the database connection will be displayed here. The user can edit the script to hide usernames and passwords. 
+Note that the credentials of the database connection will be displayed here. The user can edit the script to delete usernames and passwords. 
