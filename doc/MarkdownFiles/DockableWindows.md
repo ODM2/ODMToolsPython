@@ -7,7 +7,7 @@ The Plot window is the central, anchor window of the program. Around the plot wi
 ![DockableAreas](images/DockableAreas.png) 
 ![Docking](images/Docking.png) 
 
-Windows be docked centrally with each other, which enables tabbed viewing. Windows can also be left floating by dragging and not attaching to a dock. The blow images show the Python Console window and the Table window docked with tabs and all windows floating.
+Windows can be docked centrally with each other, which enables tabbed viewing. Windows can also be left floating by dragging but not attaching to a docking area. The below images show the Python Console window and the Table window docked with tabs and all windows floating.
 
 ![TabbedDocking](images/TabbedDocking.png)
 ![Floating](images/Floating.png)  

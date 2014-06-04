@@ -1,6 +1,6 @@
 #Editing Data Series#
 
-ODM Tools Python includes functionality to edit data values, add qualifiers to data values, derive new data series, and save edits to data series stored within an ODM database. Data editing is important for performing quality control and post processing on data series where some data values may need to be deleted, adjusted, or interpolated. Deriving data series is useful for aggregating data (e.g., daily average derived from high frequency measurements) or generating a data series that is a function of one or more other data series (e.g., discharge as a function of stage). 
+ODM Tools Python includes functionality to edit data values, add qualifiers to data values, derive new data series, and save edits to data series stored within an ODM database. Data editing is important for performing quality control and post processing on data series where some data values may need to be deleted, adjusted, or interpolated. Deriving data series is useful for aggregating data (e.g., daily average derived from high frequency measurements) or generating a data series that is a function of one or more other data series (e.g., discharge as a function of stage). Currently the functionality to derive new data series is not built into ODMTools Python.
 
 ##Selecting Series for Editing##
 
@@ -18,4 +18,4 @@ A powerful capability of ODM Tools Python is the functionality to record the ste
 
 In order to record edits, when editing is active, click on the 'Record' button in the Ribbon. Viewing the Script Editor window is helpful during this process. When the 'Record' button is activated, information on the database connection and data series of interest will automatically be written to the Script Editor. Every time points are selected and tasks are performed, the steps will be added as lines of code to the script editor. The user can also add comments, which should be done by adding # to the front of each line.
 
-Note that the credentials of the database connection will be displayed here. The user can edit the script to hide usernames and passwords. 
+Note that the credentials of the database connection will be displayed here. The user can edit the script to delete usernames and passwords. 
