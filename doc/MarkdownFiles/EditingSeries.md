@@ -1,6 +1,6 @@
 #Editing Data Series#
 
-ODM Tools Python includes functionality to edit data values, add qualifiers to data values, derive new data series, and save edits to data series stored within an ODM database. Data editing is important for performing quality control and post processing on data series where some data values may need to be deleted, adjusted, or interpolated. Deriving data series is useful for aggregating data (e.g., daily average derived from high frequency measurements) or generating a data series that is a function of one or more other data series (e.g., discharge as a function of stage). 
+ODM Tools Python includes functionality to edit data values, add qualifiers to data values, derive new data series, and save edits to data series stored within an ODM database. Data editing is important for performing quality control and post processing on data series where some data values may need to be deleted, adjusted, or interpolated. Deriving data series is useful for aggregating data (e.g., daily average derived from high frequency measurements) or generating a data series that is a function of one or more other data series (e.g., discharge as a function of stage). Currently the functionality to derive new data series is not built into ODMTools Python.
 
 ##Selecting Series for Editing##
 
