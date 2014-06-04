@@ -33,7 +33,7 @@ class QCLPage(wiz.WizardPageSimple):
 
         title = wx.StaticText(self, -1, title)
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
-        sizer.Add(title, 10, wx.ALIGN_CENTRE|wx.ALL, 5)
+        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
         self.panel=pnlQCL.pnlQCL(self, id=wxID_PNLINTRO, name=u'pnlQCL',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),

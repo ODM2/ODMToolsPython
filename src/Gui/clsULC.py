@@ -68,9 +68,11 @@ class clsULC(ULC.UltimateListCtrl):
 
 
     def repopulateList(self):
-        self.DeleteAllItems()
+        #self.DeleteAllItems()
         self._buildInnerList()
 
+
+        '''
         for series in self.subList:
             ind = self.GetItemCount()
 
@@ -81,7 +83,7 @@ class clsULC(ULC.UltimateListCtrl):
             if series[-1] == 1:
                 self._mainWin.CheckItem(self.GetItem(ind, 0), True, False)
                 #self.Select(0, True)
-
+        '''
 
     def getSelection(self):
         #returns the one highlighted row in the table
@@ -137,16 +139,14 @@ class clsULC(ULC.UltimateListCtrl):
             # uncheck it visibly
             self.checkItem(id, isChecked=False)
             self.subList[id][-1] = False
-            logger.debug("CheckCount: %d" % (self.checkCount))
+            #logger.debug("CheckCount: %d" % (self.checkCount))
             return False
-
 
     # check visibly on SeriesSelector Gui
     def checkItem(self, index, isChecked=True, sendEvent=False):
         self.subList[index][-1] = 1
         # TODO clsUCL object has no attribute 'getItem'
         self._mainWin.CheckItem(self.GetItem(index, 0), isChecked, sendEvent)
-
 
     def getColumnText(self, index, colid):
         # print self.GetItemData(index)
@@ -246,24 +246,33 @@ class clsULC(ULC.UltimateListCtrl):
 
 
 class TextSearch(object):
-    def __init__(self, objectListView, columns=(), text=""):
+    def __init__(self, objectListView, columns=(), text="", var=""):
 
         self.objectListView = objectListView
         self.columns = columns
         self.text = text
+        self.var = var
 
     def __call__(self, modelObjects):
-        if not self.text:
-            return modelObjects
+        #if not self.text:
+        #    return modelObjects
+        if self.objectListView is None:
+            logger.fatal("Unable to filter due to modelObjects being empty")
+            return []
 
-        # In non-report views, we can only search the primary column
-        # if self.objectListView.InReportView():
-        cols = self.columns or self.objectListView.columns
-        # else:
-        #	 cols = [self.objectListView.columns[0]]
+        def _filteredObjects(object):
+            if self.text and self.var:
+                return object.site.code == self.text and object.variable_code == self.var
+            if self.text:
+                return object.site.code == self.text
+            if self.var:
+                return object.variable_code == self.var
 
-        textToFind = self.text.lower()
+        test = [x for x in self.objectListView if _filteredObjects(x)]
+        print test
+        return test
 
+        '''
         def _containsText(modelObject):
 
             for col in cols:
@@ -272,8 +281,9 @@ class TextSearch(object):
                         modelObject=modelObject, col=col).lower():  #col.GetStringValue(modelObject).lower():
                     return True
             return False
+        '''
 
-        return [x for x in modelObjects if _containsText(x)]
+        #return [x for x in modelObjects if _containsText(x)]
 
     def setText(self, text):
         self.text = text
@@ -281,6 +291,7 @@ class TextSearch(object):
 
 class Chain(object):
     def __init__(self, *filters):
+        print "Filters: ", filters
         self.filters = filters
 
     def __call__(self, modelObjects):

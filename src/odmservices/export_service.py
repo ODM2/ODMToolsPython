@@ -128,12 +128,12 @@ class ExportService():
         writer.writerow(header)
 
     def export_series_metadata(self, series_ids, filename):
-        if len(series_ids) == 0:
+        if series_ids is None:
             return
 
         root = ET.Element("Metadata")
         list_root = ET.SubElement(root, "DataSeriesList")
-        list_root.set("Total", str(len(series_ids)))
+        list_root.set("Total", str(series_ids))
 
         try:
             with open(filename):
@@ -145,9 +145,13 @@ class ExportService():
             # Read the file into the XML tree
             pass
 
-        for series_id in series_ids:
-            series = self._series_service.get_series_by_id(series_id)
+        if isinstance(series_ids, int):
+            series = self._series_service.get_series_by_id(series_ids)
             self.append_series_node(series, list_root)
+        else:
+            for series_id in series_ids:
+                series = self._series_service.get_series_by_id(series_id)
+                self.append_series_node(series, list_root)
 
         tree = ET.ElementTree(root)
         tree.write(filename)

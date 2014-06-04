@@ -145,17 +145,14 @@ class SeriesPlotInfo(object):
     def stopEditSeries(self):
 
         if self.editID in self._seriesInfos:
-            self._seriesInfos[self.editID].dataTable = self.memDB.getDataValuesforGraph(self.editID,
-                                                                                   self._seriesInfos[self.editID].noDataValue,
-                                                                                   self._seriesInfos[self.editID].startDate,
-                                                                                   self._seriesInfos[self.editID].endDate)
+            self._seriesInfos[self.editID].dataTable = \
+                self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
+                                                 self._seriesInfos[self.editID].startDate,
+                                                 self._seriesInfos[self.editID].endDate)
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
         self.editID = None
         self.memDB.stopEdit()
-
-
-
 
     def getEditSeriesInfo(self):
         if self.editID and (self.editID in self._seriesInfos):
@@ -168,8 +165,10 @@ class SeriesPlotInfo(object):
 
     def update(self, key, isselected):
         if not isselected:
-            del self._seriesInfos[key]
-            self.resetDates()
+            try:
+                del self._seriesInfos[key]
+            except KeyError:
+                self.resetDates()
         else:
             ## add dictionary entry with no data
             self._seriesInfos[key] = None

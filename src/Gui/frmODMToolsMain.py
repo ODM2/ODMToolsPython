@@ -187,7 +187,6 @@ class frmODMToolsMain(wx.Frame):
         self._init_sizers()
         self._ribbon.Realize()
 
-
     def onDocking(self, value):
         paneDetails = self._mgr.GetPane(self.pnlPlot)
 
@@ -234,15 +233,17 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.Update()
 
     def addEdit(self, event):
-        isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
+        #isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
+        isSelected, seriesID, memDB = self.pnlSelector.onReadyToEdit()
         #print seriesID
 
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
+
                                                                           connection=memDB.conn)
+            self._ribbon.toggleEditButtons(True)
             self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
             self.dataTable.init(memDB, self.record_service)
-            self._ribbon.toggleEditButtons(True)
 
             # set record service for console
             self.console_tools.set_record_service(self.record_service)
@@ -361,7 +362,6 @@ class frmODMToolsMain(wx.Frame):
                     elif isinstance(item, wx.Dialog):
                         item.Destroy()
                     item.Close()
-        #logger.debug("Have I closed all but my main window?: %s" % (isinstance(wx.GetTopLevelWindows()[0], self.__class__)))
         self.Destroy()
 
         wx.GetApp().ExitMainLoop()

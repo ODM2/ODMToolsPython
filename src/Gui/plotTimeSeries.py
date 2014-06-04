@@ -129,8 +129,6 @@ class plotTimeSeries(wx.Panel):
             Publisher.sendMessage(("changeTableSelection"), sellist= [], datetime_list= datetime_list)
 
 
-
-
     def onShowLegend(self, isVisible):
         # print self.timeSeries.show_legend
         if isVisible:
@@ -170,9 +168,9 @@ class plotTimeSeries(wx.Panel):
         if self.isShowLegendEnabled :
             self.onShowLegend(self.isShowLegendEnabled)
 
-
         plt.gcf().autofmt_xdate()
         self.canvas.draw()
+
     #clear plot
     def clear(self):
         lines = []
@@ -183,8 +181,6 @@ class plotTimeSeries(wx.Panel):
         #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
         plt.cla()
         self.timeSeries.plot([], [])
-
-
 
     def stopEdit(self):
         self.clear()

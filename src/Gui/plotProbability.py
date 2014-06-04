@@ -91,19 +91,14 @@ class plotProb(wx.Panel):
         self.canvas.draw()
 
     def onShowLegend(self, isVisible):
-        # print self.timeSeries.show_legend
         self.islegendvisible = isVisible
         if isVisible:
-            plt.subplots_adjust(bottom=.1 + .1)
             leg = self.plot.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
             leg.get_frame().set_alpha(.5)
             leg.draggable(state=True)
 
         else:
-            plt.subplots_adjust(bottom=.1)
             self.plot.legend_ = None
-        # self.timeSeries.plot(legend= not isVisible)
-        #plt.gcf().autofmt_xdate()
         self.canvas.draw()
 
 
@@ -146,32 +141,20 @@ class plotProb(wx.Panel):
 
 
     def addPlot(self, cursor, series, Filter):
-
         # self.cursor = Values[0]
         self.cursor = cursor
 
         self.cursor.execute("SELECT DataValue FROM DataValues" + Filter)
         self.dataValues = [x[0] for x in self.cursor.fetchall()]
-
-
-        # self.Series= Values[1]
         self.Series = series
-
         self.plot.clear()
-
         length = len(self.dataValues)
-
         self.Yaxis = sorted(self.dataValues)
         self.Xaxis = []
         for it in range(0, length):
-            #curValue = datavalues[it]
             curFreq = self.calcualteProbabilityFreq(it + 1, length)
             curX = self.calculateProbabilityXPosition(curFreq)
-            #self.Yaxis.append(curValue)
             self.Xaxis.append(curX)
-
-            #print self.Xaxis
-            # print self.Yaxis
 
         self.plot.clear()
         x = range(len(self.Xaxis))

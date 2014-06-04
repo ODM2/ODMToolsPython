@@ -4,23 +4,19 @@ import os
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
 from wx.lib.pubsub import pub as Publisher
+from ObjectListView import ColumnDefn
 
 import frmQueryBuilder
+from clsSeriesTable import clsSeriesTable, EVT_OVL_CHECK_EVENT
 from common.logger import LoggerTool
-
-
-try:
-    from agw import pycollapsiblepane as PCP
-except ImportError:  # if it's not there locally, try the wxPython lib.
-    import wx.lib.agw.pycollapsiblepane as PCP
-from clsULC import clsULC, TextSearch, Chain
-
-from odmdata import MemoryDatabase
+from clsULC import clsULC, TextSearch
+from odmdata import MemoryDatabase, series
 from odmservices import ServiceManager
+
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
- 
+
 
 ##########only use this section when testing series selector #############
 
@@ -51,8 +47,8 @@ class test_ss(wx.Frame):
  wxID_PNLSERIESSELECTORtableSeries, wxID_PNLSERIESSELECTORPANEL1,
  wxID_PNLSERIESSELECTORPANEL2, wxID_PNLSIMPLE, wxID_PNLRADIO,
  wxID_FRAME1RBADVANCED, wxID_FRAME1RBALL,
- wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER,
-] = [wx.NewId() for _init_ctrls in range(17)]
+ wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER, wxID_PNLSERIESSELECTORtableSeriesTest,
+] = [wx.NewId() for _init_ctrls in range(18)]
 
 
 class pnlSeriesSelector(wx.Panel):
@@ -85,7 +81,7 @@ class pnlSeriesSelector(wx.Panel):
     def _init_coll_boxSizer3_Items(self, parent):
         # generated method, don't edit
         parent.AddWindow(self.cpnlSimple, 0, flag=wx.RIGHT | wx.LEFT | wx.EXPAND)
-        parent.AddWindow(self.tableSeries, 100, flag=wx.EXPAND)
+        parent.AddWindow(self.tableSeriesTable, 100, flag=wx.EXPAND)
 
     ## Panel Sizer
     def _init_coll_boxSizer1_Items(self, parent):
@@ -149,21 +145,17 @@ class pnlSeriesSelector(wx.Panel):
         self.Enable(True)
 
         ## Radio panel
-        self.pnlRadio = wx.Panel(id=wxID_PNLRADIO, name='pnlRadio',
-                                 parent=self, pos=wx.Point(3, 3), size=wx.Size(919, 20),
-                                 style=wx.TAB_TRAVERSAL)
+        self.pnlRadio = wx.Panel(id=wxID_PNLRADIO, name='pnlRadio', parent=self, pos=wx.Point(3, 3),
+                                 size=wx.Size(919, 20), style=wx.TAB_TRAVERSAL)
 
-        self.rbAll = wx.RadioButton(id=wxID_FRAME1RBALL, label=u'All',
-                                    name=u'rbAll', parent=self.pnlRadio, pos=wx.Point(0, 0),
-                                    size=wx.Size(81, 20), style=0)
+        self.rbAll = wx.RadioButton(id=wxID_FRAME1RBALL, label=u'All', name=u'rbAll', parent=self.pnlRadio,
+                                    pos=wx.Point(0, 0), size=wx.Size(81, 20), style=0)
 
-        self.rbSimple = wx.RadioButton(id=wxID_FRAME1RBSIMPLE,
-                                       label=u'Simple Filter', name=u'rbSimple', parent=self.pnlRadio,
-                                       pos=wx.Point(81, 0), size=wx.Size(112, 20), style=0)
+        self.rbSimple = wx.RadioButton(id=wxID_FRAME1RBSIMPLE, label=u'Simple Filter', name=u'rbSimple',
+                                       parent=self.pnlRadio, pos=wx.Point(81, 0), size=wx.Size(112, 20), style=0)
 
-        self.rbAdvanced = wx.RadioButton(id=wxID_FRAME1RBADVANCED,
-                                         label=u'Advanced Filter', name=u'rbAdvanced', parent=self.pnlRadio,
-                                         pos=wx.Point(193, 0), size=wx.Size(104, 20), style=0)
+        self.rbAdvanced = wx.RadioButton(id=wxID_FRAME1RBADVANCED, label=u'Advanced Filter', name=u'rbAdvanced',
+                                         parent=self.pnlRadio, pos=wx.Point(193, 0), size=wx.Size(104, 20), style=0)
 
         self.rbAll.SetValue(True)
         #self.rbAll.Bind(wx.EVT_RADIOBUTTON, self.onRbAllRadiobutton, id=wxID_FRAME1RBALL)
@@ -176,89 +168,82 @@ class pnlSeriesSelector(wx.Panel):
         self.pnlData = wx.Panel(id=wxID_PNLSPLITTER, name='pnlData', parent=self, pos=wx.Point(0, -10),
                                 size=wx.Size(900, 349), style=wx.TAB_TRAVERSAL)
 
-        ##        self.splitter = wx.SplitterWindow(id=wxID_FRAME1SPLITTER,
-        ##              name=u'splitter', parent=self.pnlData, pos=wx.Point(0, 0),
-        ##              size=wx.Size(604, 137), style=wx.NO_BORDER)
-        ##        self.splitter.SetMinSize(wx.Size(-1, -1))
-
-        self.cpnlSimple = wx.CollapsiblePane(self.pnlData, label="",
-                                          style=wx.CP_DEFAULT_STYLE|wx.CP_NO_TLW_RESIZE)
-                                          #PCP.PyCollapsiblePane(parent=self.pnlData, label="",
-                                               # agwStyle=wx.CP_NO_TLW_RESIZE | wx.CP_GTK_EXPANDER | wx.CP_USE_STATICBOX,
-                                                #size=wx.Size(300, 20), pos=wx.Point(0, -20))
+        self.cpnlSimple = wx.CollapsiblePane(self.pnlData, label="", style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE)
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.onPaneChanged, self.cpnlSimple)
 
-        ## panel for simple filter(top of splitter)
-        ##        self.pnlSimple = wx.Panel(id=wxID_PNLSIMPLE, name='panel3',
-        ##              parent=self.splitter, pos=wx.Point(0, 0), size=wx.Size(919, 300),
-        ##              style=wx.TAB_TRAVERSAL)
-
         ## Site Panel
-        self.pnlSite = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL1, name='pnlSite',
-                                parent=self.cpnlSimple.GetPane(), pos=wx.Point(3, 0), size=wx.Size(800, 25),
-                                style=wx.TAB_TRAVERSAL)
+        self.pnlSite = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL1, name='pnlSite', parent=self.cpnlSimple.GetPane(),
+                                pos=wx.Point(3, 0), size=wx.Size(800, 25), style=wx.TAB_TRAVERSAL)
 
-        self.cbSites = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBSITES,
-                                   name=u'cbSites', parent=self.pnlSite, pos=wx.Point(100, 0),
-                                   size=wx.Size(700, 23), style=0, value=u'')
+        self.cbSites = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBSITES, name=u'cbSites', parent=self.pnlSite,
+                                   pos=wx.Point(100, 0), size=wx.Size(700, 23), style=0, value=u'')
 
-        self.checkSite = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKSITE,
-                                     label=u'', name=u'checkSite', parent=self.pnlSite, pos=wx.Point(3, 0),
-                                     size=wx.Size(21, 21), style=0)
+        self.checkSite = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKSITE, label=u'', name=u'checkSite',
+                                     parent=self.pnlSite, pos=wx.Point(3, 0), size=wx.Size(21, 21), style=0)
 
-        self.lblSite = wx.StaticText(id=wxID_PNLSERIESSELECTORLBLSITE,
-                                     label=u'Site', name=u'lblSite', parent=self.pnlSite,
-                                     pos=wx.Point(30, 0), size=wx.Size(60, 21), style=0)
+        self.lblSite = wx.StaticText(id=wxID_PNLSERIESSELECTORLBLSITE, label=u'Site', name=u'lblSite',
+                                     parent=self.pnlSite, pos=wx.Point(30, 0), size=wx.Size(60, 21), style=0)
         self.lblSite.SetToolTipString(u'staticText1')
 
         self.cbSites.SetLabel(u'')
-        self.cbSites.Bind(wx.EVT_COMBOBOX, self.onCbSitesCombobox,
-                          id=wxID_PNLSERIESSELECTORCBSITES)
+        self.cbSites.Bind(wx.EVT_COMBOBOX, self.onCbSitesCombobox, id=wxID_PNLSERIESSELECTORCBSITES)
         self.checkSite.SetValue(True)
-        self.checkSite.Bind(wx.EVT_CHECKBOX, self.onCheck,
-                            id=wxID_PNLSERIESSELECTORCHECKSITE)
+        self.checkSite.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKSITE)
 
 
         ### Variable Panel
-        self.pnlVar = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL2, name='pnlVar',
-                               parent=self.cpnlSimple.GetPane(), pos=wx.Point(3, 26), size=wx.Size(800, 25),
-                               style=wx.TAB_TRAVERSAL)
+        self.pnlVar = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL2, name='pnlVar', parent=self.cpnlSimple.GetPane(),
+                               pos=wx.Point(3, 26), size=wx.Size(800, 25), style=wx.TAB_TRAVERSAL)
 
-        self.lblVariable = wx.StaticText(id=wxID_PNLSERIESSELECTORLBLVARIABLE,
-                                         label=u'Variable', name=u'lblVariable', parent=self.pnlVar,
-                                         pos=wx.Point(30, 0), size=wx.Size(60, 21), style=0)
+        self.lblVariable = wx.StaticText(id=wxID_PNLSERIESSELECTORLBLVARIABLE, label=u'Variable', name=u'lblVariable',
+                                         parent=self.pnlVar, pos=wx.Point(30, 0), size=wx.Size(60, 21), style=0)
 
-        self.checkVariable = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKVARIABLE,
-                                         label=u'', name=u'checkVariable', parent=self.pnlVar,
-                                         pos=wx.Point(3, 0), size=wx.Size(21, 21), style=0)
-        self.checkVariable.Bind(wx.EVT_CHECKBOX, self.onCheck,
-                                id=wxID_PNLSERIESSELECTORCHECKVARIABLE)
+        self.checkVariable = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKVARIABLE, label=u'', name=u'checkVariable',
+                                         parent=self.pnlVar, pos=wx.Point(3, 0), size=wx.Size(21, 21), style=0)
+        self.checkVariable.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKVARIABLE)
 
-        self.cbVariables = wx.ComboBox(choices=[],
-                                       id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
+        self.cbVariables = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
                                        parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25),
                                        style=0, value='comboBox4')
         self.cbVariables.SetLabel(u'')
         self.cbVariables.Enable(False)
-        self.cbVariables.Bind(wx.EVT_COMBOBOX, self.onCbVariablesCombobox,
-                              id=wxID_PNLSERIESSELECTORCBVARIABLES)
+        self.cbVariables.Bind(wx.EVT_COMBOBOX, self.onCbVariablesCombobox, id=wxID_PNLSERIESSELECTORCBVARIABLES)
 
-        self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeries,
-                                  name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),
-                                  size=wx.Size(903, 108),
+        ### New Stuff ##################################################################################################
+
+        self.tableSeriesTable = clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
+                                               name=u'tableSeriesTable', size=wx.Size(950, 108), pos=wx.Point(5, 5),
+                                               style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VIRTUAL)
+
+        self.tableSeriesTable.SetEmptyListMsg("No Database Loaded")
+
+        self.tableSeriesTable.rowFormatter = self._rowFormatter
+        self.tableSeriesTable.Bind(EVT_OVL_CHECK_EVENT, self.onReadyToPlot)
+        self.tableSeriesTable.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.getSelectedObject)
+        self.tableSeriesTable.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
+                                   id=wxID_PNLSERIESSELECTORtableSeries)
+        self.tableSeriesTable.handleStandardKeys = True
+        self.tableSeriesTable.useAlternateBackColors = True
+        #self.tableSeriesTable.oddRowsBackColor = wx.Colour(143, 188, 188)
+        self.tableSeriesTable.oddRowsBackColor = wx.Colour(191, 217, 217)
+
+        ################################################################################################################
+        self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeriesTest,
+                                  name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),size=wx.Size(903, 108),
                                   agwStyle=ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT | ULC.ULC_SINGLE_SEL)
+        self.tableSeries.Hide()
+
+
+        ##        self.splitter.Initialize(self.tableSeries)
+        self.cpnlSimple.Collapse(True)
+        # self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 1)
 
         self.cpnlSimple.Collapse(True)
         self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
                               id=wxID_PNLSERIESSELECTORtableSeries)
-
         self.tableSeries.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
                               id=wxID_PNLSERIESSELECTORtableSeries)
-
         self._init_sizers()
-
-    #def testBinding(self, event):
-    #    print "event:", event.m_itemIndex
 
     def initPubSub(self):
         #Publisher.subscribe(self.onEditButton, ("selectEdit"))
@@ -300,18 +285,18 @@ class pnlSeriesSelector(wx.Panel):
         #logger.debug("self.Layout(): %d" % t.interval)
 
     def initTableSeries(self):
-        #with Timer() as t:
+        """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
+
         self.memDB = MemoryDatabase(self.dbservice)
-        #logger.debug("self.memDB = MemoryDatabase(self.dbservice): %d" % t.interval)
-
-        #with Timer() as t:
-        self.tableSeries.setColumns(self.memDB.getSeriesColumns())
-        self.tableSeries.setObjects(self.memDB.getSeriesCatalog())
-        #logger.debug("setColumns & Objects: %d" % t.interval)
-
-        self.tableSeries.EnableSelectionVista(True)
-        self.selectedIndex = 0
-        self.tableSeries.Select(0)
+        seriesColumns = [
+            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value)
+            for key, value in series.returnDict().iteritems()
+        ]
+        self.tableSeriesTable.SetColumns(seriesColumns)
+        self.tableSeriesTable.CreateCheckStateColumn()
+        object = self.dbservice.get_all_series()
+        self.tableSeriesTable.SetObjects(object)
+        self.tableSeriesTable.SaveObject(object)
 
 
     def initSVBoxes(self):
@@ -332,10 +317,13 @@ class pnlSeriesSelector(wx.Panel):
         self.cbVariables.SetSelection(0)
 
     def OnTableRightDown(self, event):
-
+        """
+        Right click down menu
+        """
         # build pop-up menu for right-click display
         self.selectedIndex = event.m_itemIndex
-        self.selectedID = self.tableSeries.getColumnText(event.m_itemIndex, 1)
+        #self.selectedID = self.tableSeries.getColumnText(event.m_itemIndex, 1)
+        self.selectedID = self.tableSeriesTable.GetSelectedObject().id
 
         # print self.selectedID
         popup_edit_series = wx.NewId()
@@ -361,10 +349,9 @@ class pnlSeriesSelector(wx.Panel):
         self.tableSeries.PopupMenu(popup_menu)
         event.Skip()
 
-
     def onPaneChanged(self, event=None):
-        if event:
-            print 'wx.EVT_COLLAPSIBLEPANE_CHANGED: %s\n' % event.Collapsed
+        #if event:
+        #    print 'wx.EVT_COLLAPSIBLEPANE_CHANGED: %s\n' % event.Collapsed
         self.Layout()
 
     def onRbAdvancedRadiobutton(self, event):
@@ -384,22 +371,21 @@ class pnlSeriesSelector(wx.Panel):
         self.setFilter()
         event.Skip()
 
-
     def onRbSimpleRadiobutton(self, event):
 
         self.cpnlSimple.Expand()
         self.Layout()
         self.setFilter(self.site_code, self.variable_code)
+
         event.Skip()
 
     def onRightPlot(self, event):
-
-        self.tableSeries.checkItem(self.selectedIndex)
-        self.selectForPlot(self.selectedIndex)
+        object = self.tableSeriesTable.GetSelectedObject()
+        self.tableSeriesTable.ToggleCheck(object)
+        self.onReadyToPlot(event)
         event.Skip()
 
     def onRightEdit(self, event):
-        #self.selectForEdit(self.tableSeries.getColumnText(self.selectedIndex, 1))
         Publisher.sendMessage(("selectEdit"), event=event)
         if self.isEditing:
             Publisher.sendMessage("toggleEdit", checked=True)
@@ -418,20 +404,13 @@ class pnlSeriesSelector(wx.Panel):
         self.resetDB(self.dbservice)
         logger.debug("Refresh Occurred")
 
-    def onEditButton(self, event):
-        #
-        if self.tableSeries.GetSelectedItemCount() > 0:
-            self.selectForEdit(self.tableSeries.getColumnText(self.tableSeries.getSelection(), 1))
-        else:
-            #toggle ribbon button to be unpressed
-            print "no series selected"
-
     def onRightExData(self, event):
         dlg = wx.FileDialog(self, "Choose a save location", '', "", "*.csv", wx.SAVE | wx.OVERWRITE_PROMPT)
         if dlg.ShowModal() == wx.ID_OK:
             full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
 
-            series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
+            #series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
+            series_id = self.tableSeriesTable.GetSelectedObject().id
             self.export_service.export_series_data(series_id, full_path, True, True, True, True, True, True, True)
             self.Close()
 
@@ -444,8 +423,11 @@ class pnlSeriesSelector(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
 
-            series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
-            self.export_service.export_series_metadata(series_id, full_path)
+            self.selectedIndex = self.tableSeriesTable.GetSelectedObject().id
+            #series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
+            #print "series_id", series_id
+
+            self.export_service.export_series_metadata(self.selectedIndex , full_path)
             self.Close()
 
         dlg.Destroy()
@@ -528,24 +510,37 @@ class pnlSeriesSelector(wx.Panel):
         event.Skip()
 
     def setFilter(self, site_code='', var_code='', advfilter=''):
-        if (site_code and var_code):
-            self.siteFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[2:4], text=site_code)
-            self.variableFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], text=var_code)
-            self.tableSeries.setFilter(Chain(self.siteFilter, self.variableFilter))
-        elif (site_code):
+
+        if site_code and var_code:
             self.tableSeries.setFilter(
-                TextSearch(self.tableSeries, columns=self.tableSeries.columns[2:4], text=site_code))
-        elif (var_code):
-            self.tableSeries.setFilter(
-                TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], text=var_code))
-        elif (advfilter):
+                TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', text=site_code, var=var_code))
+            #self.siteFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[2:4], text=site_code)
+            #self.variableFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], var=var_code)
+            #self.tableSeries.setFilter(Chain(self.siteFilter, self.variableFilter))
+        elif site_code:
+            self.tableSeries.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', text=site_code))
+        elif var_code:
+            self.tableSeries.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', var=var_code))
+        elif advfilter:
             self.tableSeries.setFilter(advfilter)
         else:
-            self.tableSeries.clearFilter()
+            self.tableSeriesTable.SetObjects(self.tableSeriesTable.GetModelObjects())
+            return
 
+        self.tableSeriesTable.SetObjects(None)
+        #self.tableSeriesTable.SetEmptyListMsg("Updating Filter... Site/Variable: %s/%s" % (site_code, var_code))
         self.tableSeries.repopulateList()
+        self.tableSeriesTable.SetObjects(self.tableSeries.getFilteredObjects())
+
+
+        #modelObjects = self.tableSeriesTable.GetObjects()
+        #filteredObjects = [x for x in modelObjects if x.site_code == site_code]
+        #self.tableSeriesTable.SetObjects(filteredObjects)
+
+    """ Not using"""
 
     def onTableSeriesListItemSelected(self, event):
+        logger.fatal("I shouldn't be using this function")
 
         self.selectForPlot(event.m_itemIndex)
         #logger.debug("Checked: %s\n" % (x for x in self.tableSeries.getChecked()))
@@ -557,7 +552,11 @@ class pnlSeriesSelector(wx.Panel):
         Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=isActive)
         event.Skip()
 
+    """ Not using"""
+
     def selectForPlot(self, selIndex):
+        logger.fatal("I shouldn't be using this function")
+
         #logger.debug("self.tableseries.InnerList: %s" % (''.join(map(str, self.tableSeries.innerList))))
         sid = self.tableSeries.subList[selIndex][0]
         #logger.debug("sid: %s" % (sid))
@@ -577,16 +576,87 @@ class pnlSeriesSelector(wx.Panel):
                                       wx.OK | wx.ICON_INFORMATION)
         self.Refresh()
 
+    def onReadyToPlot(self, event):
+        """Plots a series selected from the series selector
+
+        :param event: EVT_OVL_CHECK_EVENT type
+        """
+
+        checkedCount = len(self.tableSeriesTable.GetCheckedObjects())
+        Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=(checkedCount > 0))
+
+        try:
+            object = event.object
+        except:
+            object = self.tableSeriesTable.GetSelectedObject()
+
+        #logger.debug("List of Checked Objects: %s" % (self.tableSeriesTable.GetCheckedObjects()))
+        if not self.tableSeriesTable.IsChecked(object):
+            #logger.debug("%s isn't checked: %s" % (object.id, object))
+            Publisher.sendMessage("removePlot", seriesID=object.id)
+        else:
+            #logger.debug("%s is checked: %s" % (object.id, object))
+            self.parent.Parent.addPlot(self.memDB, object.id)
+        self.Refresh()
+
+    def getSelectedObject(self, event):
+        """Capture the currently selected Object to be used for editing
+
+        :param event: wx.EVT_LIST_ITEM_FOCUSED type
+        """
+
+        object = event.GetEventObject().GetSelectedObject()
+        #logger.debug("Selected: %s" % object)
+        self.tableSeriesTable.currentlySelectedObject = object
+
+    def onReadyToEdit(self):
+        """Choose a series to edit from the series selector"""
+
+        ovl = self.tableSeriesTable
+
+        object = ovl.currentlySelectedObject
+        if object is not None:
+            if len(ovl.GetCheckedObjects()) <= ovl.allowedLimit:
+                if object not in ovl.GetCheckedObjects():
+                    ovl.ToggleCheck(object)
+
+                self.memDB.initEditValues(object.id)
+                self.isEditing = True
+                ovl.editingObject = object
+                ovl.RefreshObject(ovl.editingObject)
+
+                return True, object.id, self.memDB
+            else:
+                isSelected = False
+                logger.debug("series was not checked")
+                val_2 = wx.MessageBox("Visualization is limited to 6 series.",
+                                      "Can't add plot",
+                                      wx.OK | wx.ICON_INFORMATION)
+        self.isEditing = False
+        ovl.editingObject = None
+        return False, object.id, self.memDB
+
+
+    """Not using"""
+
     def getSelectedIndex(self):
+        logger.fatal("I shouldn't be using this function")
         return self.tableSeries.getSelection()
 
+    """Not using"""
+
     def getSelectedID(self):
+        logger.fatal("I shouldn't be using this function")
         return self.tableSeries.getColumnText(self.tableSeries.getSelection(), 1)
 
     def isEditing(self):
         return self.isEditing
 
+    """Not using"""
+
     def selectForEdit(self):
+        logger.fatal("I shouldn't be using this function")
+
         isSelected = False
 
         if not self.tableSeries.isChecked(self.getSelectedIndex()):
@@ -595,7 +665,6 @@ class pnlSeriesSelector(wx.Panel):
                 isSelected = True
 
                 #self.parent.Parent.addEdit(seriesID, self.memDB)
-
             else:
                 isSelected = False
                 logger.debug("series was not checked")
@@ -613,10 +682,35 @@ class pnlSeriesSelector(wx.Panel):
         self.isEditing = isSelected
         return isSelected, self.getSelectedID(), self.memDB
 
-
     def stopEdit(self):
+        """When edit button is untoggled, the editing feature closes"""
+        self.isEditing = False
+        self.tableSeriesTable.RefreshObject(self.tableSeriesTable.editingObject)
+        self.tableSeriesTable.editingObject = None
         self.memDB.stopEdit()
 
+
+    def _rowFormatter(self, listItem, object):
+        """Handles the formatting of rows for object list view
+        :param: wx.ListCtrl listitem
+        :param: ModelObject object
+
+        :rtype: None
+        """
+        if self.tableSeriesTable.editingObject and \
+                        object.id == self.tableSeriesTable.editingObject.id:
+            #listItem.SetTextColour(wx.Colour(255, 25, 112))
+            # font type: wx.DEFAULT, wx.DECORATIVE, wx.ROMAN, wx.SCRIPT, wx.SWISS, wx.MODERN
+            # slant: wx.NORMAL, wx.SLANT or wx.ITALIC
+            # weight: wx.NORMAL, wx.LIGHT or wx.BOLD
+            #font1 = wx.Font(10, wx.SWISS, wx.ITALIC, wx.NORMAL)
+            # use additional fonts this way ...
+            #font1 = wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Comic Sans MS')
+            listItem.SetFont(
+                wx.Font(9, family=wx.DEFAULT, weight=wx.BOLD, style=wx.ITALIC))
+        else:
+            listItem.SetTextColour(wx.Colour())
+            listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
 
 ##########only use this section when testing series selector #############
 if __name__ == '__main__':
@@ -626,3 +720,4 @@ if __name__ == '__main__':
 
     app.MainLoop()
 ##################################################################
+
