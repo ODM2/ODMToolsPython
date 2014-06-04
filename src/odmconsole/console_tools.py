@@ -49,9 +49,9 @@ class ConsoleTools(object):
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
-    def filter_dates(self, before, after):
+    def filter_date(self, before, after):
         if self._record_service:
-            self._record_service.filter_dates(before, after)
+            self._record_service.filter_date(before, after)
             self.refresh_plot()
         else:
             return "Cannot filter: %s" % (self._edit_error)

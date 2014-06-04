@@ -31,7 +31,7 @@ class RecordService():
     def filter_date(self, before, after):
         self._edit_service.filter_date(before, after)
         if self._record:
-            self._script("edit_service.filter_dates(%s, %s)\n" % (repr(before), repr(after)), 'black')
+            self._script("edit_service.filter_date(%s, %s)\n" % (repr(before), repr(after)), 'black')
             Publisher.sendMessage("scroll")
 
 
