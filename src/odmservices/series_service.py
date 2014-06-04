@@ -134,7 +134,7 @@ class SeriesService():
             series.quality_control_level_id
         )
         # Save case
-        if isSave:
+        if not isSave:
             if doesExist:
                 self._edit_session.add(series)
                 self._edit_session.add_all(data_values)
@@ -146,7 +146,7 @@ class SeriesService():
                 # there wasn't an existing file to overwrite
                 return False
         # Save As case
-        elif not isSave:
+        elif isSave:
             if doesExist:
                 logger.debug(
                     "There is already an existing file with this information. Please select 'Save' to overwrite")

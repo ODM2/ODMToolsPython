@@ -52,6 +52,8 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
+    def get_series_service(self):
+        return self._series_service
     def _populate_series(self):
         # [(ID, value, datetime), ...]
         self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
@@ -385,7 +387,7 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
-    def save(self, var=None, method=None, qcl=None, isSave=False):
+    def save(self, var=None, method=None, qcl=None, saveAs=False):
         dvs = []
         is_new_series = False
 
@@ -454,11 +456,13 @@ class EditService():
             self._series_service.delete_dvs(old_dvs)
 
         series.data_values = dvs
-        logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
-        if self._series_service.save_series(series, dvs, isSave):
+        #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
+        if self._series_service.save_series(series, dvs, saveAs):
             logger.debug("series saved!")
+            return True
         else:
             logger.debug("Crap happened")
+            return False
 
     def create_qcl(self, code, definition, explanation):
         return self._series_service.create_qcl(code, definition, explanation)

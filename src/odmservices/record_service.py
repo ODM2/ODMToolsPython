@@ -130,12 +130,38 @@ class RecordService():
             self._script("edit_service.restore()\n", 'black')
             Publisher.sendMessage("scroll")
 
+    def saveFactory(self, var=None, method=None, qcl=None, isSave=False):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param isSave:
+        :return:
+        """
+        values = {}
+        values['var'] = ("new_variable" if var else None)
+        values['method'] = ("new_method" if method else None)
+        values['qcl'] = ("new_qcl" if qcl else None)
+        values['isSave'] = isSave
+        return values['var'], values['method'], values['qcl'], values['isSave']
 
     def save(self, var=None, method=None, qcl=None, isSave=False):
-        self._edit_service.save(var=var, method=method, qcl=qcl, isSave=isSave)
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param isSave:
+        :return:
+        """
+        result = self._edit_service.save(var=var, method=method, qcl=qcl, saveAs=isSave)
         if self._record:
-            self._script("edit_service.save()\n", 'black')
+            self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (self.saveFactory(var, method, qcl, isSave)), 'black')
+            #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
+
+        return result
 
 
     ###################
@@ -169,6 +195,7 @@ class RecordService():
 
     def get_method(self, m):
         method = self._edit_service.get_method(m.id)
+        logger.debug("method: %s %s" % (type(method), method))
         if self._record:
             self._script('new_method = series_service.get_method_by_id(%s)\n' % (method.id))
             Publisher.sendMessage("scroll")
@@ -225,8 +252,9 @@ class RecordService():
         self._script("edit_service  = EditService(series_id={id}, connection_string='{con}')\n".format(
             id=self._edit_service._series_id, con=self._connection_string), 'black')
         self._script("series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')
-        self._script("## To run commands from the python console uncomment and run the following command ##\n", 'black')
+        self._script("## To run commands from the python console uncomment and run the following commands ##\n", 'black')
         self._script("#edit_service = Tools\n", 'black')
+        self._script("#series_service = Tools.get_series_service()\n", 'black')
         Publisher.sendMessage("scroll")
 
 

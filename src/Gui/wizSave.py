@@ -403,9 +403,13 @@ class wizSave(wx.wizard.Wizard):
 
             # initiate either "Save as" or "Save"
             if self.page1.pnlIntroduction.rbSave.GetValue():
-                self.record_service.save(Variable, Method, QCL, True)
+                result = self.record_service.save(Variable, Method, QCL, False)
             else:
-                self.record_service.save(Variable, Method, QCL, False)
+                result = self.record_service.save(Variable, Method, QCL, True)
+
+            if not result:
+                wx.MessageBox("Save was unsuccessful", "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
+            else:
                 Publisher.sendMessage("refreshSeries")
 
             self.Close()

@@ -22,6 +22,10 @@ class ConsoleTools(object):
         self._ribbon = ribbon
         self._record_service = record_service
 
+    def get_series_service(self):
+        return self._record_service._edit_service._series_service
+
+
 
     ################
     # Set methods
@@ -150,7 +154,7 @@ class ConsoleTools(object):
             self.refresh_plot()
 
     ###############
-    # Create stuffs
+    # Create
     ###############
 
     def create_qualifer(self, code, description):
@@ -173,6 +177,13 @@ class ConsoleTools(object):
     def create_variable(self, var):
         var = self._record_service.create_variable(var)
         return var
+
+    def save(self, var=None, method=None, qcl=None, saveAs=False):
+        result = self._record_service.save(var=var, method=method, qcl=qcl, isSave=saveAs)
+        if result:
+            print "Save worked!"
+        else:
+            print "Save didn't work!"
 
 
     ###############
