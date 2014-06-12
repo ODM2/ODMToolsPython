@@ -1,4 +1,5 @@
 import pytest
+from src.common.logger import LoggerTool
 
 __author__ = 'Jacob'
 
@@ -15,7 +16,6 @@ easy_install pytest-capturelog
 
 import logging
 import py
-from common.logger import LoggerTool
 
 def test_logger():
 

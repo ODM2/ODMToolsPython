@@ -30,10 +30,11 @@ import pnlSeriesSelector
 import pnlPlot
 import mnuRibbon
 import pnlDataTable
+import common.icons as icons
 
 from odmconsole import ConsoleTools
 from common.logger import LoggerTool
-from common.timer import Timer
+
 import logging
 
 
@@ -92,6 +93,9 @@ class frmODMToolsMain(wx.Frame):
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=prnt,
                           size=wx.Size(1000, 900),
                           style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+
+        self.SetIcon(icons.gtk_execute.getIcon())
+
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
                              False, u'Tahoma'))
 
@@ -275,36 +279,12 @@ class frmODMToolsMain(wx.Frame):
         #print "wxID_FRMDBCONFIGBTNTEST: ", db_config._init_ctrls[4] #wxID_FRMDBCONFIGBTNTEST
 
         if value == wx.ID_OK:
-
-            #with Timer() as t:
-                #reset Series Selector
             self.createService()
-            #logger.debug("createService(): %d" % t.interval)
-
-            #with Timer() as t:
-                # reset Database
             self.pnlSelector.resetDB(self.sc)
-            #logger.debug("resetDB: %d" % t.interval )
-
-            #with Timer() as t:
-                #clear all plots
             self.pnlPlot.clear()
-            #logger.debug("pnlPlot.clear(): %d" % t.interval)
-
-            #with Timer() as t:
-                # clear the filters for the table series
             self.pnlSelector.tableSeries.clearFilter()
-            #logger.debug("pnlSelector.tableSeries.clearFilter(): %d" % t.interval)
-
-            #with Timer() as t:
-                #clear table
             self.dataTable.clear()
-            #logger.debug("dataTable.clear(): %d" % t.interval)
-
-            #with Timer() as t:
-                # reset check count in clsULC
             self.pnlSelector.tableSeries.checkCount = 0
-            #logger.debug("checkCount: %d" % t.interval)
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
@@ -373,6 +353,8 @@ class frmODMToolsMain(wx.Frame):
         """
         if self.txtPythonConsole.ToolsShown():
             self.txtPythonConsole.ToggleTools()
+
+
 
 
 if __name__ == '__main__':

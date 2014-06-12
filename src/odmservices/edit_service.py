@@ -1,11 +1,11 @@
 import sqlite3
 
-from odmdata import SessionFactory
-from odmdata import DataValue
+from src.odmdata import SessionFactory
+from src.odmdata import DataValue
 from series_service import SeriesService
-from odmdata import series as series_module
+from src.odmdata import series as series_module
 
-from common.logger import LoggerTool
+from src.common.logger import LoggerTool
 import logging
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
