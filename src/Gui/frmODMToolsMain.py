@@ -2,6 +2,7 @@
 #Boa:Frame:ODMTools
 import sys
 import os
+from src.common.icons.icons import gtk_execute
 
 this_file = os.path.realpath(__file__)
 directory = os.path.dirname(os.path.dirname(this_file))
@@ -23,17 +24,17 @@ from wx.lib.pubsub import pub as Publisher
 import wx.py.crust
 import frmDBConfiguration
 
-from odmservices import ServiceManager
-from odmservices import utilities as util
+from src.odmservices import ServiceManager
+from src.odmservices import utilities as util
 from pnlScript import pnlScript
 import pnlSeriesSelector
 import pnlPlot
 import mnuRibbon
 import pnlDataTable
-import common.icons as icons
+import src.common.icons as icons
 
-from odmconsole import ConsoleTools
-from common.logger import LoggerTool
+from src.odmconsole import ConsoleTools
+from src.common.logger import LoggerTool
 
 import logging
 
@@ -94,7 +95,7 @@ class frmODMToolsMain(wx.Frame):
                           size=wx.Size(1000, 900),
                           style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
 
-        self.SetIcon(icons.gtk_execute.getIcon())
+        self.SetIcon(gtk_execute.getIcon())
 
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL,
                              False, u'Tahoma'))
@@ -329,7 +330,7 @@ class frmODMToolsMain(wx.Frame):
         windowsRemaining = len(wx.GetTopLevelWindows())
         if windowsRemaining > 0:
             import wx.lib.agw.aui.framemanager as aui
-            #logger.debug("Windows left to close: %d" % windowsRemaining)
+            # logger.debug("Windows left to close: %d" % windowsRemaining)
             for item in wx.GetTopLevelWindows():
                 #logger.debug("Windows %s" % item)
                 if not isinstance(item, self.__class__):

@@ -1,4 +1,4 @@
-from Gui import frmODMToolsMain
+from src.gui import frmODMToolsMain
 import wx
 
 
