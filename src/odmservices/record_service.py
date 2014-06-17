@@ -2,7 +2,7 @@ import logging
 
 from wx.lib.pubsub import pub as Publisher
 
-from src.common.logger import LoggerTool
+from common.logger import LoggerTool
 
 
 tool = LoggerTool()

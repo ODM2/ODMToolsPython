@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
-from src.common.logger import LoggerTool
+from common.logger import LoggerTool
 
 import utilities as util
 from series_service import SeriesService
