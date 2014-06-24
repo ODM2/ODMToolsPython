@@ -268,6 +268,10 @@ class EditService():
         self._filter_list = tmp_filter_list
 
     def add_points(self, points):
+        #todo: add the ability to send in multiple datetimes to a single 'point'
+        for point in points:
+            if type(point[2] ) == type([]):
+                print "date is a list"
         logger.debug(points)
         query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
         query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "

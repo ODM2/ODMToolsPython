@@ -2,7 +2,7 @@
 #Boa:Frame:ODMTools
 import sys
 import os
-from common.icons.icons import gtk_execute
+from src.common.icons.icons import gtk_execute
 
 '''
 this_file = os.path.realpath(__file__)
@@ -26,8 +26,8 @@ from wx.lib.pubsub import pub as Publisher
 import wx.py.crust
 import frmDBConfiguration
 
-from odmservices import ServiceManager
-from odmservices import utilities as util
+from src.odmservices import ServiceManager
+from src.odmservices import utilities as util
 from pnlScript import pnlScript
 import pnlSeriesSelector
 import pnlPlot
@@ -35,8 +35,8 @@ import mnuRibbon
 import pnlDataTable
 #import odmtools.common.icons as icons
 
-from odmconsole import ConsoleTools
-from common.logger import LoggerTool
+from src.odmconsole import ConsoleTools
+from src.common.logger import LoggerTool
 
 import logging
 
