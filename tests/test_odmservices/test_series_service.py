@@ -1,5 +1,5 @@
-from src.odmdata import *
-from src.odmservices import SeriesService
+from odmtools.odmdata import *
+from odmtools.odmservices import SeriesService
 
 from tests import test_util
 

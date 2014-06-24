@@ -1,7 +1,7 @@
 import pytest
 
-from src.odmdata import MemoryDatabase
-from src.odmservices import SeriesService
+from odmtools.odmdata import MemoryDatabase
+from odmtools.odmservices import SeriesService
 from tests import test_util
 
 

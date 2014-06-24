@@ -1,5 +1,5 @@
 import os.path
-from src.odmservices import SeriesService, ExportService
+from odmtools.odmservices import SeriesService, ExportService
 
 from tests import test_util
 

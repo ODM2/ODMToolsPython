@@ -1,5 +1,5 @@
 import pytest
-from src.common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 __author__ = 'Jacob'
 

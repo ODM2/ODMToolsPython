@@ -1,7 +1,7 @@
 import pytest
 import sqlalchemy.orm.exc
-from src.odmdata import Qualifier
-from src.odmservices import CVService
+from odmtools.odmdata import Qualifier
+from odmtools.odmservices import CVService
 
 from tests import test_util
 

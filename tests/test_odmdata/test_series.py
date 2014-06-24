@@ -1,5 +1,5 @@
-from src.odmdata import *
-from src.odmdata import copy_series
+from odmtools.odmdata import *
+from odmtools.odmdata import copy_series
 
 from tests import test_util
 

@@ -28,7 +28,7 @@ class pnlScript(wx.Frame):
         # use ID_ for future easy reference -- much better than "48", "404", etc.
         # The & character indicates the shortcut key
         filemenu.Append(ID_NEW, "&New", "New file")
-        filemenu.Append(ID_OPEN, "&Open", " Open file")
+        filemenu.Append(ID_OPEN, "&Open Existing", "Append to an existing file")
         filemenu.AppendSeparator()
         filemenu.Append(ID_SAVE, "&Save", " Save current file")
         filemenu.Append(ID_SAVE_AS, "Save &As...", " Save to specific file")
@@ -71,15 +71,26 @@ class pnlScript(wx.Frame):
         self._free = 1
 
     def OnNew(self, e):
-        if self.control.GetText() != '':
-            self.OnSaveAs(e)
+        ## Check if data already exists
+        if len(self.control.GetText()) > 0:
+            val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
+                                "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+            if val == wx.YES:
+                self.OnSaveAs(e)
 
         self.filename = ''
         self.control.SetText('')
         # self.SetTitle("Editing a new file")
-        Publisher.sendMessage(("script.title"), title="Editing a new file")
+        Publisher.sendMessage("script.title", title="Editing a new file")
 
     def OnOpen(self, e):
+        ## Check if data already exists
+        if len(self.control.GetText()) > 0:
+            val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
+                                "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+            if val == wx.YES:
+                self.OnSaveAs(e)
+
         dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.OPEN | wx.CHANGE_DIR | wx.MULTIPLE )
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
@@ -87,17 +98,20 @@ class pnlScript(wx.Frame):
 
             # Open the file and set its contents into the edit window
             filehandle = open(os.path.join(self.dirname, self.filename), 'r')
-            self.control.SetText(filehandle.read())
-            self.control.EmptyUndoBuffer()
-            filehandle.close()
 
-            # self.SetTitle("Editing: %s" % self.filename)
-            Publisher.sendMessage(("script.title"), title="Editing: %s" % self.filename)
+            if filehandle:
+                self.control.SetText(filehandle.read())
+                self.control.EmptyUndoBuffer()
+                filehandle.close()
+                # self.SetTitle("Editing: %s" % self.filename)
+                Publisher.sendMessage("script.title", title="Editing: %s" % self.filename)
+            else:
+                pass
 
         dlg.Destroy()
 
     def OnSave(self, e):
-        if self.filename == '':
+        if self.filename:
             self.OnSaveAs(e)
         else:
             saved_text = self.control.GetText()
@@ -143,7 +157,7 @@ class pnlScript(wx.Frame):
             self.console.shell.run(line)
 
     def newKeyPressed(self):
-        if self.filename != '':
+        if self.filename:
             title = "Editing: %s*" % self.filename
             self.setTitle(title)
 

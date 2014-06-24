@@ -80,6 +80,7 @@ class frmChangeValue(wx.Dialog):
     def OnBtnOkButton(self, event):
       operator = self.cbValue.GetValue()
       value = self.txtValue.GetValue()
+
       if operator == 'Add':
         operator = '+'
       if operator == 'Subtract':

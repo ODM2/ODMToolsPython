@@ -33,7 +33,7 @@ import pnlSeriesSelector
 import pnlPlot
 import mnuRibbon
 import pnlDataTable
-#import src.common.icons as icons
+#import odmtools.common.icons as icons
 
 from odmconsole import ConsoleTools
 from common.logger import LoggerTool
@@ -272,6 +272,7 @@ class frmODMToolsMain(wx.Frame):
         return self.record_service
 
     def onChangeDBConn(self, event):
+        logger.debug("WORKING!!!")
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
 
@@ -285,9 +286,9 @@ class frmODMToolsMain(wx.Frame):
             self.createService()
             self.pnlSelector.resetDB(self.sc)
             self.pnlPlot.clear()
-            self.pnlSelector.tableSeries.clearFilter()
+            #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
-            self.pnlSelector.tableSeries.checkCount = 0
+            #self.pnlSelector.tableSeries.checkCount = 0
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()

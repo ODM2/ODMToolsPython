@@ -1,4 +1,4 @@
-from src.odmdata import SessionFactory
+from odmtools.odmdata import SessionFactory
 
 
 class TestSessionFactory:
