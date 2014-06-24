@@ -142,7 +142,7 @@ class clsULC(ULC.UltimateListCtrl):
             #logger.debug("CheckCount: %d" % (self.checkCount))
             return False
 
-    # check visibly on SeriesSelector Gui
+    # check visibly on SeriesSelector gui
     def checkItem(self, index, isChecked=True, sendEvent=False):
         self.subList[index][-1] = 1
         # TODO clsUCL object has no attribute 'getItem'

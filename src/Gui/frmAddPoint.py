@@ -118,18 +118,6 @@ class frmAddPoint(wx.Dialog):
         self.grdDataValues.Font.Weight = wx.LIGHT
 
 
-        #HydroDesktop :
-        # DataValue, req
-        # ValueAccuracy,
-        # LocalDateTime, req
-        # UTCOffset, req
-        # DateTimeUTC, req
-        # OffsetValue,
-        # CensorCode, dd
-        # OffsetType, dd
-        # Qualifier, dd
-        # Sample  dd
-
 
         # color = self.grdDataValues.GetLabelBackgroundColour()
         color = "Yellow"
@@ -207,6 +195,7 @@ class frmAddPoint(wx.Dialog):
         series = self.record_service.get_series()
 
         # check if the final row is formatted correctly
+        # is the final row empty?  if yes are all rows empty? if no skip final row if no check it
         if not self.IsRowFilled(num_rows - 1):
             # TODO: Implement error messages and highlight correct cell. For now, do nothing
             event.Skip()
