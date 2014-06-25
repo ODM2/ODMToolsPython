@@ -11,10 +11,12 @@ def resource_path(relative):
     OS = platform.system()
     if OS =='Darwin' and os.environ.get('RESOURCEPATH'):
         return os.path.join(os.environ.get('RESOURCEPATH'), relative)
-    filepath = os.path.realpath(__file__)
-    return os.path.join(
-        os.path.dirname(os.path.dirname(filepath)), relative
-    )
+    elif OS == "Windows" and os.getenv('APPDATA'):
+        return os.path.join(os.getenv('APPDATA'), relative)
+    #filepath = os.path.realpath(__file__)
+    #return os.path.join(
+    #    os.path.dirname(os.path.dirname(filepath)), relative
+    #)
 
 def slash():
 	OS = platform.system()

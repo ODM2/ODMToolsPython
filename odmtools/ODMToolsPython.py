@@ -1,14 +1,15 @@
 #!/usr/bin/python
-
-import wx
-from gui import frmODMToolsMain
-
 import os
 import sys
 
 this_file = os.path.realpath(__file__)
 directory = os.path.dirname(os.path.dirname(this_file))
 sys.path.insert(0, directory)
+
+
+import wx
+from gui import frmODMToolsMain
+
 
 def create(parent):
     return frmODMToolsMain.create(parent)

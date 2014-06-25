@@ -8,7 +8,8 @@ Usage:
 from setuptools import setup
 
 APP = ['ODMToolsPython.py']
-DATA_FILES = [('', ['images'])]
+#DATA_FILES = [('', ['images'])]
+DATA_FILES = ['']
 OPTIONS = {'argv_emulation': True,
            'arch': 'i386',
            'includes': ['wx', 'sqlalchemy', 'pymysql', 'matplotlib', 'ObjectListView']}
