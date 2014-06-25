@@ -15,7 +15,7 @@ from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 ## Enable logging
 import logging
-from odmtools.common.logger import LoggerTool
+from common.logger import LoggerTool
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

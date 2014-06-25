@@ -2,13 +2,14 @@
 #Boa:Frame:ODMTools
 import sys
 import os
-from odmtools.common import gtk_execute
 
-'''
+
+
 this_file = os.path.realpath(__file__)
 directory = os.path.dirname(os.path.dirname(this_file))
 sys.path.insert(0, directory)
-'''
+from odmtools.common import gtk_execute
+
 
 import wx
 import wx.grid

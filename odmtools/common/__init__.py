@@ -1,7 +1,8 @@
 __author__ = 'Jacob'
 from icons.icons import *
+from logger import LoggerTool
 __all__=["add",
-        
+
         "binning",
         "bitmap_editor",
         "blank",
@@ -47,5 +48,7 @@ __all__=["add",
         "Undo",
         "window_command_line",
         "window_enter",
+        "LoggerTool",
+        "logger"
 
         ]
