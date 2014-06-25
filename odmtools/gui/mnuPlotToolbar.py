@@ -4,10 +4,10 @@ import logging
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 from matplotlib.widgets import Lasso
 from matplotlib import path
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 import gui_utils as g_util
-
+from odmtools.common import select, scroll_left, scroll_right
 tools = LoggerTool()
 logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
@@ -28,11 +28,9 @@ class MyCustomToolbar(NavigationToolbar):
             CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 7
             self.DeleteToolByPos(CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION)
 
-        self.AddSimpleTool(self.ON_CUSTOM_LEFT,
-                           wx.Bitmap(os.path.join(g_util.resource_path("images"), "scroll_left.png")),
+        self.AddSimpleTool(self.ON_CUSTOM_LEFT,scroll_left.GetBitmap(),
                            ' Pan to the left', 'Pan graph to the left')
-        self.AddSimpleTool(self.ON_CUSTOM_RIGHT,
-                           wx.Bitmap(g_util.resource_path("images" + g_util.slash() + "scroll_right.png")),
+        self.AddSimpleTool(self.ON_CUSTOM_RIGHT,scroll_right.GetBitmap(),
                            'Pan to the right', 'Pan graph to the right')
 
 
@@ -42,8 +40,7 @@ class MyCustomToolbar(NavigationToolbar):
 
         if allowselect:
             self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT,
-                                                   wx.Bitmap(
-                                                       g_util.resource_path("images" + g_util.slash() + "select.png")),
+                                                   select.GetBitmap(),
                                                    'Lasso Select', 'Select datavalues from the graph', isToggle=True)
 
             wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self.on_toggle_lasso_tool)
