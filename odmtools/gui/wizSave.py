@@ -15,7 +15,7 @@ wxID_PNLSUMMARY, wxID_WIZSAVE,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
 from wx.lib.pubsub import pub as Publisher
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 import logging
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

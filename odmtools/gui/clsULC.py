@@ -2,7 +2,7 @@ import logging
 import wx
 import wx.lib.agw.ultimatelistctrl as ULC
 ##used for Series Selector
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

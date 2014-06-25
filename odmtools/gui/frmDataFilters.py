@@ -6,7 +6,7 @@ from wx.lib.pubsub import pub as Publisher
 
 ## Enable logging
 import logging
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 ##

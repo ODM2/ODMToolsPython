@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import wx
 from gui import frmODMToolsMain
 

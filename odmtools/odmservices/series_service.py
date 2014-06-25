@@ -15,7 +15,7 @@ from odmdata import Sample
 from odmdata import Method
 from odmdata import QualityControlLevel
 from odmdata import ODMVersion
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

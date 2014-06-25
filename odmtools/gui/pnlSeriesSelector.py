@@ -8,7 +8,7 @@ from ObjectListView import ColumnDefn
 
 import frmQueryBuilder
 from clsSeriesTable import clsSeriesTable, EVT_OVL_CHECK_EVENT
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 from clsULC import clsULC, TextSearch
 from odmdata import MemoryDatabase, series
 from odmservices import ServiceManager

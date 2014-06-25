@@ -10,7 +10,7 @@ from odmdata import Method
  wxID_PNLMETHODSRICHTEXTCTRL1,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 import logging
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

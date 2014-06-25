@@ -124,7 +124,7 @@ class mnuRibbon(RB.RibbonBar):
         self.dpStartDate.Enabled = False
 
         #-------------------------------------------------------------------------------
-        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit", blank.GetBitmap())
+        editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit")
 
         main_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Main", wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize,
                                     RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
@@ -171,7 +171,7 @@ class mnuRibbon(RB.RibbonBar):
 
         #-------------------------------------------------------------------------------
 
-        viewPage = RB.RibbonPage(self, wx.ID_ANY, "View", blank.GetBitmap())
+        viewPage = RB.RibbonPage(self, wx.ID_ANY, "View")
 
         view_panel = RB.RibbonPanel(viewPage, wx.ID_ANY, "Tools", wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize,
                                     RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
@@ -261,7 +261,7 @@ class mnuRibbon(RB.RibbonBar):
             self.Bind(wx.EVT_MENU, self.onChangeDBConfig, menu.Append(wx.ID_ANY, "Change DB Configuration"))
             self.Bind(wx.EVT_MENU, self.onClose, menu.Append(wx.ID_ANY, "Close"))
 
-            #self.PopupMenu(menu, wx.Point(50, 25))
+            self.PopupMenu(menu, wx.Point(50, 25))
         event.Skip()
 
     def onFullDate(self, event):
