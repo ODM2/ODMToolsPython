@@ -11,6 +11,7 @@ from frmChangeValue import frmChangeValue
 from frmAddPoint import frmAddPoint
 from frmFlagValues import frmFlagValues
 from frmLinearDrift import frmLinearDrift
+from odmtools.views.recordDialog import recordDialog
 import wizSave
 import gui_utils as g_util
 from odmtools.common import *
@@ -33,7 +34,7 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
  wxID_RIBBONEDITSCRIPTSAVE, wxID_RIBBONVIEWPLOT, wxID_RIBBONVIEWTABLE, wxID_RIBBONVIEWSERIES, wxID_RIBBONVIEWCONSOLE,
  wxID_RIBBONVIEWSCRIPT, wxID_RIBBONPLOTBLANKBTN, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE, wxID_FRAME1SPINCTRL1,
  wxID_RIBBONEDITFILTER, wxID_RIBBONEDITRECORD, wxID_RIBBONEDITLINFILTER, wxID_RIBBONPLOTDATEAPPLY,
- wxID_RIBBONEDITRESETFILTER] = [wx.NewId() for _init_ctrls in range(43)]
+ wxID_RIBBONEDITRESETFILTER, wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBIONAPPEND] = [wx.NewId() for _init_ctrls in range(46)]
 
 ## #################################
 ## Build Menu and Toolbar 
@@ -55,12 +56,12 @@ class mnuRibbon(RB.RibbonBar):
 
         plot_panel = RB.RibbonPanel(home, wx.ID_ANY, "Plots", wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize,
                                     RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
-        plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)
-        plots_bar.AddSimpleButton(wxID_RIBBONPLOTTIMESERIES, "Time Series",tsa_icon.GetBitmap(),"")
-        plots_bar.AddSimpleButton(wxID_RIBBONPLOTPROB, "Probablity", probability.GetBitmap(), "")
-        plots_bar.AddSimpleButton(wxID_RIBBONPLOTHIST, "Histogram", histogram.GetBitmap(), "")
-        plots_bar.AddSimpleButton(wxID_RIBBONPLOTBOX, "Box/Whisker", box_whisker.GetBitmap(), "")
-        plots_bar.AddSimpleButton(wxID_RIBBONPLOTSUMMARY, "Summary", summary.GetBitmap(), "")
+        self.plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)
+        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTTIMESERIES, "Time Series",tsa_icon.GetBitmap(),"")
+        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTPROB, "Probablity", probability.GetBitmap(), "")
+        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTHIST, "Histogram", histogram.GetBitmap(), "")
+        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTBOX, "Box/Whisker", box_whisker.GetBitmap(), "")
+        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTSUMMARY, "Summary", summary.GetBitmap(), "")
 
 
         #-- PLOT OPTIONS-----------------------------------------------------------------------------
@@ -168,6 +169,19 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITADDPOINT, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
+
+        self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Record Functions", wx.NullBitmap, wx.DefaultPosition,
+                                    wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
+
+        #wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBIONAPPEND
+
+
+        self.record_bar = RB.RibbonButtonBar(self.record_panel)
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New", filter_list.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open", Undo.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBIONAPPEND, "Append", edit_view.GetBitmap(), "")
+        self.record_panel.Hide()
+
 
         #-------------------------------------------------------------------------------
 
@@ -320,6 +334,12 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onRecord(self, event):
+
+        if self.record_panel.IsShown():
+            self.record_panel.Hide()
+        else:
+            self.record_panel.Show()
+
         record_service = self.parent.getRecordService()
         record_service.toggle_record()
         if event.IsChecked():
@@ -327,6 +347,7 @@ class mnuRibbon(RB.RibbonBar):
             if not panedet.IsShown():
                 panedet.Show(show=True)
             script = self.parent.txtPythonScript
+
             script.OnNew(event)
             record_service.write_header()
 
