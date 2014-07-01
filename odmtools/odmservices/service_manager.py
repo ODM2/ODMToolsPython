@@ -8,6 +8,7 @@ from cv_service import CVService
 from edit_service import EditService
 from record_service import RecordService
 from export_service import ExportService
+from appdirs import *
 
 
 tool = LoggerTool()
@@ -113,7 +114,9 @@ class ServiceManager():
     ## ###################
 
     def __get_file(self, mode):
-        fn = util.resource_path('connection.config')
+        #fn = util.resource_path('connection.config')
+        fn = os.path.join(user_config_dir("ODMTools", "UCHIC"), 'connection.config')
+
         config_file = None
         try:
             config_file = open(fn, mode)
