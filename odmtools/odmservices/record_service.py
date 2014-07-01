@@ -98,6 +98,7 @@ class RecordService():
 
 
     def interpolate(self):
+        print "Interpolate"
         self._edit_service.interpolate()
         if self._record:
             self._script("edit_service.interpolate()\n", 'black')

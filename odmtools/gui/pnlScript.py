@@ -72,25 +72,25 @@ class pnlScript(wx.Frame):
         self._free = 1
 
     def OnNew(self, e):
-
         ## Check if data already exists
-        #if len(self.control.GetText()) > 0:
-        #    val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-        #                        "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
-        #    if val == wx.YES:
-        #        self.OnSaveAs(e)
+        if len(self.control.GetText()) > 0:
+            val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
+                                "Would you like to save it now? Selecting 'No' will delete anything you "
+                                "may have in the script", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+            if val == wx.YES:
+                self.OnSaveAs(e)
 
         self.filename = ''
         self.control.SetText('')
         # self.SetTitle("Editing a new file")
         Publisher.sendMessage("script.title", title="Editing a new file")
 
-
     def OnOpen(self, e):
         ## Check if data already exists
         if len(self.control.GetText()) > 0:
             val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-                                "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+                                "Would you like to save it now? Selecting 'No' will delete anything you "
+                                "may have in the script", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
             if val == wx.YES:
                 self.OnSaveAs(e)
 
