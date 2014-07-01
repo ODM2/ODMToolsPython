@@ -7,6 +7,7 @@ __author__ = 'Jacob'
 
 import logging
 import os
+import odmtools.gui.gui_utils as util
 
 
 class LoggerTool():
@@ -19,11 +20,15 @@ class LoggerTool():
         #formatter = logging.Formatter('%(asctime)s : %(message)s')
         formatter = logging.Formatter(self.formatString)
 
-        logPath = os.path.abspath(os.path.dirname("../../"))
-        logPath += '/log/'
+        #logPath = os.path.abspath(os.path.dirname("../../"))
+        logPath = util.resource_path("ODMTools")
+
+        logPath = os.path.join(logPath, "log" )
+        #print  logPath
+
         if not os.path.exists(logPath):
             os.mkdir(logPath, 0755)
-        fileHandler = logging.FileHandler(logPath + logFile, mode=m)
+        fileHandler = logging.FileHandler(os.path.join(logPath , logFile), mode=m)
         fileHandler.setFormatter(formatter)
         streamHandler = logging.StreamHandler()
         streamHandler.setFormatter(formatter)

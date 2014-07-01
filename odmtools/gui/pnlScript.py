@@ -4,6 +4,7 @@ import wx
 from wx.lib.pubsub import pub as Publisher
 
 from highlightSTC import highlightSTC
+from odmtools.views.recordDialog import recordDialog
 
 
 ID_NEW = 101
@@ -74,7 +75,8 @@ class pnlScript(wx.Frame):
         ## Check if data already exists
         if len(self.control.GetText()) > 0:
             val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-                                "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+                                "Would you like to save it now? Selecting 'No' will delete anything you "
+                                "may have in the script", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
             if val == wx.YES:
                 self.OnSaveAs(e)
 
@@ -87,7 +89,8 @@ class pnlScript(wx.Frame):
         ## Check if data already exists
         if len(self.control.GetText()) > 0:
             val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-                                "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+                                "Would you like to save it now? Selecting 'No' will delete anything you "
+                                "may have in the script", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
             if val == wx.YES:
                 self.OnSaveAs(e)
 

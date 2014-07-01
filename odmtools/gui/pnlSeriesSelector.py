@@ -615,23 +615,30 @@ class pnlSeriesSelector(wx.Panel):
         ovl = self.tableSeriesTable
 
         object = ovl.currentlySelectedObject
-        if object is not None:
-            if len(ovl.GetCheckedObjects()) <= ovl.allowedLimit:
-                if object not in ovl.GetCheckedObjects():
-                    ovl.ToggleCheck(object)
+        if object is None:
+            # # Select the first one
+            if len(ovl.modelObjects) == 0:
+                logger.fatal("There are no model objects available to edit")
+                raise Exception()
+            object = ovl.modelObjects[0]
 
-                self.memDB.initEditValues(object.id)
-                self.isEditing = True
-                ovl.editingObject = object
-                ovl.RefreshObject(ovl.editingObject)
+        if len(ovl.GetCheckedObjects()) <= ovl.allowedLimit:
+            if object not in ovl.GetCheckedObjects():
+                ovl.ToggleCheck(object)
 
-                return True, object.id, self.memDB
-            else:
-                isSelected = False
-                logger.debug("series was not checked")
-                val_2 = wx.MessageBox("Visualization is limited to 6 series.",
-                                      "Can't add plot",
-                                      wx.OK | wx.ICON_INFORMATION)
+            self.memDB.initEditValues(object.id)
+            self.isEditing = True
+            ovl.editingObject = object
+            ovl.RefreshObject(ovl.editingObject)
+
+            return True, object.id, self.memDB
+        else:
+            isSelected = False
+            logger.debug("series was not checked")
+            val_2 = wx.MessageBox("Visualization is limited to 6 series.",
+                                  "Can't add plot",
+                                  wx.OK | wx.ICON_INFORMATION)
+
         self.isEditing = False
         ovl.editingObject = None
         return False, object.id, self.memDB
