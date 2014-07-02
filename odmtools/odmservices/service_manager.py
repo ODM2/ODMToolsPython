@@ -119,7 +119,11 @@ class ServiceManager():
 
         config_file = None
         try:
-            config_file = open(fn, mode)
+            if os.path.exists(user_config_dir("ODMTools", "UCHIC")):
+                config_file = open(fn, mode)
+            else:
+                os.makedirs(fn, mode=0755)
+                config_file = open(fn, mode)
         except:
             open(fn, 'w').close()
             config_file = open(fn, mode)
