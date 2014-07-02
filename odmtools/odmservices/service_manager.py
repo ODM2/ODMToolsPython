@@ -9,6 +9,7 @@ from edit_service import EditService
 from record_service import RecordService
 from export_service import ExportService
 from appdirs import *
+import os
 
 
 tool = LoggerTool()
@@ -119,14 +120,17 @@ class ServiceManager():
 
         config_file = None
         try:
-            if os.path.exists(user_config_dir("ODMTools", "UCHIC")):
+
+            if os.path.exists(fn):
                 config_file = open(fn, mode)
             else:
-                os.makedirs(fn, mode=0755)
+                os.makedirs(user_config_dir("ODMTools", "UCHIC"))
+                open(fn, 'w').close()
                 config_file = open(fn, mode)
         except:
             open(fn, 'w').close()
             config_file = open(fn, mode)
+            
 
         return config_file
 

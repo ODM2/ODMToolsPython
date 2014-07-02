@@ -10,8 +10,8 @@ import frmQueryBuilder
 from clsSeriesTable import clsSeriesTable, EVT_OVL_CHECK_EVENT
 from odmtools.common.logger import LoggerTool
 from clsULC import clsULC, TextSearch
-from odmdata import MemoryDatabase, series
-from odmservices import ServiceManager
+from odmtools.odmdata import MemoryDatabase, series
+from odmtools.odmservices import ServiceManager
 
 
 tool = LoggerTool()
