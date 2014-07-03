@@ -592,6 +592,8 @@ class pnlSeriesSelector(wx.Panel):
         if not self.tableSeriesTable.IsChecked(object):
             #logger.debug("%s isn't checked: %s" % (object.id, object))
             Publisher.sendMessage("removePlot", seriesID=object.id)
+            from meliae import scanner
+            scanner.dump_all_objects('filename')
         else:
             #logger.debug("%s is checked: %s" % (object.id, object))
             self.parent.Parent.addPlot(self.memDB, object.id)
