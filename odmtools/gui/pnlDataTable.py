@@ -33,7 +33,7 @@ class pnlDataTable(wx.Panel):
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
         #self.myOlv.handleStandardKeys = True
-        self.myOlv.rowFormatter = self._rowFormatter
+        #self.myOlv.rowFormatter = self._rowFormatter
 
         self.currentItem = None
 
