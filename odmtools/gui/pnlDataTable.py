@@ -33,7 +33,7 @@ class pnlDataTable(wx.Panel):
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
         #self.myOlv.handleStandardKeys = True
-        self.myOlv.rowFormatter = self._rowFormatter
+        #self.myOlv.rowFormatter = self._rowFormatter
 
         self.currentItem = None
 
@@ -100,7 +100,7 @@ class pnlDataTable(wx.Panel):
             objlist = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
 
         if len(objlist) > 0:
-            self.myOlv.SelectObjects(objlist[0], deselectOthers=True)
+            self.myOlv.SelectObject(objlist[0], deselectOthers=True, ensureVisible=True)
         self.myOlv.SelectObjects(objlist, deselectOthers=True)
 
     def onKeyPress(self, evt):

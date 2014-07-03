@@ -107,10 +107,13 @@ class plotTimeSeries(wx.Panel):
                 self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
             else:
                 tflist=[False] *len(self.editCurve.dataTable)
-                for i in range(len(self.editCurve.dataTable)):
+                for i in xrange(len(self.editCurve.dataTable)):
                     if self.editCurve.dataTable[i][1] in datetime_list:
-                        tflist[i] = True
-                self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
+                        tflist[i] = 'r' #set the value as selected
+                    else:
+                        tflist[i]='k'
+                self.editPoint.set_color(tflist)
+                #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
 
             self.canvas.draw()
 

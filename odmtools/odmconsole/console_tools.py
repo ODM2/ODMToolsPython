@@ -113,11 +113,10 @@ class ConsoleTools(object):
             #data_value, local_datetime, utc_offset, datetime_utc, censor_code
             if (point[0] == None or point[2] == None or point[3] == None or
                         point[4] == None or point[7] == None or point[7] == ""):
-                return "Error adding point: %s" % (self._add_point_req_error)
+                return "Error adding point: "
 
-            if (type(point[2]) is not datetime or
-                        type(point[4]) is not datetime):
-                return "Error adding point: %s" % (self._add_point_format_error)
+            if isinstance(point[2], datetime.datetime) or isinstance(point[4], datetime.datetime):
+                return "Error adding point: "
 
         if self._record_service:
             self._record_service.add_points(point_list)
