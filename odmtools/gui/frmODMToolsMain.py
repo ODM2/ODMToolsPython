@@ -287,6 +287,7 @@ class frmODMToolsMain(wx.Frame):
             self.createService()
             self.pnlSelector.resetDB(self.sc)
             self.pnlPlot.clear()
+            self.pnlPlot.close()
             #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
             #self.pnlSelector.tableSeries.checkCount = 0
@@ -358,10 +359,6 @@ class frmODMToolsMain(wx.Frame):
         """
         if self.txtPythonConsole.ToolsShown():
             self.txtPythonConsole.ToggleTools()
-
-
-
-
 if __name__ == '__main__':
     app = wx.App(False)
     frame = create(None)
@@ -371,3 +368,37 @@ if __name__ == '__main__':
     #wx.lib.inspection.InspectionTool().Show()
 
     app.MainLoop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

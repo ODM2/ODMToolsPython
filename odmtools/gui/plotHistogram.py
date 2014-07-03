@@ -57,6 +57,8 @@ class plotHist(wx.Panel):
         self.figure.clear()
         self.hist = []
 
+
+
     def gridSize(self, cells):
         rows = 1
         cols = 1

@@ -226,24 +226,21 @@ class pnlSeriesSelector(wx.Panel):
         self.tableSeriesTable.useAlternateBackColors = True
         #self.tableSeriesTable.oddRowsBackColor = wx.Colour(143, 188, 188)
         self.tableSeriesTable.oddRowsBackColor = wx.Colour(191, 217, 217)
-
+        self.cpnlSimple.Collapse(True)
+        #self.cpnlSimple.Collapse(True)
+        self._init_sizers()
         ################################################################################################################
-        self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeriesTest,
-                                  name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),size=wx.Size(903, 108),
-                                  agwStyle=ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT | ULC.ULC_SINGLE_SEL)
-        self.tableSeries.Hide()
+        #self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeriesTest,
+        #                          name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),size=wx.Size(903, 108),
+        #                          agwStyle=ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT | ULC.ULC_SINGLE_SEL)
+        #self.tableSeries.Hide()
 
 
         ##        self.splitter.Initialize(self.tableSeries)
-        self.cpnlSimple.Collapse(True)
-        # self.splitter.SplitHorizontally(self.pnlSimple, self.tableSeries, 1)
-
-        self.cpnlSimple.Collapse(True)
-        self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
-                              id=wxID_PNLSERIESSELECTORtableSeries)
-        self.tableSeries.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
-                              id=wxID_PNLSERIESSELECTORtableSeries)
-        self._init_sizers()
+        #self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
+        #                      id=wxID_PNLSERIESSELECTORtableSeries)
+        #self.tableSeries.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
+        #                      id=wxID_PNLSERIESSELECTORtableSeries)
 
     def initPubSub(self):
         #Publisher.subscribe(self.onEditButton, ("selectEdit"))
@@ -346,7 +343,7 @@ class pnlSeriesSelector(wx.Panel):
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))
         self.Bind(wx.EVT_MENU, self.onRightExMeta, popup_menu.Append(popup_export_metadata, 'Export MetaData'))
 
-        self.tableSeries.PopupMenu(popup_menu)
+        self.tableSeriesTable.PopupMenu(popup_menu)
         event.Skip()
 
     def onPaneChanged(self, event=None):
@@ -518,7 +515,7 @@ class pnlSeriesSelector(wx.Panel):
             #self.variableFilter = TextSearch(self.tableSeries, columns=self.tableSeries.columns[5:7], var=var_code)
             #self.tableSeries.setFilter(Chain(self.siteFilter, self.variableFilter))
         elif site_code:
-            self.tableSeries.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', text=site_code))
+            self.tableSeriesTable.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', text=site_code))
         elif var_code:
             self.tableSeries.setFilter(TextSearch(self.tableSeriesTable.GetModelObjects(), columns='', var=var_code))
         elif advfilter:
@@ -538,7 +535,7 @@ class pnlSeriesSelector(wx.Panel):
         #self.tableSeriesTable.SetObjects(filteredObjects)
 
     """ Not using"""
-
+    '''
     def onTableSeriesListItemSelected(self, event):
         logger.fatal("I shouldn't be using this function")
 
@@ -575,6 +572,7 @@ class pnlSeriesSelector(wx.Panel):
                                       "Can't add plot",
                                       wx.OK | wx.ICON_INFORMATION)
         self.Refresh()
+    '''
 
     def onReadyToPlot(self, event):
         """Plots a series selected from the series selector
@@ -704,6 +702,7 @@ class pnlSeriesSelector(wx.Panel):
 
         :rtype: None
         """
+        '''
         if self.tableSeriesTable.editingObject and \
                         object.id == self.tableSeriesTable.editingObject.id:
             #listItem.SetTextColour(wx.Colour(255, 25, 112))
@@ -718,6 +717,7 @@ class pnlSeriesSelector(wx.Panel):
         else:
             listItem.SetTextColour(wx.Colour())
             listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
+        '''
 
 ##########only use this section when testing series selector #############
 if __name__ == '__main__':

@@ -95,6 +95,7 @@ class pnlPlot(fnb.FlatNotebook):
         #tempseries= self._seriesPlotInfo.getSeries(seriesID)
         self._seriesPlotInfo.update(seriesID, False)
         self.redrawPlots()
+        self.clear()
 
     def onNumBins(self, numBins):
         self.pltHist.changeNumOfBins(numBins)
@@ -156,8 +157,8 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltHist.Plot(self._seriesPlotInfo)
 
         self.pltTS.Plot(self._seriesPlotInfo)
-
         self.onShowLegend(event=None, isVisible=self.legendVisible)
+
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart= currStart, currEnd=currEnd)
 
@@ -175,12 +176,26 @@ class pnlPlot(fnb.FlatNotebook):
 
     def clear(self):
         #self.pltTS.init_plot()
-        self.pltSum.clear()
-        self.pltHist.clear()
-        self.pltProb.clear()
-        self.pltBox.clear()
-        self.pltTS.clear()
+        if self.pltSum:
+            self.pltSum.clear()
 
-        # Set title of TimeSeries to default
-        #self.pltTS.timeSeries.set_title("No Data To Plot")
+        if self.pltHist:
+            self.pltHist.clear()
+            #self.pltHist.close()
+
+        if self.pltProb:
+            self.pltProb.clear()
+            #self.pltProb.close()
+
+        if self.pltBox:
+            self.pltBox.clear()
+            #self.pltBox.close()
+
+        if self.pltTS:
+            self.pltTS.clear()
+            self.pltTS.close()
+
+            # Set title of TimeSeries to default
+            self.pltTS.timeSeries.set_title("No Data To Plot")
+
         self._seriesPlotInfo = None

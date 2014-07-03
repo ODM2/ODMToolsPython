@@ -27,6 +27,10 @@ class plotProb(wx.Panel):
     def clear(self):
         self.plot.clear()
 
+    def close(self):
+        #self.plot.clf()
+        self.plot.close('all')
+
     def _init_ctrls(self, prnt):
         #matplotlib.figure.Figure.__init__(self)
         wx.Panel.__init__(self, prnt, -1)

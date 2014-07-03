@@ -183,6 +183,7 @@ class plotTimeSeries(wx.Panel):
             # self.stopEdit()
         #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
         plt.cla()
+        #plt.clf()
         self.timeSeries.plot([], [])
 
     def stopEdit(self):
@@ -255,7 +256,9 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetBackgroundColour(color)
 
     def close(self):
-        plt.close()
+        #plt.clf()
+        #plt.close()
+        pass
 
     def Plot(self, seriesPlotInfo):
         self.seriesPlotInfo = seriesPlotInfo
@@ -264,8 +267,6 @@ class plotTimeSeries(wx.Panel):
         self.toolbar._views.clear()
         self.toolbar._positions.clear()
         self.toolbar._update_view()
-
-
 
     def updatePlot(self):
         self.clear()

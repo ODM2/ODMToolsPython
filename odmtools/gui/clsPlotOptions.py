@@ -167,6 +167,7 @@ class SeriesPlotInfo(object):
         if not isselected:
             try:
                 del self._seriesInfos[key]
+                print "Update Size: ", len(self._seriesInfos)
             except KeyError:
                 self.resetDates()
         else:

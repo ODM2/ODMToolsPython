@@ -120,6 +120,7 @@ class ServiceManager():
 
         config_file = None
         try:
+
             if os.path.exists(fn):
                 config_file = open(fn, mode)
             else:
