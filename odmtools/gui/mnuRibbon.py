@@ -370,9 +370,6 @@ class mnuRibbon(RB.RibbonBar):
             panedet.Show(show=True)
         script = self.parent.txtPythonScript
         script.OnNew(event)
-        record_service = self.parent.getRecordService()
-        record_service.write_header()
-
 
     def onRecordOpen(self, event):
         logger.debug("Open was pressed")

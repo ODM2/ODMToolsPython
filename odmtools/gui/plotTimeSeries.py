@@ -34,11 +34,11 @@ class plotTimeSeries(wx.Panel):
         self._init_coll_boxSizer1_Items(self.boxSizer1)
         self.SetSizer(self.boxSizer1)
 
-    def init_plot(self):
+    def init_plot(self, figure):
         self.timeSeries.plot([], [])
         self.timeSeries.set_title("No Data To Plot")
 
-        self.canvas = FigCanvas(self, -1, plt.figure(1))
+        self.canvas = FigCanvas(self, -1, figure)
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
                                     False, u'Tahoma'))
         self.isShowLegendEnabled = False
@@ -48,8 +48,10 @@ class plotTimeSeries(wx.Panel):
         self.parent = parent
 
         #init Plot
-        self.timeSeries = host_subplot(111, axes_class=AA.Axes)
-        self.init_plot()
+        figure = plt.figure()
+        self.timeSeries = figure.add_subplot(1,1,1)
+        #self.timeSeries = host_subplot(111, axes_class=AA.Axes)
+        self.init_plot(figure)
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
@@ -337,11 +339,13 @@ class plotTimeSeries(wx.Panel):
 
         self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
+        '''
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
-
+        '''
+        
         plt.gcf().autofmt_xdate()
 
         self.canvas.draw()

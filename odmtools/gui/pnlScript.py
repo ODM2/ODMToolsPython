@@ -4,7 +4,6 @@ import wx
 from wx.lib.pubsub import pub as Publisher
 
 from highlightSTC import highlightSTC
-from odmtools.views.recordDialog import recordDialog
 
 
 ID_NEW = 101
@@ -15,7 +14,7 @@ ID_EXECUTE_BUTTON = 300
 ID_EXECUTE_SELECTION_BUTTON = 301
 ID_EXECUTE_LINE_BUTTON = 302
 
-wildcard = "Python source (*.py)|*.py| " #All files (*.*)|*.*"
+wildcard = "Python source (*.py)|*.py" #All files (*.*)|*.*"
 
 class pnlScript(wx.Panel):
     def __init__(self, parent, id=wx.ID_ANY, name="", pos=(0, 0), size=(200, 200)):
@@ -23,6 +22,7 @@ class pnlScript(wx.Panel):
         wx.Panel.__init__(self, parent, id)
         self.console = parent.txtPythonConsole
         self.control = highlightSTC(self)
+        self.parent = parent
         # self.control = stc.StyledTextCtrl(self, 1, style=wx.TE_MULTILINE)
 
         # Set up menu
@@ -72,47 +72,61 @@ class pnlScript(wx.Panel):
         self._styles = [None] * 32
         self._free = 1
 
-    def OnNew(self, e):
-        ## Check if data already exists
-        if len(self.control.GetText()) > 0:
-            val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-                                "Would you like to save it now? Selecting 'No' will delete anything you "
-                                "may have in the script", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
-            if val == wx.YES:
-                self.OnSaveAs(e)
-
+    def newScript(self):
         self.filename = ''
         self.control.SetText('')
         # self.SetTitle("Editing a new file")
         Publisher.sendMessage("script.title", title="Editing a new file")
+        record_service = self.parent.getRecordService()
+        record_service.write_header()
+
+    def getOverwriteDialog(self):
+        return wx.MessageBox("Please check that your script has been saved before it is overwritten. "
+                    "Would you like to save it now? Selecting 'No' will delete anything you "
+                    "may have in the script", 'Save Script?', wx.CANCEL | wx.YES_NO | wx.ICON_EXCLAMATION | wx.YES_DEFAULT)
+
+    def OnNew(self, e):
+        ## Check if data already exists
+        if len(self.control.GetText()) > 0:
+            val = self.getOverwriteDialog()
+            if val == wx.YES:
+                self.OnSaveAs(e)
+                self.newScript()
+            elif val == wx.NO:
+                self.newScript()
+            else:
+                pass
+        else:
+            self.newScript()
+
 
     def OnOpen(self, e):
         ## Check if data already exists
         if len(self.control.GetText()) > 0:
-            val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-                                "Would you like to save it now? Selecting 'No' will delete anything you "
-                                "may have in the script", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+            val = self.getOverwriteDialog()
             if val == wx.YES:
                 self.OnSaveAs(e)
+            elif val == wx.NO:
+                dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.OPEN | wx.CHANGE_DIR | wx.MULTIPLE )
+                if dlg.ShowModal() == wx.ID_OK:
+                    self.filename = dlg.GetFilename()
+                    self.dirname = dlg.GetDirectory()
+                    # Open the file and set its contents into the edit window
+                    filehandle = open(os.path.join(self.dirname, self.filename), 'r')
+                    if filehandle:
+                        self.control.SetText(filehandle.read())
+                        self.control.EmptyUndoBuffer()
+                        filehandle.close()
+                        # self.SetTitle("Editing: %s" % self.filename)
+                        Publisher.sendMessage("script.title", title="Editing: %s" % self.filename)
+                    else:
+                        pass
 
-        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.OPEN | wx.CHANGE_DIR | wx.MULTIPLE )
-        if dlg.ShowModal() == wx.ID_OK:
-            self.filename = dlg.GetFilename()
-            self.dirname = dlg.GetDirectory()
+                dlg.Destroy()
 
-            # Open the file and set its contents into the edit window
-            filehandle = open(os.path.join(self.dirname, self.filename), 'r')
-
-            if filehandle:
-                self.control.SetText(filehandle.read())
-                self.control.EmptyUndoBuffer()
-                filehandle.close()
-                # self.SetTitle("Editing: %s" % self.filename)
-                Publisher.sendMessage("script.title", title="Editing: %s" % self.filename)
             else:
                 pass
 
-        dlg.Destroy()
 
     def OnSave(self, e):
         if self.filename:
@@ -123,7 +137,6 @@ class pnlScript(wx.Panel):
             filehandle.write(saved_text)
             filehandle.close()
             self.setTitle("Editing: %s" % self.filename)
-
 
     def OnSaveAs(self, e):
         dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.SAVE | wx.OVERWRITE_PROMPT)

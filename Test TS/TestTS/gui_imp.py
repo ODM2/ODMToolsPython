@@ -32,6 +32,9 @@ class MyFrame1(wx.Frame):
         self.removebutton = wx.Button(self, wx.ID_ANY, u"Remove ", wx.DefaultPosition, wx.DefaultSize, 0)
         bSizer1.Add(self.removebutton, 0, wx.ALL, 5)
 
+        self.addATonbutton = wx.Button(self, wx.ID_ANY, u"AddATon", wx.DefaultPosition, wx.DefaultSize, 0)
+        bSizer1.Add(self.addATonbutton, 0, wx.ALL, 5)
+
         self.SetSizer(bSizer1)
         self.Layout()
 
@@ -39,6 +42,7 @@ class MyFrame1(wx.Frame):
 
         self.Bind(wx.EVT_BUTTON, self.onAdd, id = self.addbutton.Id)
         self.Bind(wx.EVT_BUTTON, self.onRemove, id = self.removebutton.Id)
+        self.Bind(wx.EVT_BUTTON, self.onaddATon, id = self.addATonbutton.Id)
 
 
     def onAdd(self, event):
@@ -46,6 +50,9 @@ class MyFrame1(wx.Frame):
 
 
     def onRemove(self, event):
+        pass
+
+    def onaddATon(self, event):
         pass
 
     def __del__(self):

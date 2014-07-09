@@ -7,6 +7,11 @@ from wx.lib import wordwrap
 [wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY,
 ] = [wx.NewId() for _init_ctrls in range(2)]
 
+import logging
+from odmtools.common.logger import LoggerTool
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class plotSummary(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -46,10 +51,20 @@ class plotSummary(wx.Panel):
         event.Skip()
 
     def Plot(self, seriesPlotInfo):
+
+        import resource
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+
         self.clear()
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+
         for oneSeries in seriesPlotInfo.getSeriesInfo():
+
             if len(oneSeries.dataTable) >0:
                 self.addCol(oneSeries)
+                logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+
 
     def resizeLabel(self):
         numlines= -99

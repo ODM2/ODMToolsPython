@@ -95,7 +95,7 @@ class pnlPlot(fnb.FlatNotebook):
         #tempseries= self._seriesPlotInfo.getSeries(seriesID)
         self._seriesPlotInfo.update(seriesID, False)
         self.redrawPlots()
-        self.clear()
+        #self.clear()
 
     def onNumBins(self, numBins):
         self.pltHist.changeNumOfBins(numBins)
@@ -142,26 +142,86 @@ class pnlPlot(fnb.FlatNotebook):
 
     def addPlot(self, memDB, seriesID):
 
+        import resource
+
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB)
 
         self._seriesPlotInfo.update(seriesID, True)
-        self.selectedSerieslist.append(seriesID)
 
+        ## 2014-07-09 10:46:45,569 - DEBUG - gui.pnlPlot.addPlot() (156): Memory usage: 161288 (kb)
+        self.selectedSerieslist.append(seriesID)
+        
+
+
+
+
+        ## 2014-07-09 10:46:51,253 - DEBUG - gui.pnlPlot.addPlot() (160): Memory usage: 182816 (kb)
         self.redrawPlots()
 
+
     def redrawPlots(self):
-        self.pltSum.Plot(self._seriesPlotInfo)
-        self.pltProb.Plot(self._seriesPlotInfo)
-        self.pltBox.Plot(self._seriesPlotInfo)
-        self.pltHist.Plot(self._seriesPlotInfo)
+        import resource
+        from odmtools.common.timer import Timer
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        with Timer() as t:
+            self.pltSum.Plot(self._seriesPlotInfo)
+        logger.info("self.pltSum took %s sec" % t.interval)
 
-        self.pltTS.Plot(self._seriesPlotInfo)
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        with Timer() as t:
+            self.pltProb.Plot(self._seriesPlotInfo)
+        logger.info("self.pltSum took %.03f sec" % t.interval)
+        
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        with Timer() as t:
+            self.pltBox.Plot(self._seriesPlotInfo)
+        logger.info("self.pltBox took %.03f sec" % t.interval)    
+        
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        with Timer() as t:
+            self.pltHist.Plot(self._seriesPlotInfo)
+        logger.info("self.pltHist took %.03f sec" % t.interval)    
+        
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        with Timer() as t:
+            self.pltTS.Plot(self._seriesPlotInfo)
+        logger.info("self.pltTs took %.03f sec" % t.interval)    
+        
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         self.onShowLegend(event=None, isVisible=self.legendVisible)
-
+        
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
+        
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart= currStart, currEnd=currEnd)
+        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        logger.debug("\n")
 
+        '''
+        2014-07-09 10:53:04,628 - DEBUG - gui.pnlPlot.redrawPlots() (166): Memory usage: 111720 (kb)
+        2014-07-09 10:53:07,827 - DEBUG - gui.pnlPlot.redrawPlots() (168): Memory usage: 129832 (kb)
+        2014-07-09 10:53:08,041 - DEBUG - gui.pnlPlot.redrawPlots() (170): Memory usage: 131416 (kb)
+        2014-07-09 10:53:08,399 - DEBUG - gui.pnlPlot.redrawPlots() (172): Memory usage: 133104 (kb)
+        2014-07-09 10:53:08,704 - DEBUG - gui.pnlPlot.redrawPlots() (174): Memory usage: 134800 (kb)
+        2014-07-09 10:53:08,947 - DEBUG - gui.pnlPlot.redrawPlots() (176): Memory usage: 138368 (kb)
+        2014-07-09 10:53:09,188 - DEBUG - gui.pnlPlot.redrawPlots() (178): Memory usage: 138368 (kb)
+        2014-07-09 10:53:09,189 - DEBUG - gui.pnlPlot.redrawPlots() (180): Memory usage: 138368 (kb)
+        2014-07-09 10:53:09,190 - DEBUG - gui.pnlPlot.redrawPlots() (182): Memory usage: 138368 (kb)
+        2014-07-09 10:53:09,191 - DEBUG - gui.pnlPlot.redrawPlots() (183): 
+
+        2014-07-09 10:53:09,305 - DEBUG - gui.pnlPlot.redrawPlots() (166): Memory usage: 138368 (kb)
+        2014-07-09 10:53:10,207 - DEBUG - gui.pnlPlot.redrawPlots() (168): Memory usage: 138368 (kb)
+        2014-07-09 10:53:10,413 - DEBUG - gui.pnlPlot.redrawPlots() (170): Memory usage: 138368 (kb)
+        2014-07-09 10:53:10,767 - DEBUG - gui.pnlPlot.redrawPlots() (172): Memory usage: 138588 (kb)
+        2014-07-09 10:53:11,061 - DEBUG - gui.pnlPlot.redrawPlots() (174): Memory usage: 139016 (kb)
+        2014-07-09 10:53:11,344 - DEBUG - gui.pnlPlot.redrawPlots() (176): Memory usage: 140140 (kb)
+        2014-07-09 10:53:11,571 - DEBUG - gui.pnlPlot.redrawPlots() (178): Memory usage: 140188 (kb)
+        2014-07-09 10:53:11,572 - DEBUG - gui.pnlPlot.redrawPlots() (180): Memory usage: 140188 (kb)
+        2014-07-09 10:53:11,573 - DEBUG - gui.pnlPlot.redrawPlots() (182): Memory usage: 140188 (kb)
+        2014-07-09 10:53:11,574 - DEBUG - gui.pnlPlot.redrawPlots() (183): 
+        '''
 
     #     self.PlotGraph()
     def selectPlot(self, value):
