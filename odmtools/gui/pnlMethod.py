@@ -107,7 +107,12 @@ class pnlMethod(wx.Panel):
 
         m =  Method()
         if self.rbGenerate.Value:
-            m.description = "Values derived from ODM Tools Python"
+            genmethod = "Values derived from ODM Tools Python"
+
+            try:
+                m= self.series_service.get_method_by_description(genmethod)
+            except:
+                m.description = genmethod
 
         elif self.rbSelect.Value:
             index = self.lstMethods.GetFirstSelected()
