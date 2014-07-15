@@ -587,16 +587,21 @@ class pnlSeriesSelector(wx.Panel):
             object = event.object
         except:
             object = self.tableSeriesTable.GetSelectedObject()
-
-        #logger.debug("List of Checked Objects: %s" % (self.tableSeriesTable.GetCheckedObjects()))
+        
+        import resource
         if not self.tableSeriesTable.IsChecked(object):
-            #logger.debug("%s isn't checked: %s" % (object.id, object))
+            logger.debug("Memory before Remove: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
             Publisher.sendMessage("removePlot", seriesID=object.id)
-            from meliae import scanner
-            scanner.dump_all_objects('filename')
+            logger.debug("Memory after Remove: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+
+            #from meliae import scanner
+            #scanner.dump_all_objects('filename')
         else:
-            #logger.debug("%s is checked: %s" % (object.id, object))
+            logger.debug("%d" % (len(self.tableSeriesTable.GetCheckedObjects())))
+            logger.debug("Memory before add: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
             self.parent.Parent.addPlot(self.memDB, object.id)
+            logger.debug("Memory after add: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+
         self.Refresh()
 
     def getSelectedObject(self, event):

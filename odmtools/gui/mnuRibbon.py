@@ -32,7 +32,7 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
  wxID_RIBBONEDITSCRIPTSAVE, wxID_RIBBONVIEWPLOT, wxID_RIBBONVIEWTABLE, wxID_RIBBONVIEWSERIES, wxID_RIBBONVIEWCONSOLE,
  wxID_RIBBONVIEWSCRIPT, wxID_RIBBONPLOTBLANKBTN, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE, wxID_FRAME1SPINCTRL1,
  wxID_RIBBONEDITFILTER, wxID_RIBBONEDITRECORD, wxID_RIBBONEDITLINFILTER, wxID_RIBBONPLOTDATEAPPLY,
- wxID_RIBBONEDITRESETFILTER, wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDAPPEND] = [wx.NewId() for
+ wxID_RIBBONEDITRESETFILTER, wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDSAVE] = [wx.NewId() for
                                                                                                       _init_ctrls in
                                                                                                       range(46)]
 
@@ -162,16 +162,16 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
 
-        self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Record Options", wx.NullBitmap, wx.DefaultPosition,
+        self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Recording Functions", wx.NullBitmap, wx.DefaultPosition,
                                            wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
 
-        #wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDAPPEND
+        #wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDSAVE
 
 
         self.record_bar = RB.RibbonButtonBar(self.record_panel)
-        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New", filter_list.GetBitmap(), "")
-        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open", Undo.GetBitmap(), "")
-        #self.record_bar.AddSimpleButton(wxID_RIBBONRECORDAPPEND, "Append", edit_view.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New Script", filter_list.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open Script", Undo.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDSAVE, "Save Script", edit_view.GetBitmap(), "")
         self.record_panel.Hide()
 
 
@@ -241,7 +241,7 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecord, id=wxID_RIBBONEDITRECORD)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordNew, id=wxID_RIBBONRECORDNEW)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordOpen, id=wxID_RIBBONRECORDOPEN)
-        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordAppend, id=wxID_RIBBONRECORDAPPEND)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordSave, id=wxID_RIBBONRECORDSAVE)
 
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onLineDrift, id=wxID_RIBBONEDITLINFILTER)
 
@@ -370,9 +370,6 @@ class mnuRibbon(RB.RibbonBar):
             panedet.Show(show=True)
         script = self.parent.txtPythonScript
         script.OnNew(event)
-        record_service = self.parent.getRecordService()
-        record_service.write_header()
-
 
     def onRecordOpen(self, event):
         logger.debug("Open was pressed")
@@ -382,8 +379,11 @@ class mnuRibbon(RB.RibbonBar):
             panedet.Show(show=True)
         script.OnOpen(event)
 
-    def onRecordAppend(self, event):
-        pass
+    def onRecordSave(self, event):
+        logger.debug("Save was pressed")
+        script = self.parent.txtPythonScript
+        script.OnSaveAs(event)
+        #pass
 
     def onSave(self, event):
         # send  db connection inof to wizard

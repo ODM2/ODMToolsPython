@@ -55,18 +55,19 @@ class RecordService():
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         if self._record:
-            #print [x[2] for x in self._edit_service.get_filtered_points()]
-            self._script("edit_service.select_points({list})\n".format(
-                list=[x[2] for x in self._edit_service.get_filtered_points()]))
+            self._script("points = [\n\t{list}][0]\n".format(
+                list=[x[2] for x in self._edit_service.get_filtered_points()])
+            )
+            self._script("edit_service.select_points(points)\n")
             Publisher.sendMessage("scroll")
 
     def select_points(self, id_list=[], datetime_list=[]):
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
-            #print [x[2] for x in self._edit_service.get_filtered_points()]
-            #self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
-            self._script("edit_service.select_points({id}, {list})\n".format(id=id_list, list=[x[2] for x in
-                                                                                               self._edit_service.get_filtered_points()]))
+            self._script("points = [\n\t{list}][0]\n".format(
+                list=[x[2] for x in self._edit_service.get_filtered_points()])
+            )
+            self._script("edit_service.select_points({id}, points)\n".format(id=id_list))
             Publisher.sendMessage("scroll")
             #print self._edit_service.get_filtered_points()
 
@@ -80,8 +81,6 @@ class RecordService():
         if self._record:
             self._script("edit_service.add_points({list})\n".format(list=points))
             Publisher.sendMessage("scroll")
-
-
 
     def delete_points(self):
         self._edit_service.delete_points()
