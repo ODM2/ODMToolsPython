@@ -283,6 +283,7 @@ class EditService():
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         self._cursor.executemany(query, points)
         self._populate_series()
+        self.reset_filter()
 
     def delete_points(self):
         query = "DELETE FROM DataValues WHERE ValueID IN ("
