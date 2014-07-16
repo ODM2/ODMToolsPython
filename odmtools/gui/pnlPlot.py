@@ -142,7 +142,7 @@ class pnlPlot(fnb.FlatNotebook):
 
     def addPlot(self, memDB, seriesID):
 
-        import resource
+        #import resource
 
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB)
@@ -161,42 +161,42 @@ class pnlPlot(fnb.FlatNotebook):
 
 
     def redrawPlots(self):
-        import resource
+#        import resource
         from odmtools.common.timer import Timer
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+ #       logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         with Timer() as t:
             self.pltSum.Plot(self._seriesPlotInfo)
         logger.info("self.pltSum took %s sec" % t.interval)
 
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+#        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         with Timer() as t:
             self.pltProb.Plot(self._seriesPlotInfo)
         logger.info("self.pltSum took %.03f sec" % t.interval)
         
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+#        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         with Timer() as t:
             self.pltBox.Plot(self._seriesPlotInfo)
         logger.info("self.pltBox took %.03f sec" % t.interval)    
         
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+#        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         with Timer() as t:
             self.pltHist.Plot(self._seriesPlotInfo)
         logger.info("self.pltHist took %.03f sec" % t.interval)    
         
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+#        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         with Timer() as t:
             self.pltTS.Plot(self._seriesPlotInfo)
         logger.info("self.pltTs took %.03f sec" % t.interval)    
         
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        #logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         self.onShowLegend(event=None, isVisible=self.legendVisible)
         
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        #logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
         
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        #logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart= currStart, currEnd=currEnd)
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+        #logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
         logger.debug("\n")
 
         '''

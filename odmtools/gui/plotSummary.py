@@ -52,18 +52,18 @@ class plotSummary(wx.Panel):
 
     def Plot(self, seriesPlotInfo):
 
-        import resource
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+#        import resource
+ #       logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
 
         self.clear()
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+#        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
 
         for oneSeries in seriesPlotInfo.getSeriesInfo():
 
             if len(oneSeries.dataTable) >0:
                 self.addCol(oneSeries)
-                logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+#                logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
+ #       logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
 
 
     def resizeLabel(self):
