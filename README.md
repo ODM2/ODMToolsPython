@@ -19,12 +19,13 @@ Install the following software/libraries.
 +	[Python-2.7.6 32 bit](https://www.python.org/download/releases/2.7.6)
 +	[wxPython-3.0.0.0](http://www.wxpython.org/download.php)
 +	[Sqlalchemy-0.9.4](https://pypi.python.org/pypi/SQLAlchemy/0.9.4)
-+   [Pyodbc-3.0.7](http://code.google.com/p/pyodbc/downloads/list) 
++   [Pyodbc-3.0.7](http://code.google.com/p/pyodbc/downloads/list)
 +	[PyMySQL-0.6.2](https://github.com/petehunt/PyMySQL/)
 +	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/downloads)
 +	[Numpy-1.8.0](http://www.scipy.org/Download)
 +	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/v1.2/ObjectListView-1.2-without-graphics.zip/download)
 +   [Appdirs 1.3.0](https://pypi.python.org/pypi/appdirs/1.3.0)
+
 
 Once you have all the dependencies installed, run the main application:
     

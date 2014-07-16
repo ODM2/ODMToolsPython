@@ -169,9 +169,9 @@ class mnuRibbon(RB.RibbonBar):
 
 
         self.record_bar = RB.RibbonButtonBar(self.record_panel)
-        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New Script", filter_list.GetBitmap(), "")
-        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open Script", Undo.GetBitmap(), "")
-        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDSAVE, "Save Script", edit_view.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New Script", newscript.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open Script", openscript.GetBitmap(), "")
+        self.record_bar.AddSimpleButton(wxID_RIBBONRECORDSAVE, "Save Script", savescript.GetBitmap(), "")
         self.record_panel.Hide()
 
 

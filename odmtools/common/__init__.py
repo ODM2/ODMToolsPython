@@ -49,6 +49,9 @@ __all__=["add",
         "window_command_line",
         "window_enter",
         "LoggerTool",
-        "logger"
+        "logger",
+        "newscript",
+        "openscript",
+        "savescript"
 
         ]
