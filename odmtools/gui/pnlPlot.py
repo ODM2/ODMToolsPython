@@ -131,7 +131,6 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.setEdit(self.editID)
         self.redrawPlots()
 
-
     def addPlot(self, memDB, seriesID):
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB)
@@ -157,6 +156,7 @@ class pnlPlot(fnb.FlatNotebook):
         self.onShowLegend(event=None, isVisible=self.legendVisible)
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart=currStart, currEnd=currEnd)
+
         logger.debug("\n")
 
     #     self.PlotGraph()

@@ -534,10 +534,10 @@ class pnlSeriesSelector(wx.Panel):
 
         if not self.tblSeries.IsChecked(object):
             Publisher.sendMessage("removePlot", seriesID=object.id)
-
         else:
             #logger.debug("%d" % (len(self.tblSeries.GetCheckedObjects())))
             self.parent.Parent.addPlot(self.memDB, object.id)
+
 
         self.Refresh()
 
