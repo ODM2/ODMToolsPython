@@ -51,20 +51,10 @@ class plotSummary(wx.Panel):
         event.Skip()
 
     def Plot(self, seriesPlotInfo):
-
-        import resource
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
-
         self.clear()
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
-
         for oneSeries in seriesPlotInfo.getSeriesInfo():
-
             if len(oneSeries.dataTable) >0:
                 self.addCol(oneSeries)
-                logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
-        logger.debug("Memory usage: %s (kb)" % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss )
-
 
     def resizeLabel(self):
         numlines= -99
@@ -116,11 +106,7 @@ class plotSummary(wx.Panel):
         self.grdSummary.AppendCols(numCols=1, updateLabels=True)
         col = self.grdSummary.GetNumberCols() - 1
         self.setColLabel(col, series.siteName + "- " + series.variableName)
-
-
         #self.grdSummary.AutoSizeColLabelSize(col)
-
-       #
 
         stats = series.Statistics
         count = stats.NumberofObservations

@@ -7,8 +7,8 @@ directory = os.path.dirname(os.path.dirname(this_file))
 sys.path.insert(0, directory)
 
 
-from guppy import hpy
-h = hpy()
+#from guppy import hpy
+#h = hpy()
     
 
 import wx
@@ -26,19 +26,19 @@ def runODM():
     #import wx.lib.inspection
     #wx.lib.inspection.InspectionTool().Show()
    
-    before = h.heap()
-    print "Before: ", before
+    #before = h.heap()
+    #print "Before: ", before
     
     app.MainLoop()
     
-    after = h.heap()
-    leftover = after - before
+    #after = h.heap()
+    #leftover = after - before
     
     #import pdb
     #pdb.set_trace()
     
-    print "After: ", after
-    print "Leftovers: ", leftover
+    #print "After: ", after
+    #print "Leftovers: ", leftover
     
 
     '''
@@ -59,8 +59,8 @@ def runODM():
     '''
 
 if __name__ == '__main__':
-    from guppy import hpy
-    h = hpy()
+    #from guppy import hpy
+   # h = hpy()
     app = wx.App(False)
     frame = create(None)
     frame.Show()
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     #wx.lib.inspection.InspectionTool().Show()
 
     app.MainLoop()
-    print "HEAPY!", h.heap()
+    #print "HEAPY!", h.heap()
 
     '''
     from collections import defaultdict

@@ -1,15 +1,12 @@
 #!/usr/bin/env
 #Boa:Frame:ODMTools
 import sys
-import os
 
-
-
+'''
 this_file = os.path.realpath(__file__)
 directory = os.path.dirname(os.path.dirname(this_file))
 sys.path.insert(0, directory)
-from odmtools.common import gtk_execute
-
+'''
 
 import wx
 import wx.grid
@@ -34,7 +31,7 @@ import pnlSeriesSelector
 import pnlPlot
 import mnuRibbon
 import pnlDataTable
-#import odmtools.common.icons as icons
+from odmtools.common import gtk_execute
 
 from odmtools.odmconsole import ConsoleTools
 from odmtools.common.logger import LoggerTool
@@ -231,7 +228,6 @@ class frmODMToolsMain(wx.Frame):
         #Memory Database
         self.pnlPlot.addPlot(memDB, seriesID)
         Publisher.sendMessage("EnablePlotButton", plot=self.pnlPlot.getActivePlotID(), isActive=True)
-
         #self._ribbon.enableButtons(self.pnlPlot.getActivePlotID)
 
     def onSetScriptTitle(self, title):
@@ -288,7 +284,6 @@ class frmODMToolsMain(wx.Frame):
             self.createService()
             self.pnlSelector.resetDB(self.sc)
             self.pnlPlot.clear()
-            self.pnlPlot.close()
             #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
             #self.pnlSelector.tableSeries.checkCount = 0
@@ -360,6 +355,10 @@ class frmODMToolsMain(wx.Frame):
         """
         if self.txtPythonConsole.ToolsShown():
             self.txtPythonConsole.ToggleTools()
+
+
+
+
 if __name__ == '__main__':
     app = wx.App(False)
     frame = create(None)
@@ -369,37 +368,3 @@ if __name__ == '__main__':
     #wx.lib.inspection.InspectionTool().Show()
 
     app.MainLoop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

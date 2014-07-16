@@ -107,9 +107,14 @@ class SeriesService():
         #logger.debug("%s" % self._edit_session.query(Series).order_by(Series.id).all())
         return self._edit_session.query(Series).order_by(Series.id).all()
 
+    def reset_session(self):
+        self._edit_session = self._session_factory.get_session()  # Reset the session in order to prevent memory leaks
+
     def get_series_by_id(self, series_id):
         try:
-            return self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()
+            self.reset_session()
+            selectedSeries = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()
+            return selectedSeries
         except:
             return None
 

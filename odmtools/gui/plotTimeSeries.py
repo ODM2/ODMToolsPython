@@ -49,8 +49,8 @@ class plotTimeSeries(wx.Panel):
 
         #init Plot
         figure = plt.figure()
-        self.timeSeries = figure.add_subplot(1,1,1)
-        #self.timeSeries = host_subplot(111, axes_class=AA.Axes)
+        #self.timeSeries = figure.add_subplot(1,1,1)
+        self.timeSeries = host_subplot( 111, axes_class=AA.Axes)
         self.init_plot(figure)
 
         # Create the navigation toolbar, tied to the canvas
@@ -184,7 +184,7 @@ class plotTimeSeries(wx.Panel):
         self.axislist = {}
             # self.stopEdit()
         #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
-        plt.cla()
+        #plt.cla()
         #plt.clf()
         self.timeSeries.plot([], [])
 
@@ -298,26 +298,6 @@ class plotTimeSeries(wx.Panel):
                         )
                     )
 
-
-                #TODO set date value in table?
-
-                '''
-                # adding plot
-                #if not oneSeries.seriesID in self.lines:
-                curraxis = self.axislist[oneSeries.axisTitle]
-                self.lines[oneSeries.seriesID] = curraxis.plot_date(
-                    [x[1] for x in oneSeries.dataTable],
-                    [x[0] for x in oneSeries.dataTable],
-                    self.format, color=oneSeries.color,
-                    xdate=True, tz=None, antialiased=True,
-                    label=oneSeries.plotTitle
-                )
-                '''
-
-
-
-
-
         if count > 1:
             # self.timeSeries.set_title("Multiple Series plotted")
             self.timeSeries.set_title("")
@@ -335,40 +315,17 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.legend_ = None
 
         self.timeSeries.set_xlabel("Date")
-
-
         self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
-        '''
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
-        '''
+
         
         plt.gcf().autofmt_xdate()
 
         self.canvas.draw()
-    '''
-    def removePlot(self, oneSeries):
-
-        curraxis = self.axislist[oneSeries.axisTitle]
-
-        if oneSeries.seriesID in self.lines:
-            # unplot from timeseries
-            for l in curraxis.lines:
-                if l.get_label() == oneSeries.plotTitle:
-                    curraxis.lines.remove(l)
-                    self.setUpYAxis()
-                    # remove key from dict
-                    del self.lines[oneSeries.seriesID]
-
-            #curraxis.lines.remove(self.lines[seriesId])
-
-
-
-            self.canvas.draw()
-    '''
 
 
     def setEdit(self, id):
