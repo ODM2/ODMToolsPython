@@ -547,9 +547,12 @@ class pnlSeriesSelector(wx.Panel):
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
 
-        object = event.GetEventObject().GetSelectedObject()
-        #logger.debug("Selected: %s" % object)
-        self.tblSeries.currentlySelectedObject = object
+        object = event.GetEventObject()
+        logger.debug("Selecting... %s" % object.FocusedItem)
+        editingObject = object.modelObjects[object.FocusedItem]
+        logger.debug("Selected: %s" % editingObject)
+
+        self.tblSeries.currentlySelectedObject = editingObject
 
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector"""
