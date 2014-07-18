@@ -116,7 +116,7 @@ class plotProb(wx.Panel):
         count = self.seriesPlotInfo.count()
         self.lines = []
         self.plot = self.figure.add_subplot(111)
-        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
+        for oneSeries in self.seriesPlotInfo.getAllSeries():
 
             self.plot.set_xlabel("Cumulative Frequency < Stated Value %")
             if count > 1:

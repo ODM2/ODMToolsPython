@@ -112,7 +112,6 @@ class SeriesService():
 
     def get_series_by_id(self, series_id):
         try:
-            self.reset_session()
             selectedSeries = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()
             return selectedSeries
         except:

@@ -276,7 +276,7 @@ class plotTimeSeries(wx.Panel):
         self.setUpYAxis()
         self.lines = []
 
-        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
+        for oneSeries in self.seriesPlotInfo.getAllSeries():
             #is this the series to be edited
             if oneSeries.seriesID == self.seriesPlotInfo.getEditSeriesID():
                 self.curveindex = len(self.lines)
@@ -344,7 +344,7 @@ class plotTimeSeries(wx.Panel):
         right = 0
         adj = .05
         #loop through the list of curves and add an axis for each
-        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
+        for oneSeries in self.seriesPlotInfo.getAllSeries():
             #test to see if the axis already exists
             if not oneSeries.axisTitle in self.axislist:
                 self.axislist[oneSeries.axisTitle] = None

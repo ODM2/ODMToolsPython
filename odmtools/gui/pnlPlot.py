@@ -67,7 +67,7 @@ class pnlPlot(fnb.FlatNotebook):
                                               style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltSum, 'Summary')
 
-        self.selectedSerieslist = []
+
         self._seriesPlotInfo = None
         self.editID = None
         self.legendVisible = False
@@ -135,7 +135,7 @@ class pnlPlot(fnb.FlatNotebook):
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB)
         self._seriesPlotInfo.update(seriesID, True)
-        self.selectedSerieslist.append(seriesID)
+
         self.redrawPlots()
 
     def onRemovePlot(self, seriesID):

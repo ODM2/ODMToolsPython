@@ -88,7 +88,7 @@ class PlotBox(wx.Panel):
         i = 1
         self.plots = []
 
-        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
+        for oneSeries in self.seriesPlotInfo.getAllSeries():
             if len(oneSeries.dataTable) > 0:
                 self._createPlot(oneSeries, rows, cols, i)
                 i += 1

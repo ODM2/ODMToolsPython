@@ -1667,38 +1667,7 @@ window_enter = PyEmbeddedImage(
     "k2Uf87a23Kbdu29/bsenP7J+YuLs6ZHjp0sHDhwrTUy8W1LVA+fOXZz8oI4+sORyaWlvb239"
     "X/v5N952zAU3j8LpAAAAAElFTkSuQmCC")
 
-#----------------------------------------------------------------------
-Save = PyEmbeddedImage(
-    "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")
+
 
 #----------------------------------------------------------------------
 savescript = PyEmbeddedImage(
