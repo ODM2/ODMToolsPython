@@ -1,15 +1,17 @@
-import os
-import wx
 import logging
+
+import wx
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 from matplotlib.widgets import Lasso
 from matplotlib import path
-from odmtools.common.logger import LoggerTool
 
-import gui_utils as g_util
+from odmtools.common.logger import LoggerTool
 from odmtools.common import select, scroll_left, scroll_right
+
+
 tools = LoggerTool()
 logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 class MyCustomToolbar(NavigationToolbar):
     ON_CUSTOM_LEFT = wx.NewId()
@@ -21,27 +23,22 @@ class MyCustomToolbar(NavigationToolbar):
     # the super-classes init function as usual, then go back and delete the
     # button we don't want
     def __init__(self, plotCanvas, multPlots=False, allowselect=False):
-
         NavigationToolbar.__init__(self, plotCanvas)
+
         # delete the toolbar button we don't want
         if (not multPlots):
             CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 7
             self.DeleteToolByPos(CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION)
 
-        self.AddSimpleTool(self.ON_CUSTOM_LEFT,scroll_left.GetBitmap(),
-                           ' Pan to the left', 'Pan graph to the left')
-        self.AddSimpleTool(self.ON_CUSTOM_RIGHT,scroll_right.GetBitmap(),
-                           'Pan to the right', 'Pan graph to the right')
-
-
+        self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
+        self.AddSimpleTool(self.ON_CUSTOM_RIGHT, scroll_right.GetBitmap(), 'Pan to the right', 'Pan graph to the right')
 
         wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
         wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
 
         if allowselect:
-            self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT,
-                                                   select.GetBitmap(),
-                                                   'Lasso Select', 'Select datavalues from the graph', isToggle=True)
+            self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT, select.GetBitmap(), 'Lasso Select',
+                                                  'Select datavalues from the graph', isToggle=True)
 
             wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self.on_toggle_lasso_tool)
             # Get the ids for the existing tools
@@ -54,10 +51,18 @@ class MyCustomToolbar(NavigationToolbar):
 
         self.SetToolBitmapSize(wx.Size(16, 16))
 
+        msg = wx.StaticText(self, -1, '|')
+        msg.SetForegroundColour((108, 123, 139))
+        self.AddControl(msg)
+        self.AddSeparator()
+
+        self.msg = wx.StaticText(self, -1, "")
+        self.AddControl(self.msg)
+
         self.Realize()
 
     def editSeries(self, xys, edit):
-        #enable select button
+        # enable select button
         self.xys = xys
         self.editCurve = edit
         self.select_tool.Enable(True)
@@ -69,7 +74,7 @@ class MyCustomToolbar(NavigationToolbar):
         self.xys = None
         self.editCurve = None
         self.lassoAction = None
-        #disable select button
+        # disable select button
         self.select_tool.Enable(False)
         self.Realize()
         #untoggle lasso button
@@ -77,7 +82,7 @@ class MyCustomToolbar(NavigationToolbar):
 
 
     # in theory this should never get called, because we delete the toolbar
-    #  button that calls it. but in case it does get called (e.g. if there
+    # button that calls it. but in case it does get called (e.g. if there
     # is a keyboard shortcut I don't know about) then we override the method
     # that gets called - to protect against the exceptions that it throws
     # def configure_subplot(self, evt):
@@ -138,16 +143,10 @@ class MyCustomToolbar(NavigationToolbar):
             This function needs to be called whenever any user-defined tool is clicked e.g. Lasso
         """
         if self.pan_tool.IsToggled():
-            wx.PostEvent(
-                self.GetEventHandler(),
-                wx.CommandEvent(wx.EVT_TOOL.typeId, self.pan_tool.Id)
-            )
+            wx.PostEvent(self.GetEventHandler(), wx.CommandEvent(wx.EVT_TOOL.typeId, self.pan_tool.Id))
             self.ToggleTool(self.pan_tool.Id, False)
         elif self.zoom_tool.IsToggled():
-            wx.PostEvent(
-                self.GetEventHandler(),
-                wx.CommandEvent(wx.EVT_TOOL.typeId, self.zoom_tool.Id)
-            )
+            wx.PostEvent(self.GetEventHandler(), wx.CommandEvent(wx.EVT_TOOL.typeId, self.zoom_tool.Id))
             self.ToggleTool(self.zoom_tool.Id, False)
 
     def on_toggle_lasso_tool(self, event):

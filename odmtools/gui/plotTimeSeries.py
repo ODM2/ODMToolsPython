@@ -376,10 +376,14 @@ class plotTimeSeries(wx.Panel):
             newAxis.set_ylabel(axis)
             self.axislist[axis] = newAxis
 
-
-
-
     def _onMotion(self, event):
+        if event.xdata and event.ydata:
+            xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
+            self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
+            self.toolbar.msg.SetForegroundColour((66, 66, 66))
+        else:
+            self.toolbar.msg.SetLabelText("None")
+
         collisionFound = False
 
         if event.xdata != None and event.ydata != None:  #mouse is inside the axes
@@ -402,6 +406,7 @@ class plotTimeSeries(wx.Panel):
                         break
         if not collisionFound:
             self.tooltip.Enable(False)
+
 
     def __init__(self, parent, id, pos, size, style, name):
         self._init_ctrls(parent)
