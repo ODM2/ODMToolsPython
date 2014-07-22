@@ -548,9 +548,7 @@ class pnlSeriesSelector(wx.Panel):
         """
 
         object = event.GetEventObject()
-        logger.debug("Selecting... %s" % object.FocusedItem)
         editingObject = object.modelObjects[object.FocusedItem]
-        logger.debug("Selected: %s" % editingObject)
 
         self.tblSeries.currentlySelectedObject = editingObject
 
