@@ -73,11 +73,14 @@ class ServiceManager():
     def test_connection(self, conn_dict):
         try:
             self.version = self.get_db_version(conn_dict)
+            if self.version is None:
+                return False
         except DBAPIError:
             pass
             #print e.message
         except SQLAlchemyError:
             return False
+
         return True
 
     def delete_connection(self, conn_dict):
@@ -88,7 +91,10 @@ class ServiceManager():
         conn_string = self.__build_connection_string(conn_dict)
         service = SeriesService(conn_string)
         if not self.version:
-            self.version = service.get_db_version()
+            try:
+                self.version = service.get_db_version()
+            except:
+                return None
         return self.version
 
     def get_series_service(self):

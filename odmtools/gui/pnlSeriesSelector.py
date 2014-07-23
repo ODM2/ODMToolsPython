@@ -281,7 +281,7 @@ class pnlSeriesSelector(wx.Panel):
         """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
 
         self.memDB = MemoryDatabase(self.dbservice)
-        seriesColumns = [ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value) for key, value in
+        seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value) for key, value in
                          series.returnDict().iteritems()]
         self.tblSeries.SetColumns(seriesColumns)
         self.tblSeries.CreateCheckStateColumn()

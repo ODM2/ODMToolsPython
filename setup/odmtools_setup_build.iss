@@ -4,6 +4,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODMTools"
+#defing OrgName "UCHIC"
 #define MyAppVersion "v1.0.2-beta"
 #define MyAppURL "https://github.com/UCHIC/ODMToolsPython"
 
@@ -37,4 +38,4 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\Python27_Release\pythonw.exe"; Wo
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
 [Dirs]
-Name: "{userappdata}\{#MyAppName}"
+Name: "{localappdata}\{#OrgName}\{#MyAppName}"
