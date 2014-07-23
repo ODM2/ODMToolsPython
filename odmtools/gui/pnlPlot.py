@@ -157,8 +157,6 @@ class pnlPlot(fnb.FlatNotebook):
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart=currStart, currEnd=currEnd)
 
-        logger.debug("\n")
-
     #     self.PlotGraph()
     def selectPlot(self, value):
         #select the corresponding page of the notebook

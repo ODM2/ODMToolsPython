@@ -4,12 +4,14 @@ import datetime
 import wx
 import matplotlib
 import matplotlib.pyplot as plt
+
 import mpl_toolkits.axisartist as AA
 
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
 from matplotlib.font_manager import FontProperties
 from wx.lib.pubsub import pub as Publisher
+import wx.lib.agw.supertooltip as STT
 
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
@@ -28,20 +30,7 @@ class plotTimeSeries(wx.Panel):
         parent.AddWindow(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         parent.AddWindow(self.toolbar, 0, wx.EXPAND)
 
-    def _init_sizers(self):
-        # generated method, don't edit
-        self.boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
-        self._init_coll_boxSizer1_Items(self.boxSizer1)
-        self.SetSizer(self.boxSizer1)
 
-    def init_plot(self, figure):
-        self.timeSeries.plot([], [])
-        self.timeSeries.set_title("No Data To Plot")
-
-        self.canvas = FigCanvas(self, -1, figure)
-        self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL,
-                                    False, u'Tahoma'))
-        self.isShowLegendEnabled = False
 
     def _init_ctrls(self, parent):
         wx.Panel.__init__(self, parent, -1)
@@ -96,9 +85,28 @@ class plotTimeSeries(wx.Panel):
         self.editPoint =None
         self.hoverAction = None
 
+        self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
+        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+        self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
+
+
 
         self.canvas.draw()
         self._init_sizers()
+
+    def _init_sizers(self):
+        # generated method, don't edit
+        self.boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
+        self._init_coll_boxSizer1_Items(self.boxSizer1)
+        self.SetSizer(self.boxSizer1)
+
+    def init_plot(self, figure):
+        self.timeSeries.plot([], [])
+        self.timeSeries.set_title("No Data To Plot")
+
+        self.canvas = FigCanvas(self, -1, figure)
+        self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+        self.isShowLegendEnabled = False
 
     def changePlotSelection(self, sellist=None, datetime_list=None):
         # k black,    # r red
@@ -194,7 +202,10 @@ class plotTimeSeries(wx.Panel):
         self.editPoint = None
         self.lman = None
 
-        self.canvas.mpl_disconnect(self.hoverAction)
+        #self.canvas.mpl_disconnect(self.hoverAction)
+        #self.canvas.mpl_disconnect(self.pointPick)
+
+
         self.hoverAction = None
         self.xys = None
         self.alpha=1
@@ -236,7 +247,7 @@ class plotTimeSeries(wx.Panel):
         self.lines[self.curveindex] =line= curraxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
-                                                         label=oneSeries.plotTitle, zorder =10, alpha=1)
+                                                         label=oneSeries.plotTitle, zorder =10, alpha=1, picker=5.0, pickradius=5.0)
 
         self.selectedlist = self.parent.record_service.get_filter_list()
 
@@ -246,8 +257,9 @@ class plotTimeSeries(wx.Panel):
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.timeradius = self.editCurve.timeRadius
-        self.radius = self.editCurve.yrange/10
-        self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
+        #self.radius = self.editCurve.yrange/10
+        self.radius = 10
+
 
     def _setColor(self, color):
         """Set figure and canvas colours to be the same.
@@ -287,6 +299,7 @@ class plotTimeSeries(wx.Panel):
             else:
                 if oneSeries.dataTable is not None:
                     curraxis = self.axislist[oneSeries.axisTitle]
+
                     self.lines.append(
                         curraxis.plot_date(
                             [x[1] for x in oneSeries.dataTable],
@@ -294,9 +307,10 @@ class plotTimeSeries(wx.Panel):
                             self.format, color=oneSeries.color,
                             xdate=True, tz=None, antialiased=True,
                             label=oneSeries.plotTitle,
-                            alpha = self.alpha,
+                            alpha = self.alpha, picker=5.0, pickradius=5.0
                         )
                     )
+
 
         if count > 1:
             # self.timeSeries.set_title("Multiple Series plotted")
@@ -322,7 +336,6 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
 
-        
         plt.gcf().autofmt_xdate()
 
         self.canvas.draw()
@@ -377,35 +390,52 @@ class plotTimeSeries(wx.Panel):
             self.axislist[axis] = newAxis
 
     def _onMotion(self, event):
-        if event.xdata and event.ydata:
-            xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
-            self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
-            self.toolbar.msg.SetForegroundColour((66, 66, 66))
-        else:
-            self.toolbar.msg.SetLabelText("None")
+        """
 
-        collisionFound = False
+        :type event: matplotlib.backend_bases.MouseEvent
+        :return:
+        """
+        try:
+            if event.xdata and event.ydata:
+                xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
+                self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
+                self.toolbar.msg.SetForegroundColour((66, 66, 66))
+            else:
+                self.toolbar.msg.SetLabelText("None")
+        except ValueError:
+            pass
 
-        if event.xdata != None and event.ydata != None:  #mouse is inside the axes
-            if self.editCurve:
-                for i in xrange(len(self.editCurve.dataTable)):
+    def _onPick(self, event):
+        """
 
+        :param event:
+        :return:
+        """
 
-                    #if abs(event.xdata - matplotlib.dates.date2num(self.editCurve.dataTable[i][1])) < radius and abs(
-                    #                event.ydata - self.editCurve.dataTable[i][0]) < radius:
+        thisline = event.artist
+        xdata = thisline.get_xdata()
+        ydata = thisline.get_ydata()
+        ind = event.ind
 
-                    if abs(event.ydata - self.editCurve.dataTable[i][0]) < self.radius and \
-                                    abs((matplotlib.dates.num2date(event.xdata).replace(tzinfo = None) -
-                                             self.editCurve.dataTable[i][1]).total_seconds()) < self.timeradius:
+        xValue = xdata[ind][0]
+        yValue = ydata[ind][0]
+        tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
 
-                        top = tip = '(%s, %f)' % (self.editCurve.dataTable[i][1], self.editCurve.dataTable[i][0])
+        self.tooltip.SetTip(tip)
+        self.tooltip.Enable(True)
+        self.tooltip.SetAutoPop(10000)
 
-                        self.tooltip.SetTip(tip)
-                        self.tooltip.Enable(True)
-                        collisionFound = True
-                        break
-        if not collisionFound:
+    def _onFigureLeave(self, event):
+        """Catches mouse leaving the figure
+
+        :param event:
+        :return:
+        """
+
+        if self.tooltip.Window.Enabled:
             self.tooltip.Enable(False)
+
+
 
 
     def __init__(self, parent, id, pos, size, style, name):
