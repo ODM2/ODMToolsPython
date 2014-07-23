@@ -9,25 +9,36 @@ ODMTools is a python application for managing observational data using the Obser
 
 ##Releases
 
-+	Latest Release: [Beta v1.0 ] (https://github.com/UCHIC/ODMToolsPython/releases/tag/v1.0-beta)
+To make running ODMTools easier we have included installers. Please select the one that is appropriate for your operating system
+
+#Windows
+Recommended Release: 
++   [Beta v1.0 ] (https://github.com/UCHIC/ODMToolsPython/releases/tag/v1.0-beta)
+
+Developmental Release:
 +	[Developmental v0.1](https://github.com/UCHIC/ODMToolsPython/releases/tag/win_v0.1_exp)
 
-Running From Source on Windows
+#Mac
++   *Coming Soon*
+
+Running From Source
 -------------------
 Install the following software/libraries. 
 
 +	[Python-2.7.6 32 bit](https://www.python.org/download/releases/2.7.6)
 +	[wxPython-3.0.0.0](http://www.wxpython.org/download.php)
 +	[Sqlalchemy-0.9.4](https://pypi.python.org/pypi/SQLAlchemy/0.9.4)
-+   [Pyodbc-3.0.7](http://code.google.com/p/pyodbc/downloads/list) 
++   [Pyodbc-3.0.7](http://code.google.com/p/pyodbc/downloads/list)
 +	[PyMySQL-0.6.2](https://github.com/petehunt/PyMySQL/)
 +	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/downloads)
 +	[Numpy-1.8.0](http://www.scipy.org/Download)
 +	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/v1.2/ObjectListView-1.2-without-graphics.zip/download)
++   [Appdirs 1.3.0](https://pypi.python.org/pypi/appdirs/1.3.0)
 
-Once you have all the dependencies installed, run the main application:
+
+Once you have downloaded the source code and all the dependencies installed, run the main application:
     
-    python src/gui/frmODMToolsMain.py
+    python odmtools/ODMToolsPython.py
 
 Sponsors
 ---------
