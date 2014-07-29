@@ -49,8 +49,13 @@ class RecordService():
             Publisher.sendMessage("scroll")
 
 
-    def toggle_filter_previous(self):
-        self._edit_service.toggle_filter_previous()
+    def toggle_filter_previous(self, value = None):
+        if self._edit_service._filter_from_selection is not value:
+            self._edit_service.toggle_filter_previous(value)
+            if self._record:
+                self._script("edit_service.toggle_filter_previous(%s)\n"%(value), 'black')
+                Publisher.sendMessage("scroll")
+
 
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)

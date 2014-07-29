@@ -117,6 +117,7 @@ class EditService():
 
     # Data Gaps
     def data_gaps(self, value, time_period):
+        self._test_filter_previous()
         length = len(self._series_points)
 
         value_sec = 0
@@ -152,6 +153,7 @@ class EditService():
             self._filter_list[key] = True
 
     def value_change_threshold(self, value, operator):
+        self._test_filter_previous()
         length = len(self._series_points)
         tmp = {}
         for i in xrange(length):
@@ -199,8 +201,12 @@ class EditService():
     def reset_filter(self):
         self._filter_list = [False] * len(self._series_points)
 
-    def toggle_filter_previous(self):
-        self._filter_from_selection = not self._filter_from_selection
+    def toggle_filter_previous(self, value = None):
+        if value:
+            self._filter_from_selection = value
+        else:
+            self._filter_from_selection = not self._filter_from_selection
+
 
 
     ###################

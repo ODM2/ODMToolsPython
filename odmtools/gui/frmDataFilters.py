@@ -64,6 +64,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
 
     def onBtnOKButton(self, event):
+
+        self.recordService.toggle_filter_previous(self.chkToggleFilterSelection.Value)
+        
         if not self.is_applied:
             self.onBtnApplyButton(event)
         event.Skip()
@@ -93,10 +96,10 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
             dateBefore = self.dpBefore.GetValue()
             timeBefore = self.tpBefore.GetValue(as_wxDateTime=True)
 
-            print type(timeBefore)
-            print dir(timeBefore)
-            dtDateAfter = datetime(int(dateAfter.Year), int(dateAfter.Month), int(dateAfter.Day), int(timeAfter.Hour), int(timeAfter.Minute), timeAfter.Second)
-            dtDateBefore = datetime(int(dateBefore.Year), int(dateBefore.Month), int(dateBefore.Day), int(timeBefore.Hour), int(timeBefore.Minute), int(timeBefore.Second))
+            #print type(timeBefore)
+            #print dir(timeBefore)
+            dtDateAfter = datetime(int(dateAfter.Year), int(dateAfter.Month)+1, int(dateAfter.Day), int(timeAfter.Hour), int(timeAfter.Minute), timeAfter.Second)
+            dtDateBefore = datetime(int(dateBefore.Year), int(dateBefore.Month)+1, int(dateBefore.Day), int(timeBefore.Hour), int(timeBefore.Minute), int(timeBefore.Second))
             self.recordService.filter_date(dtDateBefore, dtDateAfter)
 
         elif self.rbVChangeThresh.GetValue():
@@ -118,9 +121,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         # logger.debug("dateAfter: ", repr(dateAfter.day), " + ", repr(dateAfter.month), " + ", repr(dateAfter.year))
         # logger.debug("dateBefore: ", repr(dateBefore.day), " + ", repr(dateBefore.month), " + ", repr(dateBefore.year))
 
-        formattedDateAfter = wx.DateTimeFromDMY(int(dateAfter.day), int(dateAfter.month), int(dateAfter.year), 0, 0, 0)
+        formattedDateAfter = wx.DateTimeFromDMY(int(dateAfter.day), int(dateAfter.month)-1, int(dateAfter.year), 0, 0, 0)
 
-        formattedDateBefore = wx.DateTimeFromDMY(int(dateBefore.day) + 1, int(dateBefore.month), int(dateBefore.year), 0, 0,
+        formattedDateBefore = wx.DateTimeFromDMY(int(dateBefore.day) + 1, int(dateBefore.month)-1, int(dateBefore.year), 0, 0,
                                                  0)
         self.dpAfter.SetRange(formattedDateAfter, formattedDateBefore)
         self.dpBefore.SetRange(formattedDateAfter, formattedDateBefore)

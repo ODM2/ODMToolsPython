@@ -40,9 +40,9 @@ class ConsoleTools(object):
         else:
             return "Cannot record: %s" % (self._edit_error)
 
-    def toggle_filter_previous(self):
+    def toggle_filter_previous(self, value= None):
         if self._record_service:
-            self._record_service.toggle_filter_previous()
+            self._record_service.toggle_filter_previous(None)
 
     ################
     # Filter methods
