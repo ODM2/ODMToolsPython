@@ -66,7 +66,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
     def onBtnOKButton(self, event):
 
         self.recordService.toggle_filter_previous(self.chkToggleFilterSelection.Value)
-        
+
         if not self.is_applied:
             self.onBtnApplyButton(event)
         event.Skip()
