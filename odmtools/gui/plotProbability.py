@@ -25,21 +25,21 @@ class plotProb(wx.Panel):
 
 
     def clear(self):
-        self.plot.clear()
+        self.plots.clear()
 
     def close(self):
         #self.plot.clf()
-        self.plot.close('all')
+        self.plots.close('all')
 
     def _init_ctrls(self, prnt):
         #matplotlib.figure.Figure.__init__(self)
         wx.Panel.__init__(self, prnt, -1)
 
         self.figure = Figure()
-        self.plot = self.figure.add_subplot(111)
-        self.plot.axis([0, 1, 0, 1])  #
-        self.plot.plot([], [])
-        self.plot.set_title("No Data To Plot")
+        self.plots = self.figure.add_subplot(111)
+        self.plots.axis([0, 1, 0, 1])  #
+        self.plots.plot([], [])
+        self.plots.set_title("No Data To Plot")
         self.islegendvisible = False
 
 
@@ -88,7 +88,7 @@ class plotProb(wx.Panel):
         # print plt.setp(self.lines)
         # print(len(self.lines))
         self.format = ls + m
-        for line in self.lines:
+        for line in self.prob:
             plt.setp(line, linestyle=ls, marker=m)
         if self.islegendvisible:
             self.onShowLegend(self.islegendvisible)
@@ -97,12 +97,12 @@ class plotProb(wx.Panel):
     def onShowLegend(self, isVisible):
         self.islegendvisible = isVisible
         if isVisible:
-            leg = self.plot.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
+            leg = self.plots.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
             leg.get_frame().set_alpha(.5)
             leg.draggable(state=True)
 
         else:
-            self.plot.legend_ = None
+            self.plots.legend_ = None
         self.canvas.draw()
 
 
@@ -114,32 +114,45 @@ class plotProb(wx.Panel):
     def updatePlot(self):
         self.clear()
         count = self.seriesPlotInfo.count()
-        self.lines = []
-        self.plot = self.figure.add_subplot(111)
+        self.prob = []
+        self.plots = self.figure.add_subplot(111)
         for oneSeries in self.seriesPlotInfo.getAllSeries():
 
-            self.plot.set_xlabel("Cumulative Frequency < Stated Value %")
+            self.plots.set_xlabel("Cumulative Frequency < Stated Value %")
             if count > 1:
-                self.plot.set_ylabel("\n".join(textwrap.wrap(oneSeries.axisTitle, 50)))
-                self.plot.set_title("")
+                self.plots.set_ylabel("\n".join(textwrap.wrap(oneSeries.axisTitle, 50)))
+                self.plots.set_title("")
 
             else:
-                self.plot.set_ylabel("\n".join(textwrap.wrap(oneSeries.axisTitle, 50)))
-                self.plot.set_title("\n".join(textwrap.wrap(oneSeries.plotTitle, 55)))
+                self.plots.set_ylabel("\n".join(textwrap.wrap(oneSeries.axisTitle, 50)))
+                self.plots.set_title("\n".join(textwrap.wrap(oneSeries.siteName, 55)))
 
             if len(oneSeries.dataTable) >0:
-                self.lines.append(
-                    self.plot.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
+                self.prob.append(
+                    self.plots.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
                                    label=oneSeries.plotTitle))
 
         self.setXaxis()
 
-        if count > 1:
+        '''if count > 1:
             plt.subplots_adjust(bottom=.1 + .1)
             self.plot.legend(loc='upper center', ncol=2, prop=self.fontP)
         else:
             plt.subplots_adjust(bottom=.1)
-            self.plot.legend_ = None
+            self.plot.legend_ = None'''
+
+        left = 0.125  # the left side of the subplots of the figure
+        right = 0.9  # the right side of the subplots of the figure
+        bottom = 0.51  # the bottom of the subplots of the figure
+        top = 1.2  # the top of the subplots of the figure
+        wspace = .8  # the amount of width reserved for blank space between subplots
+        hspace = .8  # the amount of height reserved for white space between subplots
+        self.figure.subplots_adjust(
+            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+        )
+
+        if len(self.prob)>0:
+            self.figure.tight_layout()
 
         self.canvas.draw()
 
@@ -151,7 +164,7 @@ class plotProb(wx.Panel):
         self.cursor.execute("SELECT DataValue FROM DataValues" + Filter)
         self.dataValues = [x[0] for x in self.cursor.fetchall()]
         self.Series = series
-        self.plot.clear()
+        self.plots.clear()
         length = len(self.dataValues)
         self.Yaxis = sorted(self.dataValues)
         self.Xaxis = []
@@ -160,15 +173,15 @@ class plotProb(wx.Panel):
             curX = self.calculateProbabilityXPosition(curFreq)
             self.Xaxis.append(curX)
 
-        self.plot.clear()
+        self.plots.clear()
         x = range(len(self.Xaxis))
-        self.plot.set_xlabel("Cumulative Frequency < Stated Value %")
-        self.plot.set_ylabel(
+        self.plots.set_xlabel("Cumulative Frequency < Stated Value %")
+        self.plots.set_ylabel(
             "\n".join(textwrap.wrap(self.Series.variable_name + " (" + self.Series.variable_units_name + ")", 50)))
-        self.plot.set_title("\n".join(textwrap.wrap(self.Series.site_name + " " + self.Series.variable_name, 55)))
+        self.plots.set_title("\n".join(textwrap.wrap(self.Series.site_name + " " + self.Series.variable_name, 55)))
 
-        self.plot = self.figure.add_subplot(111)
-        self.lines = self.plot.plot(self.Xaxis, self.Yaxis, 'bs')
+        self.plots = self.figure.add_subplot(111)
+        self.prob = self.plots.plot(self.Xaxis, self.Yaxis, 'bs')
 
         #self.figure.autofmt_xdate()
         self.setXaxis()
@@ -176,13 +189,13 @@ class plotProb(wx.Panel):
 
     def setXaxis(self):
 
-        self.plot.set_xticklabels(
+        self.plots.set_xticklabels(
             ["0.01", "0.02", "0.02", "1", "2", "5", "10", "20", "30", "40", "50", "60", "70", "80", "90", "95", "98",
              "99", "99.9", "99.98", "99.99"])
-        self.plot.set_xticks(
+        self.plots.set_xticks(
             [-3.892, -3.5, -3.095, -2.323, -2.055, -1.645, -1.282, -0.842, -0.542, -0.254, 0, 0.254, 0.542, 0.842,
              1.282, 1.645, 2.055, 2.323, 3.095, 3.5, 3.892])
-        self.plot.set_xbound(-4, 4)
+        self.plots.set_xbound(-4, 4)
 
 
     def setColor(self, color):
