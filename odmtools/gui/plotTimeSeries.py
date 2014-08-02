@@ -147,14 +147,14 @@ class plotTimeSeries(wx.Panel):
         if isVisible:
             self.isShowLegendEnabled = True
             #logger.debug("IsVisible")
-            plt.subplots_adjust(bottom=.1 + .1)
+            #plt.subplots_adjust(bottom=.1 + .1)
             leg = self.timeSeries.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
             leg.get_frame().set_alpha(.5)
             leg.draggable(state=True)
         else:
             self.isShowLegendEnabled = False
             #logger.debug("IsNotVisible")
-            plt.subplots_adjust(bottom=.1)
+            #plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
         plt.gcf().autofmt_xdate()
@@ -412,18 +412,22 @@ class plotTimeSeries(wx.Panel):
         :return:
         """
 
-        thisline = event.artist
-        xdata = thisline.get_xdata()
-        ydata = thisline.get_ydata()
-        ind = event.ind
+        try:
+            thisline = event.artist
+            xdata = thisline.get_xdata()
+            ydata = thisline.get_ydata()
+            ind = event.ind
 
-        xValue = xdata[ind][0]
-        yValue = ydata[ind][0]
-        tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
+            xValue = xdata[ind][0]
+            yValue = ydata[ind][0]
+            tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
 
-        self.tooltip.SetTip(tip)
-        self.tooltip.Enable(True)
-        self.tooltip.SetAutoPop(10000)
+            self.tooltip.SetTip(tip)
+            self.tooltip.Enable(True)
+            self.tooltip.SetAutoPop(10000)
+        except AttributeError as e:
+            pass
+            #print "Attribute Error was caught: ", e
 
     def _onFigureLeave(self, event):
         """Catches mouse leaving the figure
@@ -432,8 +436,13 @@ class plotTimeSeries(wx.Panel):
         :return:
         """
 
+        #print "Left the window!"
+
         if self.tooltip.Window.Enabled:
             self.tooltip.Enable(False)
+            #window = self.tooltip.GetWindow()
+            #print "Window! ", window, dir(window)
+            #print "Window closed!"
 
 
 

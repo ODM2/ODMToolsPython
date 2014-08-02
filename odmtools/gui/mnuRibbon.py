@@ -162,11 +162,8 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
 
-        self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Recording Functions", wx.NullBitmap, wx.DefaultPosition,
+        self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Recording Options", wx.NullBitmap, wx.DefaultPosition,
                                            wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
-
-        #wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDSAVE
-
 
         self.record_bar = RB.RibbonButtonBar(self.record_panel)
         self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New Script", newscript.GetBitmap(), "")
@@ -187,6 +184,15 @@ class mnuRibbon(RB.RibbonBar):
         view_bar.AddSimpleButton(wxID_RIBBONVIEWSERIES, "Series Selector", bitmap_editor.GetBitmap(), "")
         view_bar.AddSimpleButton(wxID_RIBBONVIEWCONSOLE, "Python Console", window_command_line.GetBitmap(), "")
         view_bar.AddSimpleButton(wxID_RIBBONVIEWSCRIPT, "PythonScript", script.GetBitmap(), "")
+
+        self.scriptPanel = RB.RibbonPanel(viewPage, wx.ID_ANY, "Script Options", wx.NullBitmap, wx.DefaultPosition,
+                                           wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
+
+        self.scriptBar = RB.RibbonButtonBar(self.scriptPanel)
+        self.scriptBar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New Script", newscript.GetBitmap(), "")
+        self.scriptBar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open Script", openscript.GetBitmap(), "")
+        self.scriptBar.AddSimpleButton(wxID_RIBBONRECORDSAVE, "Save Script", savescript.GetBitmap(), "")
+        self.scriptPanel.Hide()
 
         self.CurrPage = 1
         self.SetActivePageByIndex(self.CurrPage)
@@ -552,6 +558,10 @@ class mnuRibbon(RB.RibbonBar):
 
         if event.Id == wxID_RIBBONVIEWSCRIPT:
             value = "Script"
+            if self.scriptPanel.IsShown():
+                self.scriptPanel.Hide()
+            else:
+                self.scriptPanel.Show()
         elif event.Id == wxID_RIBBONVIEWCONSOLE:
             value = "Console"
         elif event.Id == wxID_RIBBONVIEWSERIES:

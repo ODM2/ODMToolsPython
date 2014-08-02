@@ -80,6 +80,7 @@ class pnlScript(wx.Panel):
         # self.SetTitle("Editing a new file")
         Publisher.sendMessage("script.title", title="Editing a new file")
         record_service = self.parent.getRecordService()
+        print"Parent=%s" % self.parent
         record_service.write_header()
 
     def getOverwriteDialog(self):

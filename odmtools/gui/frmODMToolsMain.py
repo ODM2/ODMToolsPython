@@ -205,7 +205,9 @@ class frmODMToolsMain(wx.Frame):
             paneDetails = self._mgr.GetPane(self.txtPythonScript)
             if paneDetails.IsNotebookPage():
                 paneDetails.Float()
-            paneDetails.FloatingPosition(pos=self.Position)
+            if paneDetails.IsFloating():
+                paneDetails.Dock()  
+            #paneDetails.FloatingPosition(pos=self.Position)
 
         elif value == "Console":
             paneDetails = self._mgr.GetPane(self.txtPythonConsole)
