@@ -205,7 +205,6 @@ class plotTimeSeries(wx.Panel):
         #self.canvas.mpl_disconnect(self.hoverAction)
         #self.canvas.mpl_disconnect(self.pointPick)
 
-
         self.hoverAction = None
         self.xys = None
         self.alpha=1
@@ -349,7 +348,6 @@ class plotTimeSeries(wx.Panel):
             self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
 
             self.updatePlot()
-            # print self.editCurve
 
     def setUpYAxis(self):
         self.axislist = {}
@@ -401,7 +399,7 @@ class plotTimeSeries(wx.Panel):
                 self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
                 self.toolbar.msg.SetForegroundColour((66, 66, 66))
             else:
-                self.toolbar.msg.SetLabelText("None")
+                self.toolbar.msg.SetLabelText("")
         except ValueError:
             pass
 
@@ -427,7 +425,6 @@ class plotTimeSeries(wx.Panel):
             self.tooltip.SetAutoPop(10000)
         except AttributeError as e:
             pass
-            #print "Attribute Error was caught: ", e
 
     def _onFigureLeave(self, event):
         """Catches mouse leaving the figure
@@ -436,16 +433,8 @@ class plotTimeSeries(wx.Panel):
         :return:
         """
 
-        #print "Left the window!"
-
         if self.tooltip.Window.Enabled:
-            self.tooltip.Enable(False)
-            #window = self.tooltip.GetWindow()
-            #print "Window! ", window, dir(window)
-            #print "Window closed!"
-
-
-
+            self.tooltip.SetTip("")
 
     def __init__(self, parent, id, pos, size, style, name):
         self._init_ctrls(parent)
