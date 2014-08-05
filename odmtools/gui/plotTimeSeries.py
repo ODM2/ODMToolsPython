@@ -24,13 +24,14 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class plotTimeSeries(wx.Panel):
+    def __init__(self, parent, id, pos, size, style, name):
+        self._init_ctrls(parent)
+
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
 
         parent.AddWindow(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         parent.AddWindow(self.toolbar, 0, wx.EXPAND)
-
-
 
     def _init_ctrls(self, parent):
         wx.Panel.__init__(self, parent, -1)
@@ -89,8 +90,6 @@ class plotTimeSeries(wx.Panel):
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
 
-
-
         self.canvas.draw()
         self._init_sizers()
 
@@ -124,14 +123,9 @@ class plotTimeSeries(wx.Panel):
                         tflist[i]='k'
                 self.editPoint.set_color(tflist)
                 #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
-
             self.canvas.draw()
 
-
     def changeSelection(self, sellist=[], datetime_list=[]):
-        #logger.debug("datetimelist: {list}".format(list=sorted(datetime_list)))
-        #logger.debug("sellist: {list}".format(list=sellist))
-
         self.changePlotSelection(sellist, datetime_list)
         if len(sellist)>0:
             self.parent.record_service.select_points_tf(sellist)
@@ -143,18 +137,15 @@ class plotTimeSeries(wx.Panel):
 
 
     def onShowLegend(self, isVisible):
-        # print self.timeSeries.show_legend
         if isVisible:
             self.isShowLegendEnabled = True
-            #logger.debug("IsVisible")
-            #plt.subplots_adjust(bottom=.1 + .1)
+            plt.subplots_adjust(bottom=.1 + .1)
             leg = self.timeSeries.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
             leg.get_frame().set_alpha(.5)
             leg.draggable(state=True)
         else:
             self.isShowLegendEnabled = False
-            #logger.debug("IsNotVisible")
-            #plt.subplots_adjust(bottom=.1)
+            plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
         plt.gcf().autofmt_xdate()
@@ -396,7 +387,9 @@ class plotTimeSeries(wx.Panel):
         try:
             if event.xdata and event.ydata:
                 xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
-                self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
+                #self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
+                #self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%b %d, %Y %H:%M:%S"), event.ydata))
+                self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%b %d, %Y %H:%M"), event.ydata))
                 self.toolbar.msg.SetForegroundColour((66, 66, 66))
             else:
                 self.toolbar.msg.SetLabelText("")
@@ -418,11 +411,14 @@ class plotTimeSeries(wx.Panel):
 
             xValue = xdata[ind][0]
             yValue = ydata[ind][0]
-            tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
+            #tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
+            #tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M:%S"), yValue)
+            tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M"), yValue)
+
 
             self.tooltip.SetTip(tip)
             self.tooltip.Enable(True)
-            self.tooltip.SetAutoPop(10000)
+            self.tooltip.SetAutoPop(1000)
         except AttributeError as e:
             pass
 
@@ -436,6 +432,5 @@ class plotTimeSeries(wx.Panel):
         if self.tooltip.Window.Enabled:
             self.tooltip.SetTip("")
 
-    def __init__(self, parent, id, pos, size, style, name):
-        self._init_ctrls(parent)
+
 
