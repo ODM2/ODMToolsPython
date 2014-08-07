@@ -191,6 +191,6 @@ class pnlPlot(fnb.FlatNotebook):
             self.pltTS.close()
 
             # Set title of TimeSeries to default
-            self.pltTS.timeSeries.set_title("No Data To Plot")
+            self.pltTS.setTimeSeriesTitle("No Data To Plot")
 
         #self._seriesPlotInfo = None
