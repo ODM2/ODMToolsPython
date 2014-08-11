@@ -213,7 +213,7 @@ class plotTimeSeries(wx.Panel):
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.updatePlot()
         self.toolbar.stopEdit()
-        self.editseriesID = -1
+        self.editseriesID = -1 
 
     def updateValues(self):
         # self.addEdit(self.editCursor, self.editSeries, self.editDataFilter)
