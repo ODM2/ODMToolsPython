@@ -53,6 +53,7 @@ class MyCustomToolbar(NavigationToolbar):
 
         msg = wx.StaticText(self, -1, '|')
         msg.SetForegroundColour((108, 123, 139))
+
         self.AddControl(msg)
         self.AddSeparator()
 

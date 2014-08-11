@@ -4,6 +4,7 @@ import datetime
 import wx
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 
 import mpl_toolkits.axisartist as AA
 
@@ -11,8 +12,6 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
 from matplotlib.font_manager import FontProperties
 from wx.lib.pubsub import pub as Publisher
-import wx.lib.agw.supertooltip as STT
-
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 ## Enable logging
@@ -24,13 +23,14 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class plotTimeSeries(wx.Panel):
+    def __init__(self, parent, id, pos, size, style, name):
+        self._init_ctrls(parent)
+
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
 
         parent.AddWindow(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         parent.AddWindow(self.toolbar, 0, wx.EXPAND)
-
-
 
     def _init_ctrls(self, parent):
         wx.Panel.__init__(self, parent, -1)
@@ -86,10 +86,9 @@ class plotTimeSeries(wx.Panel):
         self.hoverAction = None
 
         self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
-        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
-        self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
-
-
+        #self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+        #self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
+        self.cursors = []
 
         self.canvas.draw()
         self._init_sizers()
@@ -203,7 +202,7 @@ class plotTimeSeries(wx.Panel):
         self.lman = None
 
         #self.canvas.mpl_disconnect(self.hoverAction)
-        #self.canvas.mpl_disconnect(self.pointPick)
+        self.canvas.mpl_disconnect(self.pointPick)
 
         self.hoverAction = None
         self.xys = None
@@ -216,8 +215,6 @@ class plotTimeSeries(wx.Panel):
             self.updatePlot()
         self.toolbar.stopEdit()
         self.editseriesID = -1
-
-
 
     def updateValues(self):
         # self.addEdit(self.editCursor, self.editSeries, self.editDataFilter)
@@ -243,7 +240,7 @@ class plotTimeSeries(wx.Panel):
 
     def drawEditPlot(self, oneSeries):
         curraxis = self.axislist[oneSeries.axisTitle]
-        self.lines[self.curveindex] =line= curraxis.plot_date([x[1] for x in oneSeries.dataTable],
+        self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
                                                          label=oneSeries.plotTitle, zorder =10, alpha=1, picker=5.0, pickradius=5.0)
@@ -258,6 +255,8 @@ class plotTimeSeries(wx.Panel):
         self.timeradius = self.editCurve.timeRadius
         #self.radius = self.editCurve.yrange/10
         self.radius = 10
+        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+
 
 
     def _setColor(self, color):
@@ -335,6 +334,22 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
 
+        # Disable existing Cursors
+        if self.cursors:
+            for i in self.cursors:
+                i.disable()
+
+        self.cursors = []
+
+        # initialize cursors for axes
+        for k, v in self.axislist.iteritems():
+            i = Cursor(self.canvas, v, k)
+            i.enable()
+            self.cursors.append(i)
+
+            #if self.
+
+
         plt.gcf().autofmt_xdate()
 
         self.canvas.draw()
@@ -346,7 +361,6 @@ class plotTimeSeries(wx.Panel):
 
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
-
             self.updatePlot()
 
     def setUpYAxis(self):
@@ -436,6 +450,35 @@ class plotTimeSeries(wx.Panel):
         if self.tooltip.Window.Enabled:
             self.tooltip.SetTip("")
 
-    def __init__(self, parent, id, pos, size, style, name):
-        self._init_ctrls(parent)
+class Cursor(object):
+    def __init__(self, canvas, ax, name):
+        self.canvas = canvas
+        self.ax = ax
+        self.name = name
+        self.cid = None
+        self.selected = None
 
+    def enable(self):
+        self.cid = self.canvas.mpl_connect('motion_notify_event', self)
+
+    def disable(self):
+        self.canvas.mpl_disconnect(self.cid)
+
+    def setSelected(self, selected):
+        self.selected = selected
+
+    def __call__(self, event):
+        if event.inaxes is None:
+            return
+        ax = self.ax
+        if ax != event.inaxes:
+            inv = ax.transData.inverted()
+            x, y = inv.transform(np.array((event.x, event.y)).reshape(1, 2)).ravel()
+        elif ax == event.inaxes:
+            x, y = event.xdata, event.ydata
+        else:
+            return
+
+        xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
+
+        logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
