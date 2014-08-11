@@ -10,6 +10,10 @@ import mpl_toolkits.axisartist as AA
 
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
+
+from matplotlib.lines import Line2D
+from matplotlib.text import Text
+
 from matplotlib.font_manager import FontProperties
 from wx.lib.pubsub import pub as Publisher
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
@@ -38,9 +42,12 @@ class plotTimeSeries(wx.Panel):
 
         #init Plot
         figure = plt.figure()
-        #self.timeSeries = figure.add_subplot(1,1,1)
         self.timeSeries = host_subplot( 111, axes_class=AA.Axes)
         self.init_plot(figure)
+
+        self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
+        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+        self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
@@ -100,9 +107,9 @@ class plotTimeSeries(wx.Panel):
         self.SetSizer(self.boxSizer1)
 
     def init_plot(self, figure):
-        self.timeSeries.plot([], [])
-        self.timeSeries.set_title("No Data To Plot")
-
+        self.timeSeries.plot([], [], picker=5)
+        self.setTimeSeriesTitle("No Data to Plot")
+        
         self.canvas = FigCanvas(self, -1, figure)
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
@@ -123,14 +130,9 @@ class plotTimeSeries(wx.Panel):
                         tflist[i]='k'
                 self.editPoint.set_color(tflist)
                 #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
-
             self.canvas.draw()
 
-
     def changeSelection(self, sellist=[], datetime_list=[]):
-        #logger.debug("datetimelist: {list}".format(list=sorted(datetime_list)))
-        #logger.debug("sellist: {list}".format(list=sellist))
-
         self.changePlotSelection(sellist, datetime_list)
         if len(sellist)>0:
             self.parent.record_service.select_points_tf(sellist)
@@ -142,18 +144,15 @@ class plotTimeSeries(wx.Panel):
 
 
     def onShowLegend(self, isVisible):
-        # print self.timeSeries.show_legend
         if isVisible:
             self.isShowLegendEnabled = True
-            #logger.debug("IsVisible")
-            #plt.subplots_adjust(bottom=.1 + .1)
+            plt.subplots_adjust(bottom=.1 + .1)
             leg = self.timeSeries.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
             leg.get_frame().set_alpha(.5)
             leg.draggable(state=True)
         else:
             self.isShowLegendEnabled = False
-            #logger.debug("IsNotVisible")
-            #plt.subplots_adjust(bottom=.1)
+            plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
         plt.gcf().autofmt_xdate()
@@ -193,7 +192,7 @@ class plotTimeSeries(wx.Panel):
         #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
         #plt.cla()
         #plt.clf()
-        self.timeSeries.plot([], [])
+        self.timeSeries.plot([], [], picker=5)
 
     def stopEdit(self):
         self.clear()
@@ -305,34 +304,35 @@ class plotTimeSeries(wx.Panel):
                             self.format, color=oneSeries.color,
                             xdate=True, tz=None, antialiased=True,
                             label=oneSeries.plotTitle,
-                            alpha = self.alpha, picker=5.0, pickradius=5.0
+                            alpha = self.alpha, picker=8.0, pickradius=8.0
                         )
                     )
 
 
         if count > 1:
-            # self.timeSeries.set_title("Multiple Series plotted")
-            self.timeSeries.set_title("")
+            self.setTimeSeriesTitle("")
             plt.subplots_adjust(bottom=.1 + .1)
             # self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
             #      ncol=2, prop = self.fontP)
             self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -1.75),
                                    ncol=2, prop=self.fontP)
         elif count == 0:
-            self.timeSeries.set_title("")
+            self.setTimeSeriesTitle("")
             self.timeSeries.legend_ = None
         else:
-            self.timeSeries.set_title(oneSeries.siteName)
+            self.setTimeSeriesTitle(oneSeries.siteName)
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
-        self.timeSeries.set_xlabel("Date")
+        self.timeSeries.set_xlabel("Date", picker=True)
         self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
+        self.timeSeries.axis[:].major_ticklabels.set_picker(True)
+
 
         # Disable existing Cursors
         if self.cursors:
@@ -354,6 +354,8 @@ class plotTimeSeries(wx.Panel):
 
         self.canvas.draw()
 
+    def setTimeSeriesTitle(self, title=""):
+        self.timeSeries.set_title(title, picker=True)
 
     def setEdit(self, id):
         self.editseriesID = id
@@ -398,7 +400,16 @@ class plotTimeSeries(wx.Panel):
                 newAxis.axis['right'].toggle(all=True)
                 plt.subplots_adjust(right=.9 - (adj * right))
 
-            newAxis.set_ylabel(axis)
+            a = newAxis.set_ylabel(axis, picker=True)
+            a.set_picker(True)
+            a.set_color((1, 0, .6))
+            print "a: ", a, a.get_picker()
+            #newAxis.set_picker(True)
+            #for label in newAxis.get_ylabels(): 
+            #    print ".",
+            #    label.set_picker(True)
+
+            logger.debug("axis label: %s" % (axis))
             self.axislist[axis] = newAxis
 
     def _onMotion(self, event):
@@ -410,7 +421,9 @@ class plotTimeSeries(wx.Panel):
         try:
             if event.xdata and event.ydata:
                 xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
-                self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
+                #self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
+                #self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%b %d, %Y %H:%M:%S"), event.ydata))
+                self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%b %d, %Y %H:%M"), event.ydata))
                 self.toolbar.msg.SetForegroundColour((66, 66, 66))
             else:
                 self.toolbar.msg.SetLabelText("")
@@ -424,7 +437,7 @@ class plotTimeSeries(wx.Panel):
         :return:
         """
 
-        try:
+        if isinstance(event.artist, Line2D):
             thisline = event.artist
             xdata = thisline.get_xdata()
             ydata = thisline.get_ydata()
@@ -432,13 +445,17 @@ class plotTimeSeries(wx.Panel):
 
             xValue = xdata[ind][0]
             yValue = ydata[ind][0]
-            tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
+            #tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
+            #tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M:%S"), yValue)
+            tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M"), yValue)
 
             self.tooltip.SetTip(tip)
             self.tooltip.Enable(True)
-            self.tooltip.SetAutoPop(10000)
-        except AttributeError as e:
-            pass
+            self.tooltip.SetAutoPop(1000)
+
+        elif isinstance(event.artist, Text):
+            text = event.artist
+            print "Picking Label: ", text.get_text()
 
     def _onFigureLeave(self, event):
         """Catches mouse leaving the figure
