@@ -198,27 +198,20 @@ class SeriesPlotInfo(object):
     def getAllSeries(self):
         return self._seriesInfos.values()
 
-    def getSeriesInfo(self, seriesID):
-        assert seriesID is not None
-        #lst = []  #of length len(seriesInfos)
+    def getSeriesById(self, seriesID):
+        try:
+            series = self.memDB.series_service.get_series_by_id(seriesID)
+            self.memDB.series_service.reset_session()
+            return series
+        except:
+            return None
 
-        #for key in self.getSeriesIDs():
-
-        #if the current series is not already in the list
-        #seriesInfo = self._seriesInfos[key
-
-        #if seriesInfo is None:
-        # if key in self._seriesInfos.keys():
-        # if not self._seriesInfos[key] == None:
+    def getSelectedSeries(self, seriesID):
         seriesInfo = OneSeriesPlotInfo(self)
-        #add dictionary entry
-        #self._seriesInfos[key] = seriesInfo
+        series = self.getSeriesById(seriesID)
+        return self.createSeriesInfo(seriesID, seriesInfo, series)
 
-
-        series = self.memDB.series_service.get_series_by_id(seriesID)
-        self.memDB.series_service.reset_session()
-        #print "series date: ", type(series.begin_date_time)
-
+    def createSeriesInfo(self, seriesID, seriesInfo, series):
         startDate = series.begin_date_time
         endDate = series.end_date_time
 
@@ -231,7 +224,6 @@ class SeriesPlotInfo(object):
             self.currentStart = self.startDate
             self.currentEnd = self.endDate
 
-
         variableName = series.variable_name
         unitsName = series.variable_units_name
         siteName = series.site_name
@@ -240,7 +232,7 @@ class SeriesPlotInfo(object):
         if self.editID == seriesID:
             data = self.memDB.getEditDataValuesforGraph()
         else:
-            #using current variable keeps the series subsetted
+            # using current variable keeps the series subsetted
             data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
@@ -257,11 +249,31 @@ class SeriesPlotInfo(object):
         seriesInfo.dataTable = data
         seriesInfo.timeRadius = self.setTimeRadius(series)
         yvals = [y[0] for y in data]
-        seriesInfo.yrange = max(yvals)-min(yvals)
+        seriesInfo.yrange = max(yvals) - min(yvals)
+        return seriesInfo
+
+    def getSeriesInfo(self, seriesID):
+        assert seriesID is not None
+        #lst = []  #of length len(seriesInfos)
+
+        #for key in self.getSeriesIDs():
+
+        #if the current series is not already in the list
+        #seriesInfo = self._seriesInfos[key
+
+        #if seriesInfo is None:
+        # if key in self._seriesInfos.keys():
+        # if not self._seriesInfos[key] == None:
+        oneSeriesInfo = OneSeriesPlotInfo(self)
+        series = self.getSeriesById(seriesID)
+        #add dictionary entry
+        #self._seriesInfos[key] = seriesInfo
+        #print "series date: ", type(series.begin_date_time)
+
+        seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
         #Tests to see if any values were returned for the given daterange
         #if data is not None:
         self.build(seriesInfo)
-
 
         # else:
         #     seriesInfo = self._seriesInfos[key]
@@ -285,8 +297,6 @@ class SeriesPlotInfo(object):
         seriesInfo.Probability = Probability(data, seriesInfo.noDataValue)
         seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
         seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
-
-
 
     def setTimeRadius(self, series):
         ts = series.time_support

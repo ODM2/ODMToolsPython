@@ -552,6 +552,9 @@ class pnlSeriesSelector(wx.Panel):
 
         self.tblSeries.currentlySelectedObject = editingObject
 
+        ## update Cursor
+        Publisher.sendMessage("updateCursor", selectedObject=editingObject)
+
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector"""
 

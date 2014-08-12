@@ -48,6 +48,7 @@ class plotTimeSeries(wx.Panel):
         self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
+        Publisher.subscribe(self.updateCursor, "updateCursor")
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
@@ -213,7 +214,7 @@ class plotTimeSeries(wx.Panel):
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.updatePlot()
         self.toolbar.stopEdit()
-        self.editseriesID = -1 
+        self.editseriesID = -1
 
     def updateValues(self):
         # self.addEdit(self.editCursor, self.editSeries, self.editDataFilter)
@@ -239,6 +240,7 @@ class plotTimeSeries(wx.Panel):
 
     def drawEditPlot(self, oneSeries):
         curraxis = self.axislist[oneSeries.axisTitle]
+        curraxis.set_zorder(10)
         self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
@@ -296,7 +298,7 @@ class plotTimeSeries(wx.Panel):
             else:
                 if oneSeries.dataTable is not None:
                     curraxis = self.axislist[oneSeries.axisTitle]
-
+                    curraxis.set_zorder(1)
                     self.lines.append(
                         curraxis.plot_date(
                             [x[1] for x in oneSeries.dataTable],
@@ -333,28 +335,46 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
         self.timeSeries.axis[:].major_ticklabels.set_picker(True)
 
+        plt.gcf().autofmt_xdate()
+        self.canvas.draw()
 
+    def updateCursor(self, selectedObject):
+        """
+        :param selectedObject:
+        """
+
+        # get series
+        series = None
+        try:
+            if selectedObject and self.seriesPlotInfo:
+                seriesInfo = self.seriesPlotInfo.getSelectedSeries(selectedObject.id)
+
+                if seriesInfo and seriesInfo.axisTitle in self.axislist.keys():
+                    currentAxis = self.axislist[seriesInfo.axisTitle]
+                    self.configureCursor(currentAxis)
+        except AttributeError as e:
+            print "Ignoring Attribute Error", e
+
+        pass
+
+    def configureCursor(self, currentAxis):
+        """Creates the cursors for each axes in order to provide data hovering"""
         # Disable existing Cursors
         if self.cursors:
             for i in self.cursors:
                 i.disable()
-
         self.cursors = []
 
-        # initialize cursors for axes
+        # initialize cursors for axes from currently selected axes
         for k, v in self.axislist.iteritems():
             i = Cursor(self.canvas, v, k)
             i.enable()
+            if v == currentAxis:
+                i.selected = currentAxis
             self.cursors.append(i)
 
-            #if self.
-
-
-        plt.gcf().autofmt_xdate()
-
-        self.canvas.draw()
-
     def setTimeSeriesTitle(self, title=""):
+        """Set the title of the TimeSeries plot"""
         self.timeSeries.set_title(title, picker=True)
 
     def setEdit(self, id):
@@ -370,11 +390,15 @@ class plotTimeSeries(wx.Panel):
         left = 0
         right = 0
         adj = .05
+        editaxis = None
         #loop through the list of curves and add an axis for each
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             #test to see if the axis already exists
+            if oneSeries.edit:
+                editaxis = oneSeries.axisTitle
             if not oneSeries.axisTitle in self.axislist:
                 self.axislist[oneSeries.axisTitle] = None
+                
 
         for i, axis in zip(range(len(self.axislist)), self.axislist):
             if i % 2 == 0:
@@ -403,7 +427,6 @@ class plotTimeSeries(wx.Panel):
             a = newAxis.set_ylabel(axis, picker=True)
             a.set_picker(True)
             a.set_color((1, 0, .6))
-            print "a: ", a, a.get_picker()
             #newAxis.set_picker(True)
             #for label in newAxis.get_ylabels(): 
             #    print ".",
@@ -496,6 +519,6 @@ class Cursor(object):
         else:
             return
 
-        xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
-
-        logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
+        if self.selected:
+            xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
+            logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
