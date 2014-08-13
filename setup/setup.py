@@ -7,19 +7,19 @@ Usage:
 
 from setuptools import setup
 
-APP = ['ODMToolsPython.py']
-#DATA_FILES = [('', ['images'])]
+APP = ['../odmtools/ODMToolsPython.py']
+#DATA_FILES = ['--iconfile']
 DATA_FILES = ['']
 OPTIONS = {'argv_emulation': True,
+           'iconfile': '/Users/stephanie/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
            'arch': 'i386',
-           'includes': ['wx', 'sqlalchemy', 'pymysql', 'matplotlib', 'ObjectListView']}
+           'includes': ['sqlalchemy', 'pymysql', 'appdirs', 'ObjectListView']}
 
 setup(
     app=APP,
-    data_files=DATA_FILES,
-    options={'py2app': OPTIONS},
-    setup_requires=['py2app'],
+    #data_files=DATA_FILES,
+    #options={'py2app': OPTIONS},
+    #setup_requires=['py2app'],
 )
-
 # to add an icon py2applet --make-setup foo.py --iconfile images/icon.icns
 # --arch i386 --includes wx, sqlalchemy, pymysql, matplotlib, ObjectListView  
