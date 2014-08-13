@@ -45,8 +45,8 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries = host_subplot( 111, axes_class=AA.Axes)
         self.init_plot(figure)
 
-        self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
-        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+        #self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
+        #self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
         Publisher.subscribe(self.updateCursor, "updateCursor")
 
@@ -93,9 +93,6 @@ class plotTimeSeries(wx.Panel):
         self.editPoint =None
         self.hoverAction = None
 
-        self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
-        #self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
-        #self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
         self.cursors = []
 
         self.canvas.draw()
@@ -203,6 +200,7 @@ class plotTimeSeries(wx.Panel):
 
         #self.canvas.mpl_disconnect(self.hoverAction)
         self.canvas.mpl_disconnect(self.pointPick)
+        self.pointPick = None
 
         self.hoverAction = None
         self.xys = None
@@ -335,7 +333,9 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
         self.timeSeries.axis[:].major_ticklabels.set_picker(True)
 
-        plt.gcf().autofmt_xdate()
+        #plt.gcf().autofmt_xdate()
+        plt.tight_layout()
+        self.configureCursor(None)
         self.canvas.draw()
 
     def updateCursor(self, selectedObject):
@@ -343,22 +343,28 @@ class plotTimeSeries(wx.Panel):
         :param selectedObject:
         """
 
-        # get series
-        series = None
         try:
-            if selectedObject and self.seriesPlotInfo:
-                seriesInfo = self.seriesPlotInfo.getSelectedSeries(selectedObject.id)
+            if selectedObject:
+                if self.seriesPlotInfo:
+                    seriesInfo = self.seriesPlotInfo.getSelectedSeries(selectedObject.id)
 
-                if seriesInfo and seriesInfo.axisTitle in self.axislist.keys():
-                    currentAxis = self.axislist[seriesInfo.axisTitle]
-                    self.configureCursor(currentAxis)
+                    if seriesInfo:
+                        currentAxis = None
+                        # If there a key with the axisTitle we are interested in, set currentaxis to that.
+                        if seriesInfo.axisTitle in self.axislist.keys():
+                            currentAxis = self.axislist[seriesInfo.axisTitle]
+                        # If nothing is in the axislist, we don't care about it
+                        elif len(self.axislist) < 1:
+                            currentAxis = None
+                        self.configureCursor(currentAxis)
+
         except AttributeError as e:
             print "Ignoring Attribute Error", e
 
-        pass
 
-    def configureCursor(self, currentAxis):
+    def configureCursor(self, currentAxis=None):
         """Creates the cursors for each axes in order to provide data hovering"""
+
         # Disable existing Cursors
         if self.cursors:
             for i in self.cursors:
@@ -367,10 +373,20 @@ class plotTimeSeries(wx.Panel):
 
         # initialize cursors for axes from currently selected axes
         for k, v in self.axislist.iteritems():
-            i = Cursor(self.canvas, v, k)
-            i.enable()
+            i = Cursor(self.canvas, self.toolbar, v, k)
+            ## If I have selected an axis that is in the axislist
             if v == currentAxis:
-                i.selected = currentAxis
+                i.enable()
+                i.setSelected(currentAxis)
+            # If there is only one axis in the axislist, default to the first axis
+            elif len(self.axislist) == 1:
+                i.enable()
+                i.setSelected(self.axislist.values()[0])
+            # Else I disable the other axes that I don't care about
+            else:
+                i.setSelected(None)
+                i.disable()
+
             self.cursors.append(i)
 
     def setTimeSeriesTitle(self, title=""):
@@ -398,9 +414,19 @@ class plotTimeSeries(wx.Panel):
                 editaxis = oneSeries.axisTitle
             if not oneSeries.axisTitle in self.axislist:
                 self.axislist[oneSeries.axisTitle] = None
-                
+        keys = self.axislist.keys()
 
-        for i, axis in zip(range(len(self.axislist)), self.axislist):
+        if editaxis:
+            for i in range(len(keys)):
+                if keys[i] == editaxis:
+                    keys.pop(i)
+                    break
+            #for host subplot set to the first series so that the pick event will work when editing. keys.insert(0, editaxis)
+            #if using add_subplot set it to the last series. keys.append(editaxis)
+            keys.insert(0, editaxis)
+
+        leftadjust = -30
+        for i, axis in zip(range(len(self.axislist)), keys):
             if i % 2 == 0:
                 left = left + 1
                 #add to the left(yaxis)
@@ -410,10 +436,10 @@ class plotTimeSeries(wx.Panel):
                 else:
                     newAxis = self.timeSeries.twinx()
                     new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
-                    newAxis.axis['left'] = new_fixed_axis(loc='left', axes=newAxis, offset=(-30 * left, 0))
+                    newAxis.axis['left'] = new_fixed_axis(loc='left', axes=newAxis, offset=(leftadjust * left, 0))
                     newAxis.axis["left"].toggle(all=True)
                     newAxis.axis["right"].toggle(all=False)
-                    plt.subplots_adjust(left=.10 + (adj * (left - 1)))
+                    leftadjust -= 15
 
             else:
                 right = right + 1
@@ -422,16 +448,9 @@ class plotTimeSeries(wx.Panel):
                 new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
                 newAxis.axis['right'] = new_fixed_axis(loc='right', axes=newAxis, offset=(60 * (right - 1), 0))
                 newAxis.axis['right'].toggle(all=True)
-                plt.subplots_adjust(right=.9 - (adj * right))
 
             a = newAxis.set_ylabel(axis, picker=True)
             a.set_picker(True)
-            a.set_color((1, 0, .6))
-            #newAxis.set_picker(True)
-            #for label in newAxis.get_ylabels(): 
-            #    print ".",
-            #    label.set_picker(True)
-
             logger.debug("axis label: %s" % (axis))
             self.axislist[axis] = newAxis
 
@@ -474,7 +493,7 @@ class plotTimeSeries(wx.Panel):
 
             self.tooltip.SetTip(tip)
             self.tooltip.Enable(True)
-            self.tooltip.SetAutoPop(1000)
+            self.tooltip.SetAutoPop(10000)
 
         elif isinstance(event.artist, Text):
             text = event.artist
@@ -491,8 +510,9 @@ class plotTimeSeries(wx.Panel):
             self.tooltip.SetTip("")
 
 class Cursor(object):
-    def __init__(self, canvas, ax, name):
+    def __init__(self, canvas, toolbar, ax, name):
         self.canvas = canvas
+        self.toolbar = toolbar
         self.ax = ax
         self.name = name
         self.cid = None
@@ -505,6 +525,7 @@ class Cursor(object):
         self.canvas.mpl_disconnect(self.cid)
 
     def setSelected(self, selected):
+        #logger.debug("Enabling %s" % selected)
         self.selected = selected
 
     def __call__(self, event):
@@ -519,6 +540,9 @@ class Cursor(object):
         else:
             return
 
-        if self.selected:
-            xValue = matplotlib.dates.num2date(event.xdata).replace(tzinfo=None)
-            logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
+        #if self.selected:
+        xValue = matplotlib.dates.num2date(x).replace(tzinfo=None)
+
+        self.toolbar.msg.SetLabelText("X= %s,  Y= %.4f (%s)" % (xValue.strftime("%b %d, %Y %H:%M"), y, self.name))
+        self.toolbar.msg.SetForegroundColour((66, 66, 66))
+        #logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
