@@ -246,7 +246,6 @@ class frmODMToolsMain(wx.Frame):
 
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
-
                                                                           connection=memDB.conn)
             self._ribbon.toggleEditButtons(True)
             self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
