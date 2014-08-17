@@ -3,18 +3,18 @@ import logging
 from sqlalchemy import distinct
 import sqlalchemy.exc
 
-from odmdata import SessionFactory
-from odmdata import Site
-from odmdata import Variable
-from odmdata import Unit
-from odmdata import Series
-from odmdata import DataValue
-from odmdata import Qualifier
-from odmdata import OffsetType
-from odmdata import Sample
-from odmdata import Method
-from odmdata import QualityControlLevel
-from odmdata import ODMVersion
+from odmtools.odmdata import SessionFactory
+from odmtools.odmdata import Site
+from odmtools.odmdata import Variable
+from odmtools.odmdata import Unit
+from odmtools.odmdata import Series
+from odmtools.odmdata import DataValue
+from odmtools.odmdata import Qualifier
+from odmtools.odmdata import OffsetType
+from odmtools.odmdata import Sample
+from odmtools.odmdata import Method
+from odmtools.odmdata import QualityControlLevel
+from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
 
 tool = LoggerTool()

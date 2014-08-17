@@ -1,20 +1,20 @@
 # CV imports
-from odmdata import SessionFactory
-from odmdata import VerticalDatumCV
-from odmdata import SiteTypeCV
-from odmdata import VariableNameCV
-from odmdata import SpeciationCV
-from odmdata import SampleMediumCV
-from odmdata import ValueTypeCV
-from odmdata import DataTypeCV
-from odmdata import GeneralCategoryCV
-from odmdata import CensorCodeCV
-from odmdata import TopicCategoryCV
-from odmdata import SampleTypeCV
-from odmdata import OffsetType
-from odmdata import Sample
-from odmdata import Qualifier
-from odmdata import Unit
+from odmtools.odmdata import SessionFactory
+from odmtools.odmdata import VerticalDatumCV
+from odmtools.odmdata import SiteTypeCV
+from odmtools.odmdata import VariableNameCV
+from odmtools.odmdata import SpeciationCV
+from odmtools.odmdata import SampleMediumCV
+from odmtools.odmdata import ValueTypeCV
+from odmtools.odmdata import DataTypeCV
+from odmtools.odmdata import GeneralCategoryCV
+from odmtools.odmdata import CensorCodeCV
+from odmtools.odmdata import TopicCategoryCV
+from odmtools.odmdata import SampleTypeCV
+from odmtools.odmdata import OffsetType
+from odmtools.odmdata import Sample
+from odmtools.odmdata import Qualifier
+from odmtools.odmdata import Unit
 
 
 class CVService():

@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/local/bin/python
 
 import os
 import sys
@@ -8,7 +8,7 @@ directory = os.path.dirname(os.path.dirname(this_file))
 sys.path.insert(0, directory)
 
 import wx
-from gui import frmODMToolsMain
+from odmtools.gui import frmODMToolsMain
 
 def create(parent):
     return frmODMToolsMain.create(parent)
@@ -18,17 +18,8 @@ def runODM():
     frame = create(None)
     frame.Show()
 
-    #import wx.lib.inspection
-    #wx.lib.inspection.InspectionTool().Show()
 
     app.MainLoop()
 
 if __name__ == '__main__':
-    app = wx.App(False)
-    frame = create(None)
-    frame.Show()
-
-    #import wx.lib.inspection
-    #wx.lib.inspection.InspectionTool().Show()
-
-    app.MainLoop()
+    runODM()

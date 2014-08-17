@@ -93,7 +93,8 @@ class ServiceManager():
         if not self.version:
             try:
                 self.version = service.get_db_version()
-            except:
+            except Exception as e:
+                print e.message
                 return None
         return self.version
 
