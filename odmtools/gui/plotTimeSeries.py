@@ -451,7 +451,7 @@ class plotTimeSeries(wx.Panel):
 
             a = newAxis.set_ylabel(axis, picker=True)
             a.set_picker(True)
-            logger.debug("axis label: %s" % (axis))
+            #logger.debug("axis label: %s" % (axis))
             self.axislist[axis] = newAxis
 
     def _onMotion(self, event):
