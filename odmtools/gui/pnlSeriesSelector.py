@@ -518,6 +518,7 @@ class pnlSeriesSelector(wx.Panel):
             self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:1]))
         self.tblSeries.RepopulateList()
 
+
     def onReadyToPlot(self, event):
         """Plots a series selected from the series selector
 
@@ -548,7 +549,7 @@ class pnlSeriesSelector(wx.Panel):
         """
 
         object = event.GetEventObject()
-        editingObject = object.modelObjects[object.FocusedItem]
+        editingObject = object.innerList[object.FocusedItem]
 
         self.tblSeries.currentlySelectedObject = editingObject
 
