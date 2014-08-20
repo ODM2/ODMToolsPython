@@ -8,22 +8,22 @@ Usage:
 """
 
 from setuptools import setup
-
+#'arch': 'i386',
+LIBS = ['/usr/X11/libs/libfreetype.6.dylib, /usr/X11/libs/libstdc++.6.dylib, /usr/X11/libs/libpng15.15.dylib']
 APP = ['/Users/stephanie/ODMToolsPython/ODMToolsPython.py']
-DATA_FILES = ['']
+#DATA_FILES = ['']
 OPTIONS = {'iconfile': '/Users/stephanie/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
-           'arch': 'i386',
-	   'includes': ['pymysql', 'appdirs', 'matplotlib','sqlalchemy']
+           'includes': ['pymysql', 'appdirs', 'matplotlib','sqlalchemy'],
+           'frameworks': LIBS
 	   
 }
-#'packages': ['/Users/stephanie/ODMToolsPython/odmtools']
-#'includes': ['/Users/stephanie/ODMToolsPython/odmtools']
 
 setup(
     app=APP,
     #data_files=DATA_FILES,
     options={'py2app': OPTIONS},
-    #setup_requires=['py2app'],
+    setup_requires=['py2app'],
 )
+
 # to add an icon py2applet --make-setup foo.py --iconfile images/icon.icns
 # --arch i386 --includes wx, sqlalchemy, pymysql, matplotlib, ObjectListView , appdirs 

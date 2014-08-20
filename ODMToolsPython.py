@@ -3,7 +3,7 @@
 # ## Loading up information ####
 import logging
 
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 
 tool = LoggerTool()
