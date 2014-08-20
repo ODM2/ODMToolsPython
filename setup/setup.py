@@ -9,11 +9,11 @@ Usage:
 
 from setuptools import setup
 #'arch': 'i386',
-LIBS = ['/usr/X11/libs/libfreetype.6.dylib, /usr/X11/libs/libstdc++.6.dylib, /usr/X11/libs/libpng15.15.dylib']
+LIBS = ['/usr/X11/lib/libfreetype.6.dylib', '/usr/X11/lib/libstdc++.6.dylib', '/usr/X11/lib/libpng15.15.dylib']
 APP = ['/Users/stephanie/ODMToolsPython/ODMToolsPython.py']
 #DATA_FILES = ['']
 OPTIONS = {'iconfile': '/Users/stephanie/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
-           'includes': ['pymysql', 'appdirs', 'matplotlib','sqlalchemy'],
+           'includes': ['pymysql', 'appdirs', 'matplotlib','sqlalchemy', 'dateutil'],
            'frameworks': LIBS
 	   
 }
