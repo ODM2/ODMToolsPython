@@ -129,7 +129,7 @@ class SeriesPlotInfo(object):
 
         if self.editID not in self._seriesInfos:
             self.update(self.editID, True)
-            self.getSeriesInfo()
+           # self.getSeriesInfo(self.editID)
         else:
             self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
 
@@ -166,12 +166,15 @@ class SeriesPlotInfo(object):
     def update(self, key, isselected):
         if not isselected:
             try:
+                self.colorList.append(self._seriesInfos[key].color)
                 del self._seriesInfos[key]
             except KeyError:
                 self.resetDates()
         else:
             ## add dictionary entry with no data
-            self._seriesInfos[key] = None
+            self._seriesInfos[key] = self.getSeriesInfo(key)
+
+
 
 
     # def Update(self):
@@ -192,91 +195,108 @@ class SeriesPlotInfo(object):
         else:
             return None
 
-    def getSeriesInfo(self):
-        lst = []  #of length len(seriesInfos)
+    def getAllSeries(self):
+        return self._seriesInfos.values()
 
-        for key in self.getSeriesIDs():
+    def getSeriesById(self, seriesID):
+        try:
+            series = self.memDB.series_service.get_series_by_id(seriesID)
+            self.memDB.series_service.reset_session()
+            return series
+        except:
+            return None
 
-            #if the current series is not already in the list
-            seriesInfo = self._seriesInfos[key]
-            if seriesInfo is None:
-                # if key in self._seriesInfos.keys():
-                # if not self._seriesInfos[key] == None:
-                seriesInfo = OneSeriesPlotInfo(self)
-                #add dictionary entry
-                self._seriesInfos[key] = seriesInfo
+    def getSelectedSeries(self, seriesID):
+        seriesInfo = OneSeriesPlotInfo(self)
+        series = self.getSeriesById(seriesID)
+        return self.createSeriesInfo(seriesID, seriesInfo, series)
 
-                seriesID = key
-                series = self.memDB.series_service.get_series_by_id(seriesID)
-                #print "series date: ", type(series.begin_date_time)
+    def createSeriesInfo(self, seriesID, seriesInfo, series):
+        startDate = series.begin_date_time
+        endDate = series.end_date_time
 
-                startDate = series.begin_date_time
-                endDate = series.end_date_time
+        if endDate > self.endDate:
+            self.endDate = endDate
+        if startDate < self.startDate:
+            self.startDate = startDate
 
-                if endDate > self.endDate:
-                    self.endDate = endDate
-                if startDate < self.startDate:
-                    self.startDate = startDate
+        if not self.isSubsetted:
+            self.currentStart = self.startDate
+            self.currentEnd = self.endDate
 
-                if not self.isSubsetted:
-                    self.currentStart = self.startDate
-                    self.currentEnd = self.endDate
+        variableName = series.variable_name
+        unitsName = series.variable_units_name
+        siteName = series.site_name
+        dataType = series.data_type
+        noDataValue = series.variable.no_data_value
+        if self.editID == seriesID:
+            data = self.memDB.getEditDataValuesforGraph()
+        else:
+            # using current variable keeps the series subsetted
+            data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
+        seriesInfo.seriesID = seriesID
+        seriesInfo.series = series
 
+        seriesInfo.startDate = startDate
+        seriesInfo.endDate = endDate
+        seriesInfo.dataType = dataType
+        seriesInfo.siteName = siteName
+        seriesInfo.variableName = variableName
+        seriesInfo.variableUnits = unitsName
+        seriesInfo.plotTitle = "Site: " + siteName + "\nVarName: " + variableName + "\nQCL: " + series.quality_control_level_code
+        seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
+        seriesInfo.noDataValue = noDataValue
+        seriesInfo.dataTable = data
+        seriesInfo.timeRadius = self.setTimeRadius(series)
+        yvals = [y[0] for y in data]
+        seriesInfo.yrange = max(yvals) - min(yvals)
+        return seriesInfo
 
-                variableName = series.variable_name
-                unitsName = series.variable_units_name
-                siteName = series.site_name
-                dataType = series.data_type
-                noDataValue = series.variable.no_data_value
-                if self.editID == seriesID:
-                    data = self.memDB.getEditDataValuesforGraph()
-                else:
-                    #using current variable keeps the series subsetted
-                    data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
-                seriesInfo.seriesID = seriesID
-                seriesInfo.series = series
+    def getSeriesInfo(self, seriesID):
+        assert seriesID is not None
+        #lst = []  #of length len(seriesInfos)
 
-                seriesInfo.startDate = startDate
-                seriesInfo.endDate = endDate
-                seriesInfo.dataType = dataType
-                seriesInfo.siteName = siteName
-                seriesInfo.variableName = variableName
-                seriesInfo.variableUnits = unitsName
-                seriesInfo.plotTitle = "Site: " + siteName + "\nVarName: " + variableName + "\nQCL: " + series.quality_control_level_code
-                seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
-                seriesInfo.noDataValue = noDataValue
-                seriesInfo.dataTable = data
-                seriesInfo.timeRadius = self.setTimeRadius(series)
-                yvals = [y[0] for y in data]
-                seriesInfo.yrange = max(yvals)-min(yvals)
-                #Tests to see if any values were returned for the given daterange
-                #if data is not None:
-                self.build(seriesInfo)
+        #for key in self.getSeriesIDs():
 
+        #if the current series is not already in the list
+        #seriesInfo = self._seriesInfos[key
 
-            else:
-                seriesInfo = self._seriesInfos[key]
-                #print "seriesInfo.startDate ", seriesInfo.startDate
-                #print "seriesInfo.endDate ", seriesInfo.endDate
+        #if seriesInfo is None:
+        # if key in self._seriesInfos.keys():
+        # if not self._seriesInfos[key] == None:
+        oneSeriesInfo = OneSeriesPlotInfo(self)
+        series = self.getSeriesById(seriesID)
+        #add dictionary entry
+        #self._seriesInfos[key] = seriesInfo
+        #print "series date: ", type(series.begin_date_time)
 
-            i = len(lst)
-            if self.editID == seriesInfo.seriesID:
-                #set color to black for editing
-                seriesInfo.edit = True
-                seriesInfo.plotcolor = self.colorList[i % len(self.colorList)]
-                seriesInfo.color = "Black"
-            else:
-                seriesInfo.color = self.colorList[i % len(self.colorList)]
-            lst.append(seriesInfo)
-        return lst
+        seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
+        #Tests to see if any values were returned for the given daterange
+        #if data is not None:
+        self.build(seriesInfo)
+
+        # else:
+        #     seriesInfo = self._seriesInfos[key]
+        #     #print "seriesInfo.startDate ", seriesInfo.startDate
+        #     #print "seriesInfo.endDate ", seriesInfo.endDate
+
+        i = len(self._seriesInfos)
+        if self.editID == seriesInfo.seriesID:
+            #set color to black for editing
+            seriesInfo.edit = True
+            seriesInfo.plotcolor = self.colorList.pop(0)
+            seriesInfo.color = "Black"
+        else:
+            seriesInfo.color = self.colorList.pop(0)
+        #lst.append(seriesInfo)
+        #return lst
+        return seriesInfo
 
     def build(self, seriesInfo):
         data = seriesInfo.dataTable
         seriesInfo.Probability = Probability(data, seriesInfo.noDataValue)
         seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
         seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
-
-
 
     def setTimeRadius(self, series):
         ts = series.time_support

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from wx.lib.pubsub import pub as Publisher
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-from matplotlib.ticker import *
+
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 
@@ -26,7 +26,7 @@ class PlotBox(wx.Panel):
 
 
     def _init_ctrls(self, prnt):
-        #matplotlib.figure.Figure.__init__(self)
+        # matplotlib.figure.Figure.__init__(self)
         wx.Panel.__init__(self, prnt, -1)
 
         Publisher.subscribe(self.monthly, ("box.Monthly"))
@@ -50,13 +50,16 @@ class PlotBox(wx.Panel):
         #self.canvas.SetCursor(wx.StockCursor(wx.CURSOR_CROSS))
         #self.canvas.SetScrollbar(wx.HORIZONTAL, 0,5, 1000)
         self.setColor("WHITE")
-        self.canvas.SetFont(wx.Font(15, wx.SWISS, wx.NORMAL, wx.NORMAL,
-                                    False, u'Tahoma'))
+        self.canvas.SetFont(wx.Font(15, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.canvas.draw()
         self._init_sizers()
 
     def clear(self):
         self.figure.clear()
+
+    def close(self):
+        plt.clf()
+        plt.close('all')
 
     def gridSize(self, cells):
         rows = 1
@@ -85,13 +88,13 @@ class PlotBox(wx.Panel):
         i = 1
         self.plots = []
 
-        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
-            if len(oneSeries.dataTable) >0:
-                self._createPlot(oneSeries,rows, cols, i)
+        for oneSeries in self.seriesPlotInfo.getAllSeries():
+            if len(oneSeries.dataTable) > 0:
+                self._createPlot(oneSeries, rows, cols, i)
                 i += 1
 
         plt.setp([x.get_xticklabels() for x in self.plots[0:]], rotation=35)
-        #print "xlabels: ", [dir(x.get_xticklabels()) for x in self.plots[0:]]
+        # print "xlabels: ", [dir(x.get_xticklabels()) for x in self.plots[0:]]
 
         left = 0.125  # the left side of the subplots of the figure
         right = 0.9  # the right side of the subplots of the figure
@@ -99,22 +102,19 @@ class PlotBox(wx.Panel):
         top = 1.2  # the top of the subplots of the figure
         wspace = .8  # the amount of width reserved for blank space between subplots
         hspace = .8  # the amount of height reserved for white space between subplots
-        self.figure.subplots_adjust(
-            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
-        )
-        if len(self.plots)>0:
+        self.figure.subplots_adjust(left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace)
+        if len(self.plots) > 0:
             self.figure.tight_layout()
 
-
-
         self.canvas.draw()
+
     def _createPlot(self, oneSeries, rows, cols, index):
 
         count = self.seriesPlotInfo.count()
 
         self.plots.append(self.figure.add_subplot(repr(rows) + repr(cols) + repr(index)))
 
-        #print "self.plots: ", [dir(x) for x in self.plots]
+        # print "self.plots: ", [dir(x) for x in self.plots]
 
         wrap, text = self.textSize(count)
         self.plots[index - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
@@ -131,8 +131,8 @@ class PlotBox(wx.Panel):
         cl = oneSeries.BoxWhisker.currinterval.confint
         mean = oneSeries.BoxWhisker.currinterval.means
         ci = oneSeries.BoxWhisker.currinterval.conflimit
-        bp = self.plots[index - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True,
-                                       bootstrap=5000, conf_intervals=cl)
+        bp = self.plots[index - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True, bootstrap=5000,
+                                           conf_intervals=cl)
 
 
         # Plot Mean and its confidence interval
@@ -154,8 +154,6 @@ class PlotBox(wx.Panel):
         # self.plot.set_ybound(min(data),max(data))
         self.plots[index - 1].set_autoscale_on(True)
         self.plots[index - 1].set_xticklabels(oneSeries.BoxWhisker.currinterval.xlabels)
-
-
 
 
     def setColor(self, color):

@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy.exc import SQLAlchemyError, DBAPIError
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 import utilities as util
 from series_service import SeriesService
@@ -8,6 +8,8 @@ from cv_service import CVService
 from edit_service import EditService
 from record_service import RecordService
 from export_service import ExportService
+from appdirs import *
+import os
 
 
 tool = LoggerTool()
@@ -71,11 +73,14 @@ class ServiceManager():
     def test_connection(self, conn_dict):
         try:
             self.version = self.get_db_version(conn_dict)
+            if self.version is None:
+                return False
         except DBAPIError:
             pass
             #print e.message
         except SQLAlchemyError:
             return False
+
         return True
 
     def delete_connection(self, conn_dict):
@@ -86,7 +91,11 @@ class ServiceManager():
         conn_string = self.__build_connection_string(conn_dict)
         service = SeriesService(conn_string)
         if not self.version:
-            self.version = service.get_db_version()
+            try:
+                self.version = service.get_db_version()
+            except Exception as e:
+                print e.message
+                return None
         return self.version
 
     def get_series_service(self):
@@ -113,13 +122,22 @@ class ServiceManager():
     ## ###################
 
     def __get_file(self, mode):
-        fn = util.resource_path('connection.config')
+        #fn = util.resource_path('connection.config')
+        fn = os.path.join(user_config_dir("ODMTools", "UCHIC"), 'connection.config')
+
         config_file = None
         try:
-            config_file = open(fn, mode)
+
+            if os.path.exists(fn):
+                config_file = open(fn, mode)
+            else:
+                os.makedirs(user_config_dir("ODMTools", "UCHIC"))
+                open(fn, 'w').close()
+                config_file = open(fn, mode)
         except:
             open(fn, 'w').close()
             config_file = open(fn, mode)
+            
 
         return config_file
 

@@ -1,13 +1,13 @@
 # This class is intended for users to simplify console interaction
 
-import datetime
+from datetime import datetime
 import logging
 
 from wx.lib.pubsub import pub as Publisher
 
 from odmservices import ServiceManager
 from odmdata import Qualifier
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -17,10 +17,11 @@ class ConsoleTools(object):
     def __init__(self, ribbon, record_service=None):
         self._edit_error = "no series selected for editing"
         self._add_point_req_error = "A required field was left empty"
-        self._add_point_req_error = "A date is not formatted correctly"
+        self._add_point_format_error = "A date is not formatted correctly"
 
         self._ribbon = ribbon
         self._record_service = record_service
+
 
     def get_series_service(self):
         return self._record_service._edit_service._series_service
@@ -39,9 +40,9 @@ class ConsoleTools(object):
         else:
             return "Cannot record: %s" % (self._edit_error)
 
-    def toggle_filter_previous(self):
+    def toggle_filter_previous(self, value= None):
         if self._record_service:
-            self._record_service.toggle_filter_previous()
+            self._record_service.toggle_filter_previous(None)
 
     ################
     # Filter methods
@@ -65,9 +66,9 @@ class ConsoleTools(object):
             self._record_service.data_gaps(value, time_period)
             self.refresh_plot()
 
-    def value_change_threshold(self, value):
+    def value_change_threshold(self, value, operator):
         if self._record_service:
-            self._record_service.value_change_threshold(value)
+            self._record_service.value_change_threshold(value, operator)
             self.refresh_plot()
 
     def reset_filter(self):
@@ -115,8 +116,7 @@ class ConsoleTools(object):
                         point[4] == None or point[7] == None or point[7] == ""):
                 return "Error adding point: %s" % (self._add_point_req_error)
 
-            if (type(point[2]) is not datetime or
-                        type(point[4]) is not datetime):
+            if not isinstance(point[2], datetime) or not isinstance(point[4], datetime):
                 return "Error adding point: %s" % (self._add_point_format_error)
 
         if self._record_service:

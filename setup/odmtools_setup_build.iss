@@ -4,7 +4,8 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODMTools"
-#define MyAppVersion "v1.0-beta"
+#defing OrgName "UCHIC"
+#define MyAppVersion "v1.0.2-beta"
 #define MyAppURL "https://github.com/UCHIC/ODMToolsPython"
 
 [Setup]
@@ -33,8 +34,8 @@ Source: "D:\Dev\ODMTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\Python27_Release\pythonw.exe"; WorkingDir: "{app}"; Parameters: """{app}\ODMToolsPython\src\Gui\frmODMToolsMain.py""";
+Name: "{group}\{#MyAppName}"; Filename: "{app}\Python27_Release\pythonw.exe"; WorkingDir: "{app}"; Parameters: """{app}\ODMToolsPython\odmtools\ODMToolsPython.py""";
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
 [Dirs]
-Name: "{userappdata}\{#MyAppName}"
+Name: "{localappdata}\{#OrgName}\{#MyAppName}"

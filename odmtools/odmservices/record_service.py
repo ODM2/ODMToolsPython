@@ -2,7 +2,7 @@ import logging
 
 from wx.lib.pubsub import pub as Publisher
 
-from src.common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 
 tool = LoggerTool()
@@ -42,31 +42,37 @@ class RecordService():
             Publisher.sendMessage("scroll")
 
 
-    def value_change_threshold(self, value):
-        self._edit_service.value_change_threshold(value)
+    def value_change_threshold(self, value, operator):
+        self._edit_service.value_change_threshold(value, operator)
         if self._record:
-            self._script("edit_service.value_change_threshold(%s)\n" % (value), 'black')
+            self._script("edit_service.value_change_threshold(%s,'%s')\n" % (value, operator), 'black')
             Publisher.sendMessage("scroll")
 
 
-    def toggle_filter_previous(self):
-        self._edit_service.toggle_filter_previous()
+    def toggle_filter_previous(self, value = None):
+        if self._edit_service._filter_from_selection is not value:
+            self._edit_service.toggle_filter_previous(value)
+            if self._record:
+                self._script("edit_service.toggle_filter_previous(%s)\n"%(value), 'black')
+                Publisher.sendMessage("scroll")
+
 
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         if self._record:
-            #print [x[2] for x in self._edit_service.get_filtered_points()]
-            self._script("edit_service.select_points({list})\n".format(
-                list=[x[2] for x in self._edit_service.get_filtered_points()]))
+            self._script("points = [\n\t{list}][0]\n".format(
+                list=[x[2] for x in self._edit_service.get_filtered_points()])
+            )
+            self._script("edit_service.select_points(points)\n")
             Publisher.sendMessage("scroll")
 
     def select_points(self, id_list=[], datetime_list=[]):
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
-            #print [x[2] for x in self._edit_service.get_filtered_points()]
-            #self._script("edit_service.select_points({list})\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
-            self._script("edit_service.select_points({id}, {list})\n".format(id=id_list, list=[x[2] for x in
-                                                                                               self._edit_service.get_filtered_points()]))
+            self._script("points = [\n\t{list}][0]\n".format(
+                list=[x[2] for x in self._edit_service.get_filtered_points()])
+            )
+            self._script("edit_service.select_points({id}, points)\n".format(id=id_list))
             Publisher.sendMessage("scroll")
             #print self._edit_service.get_filtered_points()
 
@@ -80,8 +86,6 @@ class RecordService():
         if self._record:
             self._script("edit_service.add_points({list})\n".format(list=points))
             Publisher.sendMessage("scroll")
-
-
 
     def delete_points(self):
         self._edit_service.delete_points()
@@ -98,6 +102,7 @@ class RecordService():
 
 
     def interpolate(self):
+        print "Interpolate"
         self._edit_service.interpolate()
         if self._record:
             self._script("edit_service.interpolate()\n", 'black')

@@ -1,8 +1,6 @@
 #!/usr/bin/env
 #Boa:Frame:ODMTools
 import sys
-import os
-from src.common.icons.icons import gtk_execute
 
 '''
 this_file = os.path.realpath(__file__)
@@ -26,17 +24,17 @@ from wx.lib.pubsub import pub as Publisher
 import wx.py.crust
 import frmDBConfiguration
 
-from src.odmservices import ServiceManager
-from src.odmservices import utilities as util
+from odmtools.odmservices import ServiceManager
+from odmtools.odmservices import utilities as util
 from pnlScript import pnlScript
 import pnlSeriesSelector
 import pnlPlot
 import mnuRibbon
 import pnlDataTable
-#import odmtools.common.icons as icons
+from odmtools.common import gtk_execute
 
-from src.odmconsole import ConsoleTools
-from src.common.logger import LoggerTool
+from odmtools.odmconsole import ConsoleTools
+from odmtools.common.logger import LoggerTool
 
 import logging
 
@@ -53,7 +51,6 @@ def create(parent):
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
@@ -75,6 +72,8 @@ class frmODMToolsMain(wx.Frame):
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
     def _init_database(self):
+        logger.debug("Loading Database...")
+
         self.service_manager = ServiceManager()
         self.record_service = None
         conn_dict = self.service_manager.get_current_connection()
@@ -90,12 +89,14 @@ class frmODMToolsMain(wx.Frame):
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
 
-    ###################### Form ################
+    ###################### Frame ################
     def _init_ctrls(self, prnt):
         # generated method, don't edit
+        logger.debug("Loading frame...")
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=prnt,
                           size=wx.Size(1000, 900),
                           style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+
 
         self.SetIcon(gtk_execute.getIcon())
 
@@ -103,25 +104,32 @@ class frmODMToolsMain(wx.Frame):
                              False, u'Tahoma'))
 
         ############### Ribbon ###################
+        logger.debug("Loading Ribbon Menu...")
         self._ribbon = mnuRibbon.mnuRibbon(parent=self, id=wx.ID_ANY, name='ribbon')
 
 
         ################ Docking Tools##############
+
         self.pnlDocking = wx.Panel(id=wxID_ODMTOOLSPANEL1, name='pnlDocking',
                                    parent=self, size=wx.Size(605, 458),
                                    style=wx.TAB_TRAVERSAL)
 
         ################ Series Selection Panel ##################
+        logger.debug("Loading Series Selector ...")
         self.pnlSelector = pnlSeriesSelector.pnlSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
                                                                parent=self.pnlDocking, size=wx.Size(770, 388),
                                                                style=wx.TAB_TRAVERSAL, dbservice=self.sc)
 
         ####################grid Table View##################
+        logger.debug("Loading DataTable ...")
+
         self.dataTable = pnlDataTable.pnlDataTable(id=wxID_ODMTOOLSGRID1, name='dataTable',
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
                                                    style=0)
 
         ############# Graph ###############
+        logger.debug("Loading Plot ...")
+
         self.pnlPlot = pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
                                        parent=self.pnlDocking, size=wx.Size(605, 458),
                                        style=wx.TAB_TRAVERSAL)
@@ -136,21 +144,21 @@ class frmODMToolsMain(wx.Frame):
         #self.txtPythonConsole = wx.py.crust.Crust(self.pnlConsole, intro=myIntroText, showInterpIntro=False,
         #                                               size=wx.Size(200, 200), style=wx.NO_BORDER)  #,  style=1)
 
+        logger.debug("Loading Python Console ...")
         self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE, showInterpIntro=False,
                                                        size=wx.Size(200, 200), style=wx.NO_BORDER)
         wx.CallAfter(self._postStartup)
-
         # Console tools object for usability
         self.console_tools = ConsoleTools(self._ribbon)
         self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
+        logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,
                                          size=wx.Size(200, 200))
 
-        #logger.debug("Script: %s" % dir(self.txtPythonScript))
-
         ############ Docking ###################
+        logger.debug("Loading AuiManager ...")
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self.pnlDocking)
 
@@ -169,11 +177,11 @@ class frmODMToolsMain(wx.Frame):
                           Name("Script").Movable().Floatable().Right()
                           .MinimizeButton(True).MaximizeButton(True).FloatingSize(size=(600, 800)).CloseButton(
             True).Float().FloatingPosition(pos=(self.Position)).Show(
-            show=False).Hide())  #, target=self._mgr.GetPane("Selector"))
+            show=False).Hide())
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(600, 800)).MinimizeButton(
             True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float().Show(
-            show=False).Hide())  #, target=self._mgr.GetPane("Selector"))
+            show=False).Hide())
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.
         #self.loadDockingSettings()
@@ -193,6 +201,8 @@ class frmODMToolsMain(wx.Frame):
 
         self._init_sizers()
         self._ribbon.Realize()
+        logger.debug("System starting ...")
+
 
     def onDocking(self, value):
         paneDetails = self._mgr.GetPane(self.pnlPlot)
@@ -207,6 +217,8 @@ class frmODMToolsMain(wx.Frame):
             paneDetails = self._mgr.GetPane(self.txtPythonScript)
             if paneDetails.IsNotebookPage():
                 paneDetails.Float()
+            #if paneDetails.IsFloating():
+            #    paneDetails.Dock()
             paneDetails.FloatingPosition(pos=self.Position)
 
         elif value == "Console":
@@ -240,13 +252,10 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.Update()
 
     def addEdit(self, event):
-        #isSelected, seriesID, memDB = self.pnlSelector.selectForEdit()
         isSelected, seriesID, memDB = self.pnlSelector.onReadyToEdit()
-        #print seriesID
 
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
-
                                                                           connection=memDB.conn)
             self._ribbon.toggleEditButtons(True)
             self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
@@ -272,7 +281,6 @@ class frmODMToolsMain(wx.Frame):
         return self.record_service
 
     def onChangeDBConn(self, event):
-        logger.debug("WORKING!!!")
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
 
@@ -306,6 +314,7 @@ class frmODMToolsMain(wx.Frame):
     def loadDockingSettings(self):
         #test if there is a perspective to load
         try:
+            # TODO Fix resource_path to appdirs
             f = open(util.resource_path('ODMTools.config'), 'r')
         except:
             # Create the file if it doesn't exist
@@ -357,16 +366,3 @@ class frmODMToolsMain(wx.Frame):
         """
         if self.txtPythonConsole.ToolsShown():
             self.txtPythonConsole.ToggleTools()
-
-
-
-
-if __name__ == '__main__':
-    app = wx.App(False)
-    frame = create(None)
-    frame.Show()
-
-    #import wx.lib.inspection
-    #wx.lib.inspection.InspectionTool().Show()
-
-    app.MainLoop()

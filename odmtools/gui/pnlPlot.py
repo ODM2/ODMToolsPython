@@ -19,7 +19,7 @@ import plotProbability
 from clsPlotOptions import SeriesPlotInfo
 
 import logging
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -67,7 +67,7 @@ class pnlPlot(fnb.FlatNotebook):
                                               style=wx.TAB_TRAVERSAL)
         self.AddPage(self.pltSum, 'Summary')
 
-        self.selectedSerieslist = []
+
         self._seriesPlotInfo = None
         self.editID = None
         self.legendVisible = False
@@ -89,13 +89,6 @@ class pnlPlot(fnb.FlatNotebook):
     def onChangeSelection(self, sellist, datetime_list):
         self.pltTS.changePlotSelection(sellist, datetime_list)
 
-    def onRemovePlot(self, seriesID):
-
-        # self.selectedSerieslist.remove(seriesID)
-        #tempseries= self._seriesPlotInfo.getSeries(seriesID)
-        self._seriesPlotInfo.update(seriesID, False)
-        self.redrawPlots()
-
     def onNumBins(self, numBins):
         self.pltHist.changeNumOfBins(numBins)
 
@@ -108,11 +101,11 @@ class pnlPlot(fnb.FlatNotebook):
         #   def onDateChanged(self, startDate, endDate):
         #       self.pltTS.onDateChanged(startDate, endDate)
 
-    # Reset the date to the full date
     def onDateFull(self):
         self._seriesPlotInfo.updateDateRange()
         self.redrawPlots()
 
+    # Reset the date to the full date
     def onPlotType(self, event, ptype):
         self.pltTS.onPlotType(ptype)
         self.pltProb.onPlotType(ptype)
@@ -128,7 +121,6 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.stopEdit()
         self.redrawPlots()
 
-
     def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
         if not self._seriesPlotInfo:
@@ -140,27 +132,30 @@ class pnlPlot(fnb.FlatNotebook):
         self.redrawPlots()
 
     def addPlot(self, memDB, seriesID):
-
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB)
-
         self._seriesPlotInfo.update(seriesID, True)
-        self.selectedSerieslist.append(seriesID)
 
         self.redrawPlots()
+
+    def onRemovePlot(self, seriesID):
+
+        # self.selectedSerieslist.remove(seriesID)
+        #tempseries= self._seriesPlotInfo.getSeries(seriesID)
+        self._seriesPlotInfo.update(seriesID, False)
+        self.redrawPlots()
+        #self.clear()
 
     def redrawPlots(self):
         self.pltSum.Plot(self._seriesPlotInfo)
         self.pltProb.Plot(self._seriesPlotInfo)
         self.pltBox.Plot(self._seriesPlotInfo)
         self.pltHist.Plot(self._seriesPlotInfo)
-
         self.pltTS.Plot(self._seriesPlotInfo)
 
         self.onShowLegend(event=None, isVisible=self.legendVisible)
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
-        Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart= currStart, currEnd=currEnd)
-
+        Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart=currStart, currEnd=currEnd)
 
     #     self.PlotGraph()
     def selectPlot(self, value):
@@ -175,12 +170,27 @@ class pnlPlot(fnb.FlatNotebook):
 
     def clear(self):
         #self.pltTS.init_plot()
-        self.pltSum.clear()
-        self.pltHist.clear()
-        self.pltProb.clear()
-        self.pltBox.clear()
-        self.pltTS.clear()
+        '''
+        if self.pltSum:
+            self.pltSum.clear()
 
-        # Set title of TimeSeries to default
-        #self.pltTS.timeSeries.set_title("No Data To Plot")
-        self._seriesPlotInfo = None
+        if self.pltHist:
+            #self.pltHist.clear()
+            self.pltHist.close()
+
+        if self.pltProb:
+            #self.pltProb.clear()
+            self.pltProb.close()
+
+        if self.pltBox:
+            #self.pltBox.clear()
+            self.pltBox.close()
+        '''
+        if self.pltTS:
+            #self.pltTS.clear()
+            self.pltTS.close()
+
+            # Set title of TimeSeries to default
+            self.pltTS.setTimeSeriesTitle("No Data To Plot")
+
+        #self._seriesPlotInfo = None

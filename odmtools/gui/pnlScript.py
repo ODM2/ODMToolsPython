@@ -14,34 +14,38 @@ ID_EXECUTE_BUTTON = 300
 ID_EXECUTE_SELECTION_BUTTON = 301
 ID_EXECUTE_LINE_BUTTON = 302
 
-wildcard = "Python source (*.py)|*.py| " #All files (*.*)|*.*"
+#wildcard = "Python Source (*.py, .py)|*" #All files (*.*)|*.*"
+wildcard = "Python source (*.py)|*.py|" \
+            "All files (*.*)|*.*"
 
-class pnlScript(wx.Frame):
+class pnlScript(wx.Panel):
     def __init__(self, parent, id=wx.ID_ANY, name="", pos=(0, 0), size=(200, 200)):
-        super(pnlScript, self).__init__(parent, id, name=name, pos=pos, size=size, style=0)
+        #super(pnlScript, self).__init__(parent, id, name=name, pos=pos, size=size, style=0)
+        wx.Panel.__init__(self, parent, id)
         self.console = parent.txtPythonConsole
         self.control = highlightSTC(self)
+        self.parent = parent
         # self.control = stc.StyledTextCtrl(self, 1, style=wx.TE_MULTILINE)
 
         # Set up menu
-        filemenu = wx.Menu()
+        #filemenu = wx.Menu()
         # use ID_ for future easy reference -- much better than "48", "404", etc.
         # The & character indicates the shortcut key
-        filemenu.Append(ID_NEW, "&New", "New file")
-        filemenu.Append(ID_OPEN, "&Open Existing", "Append to an existing file")
-        filemenu.AppendSeparator()
-        filemenu.Append(ID_SAVE, "&Save", " Save current file")
-        filemenu.Append(ID_SAVE_AS, "Save &As...", " Save to specific file")
+        #filemenu.Append(ID_NEW, "&New", "New file")
+        #filemenu.Append(ID_OPEN, "&Open Existing", "Append to an existing file")
+        #filemenu.AppendSeparator()
+        #filemenu.Append(ID_SAVE, "&Save", " Save current file")
+        #filemenu.Append(ID_SAVE_AS, "Save &As...", " Save to specific file")
 
         # create the menubar
-        menuBar = wx.MenuBar()
-        menuBar.Append(filemenu, "&File")
-        self.SetMenuBar(menuBar)
+        #menuBar = wx.MenuBar()
+        #menuBar.Append(filemenu, "&File")
+        #self.SetMenuBar(menuBar)
 
-        wx.EVT_MENU(self, ID_NEW, self.OnNew)
-        wx.EVT_MENU(self, ID_OPEN, self.OnOpen)
-        wx.EVT_MENU(self, ID_SAVE, self.OnSave)
-        wx.EVT_MENU(self, ID_SAVE_AS, self.OnSaveAs)
+        #wx.EVT_MENU(self, ID_NEW, self.OnNew)
+        #wx.EVT_MENU(self, ID_OPEN, self.OnOpen)
+        #wx.EVT_MENU(self, ID_SAVE, self.OnSave)
+        #wx.EVT_MENU(self, ID_SAVE_AS, self.OnSaveAs)
 
         # Set up execute buttons
         self.sizer2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -70,35 +74,52 @@ class pnlScript(wx.Frame):
         self._styles = [None] * 32
         self._free = 1
 
-    def OnNew(self, e):
-        ## Check if data already exists
-        if len(self.control.GetText()) > 0:
-            val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-                                "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
-            if val == wx.YES:
-                self.OnSaveAs(e)
-
+    def newScript(self):
         self.filename = ''
         self.control.SetText('')
         # self.SetTitle("Editing a new file")
         Publisher.sendMessage("script.title", title="Editing a new file")
+        record_service = self.parent.getRecordService()
+        print"Parent=%s" % self.parent
+        record_service.write_header()
+
+    def getOverwriteDialog(self):
+        return wx.MessageBox("Please check that your script has been saved before it is overwritten. "
+                    "Would you like to save it now? \n\nSelecting 'No' will delete anything you "
+                    "may have in the script", 'Save Script?', wx.CANCEL | wx.YES_NO | wx.ICON_EXCLAMATION | wx.NO_DEFAULT)
+
+    def OnNew(self, e):
+        ## Check if data already exists
+        if len(self.control.GetText()) > 0:
+            val = self.getOverwriteDialog()
+            if val == wx.YES:
+                if self.OnSaveAs(e):
+                    self.newScript()
+            elif val == wx.NO:
+                self.newScript()
+            else:
+                pass
+        else:
+            self.newScript()
+
 
     def OnOpen(self, e):
         ## Check if data already exists
         if len(self.control.GetText()) > 0:
-            val = wx.MessageBox("Please check that your script has been saved before it is overwritten. "
-                                "Would you like to save it now?", 'Save Script?', wx.YES_NO | wx.ICON_EXCLAMATION)
+            val = self.getOverwriteDialog()
             if val == wx.YES:
                 self.OnSaveAs(e)
+            elif val == wx.CANCEL:
+                return
+            elif val == wx.NO:
+                pass
 
         dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.OPEN | wx.CHANGE_DIR | wx.MULTIPLE )
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
-
             # Open the file and set its contents into the edit window
             filehandle = open(os.path.join(self.dirname, self.filename), 'r')
-
             if filehandle:
                 self.control.SetText(filehandle.read())
                 self.control.EmptyUndoBuffer()
@@ -120,12 +141,11 @@ class pnlScript(wx.Frame):
             filehandle.close()
             self.setTitle("Editing: %s" % self.filename)
 
-
     def OnSaveAs(self, e):
         dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", wildcard, wx.SAVE | wx.OVERWRITE_PROMPT)
-        if dlg.ShowModal() == wx.ID_OK:
+        result = dlg.ShowModal()
+        if result == wx.ID_OK:
             saved_text = self.control.GetText()
-
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
             filehandle = open(os.path.join(self.dirname, self.filename), 'w')
@@ -134,13 +154,17 @@ class pnlScript(wx.Frame):
 
             # self.SetTitle("Editing: %s" % self.filename)
             self.setTitle("Editing: %s" % self.filename)
+            dlg.Destroy()
+            return True
 
-        dlg.Destroy()
+        elif result == wx.ID_CANCEL:
+            dlg.Destroy()
+            return False
 
     def OnExecute(self, e):
-        self.OnSave(e)
-        filename = os.path.join(self.dirname, self.filename)
-        self.console.shell.runfile(filename)
+        text = self.control.GetText()
+        for line in text.split("\n"):
+            self.console.shell.run(line)
         self.console.shell.run("\n")
 
     def OnExecuteSelection(self, e):

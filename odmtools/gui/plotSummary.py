@@ -7,6 +7,11 @@ from wx.lib import wordwrap
 [wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY,
 ] = [wx.NewId() for _init_ctrls in range(2)]
 
+import logging
+from odmtools.common.logger import LoggerTool
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class plotSummary(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -47,7 +52,7 @@ class plotSummary(wx.Panel):
 
     def Plot(self, seriesPlotInfo):
         self.clear()
-        for oneSeries in seriesPlotInfo.getSeriesInfo():
+        for oneSeries in seriesPlotInfo.getAllSeries():
             if len(oneSeries.dataTable) >0:
                 self.addCol(oneSeries)
 
@@ -101,11 +106,7 @@ class plotSummary(wx.Panel):
         self.grdSummary.AppendCols(numCols=1, updateLabels=True)
         col = self.grdSummary.GetNumberCols() - 1
         self.setColLabel(col, series.siteName + "- " + series.variableName)
-
-
         #self.grdSummary.AutoSizeColLabelSize(col)
-
-       #
 
         stats = series.Statistics
         count = stats.NumberofObservations

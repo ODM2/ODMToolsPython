@@ -6,7 +6,8 @@ By Jacob Meline
 __author__ = 'Jacob'
 
 import logging
-import os
+
+from appdirs import *
 
 
 class LoggerTool():
@@ -16,14 +17,19 @@ class LoggerTool():
 
     def setupLogger(self, loggerName, logFile, m='w', level=logging.INFO):
         l = logging.getLogger(loggerName)
-        #formatter = logging.Formatter('%(asctime)s : %(message)s')
+        # formatter = logging.Formatter('%(asctime)s : %(message)s')
         formatter = logging.Formatter(self.formatString)
 
-        logPath = os.path.abspath(os.path.dirname("../../"))
-        logPath += '/log/'
+        #logPath = os.path.abspath(os.path.dirname("../../"))
+        #logPath = util.resource_path("ODMTools")
+        logPath = user_log_dir("ODMTools", "UCHIC")
+
+        #logPath = os.path.join(user_log_dir("ODMTools", "UCHIC"), "log")
+        #print  logPath
+
         if not os.path.exists(logPath):
-            os.mkdir(logPath, 0755)
-        fileHandler = logging.FileHandler(logPath + logFile, mode=m)
+            os.makedirs(logPath, 0755)
+        fileHandler = logging.FileHandler(os.path.join(logPath, logFile), mode=m)
         fileHandler.setFormatter(formatter)
         streamHandler = logging.StreamHandler()
         streamHandler.setFormatter(formatter)

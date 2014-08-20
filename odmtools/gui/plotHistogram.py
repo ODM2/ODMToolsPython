@@ -57,6 +57,8 @@ class plotHist(wx.Panel):
         self.figure.clear()
         self.hist = []
 
+
+
     def gridSize(self, cells):
         rows = 1
         cols = 1
@@ -83,7 +85,7 @@ class plotHist(wx.Panel):
         rows, cols = self.gridSize(count)
         self.plots = []
         i = 1
-        for oneSeries in self.seriesPlotInfo.getSeriesInfo():
+        for oneSeries in self.seriesPlotInfo.getAllSeries():
             self.plots.append(self.figure.add_subplot(repr(rows) + repr(cols) + repr(i)))
 
             wrap, text = self.textSize(count)

@@ -13,7 +13,7 @@ import wx.stc as stc
 from wx.lib.pubsub import pub as Publisher
 
 
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 
 
 if wx.Platform == '__WXMSW__':

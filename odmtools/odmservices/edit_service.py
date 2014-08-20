@@ -1,12 +1,12 @@
 import sqlite3
 
-from odmdata import SessionFactory
-from odmdata import DataValue
+from odmtools.odmdata import SessionFactory
+from odmtools.odmdata import DataValue
 from series_service import SeriesService
-from odmdata import series as series_module
+from odmtools.odmdata import series as series_module
 
 import logging
-from common.logger import LoggerTool
+from odmtools.common.logger import LoggerTool
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
@@ -117,6 +117,7 @@ class EditService():
 
     # Data Gaps
     def data_gaps(self, value, time_period):
+        self._test_filter_previous()
         length = len(self._series_points)
 
         value_sec = 0
@@ -151,7 +152,8 @@ class EditService():
         for key in tmp.keys():
             self._filter_list[key] = True
 
-    def value_change_threshold(self, value):
+    def value_change_threshold(self, value, operator):
+        self._test_filter_previous()
         length = len(self._series_points)
         tmp = {}
         for i in xrange(length):
@@ -162,9 +164,14 @@ class EditService():
             if i + 1 < length:  # make sure we stay in bounds
                 point1 = self._series_points[i]
                 point2 = self._series_points[i + 1]
-                if abs(point1[1] - point2[1]) >= value:
-                    tmp[i] = True
-                    tmp[i + 1] = True
+                if operator == '>':
+                    if abs(point1[1] - point2[1]) >= value:
+                        tmp[i] = True
+                        tmp[i + 1] = True
+                if operator == '<':
+                     if abs(point1[1] - point2[1]) <= value:
+                        tmp[i] = True
+                        tmp[i + 1] = True
 
         self.reset_filter()
         for key in tmp.keys():
@@ -194,8 +201,12 @@ class EditService():
     def reset_filter(self):
         self._filter_list = [False] * len(self._series_points)
 
-    def toggle_filter_previous(self):
-        self._filter_from_selection = not self._filter_from_selection
+    def toggle_filter_previous(self, value = None):
+        if value:
+            self._filter_from_selection = value
+        else:
+            self._filter_from_selection = not self._filter_from_selection
+
 
 
     ###################
@@ -278,6 +289,7 @@ class EditService():
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         self._cursor.executemany(query, points)
         self._populate_series()
+        self.reset_filter()
 
     def delete_points(self):
         query = "DELETE FROM DataValues WHERE ValueID IN ("
