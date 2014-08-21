@@ -10,6 +10,12 @@ sys.path.insert(0, directory)
 
 import wx
 import wx.grid
+import logging
+import mnuRibbon
+import pnlSeriesSelector
+import pnlPlot
+import pnlDataTable
+from odmtools.common import gtk_execute
 #import wx.aui
 
 try:
@@ -27,16 +33,10 @@ import frmDBConfiguration
 from odmtools.odmservices import ServiceManager
 from odmtools.odmservices import utilities as util
 from pnlScript import pnlScript
-import pnlSeriesSelector
-import pnlPlot
-import mnuRibbon
-import pnlDataTable
-from odmtools.common import gtk_execute
 
 from odmtools.odmconsole import ConsoleTools
 from odmtools.common.logger import LoggerTool
 
-import logging
 
 
 def create(parent):
@@ -150,8 +150,14 @@ class frmODMToolsMain(wx.Frame):
         wx.CallAfter(self._postStartup)
         # Console tools object for usability
         self.console_tools = ConsoleTools(self._ribbon)
-        self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
+        #self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
+
+        # FIXME closing the txtPythonConsole from menu crashes the python console. We will need to extend pyCrust to remove this so that we don't have issues in the future.
+
+        self.txtPythonConsole.shell.run("import odmtools.odmconsole as odm", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("Tools = odm.console_tools", prompt=False, verbose=False)
+
 
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,

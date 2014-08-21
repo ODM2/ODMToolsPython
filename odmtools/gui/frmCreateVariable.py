@@ -1,7 +1,7 @@
 #Boa:Frame:frmCreateVariable
 
 import wx
-from odmdata import Variable
+from odmtools.odmdata import Variable
 
 def create(parent):
     return frmCreateVariable(parent)

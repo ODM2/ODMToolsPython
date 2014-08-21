@@ -5,8 +5,8 @@ import logging
 
 from wx.lib.pubsub import pub as Publisher
 
-from odmservices import ServiceManager
-from odmdata import Qualifier
+from odmtools.odmservices import ServiceManager
+from odmtools.odmdata import Qualifier
 from odmtools.common.logger import LoggerTool
 
 tool = LoggerTool()

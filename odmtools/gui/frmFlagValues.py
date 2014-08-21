@@ -1,7 +1,7 @@
 #Boa:Dialog:frmFlagValues
 
 import wx
-from odmdata import Qualifier
+from odmtools.odmdata import Qualifier
 
 def create(parent):
     return frmFlagValues(parent)

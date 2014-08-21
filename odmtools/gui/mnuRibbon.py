@@ -558,10 +558,12 @@ class mnuRibbon(RB.RibbonBar):
 
         if event.Id == wxID_RIBBONVIEWSCRIPT:
             value = "Script"
+            ''' TODO add the ability to modify the script outside of editing...
             if self.scriptPanel.IsShown():
                 self.scriptPanel.Hide()
             else:
                 self.scriptPanel.Show()
+            '''
         elif event.Id == wxID_RIBBONVIEWCONSOLE:
             value = "Console"
         elif event.Id == wxID_RIBBONVIEWSERIES:

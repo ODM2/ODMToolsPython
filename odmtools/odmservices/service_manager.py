@@ -8,7 +8,7 @@ from cv_service import CVService
 from edit_service import EditService
 from record_service import RecordService
 from export_service import ExportService
-from appdirs import *
+from odmtools.common.appdirs import *
 import os
 
 
