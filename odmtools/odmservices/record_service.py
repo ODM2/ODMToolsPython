@@ -254,14 +254,12 @@ class RecordService():
         return var
 
     def write_header(self):
-        self._script("from odmservices import EditService\n", 'black')
-        self._script("from odmservices import SeriesService\n", 'black')
-        self._script("edit_service  = EditService(series_id={id}, connection_string='{con}')\n".format(
+        self._script("#Uncomment the following commands when running outside ODMTools\n", 'black')
+        self._script("#from odmtools.odmservices import EditService, SeriesService\n", 'black')
+        self._script("#edit_service  = EditService(series_id={id}, connection_string='{con}')\n".format(
             id=self._edit_service._series_id, con=self._connection_string), 'black')
-        self._script("series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')
-        self._script("## To run commands from the python console uncomment and run the following commands ##\n", 'black')
-        self._script("#edit_service = Tools\n", 'black')
-        self._script("#series_service = Tools.get_series_service()\n", 'black')
+        self._script("#series_service = SeriesService(connection_string='%s')\n" % (self._connection_string), 'black')
+
         Publisher.sendMessage("scroll")
 
 

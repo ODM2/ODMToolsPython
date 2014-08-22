@@ -34,4 +34,8 @@ def runODM():
     app.MainLoop()
 
 if __name__ == '__main__':
-    runODM()
+    app = wx.App(False)
+    frame = create(None)
+    frame.Show()
+    app.MainLoop()
+    #runODM()

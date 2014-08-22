@@ -150,14 +150,11 @@ class frmODMToolsMain(wx.Frame):
         wx.CallAfter(self._postStartup)
         # Console tools object for usability
         self.console_tools = ConsoleTools(self._ribbon)
-        #self.txtPythonConsole.shell.run("Tools = app.TopWindow.console_tools", prompt=False, verbose=False)
 
         # FIXME closing the txtPythonConsole from menu crashes the python console. We will need to extend pyCrust to remove this so that we don't have issues in the future.
 
-        self.txtPythonConsole.shell.run("import odmtools.odmconsole as odm", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.console_tools", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
-        self.txtPythonConsole.shell.run("Tools = odm.console_tools", prompt=False, verbose=False)
-
 
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,
@@ -272,6 +269,8 @@ class frmODMToolsMain(wx.Frame):
             Publisher.sendMessage("setEdit", isEdit=True)
         else:
             Publisher.sendMessage("setEdit", isEdit=False)
+        #self.txtPythonConsole.shell.run("edit_service = app.TopWindow.odmconsole.console_tools", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False, verbose=False)
 
     def stopEdit(self, event):
 
