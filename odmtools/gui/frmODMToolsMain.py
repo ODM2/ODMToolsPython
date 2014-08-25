@@ -172,9 +172,9 @@ class frmODMToolsMain(wx.Frame):
                           Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
                           Position(1).MinimizeButton(True).MaximizeButton(True))
 
-        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-                          .Caption('Series Selector').MinSize(wx.Size(50, 200)).Movable().Floatable().
-                          Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True))
+        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector").MinSize(wx.Size(50, 200)).
+                          Movable().Floatable().Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True))
+        self.refreshConnectionInfo()
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Movable().Floatable().Right()
@@ -205,6 +205,17 @@ class frmODMToolsMain(wx.Frame):
         self._init_sizers()
         self._ribbon.Realize()
         logger.debug("System starting ...")
+
+    def refreshConnectionInfo(self):
+        """Updates the Series Selector Connection Information for the user"""
+
+        conn_dict = self.service_manager.get_current_connection()
+
+        msg = 'Series: %s://%s@%s/%s' % (
+            conn_dict['engine'], conn_dict['user'], conn_dict['address'], conn_dict['db']
+        )
+
+        self._mgr.GetPane('Selector').Caption(msg)
 
 
     def onDocking(self, value):
@@ -302,6 +313,7 @@ class frmODMToolsMain(wx.Frame):
             #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
             #self.pnlSelector.tableSeries.checkCount = 0
+            self.refreshConnectionInfo()
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
