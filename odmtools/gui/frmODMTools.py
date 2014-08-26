@@ -16,6 +16,7 @@ import pnlSeriesSelector
 import pnlPlot
 import pnlDataTable
 from odmtools.common import gtk_execute
+from odmtools.common.appdirs import *
 #import wx.aui
 
 try:
@@ -150,12 +151,15 @@ class frmODMToolsMain(wx.Frame):
         wx.CallAfter(self._postStartup)
         # Console tools object for usability
 
+
         # FIXME closing the txtPythonConsole from menu crashes the python console. We will need to extend pyCrust to remove this so that we don't have issues in the future.
 
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
+        #self.console_tools = ConsoleTools(self._ribbon)
 
-
+        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
 
         logger.debug("Loading Python Script ...")
@@ -174,9 +178,9 @@ class frmODMToolsMain(wx.Frame):
                           Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
                           Position(1).MinimizeButton(True).MaximizeButton(True))
 
-        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector")
-                          .Caption('Series Selector').MinSize(wx.Size(50, 200)).Movable().Floatable().
-                          Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True))
+        self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector").MinSize(wx.Size(50, 200)).
+                          Movable().Floatable().Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True))
+        self.refreshConnectionInfo()
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Movable().Floatable().Right()
@@ -207,6 +211,17 @@ class frmODMToolsMain(wx.Frame):
         self._init_sizers()
         self._ribbon.Realize()
         logger.debug("System starting ...")
+
+    def refreshConnectionInfo(self):
+        """Updates the Series Selector Connection Information for the user"""
+
+        conn_dict = self.service_manager.get_current_connection()
+
+        msg = 'Series: %s://%s@%s/%s' % (
+            conn_dict['engine'], conn_dict['user'], conn_dict['address'], conn_dict['db']
+        )
+
+        self._mgr.GetPane('Selector').Caption(msg)
 
 
     def onDocking(self, value):
@@ -270,9 +285,11 @@ class frmODMToolsMain(wx.Frame):
             Publisher.sendMessage("setEdit", isEdit=True)
         else:
             Publisher.sendMessage("setEdit", isEdit=False)
+
             #self.record_service = None
-        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service._edit_service", prompt=False, verbose=False)
-        self.txtPythonConsole.shell.run("series_service = edit_service._series_service", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False, verbose=False)
+
 
 
     def stopEdit(self, event):
@@ -305,6 +322,7 @@ class frmODMToolsMain(wx.Frame):
             #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
             #self.pnlSelector.tableSeries.checkCount = 0
+            self.refreshConnectionInfo()
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
@@ -323,11 +341,12 @@ class frmODMToolsMain(wx.Frame):
         #test if there is a perspective to load
         try:
             # TODO Fix resource_path to appdirs
-            f = open(util.resource_path('ODMTools.config'), 'r')
+            os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config')
+            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'r')
         except:
             # Create the file if it doesn't exist
-            open(util.resource_path('ODMTools.config'), 'w').close()
-            f = open(util.resource_path('ODMTools.config'), 'r')
+            open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'w').close()
+            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'r')
 
         self._mgr.LoadPerspective(f.read(), True)
 
@@ -339,7 +358,7 @@ class frmODMToolsMain(wx.Frame):
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
-            f = open(util.resource_path('ODMTools.config'), 'w')
+            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'w')
             f.write(self._mgr.SavePerspective())
         except:
             print "error saving docking data"

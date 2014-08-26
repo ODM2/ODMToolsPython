@@ -66,7 +66,7 @@ class pnlScript(wx.Panel):
         self.sizer.Add(self.control, 1, wx.EXPAND)
 
         self.SetSizer(self.sizer)
-        self.SetAutoLayout(1)
+       # self.SetAutoLayout(1)
         self.sizer.Fit(self)
 
         self.dirname = ''

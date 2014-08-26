@@ -4,14 +4,15 @@ import os
 import wx
 
 
-# import wx.lib.agw.ultimatelistctrl as ULC
 from wx.lib.pubsub import pub as Publisher
 from ObjectListView import ColumnDefn
 from ObjectListView.Filter import TextSearch, Chain
 
 import frmQueryBuilder
+
 #from clsSeriesTable import clsSeriesTable, TextSearch, Chain, EVT_OVL_CHECK_EVENT
 from odmtools.controller.odmObjectListView import EVT_OVL_CHECK_EVENT
+
 from odmtools.common.logger import LoggerTool
 from odmtools.controller import odmObjectListView
 from odmtools.odmdata import MemoryDatabase, series
@@ -48,9 +49,8 @@ class test_ss(wx.Frame):
  wxID_PNLSERIESSELECTORCHECKSITE, wxID_PNLSERIESSELECTORCHECKVARIABLE, wxID_PNLSERIESSELECTORLBLSITE,
  wxID_PNLSERIESSELECTORLBLVARIABLE, wxID_PNLSERIESSELECTORtableSeries, wxID_PNLSERIESSELECTORPANEL1,
  wxID_PNLSERIESSELECTORPANEL2, wxID_PNLSIMPLE, wxID_PNLRADIO, wxID_FRAME1RBADVANCED, wxID_FRAME1RBALL,
- wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER, wxID_PNLSERIESSELECTORtableSeriesTest, ] = [wx.NewId() for
-                                                                                                         _init_ctrls in
-                                                                                                         range(18)]
+ wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER, wxID_PNLSERIESSELECTORtableSeriesTest, ] = [
+    wx.NewId() for _init_ctrls in range(18)]
 
 
 class pnlSeriesSelector(wx.Panel):
@@ -191,7 +191,6 @@ class pnlSeriesSelector(wx.Panel):
         self.checkSite.SetValue(True)
         self.checkSite.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKSITE)
 
-
         ### Variable Panel
         self.pnlVar = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL2, name='pnlVar', parent=self.cpnlSimple.GetPane(),
                                pos=wx.Point(3, 26), size=wx.Size(800, 25), style=wx.TAB_TRAVERSAL)
@@ -210,9 +209,11 @@ class pnlSeriesSelector(wx.Panel):
         self.cbVariables.Enable(False)
         self.cbVariables.Bind(wx.EVT_COMBOBOX, self.onCbVariablesCombobox, id=wxID_PNLSERIESSELECTORCBVARIABLES)
 
+
         ### New Stuff ##################################################################################################
 
         self.tblSeries = odmObjectListView.clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
+
                                                name=u'tblSeries', size=wx.Size(950, 108), pos=wx.Point(5, 5),
                                                style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VIRTUAL)
 
@@ -228,20 +229,7 @@ class pnlSeriesSelector(wx.Panel):
         #self.tblSeries.oddRowsBackColor = wx.Colour(143, 188, 188)
         self.tblSeries.oddRowsBackColor = wx.Colour(191, 217, 217)
         self.cpnlSimple.Collapse(True)
-        #self.cpnlSimple.Collapse(True)
         self._init_sizers()
-        ################################################################################################################
-        #self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeriesTest,
-        #                          name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),size=wx.Size(903, 108),
-        #                          agwStyle=ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT | ULC.ULC_SINGLE_SEL)
-        #self.tableSeries.Hide()
-
-
-        ##        self.splitter.Initialize(self.tableSeries)
-        #self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
-        #                      id=wxID_PNLSERIESSELECTORtableSeries)
-        #self.tableSeries.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
-        #                      id=wxID_PNLSERIESSELECTORtableSeries)
 
     def initPubSub(self):
         #Publisher.subscribe(self.onEditButton, ("selectEdit"))

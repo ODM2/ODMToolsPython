@@ -645,3 +645,4 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, state)
 
         self.enableDateSelection(not state)
+
