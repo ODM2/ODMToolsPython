@@ -3,6 +3,7 @@ import os
 
 import wx
 
+
 # import wx.lib.agw.ultimatelistctrl as ULC
 from wx.lib.pubsub import pub as Publisher
 from ObjectListView import ColumnDefn
@@ -10,8 +11,9 @@ from ObjectListView.Filter import TextSearch, Chain
 
 import frmQueryBuilder
 #from clsSeriesTable import clsSeriesTable, TextSearch, Chain, EVT_OVL_CHECK_EVENT
-from clsSeriesTable import clsSeriesTable, EVT_OVL_CHECK_EVENT
+from odmtools.controller.odmObjectListView import EVT_OVL_CHECK_EVENT
 from odmtools.common.logger import LoggerTool
+from odmtools.controller import odmObjectListView
 from odmtools.odmdata import MemoryDatabase, series
 from odmtools.odmservices import ServiceManager
 
@@ -210,7 +212,7 @@ class pnlSeriesSelector(wx.Panel):
 
         ### New Stuff ##################################################################################################
 
-        self.tblSeries = clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
+        self.tblSeries = odmObjectListView.clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
                                                name=u'tblSeries', size=wx.Size(950, 108), pos=wx.Point(5, 5),
                                                style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VIRTUAL)
 

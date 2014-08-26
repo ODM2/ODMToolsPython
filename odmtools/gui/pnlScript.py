@@ -3,7 +3,7 @@ import os
 import wx
 from wx.lib.pubsub import pub as Publisher
 
-from highlightSTC import highlightSTC
+from odmtools.controller import odmHighlightSTC
 
 
 ID_NEW = 101
@@ -23,7 +23,7 @@ class pnlScript(wx.Panel):
         #super(pnlScript, self).__init__(parent, id, name=name, pos=pos, size=size, style=0)
         wx.Panel.__init__(self, parent, id)
         self.console = parent.txtPythonConsole
-        self.control = highlightSTC(self)
+        self.control = odmHighlightSTC.highlightSTC(self)
         self.parent = parent
         # self.control = stc.StyledTextCtrl(self, 1, style=wx.TE_MULTILINE)
 
