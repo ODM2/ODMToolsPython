@@ -1,15 +1,15 @@
 import logging
-from sqlalchemy.exc import SQLAlchemyError, DBAPIError
-from odmtools.common.logger import LoggerTool
+import os
 
-import utilities as util
+from sqlalchemy.exc import SQLAlchemyError, DBAPIError
+
+from odmtools.common.logger import LoggerTool
 from series_service import SeriesService
 from cv_service import CVService
 from edit_service import EditService
-from record_service import RecordService
+from odmtools.controller import EditTools
 from export_service import ExportService
 from odmtools.common.appdirs import *
-import os
 
 
 tool = LoggerTool()
@@ -111,7 +111,7 @@ class ServiceManager():
         return EditService(series_id, connection=connection, connection_string=conn_string, debug=self.debug)
 
     def get_record_service(self, script, series_id, connection):
-        return RecordService(script, self.get_edit_service(series_id, connection),
+        return EditTools(self, script, self.get_edit_service(series_id, connection),
                              self.__build_connection_string(self.get_current_connection()))
 
     def get_export_service(self):

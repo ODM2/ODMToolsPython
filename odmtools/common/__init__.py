@@ -52,6 +52,7 @@ __all__=["add",
         "logger",
         "newscript",
         "openscript",
-        "savescript"
+        "savescript",
+        "deletered"
 
         ]

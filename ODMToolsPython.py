@@ -21,11 +21,12 @@ sys.path.insert(0, directory)
 '''
 
 import wx
-from odmtools.gui import frmODMToolsMain
+from odmtools.gui import frmODMTools
 
 
 def create(parent):
-    return frmODMToolsMain.create(parent)
+    return frmODMTools.create(parent)
+
 
 def runODM():
     app = wx.App(False)
@@ -33,9 +34,9 @@ def runODM():
     frame.Show()
     app.MainLoop()
 
+
 if __name__ == '__main__':
     app = wx.App(False)
     frame = create(None)
     frame.Show()
     app.MainLoop()
-    #runODM()

@@ -4,11 +4,11 @@ import wx
 import wx.wizard as wiz
 
 # import * from WizardPanels
-import pnlMethod
-import pnlQCL
-import pnlVariable
-import pnlSummary
-import pnlIntro
+import pageMethod
+import pageQCL
+import pageVariable
+import pageSummary
+import pageIntro
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
 wxID_PNLSUMMARY, wxID_WIZSAVE,
@@ -35,7 +35,7 @@ class QCLPage(wiz.WizardPageSimple):
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
-        self.panel=pnlQCL.pnlQCL(self, id=wxID_PNLINTRO, name=u'pnlQCL',
+        self.panel=pageQCL.pnlQCL(self, id=wxID_PNLINTRO, name=u'pnlQCL',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),
               style=wx.TAB_TRAVERSAL, sm = service_man, qcl = qcl)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
@@ -73,7 +73,7 @@ class VariablePage(wiz.WizardPageSimple):
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         sizer.Add(title, 10, wx.ALIGN_CENTRE|wx.ALL, 5)
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
-        self.panel=pnlVariable.pnlVariable(self, id=wxID_PNLVARIABLE, name=u'pnlVariable',
+        self.panel=pageVariable.pnlVariable(self, id=wxID_PNLVARIABLE, name=u'pnlVariable',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),
               style=wx.TAB_TRAVERSAL,sm = service_man, var = var)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
@@ -119,7 +119,7 @@ class MethodPage(wiz.WizardPageSimple):
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         sizer.Add(title, 10, wx.ALIGN_CENTRE|wx.ALL, 5)
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
-        self.panel=pnlMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
+        self.panel=pageMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),
               style=wx.TAB_TRAVERSAL,sm = service_man, method = method)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
@@ -158,7 +158,7 @@ class SummaryPage(wiz.WizardPageSimple):
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         sizer.Add(title, 10, wx.ALIGN_CENTRE|wx.ALL, 5)
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
-        self.panel =pnlSummary.pnlSummary(self, id=wxID_PNLSUMMARY, name=u'pnlSummary',
+        self.panel =pageSummary.pnlSummary(self, id=wxID_PNLSUMMARY, name=u'pnlSummary',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),
               style=wx.TAB_TRAVERSAL, sm = service_man)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
@@ -211,7 +211,7 @@ class IntroPage(wiz.PyWizardPage):
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         sizer.Add(title, 10, wx.ALIGN_CENTRE|wx.ALL, 5)
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
-        self.pnlIntroduction=pnlIntro.pnlIntro(self, id=wxID_PNLINTRO, name=u'pnlIntro',
+        self.pnlIntroduction=pageIntro.pnlIntro(self, id=wxID_PNLINTRO, name=u'pnlIntro',
               pos=wx.Point(536, 285), size=wx.Size(439, 357), style=wx.TAB_TRAVERSAL)
         self.sizer.Add(self.pnlIntroduction, 85, wx.ALL, 5)
 

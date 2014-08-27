@@ -16,7 +16,7 @@ import plotSummary
 import plotHistogram
 import plotBoxWhisker
 import plotProbability
-from clsPlotOptions import SeriesPlotInfo
+from odmtools.controller.logicPlotOptions import SeriesPlotInfo
 
 import logging
 from odmtools.common.logger import LoggerTool

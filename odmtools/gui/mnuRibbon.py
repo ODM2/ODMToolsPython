@@ -324,9 +324,10 @@ class mnuRibbon(RB.RibbonBar):
         self.redrawPlotTable()
 
     def redrawPlotTable(self):
-        recordService = self.parent.getRecordService()
-        Publisher.sendMessage("changeSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
-        Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
+        print "inRedrawPlot"
+        #recordService = self.parent.getRecordService()
+        #Publisher.sendMessage("changeSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
+        #Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
 
 
     def onLineDrift(self, event):
@@ -412,7 +413,7 @@ class mnuRibbon(RB.RibbonBar):
     def onEditInterpolate(self, event):
         logger.debug("Interpolate!")
         self.parent.getRecordService().interpolate()
-        Publisher.sendMessage(("updateValues"), event=event)
+        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
     def onEditFlag(self, event):
@@ -421,14 +422,14 @@ class mnuRibbon(RB.RibbonBar):
         logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
         if val == 5101:  #wx.ID_OK:
             self.parent.getRecordService().flag(add_flag.GetValue())
-            Publisher.sendMessage(("updateValues"), event=event)
+            #Publisher.sendMessage(("updateValues"), event=event)
         add_flag.Destroy()
         event.Skip()
 
     def onEditAddPoint(self, event):
         add_value = frmAddPoint(self, self.parent.getRecordService())
         add_value.ShowModal()
-        Publisher.sendMessage(("updateValues"), event=event)
+        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
     def onEditDelPoint(self, event):
@@ -437,13 +438,13 @@ class mnuRibbon(RB.RibbonBar):
                             'Deleting Points', wx.YES_NO | wx.ICON_QUESTION)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().delete_points()
-            Publisher.sendMessage(("updateValues"), event=event)
+            #Publisher.sendMessage(("updateValues"), event=event)
         self.redrawPlotTable()
         event.Skip()
 
     def onRestore(self, event):
         self.parent.getRecordService().restore()
-        Publisher.sendMessage(("updateValues"), event=event)
+        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
 

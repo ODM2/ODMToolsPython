@@ -129,38 +129,46 @@ class SeriesService():
         # Pass in probably a Series object, match it against the database
         pass
 
-    def save_series(self, series, data_values, isSave=False):
-        doesExist = self.series_exists(
+
+    def save_series(self, series, data_values, override=False):
+
+        # Save case
+        if self.does_exist(series):
+            self._edit_session.add(series)
+            self._edit_session.add_all(data_values)
+            self._edit_session.commit()
+            logger.debug("Existing File was overwritten with new information")
+            return True
+        else:
+            logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
+            # there wasn't an existing file to overwrite
+            return False
+
+    def save_as_series(self, series, data_values, override=False):
+        # Save As case
+        if self.does_exist(series):
+            logger.debug(
+                "There is already an existing file with this information. Please select 'Save' to overwrite")
+            return False
+        else:
+            self._edit_session.add(series)
+            self._edit_session.add_all(data_values)
+        self._edit_session.commit()
+        logger.debug("A new series was added to the database")
+        return True
+
+    def save_as_existing_series(self, series, data_value, override=False):
+        # Save as Existing Series
+        pass
+
+    def does_exist(self, series):
+        return self.series_exists(
             series.site_id,
             series.variable_id,
             series.method_id,
             series.source_id,
             series.quality_control_level_id
         )
-        # Save case
-        if not isSave:
-            if doesExist:
-                self._edit_session.add(series)
-                self._edit_session.add_all(data_values)
-                self._edit_session.commit()
-                logger.debug("Existing File was overwritten with new information")
-                return True
-            else:
-                logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
-                # there wasn't an existing file to overwrite
-                return False
-        # Save As case
-        elif isSave:
-            if doesExist:
-                logger.debug(
-                    "There is already an existing file with this information. Please select 'Save' to overwrite")
-                return False
-            else:
-                self._edit_session.add(series)
-                self._edit_session.add_all(data_values)
-            self._edit_session.commit()
-            logger.debug("A new series was added to the database")
-        return True
 
     def series_exists(self, site_id, var_id, method_id, source_id, qcl_id):
         try:

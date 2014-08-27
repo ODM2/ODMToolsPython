@@ -16,6 +16,7 @@ import pnlSeriesSelector
 import pnlPlot
 import pnlDataTable
 from odmtools.common import gtk_execute
+from odmtools.common.appdirs import *
 #import wx.aui
 
 try:
@@ -31,10 +32,10 @@ import wx.py.crust
 import frmDBConfiguration
 
 from odmtools.odmservices import ServiceManager
-from odmtools.odmservices import utilities as util
+#from odmtools.odmservices import utilities as util
 from pnlScript import pnlScript
 
-from odmtools.odmconsole import ConsoleTools
+
 from odmtools.common.logger import LoggerTool
 
 
@@ -149,12 +150,17 @@ class frmODMToolsMain(wx.Frame):
                                                        size=wx.Size(200, 200), style=wx.NO_BORDER)
         wx.CallAfter(self._postStartup)
         # Console tools object for usability
-        self.console_tools = ConsoleTools(self._ribbon)
+
 
         # FIXME closing the txtPythonConsole from menu crashes the python console. We will need to extend pyCrust to remove this so that we don't have issues in the future.
 
-        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.console_tools", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
+
+        #self.console_tools = ConsoleTools(self._ribbon)
+
+        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
+
 
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,
@@ -276,12 +282,15 @@ class frmODMToolsMain(wx.Frame):
             self.dataTable.init(memDB, self.record_service)
 
             # set record service for console
-            self.console_tools.set_record_service(self.record_service)
             Publisher.sendMessage("setEdit", isEdit=True)
         else:
             Publisher.sendMessage("setEdit", isEdit=False)
-        #self.txtPythonConsole.shell.run("edit_service = app.TopWindow.odmconsole.console_tools", prompt=False, verbose=False)
+
+            #self.record_service = None
+        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False, verbose=False)
+
+
 
     def stopEdit(self, event):
 
@@ -332,11 +341,12 @@ class frmODMToolsMain(wx.Frame):
         #test if there is a perspective to load
         try:
             # TODO Fix resource_path to appdirs
-            f = open(util.resource_path('ODMTools.config'), 'r')
+            os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config')
+            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'r')
         except:
             # Create the file if it doesn't exist
-            open(util.resource_path('ODMTools.config'), 'w').close()
-            f = open(util.resource_path('ODMTools.config'), 'r')
+            open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'w').close()
+            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'r')
 
         self._mgr.LoadPerspective(f.read(), True)
 
@@ -348,7 +358,7 @@ class frmODMToolsMain(wx.Frame):
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
-            f = open(util.resource_path('ODMTools.config'), 'w')
+            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'w')
             f.write(self._mgr.SavePerspective())
         except:
             print "error saving docking data"

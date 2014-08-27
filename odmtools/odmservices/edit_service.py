@@ -473,6 +473,9 @@ class EditService():
 
         series.data_values = dvs
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
+
+        # TODO Change saveAs
+
         if self._series_service.save_series(series, dvs, saveAs):
             logger.debug("series saved!")
             return True
