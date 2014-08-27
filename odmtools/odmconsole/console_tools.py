@@ -185,6 +185,8 @@ class ConsoleTools(object):
         else:
             print "Save didn't work!"
 
+    # TODO add save_as & save_existing
+
 
     ###############
     # Export methods

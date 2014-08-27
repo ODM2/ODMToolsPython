@@ -13,12 +13,12 @@ class RecordService():
     # Script header (imports etc.) will be set up in Main when record is clicked.
     def __init__(self, script, edit_service, connection_string, record=False):
         self._script = script
-        #logger.debug(dir(self._script))sr
+        # logger.debug(dir(self._script))sr
         self._edit_service = edit_service
         self._connection_string = connection_string
         self._record = record
 
-    ###################
+    # ##################
     # Filters
     ###################
     def filter_value(self, value, operator):
@@ -49,29 +49,27 @@ class RecordService():
             Publisher.sendMessage("scroll")
 
 
-    def toggle_filter_previous(self, value = None):
+    def toggle_filter_previous(self, value=None):
         if self._edit_service._filter_from_selection is not value:
             self._edit_service.toggle_filter_previous(value)
             if self._record:
-                self._script("edit_service.toggle_filter_previous(%s)\n"%(value), 'black')
+                self._script("edit_service.toggle_filter_previous(%s)\n" % (value), 'black')
                 Publisher.sendMessage("scroll")
 
 
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         if self._record:
-            self._script("points = [\n\t{list}][0]\n".format(
-                list=[x[2] for x in self._edit_service.get_filtered_points()])
-            )
+            self._script(
+                "points = [\n\t{list}][0]\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
             self._script("edit_service.select_points(points)\n")
             Publisher.sendMessage("scroll")
 
     def select_points(self, id_list=[], datetime_list=[]):
         self._edit_service.select_points(id_list, datetime_list)
         if self._record:
-            self._script("points = [\n\t{list}][0]\n".format(
-                list=[x[2] for x in self._edit_service.get_filtered_points()])
-            )
+            self._script(
+                "points = [\n\t{list}][0]\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
             self._script("edit_service.select_points({id}, points)\n".format(id=id_list))
             Publisher.sendMessage("scroll")
             #print self._edit_service.get_filtered_points()
@@ -137,7 +135,7 @@ class RecordService():
             self._script("edit_service.restore()\n", 'black')
             Publisher.sendMessage("scroll")
 
-    def saveFactory(self, var=None, method=None, qcl=None, isSave=False):
+    def saveFactory(self, var=None, method=None, qcl=None, override=False):
         """
 
         :param var:
@@ -150,21 +148,60 @@ class RecordService():
         values['var'] = ("new_variable" if var else None)
         values['method'] = ("new_method" if method else None)
         values['qcl'] = ("new_qcl" if qcl else None)
-        values['isSave'] = isSave
+        values['override'] = override
         return values['var'], values['method'], values['qcl'], values['isSave']
 
-    def save(self, var=None, method=None, qcl=None, isSave=False):
+    # TODO Create save_as & save_existing
+    def save(self, var=None, method=None, qcl=None, override=False):
         """
 
         :param var:
         :param method:
         :param qcl:
-        :param isSave:
+        :param override:
         :return:
         """
-        result = self._edit_service.save(var=var, method=method, qcl=qcl, saveAs=isSave)
+        result = self._edit_service.save(var=var, method=method, qcl=qcl, override=override)
         if self._record:
-            self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (self.saveFactory(var, method, qcl, isSave)), 'black')
+            self._script(
+                "edit_service.save(%s, %s, %s, override=%s)\n" % (self.saveFactory(var, method, qcl, override)),
+                'black')
+            #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
+            Publisher.sendMessage("scroll")
+        return result
+
+    def save_as(self, var=None, method=None, qcl=None, override=False):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param override:
+        :return:
+        """
+        result = self._edit_service.save(var=var, method=method, qcl=qcl, override=override)
+        if self._record:
+            self._script(
+                "edit_service.save_as(%s, %s, %s, override=%s)\n" % (self.saveFactory(var, method, qcl, override)),
+                'black')
+            #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
+            Publisher.sendMessage("scroll")
+        return result
+
+    def save_as_existing(self, var=None, method=None, qcl=None, override=False):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param override:
+        :return:
+        """
+        result = self._edit_service.save_as_existing(var=var, method=method, qcl=qcl, override=override)
+        if self._record:
+            self._script(
+                "edit_service.save(%s, %s, %s, override=%s)\n" % (self.saveFactory(var, method, qcl, override)),
+                'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
 

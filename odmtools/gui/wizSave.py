@@ -356,9 +356,6 @@ class wizSave(wx.wizard.Wizard):
         else:
             closeSuccessful = True
 
-
-
-
         #if QCL.code == 0:
         #     #TODO MessageBox "you are overwriting an level 0 dataset, which is usually reserved for raw data
         #     #  are you sure you want to save?"
@@ -405,7 +402,8 @@ class wizSave(wx.wizard.Wizard):
             if self.page1.pnlIntroduction.rbSave.GetValue():
                 result = self.record_service.save(Variable, Method, QCL, False)
             else:
-                result = self.record_service.save(Variable, Method, QCL, True)
+                result = self.record_service.saveAs(Variable, Method, QCL, True)
+            #self.page1.pnlIntroduction.rb
 
             if not result:
                 wx.MessageBox("Save was unsuccessful", "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
