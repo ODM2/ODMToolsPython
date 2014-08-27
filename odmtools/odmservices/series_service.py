@@ -130,12 +130,16 @@ class SeriesService():
         pass
 
 
-    def save_series(self, series, data_values, override=False):
+    def save_series(self, series):
+        """ Save to an Existing Series
+        :param series:
+        :param data_values:
+        :return:
+        """
 
-        # Save case
         if self.does_exist(series):
             self._edit_session.add(series)
-            self._edit_session.add_all(data_values)
+            self._edit_session.add_all(series.data_values)
             self._edit_session.commit()
             logger.debug("Existing File was overwritten with new information")
             return True
@@ -144,7 +148,12 @@ class SeriesService():
             # there wasn't an existing file to overwrite
             return False
 
-    def save_as_series(self, series, data_values, override=False):
+    def save_new_series(self, series):
+        """ Create as a new catalog entry
+        :param series:
+        :param data_values:
+        :return:
+        """
         # Save As case
         if self.does_exist(series):
             logger.debug(
@@ -152,14 +161,10 @@ class SeriesService():
             return False
         else:
             self._edit_session.add(series)
-            self._edit_session.add_all(data_values)
-        self._edit_session.commit()
+            self._edit_session.add_all(series.data_values)
+            self._edit_session.commit()
         logger.debug("A new series was added to the database")
         return True
-
-    def save_as_existing_series(self, series, data_value, override=False):
-        # Save as Existing Series
-        pass
 
     def does_exist(self, series):
         return self.series_exists(

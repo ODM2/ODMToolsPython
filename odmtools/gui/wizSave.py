@@ -45,7 +45,7 @@ class QCLPage(wiz.WizardPageSimple):
     def _init_data(self, series):
         qcl=series.get_all_qcls()
         index = 0
-        for q, i  in zip(qcl, range(len(qcl))):
+        for q, i in zip(qcl, range(len(qcl))):
             num_items = self.panel.lstQCL.GetItemCount()
             self.panel.lstQCL.InsertStringItem(num_items, str(q.code))
             self.panel.lstQCL.SetStringItem(num_items, 1, str(q.definition))
@@ -399,10 +399,20 @@ class wizSave(wx.wizard.Wizard):
                 Method=self.record_service.create_method(Method)
 
             # initiate either "Save as" or "Save"
+            '''
             if self.page1.pnlIntroduction.rbSave.GetValue():
                 result = self.record_service.save(Variable, Method, QCL, False)
             else:
                 result = self.record_service.saveAs(Variable, Method, QCL, True)
+            '''
+
+            if self.page1.pnlIntroduction.rbSave.GetValue():
+                result = self.record_service.save(Variable, Method, QCL)
+            elif self.page1.pnlIntroduction.rbSaveAs.GetValue():
+                result = self.record_service.save_as(Variable, Method, QCL)
+            else:
+                result = self.record_service.save_existing(Variable, Method, QCL)
+
             #self.page1.pnlIntroduction.rb
 
             if not result:

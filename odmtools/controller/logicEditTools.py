@@ -167,7 +167,7 @@ class EditTools():
             self._script("edit_service.restore()\n", 'black')
             Publisher.sendMessage("scroll")
 
-    def saveFactory(self, var=None, method=None, qcl=None, override=False):
+    def saveFactory(self, var=None, method=None, qcl=None):
         """
 
         :param var:
@@ -180,11 +180,11 @@ class EditTools():
         values['var'] = ("new_variable" if var else None)
         values['method'] = ("new_method" if method else None)
         values['qcl'] = ("new_qcl" if qcl else None)
-        values['override'] = override
-        return values['var'], values['method'], values['qcl'], values['isSave']
+        #values['override'] = override
+        return values['var'], values['method'], values['qcl']#, values['isSave']
 
     # TODO Create save_as & save_existing
-    def save(self, var=None, method=None, qcl=None, override=False):
+    def save(self, var=None, method=None, qcl=None):
         """
 
         :param var:
@@ -193,16 +193,16 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save(var=var, method=method, qcl=qcl, override=override)
+        result = self._edit_service.save(var=var, method=method, qcl=qcl)
         if self._record:
             self._script(
-                "edit_service.save(%s, %s, %s, override=%s)\n" % (self.saveFactory(var, method, qcl, override)),
+                "edit_service.save(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
         return result
 
-    def save_as(self, var=None, method=None, qcl=None, override=False):
+    def save_as(self, var=None, method=None, qcl=None):
         """
 
         :param var:
@@ -211,16 +211,16 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save(var=var, method=method, qcl=qcl, override=override)
+        result = self._edit_service.save_as(var=var, method=method, qcl=qcl)
         if self._record:
             self._script(
-                "edit_service.save_as(%s, %s, %s, override=%s)\n" % (self.saveFactory(var, method, qcl, override)),
+                "edit_service.save_as(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
         return result
 
-    def save_as_existing(self, var=None, method=None, qcl=None, override=False):
+    def save_as_existing(self, var=None, method=None, qcl=None):
         """
 
         :param var:
@@ -229,10 +229,10 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save_as_existing(var=var, method=method, qcl=qcl, override=override)
+        result = self._edit_service.save_as_existing(var=var, method=method, qcl=qcl)
         if self._record:
             self._script(
-                "edit_service.save(%s, %s, %s, override=%s)\n" % (self.saveFactory(var, method, qcl, override)),
+                "edit_service.save_as_existing(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
