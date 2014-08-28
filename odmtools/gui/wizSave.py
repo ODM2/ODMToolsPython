@@ -8,17 +8,56 @@ import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
-import pageIntro
+#import pageIntro
+#from  odmtools.gui.pageIntro import pnlIntro as pageIntro
+from odmtools.gui.pageExisting import  pnlExisting
+from  odmtools.view import clsIntro as pageIntro
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
-wxID_PNLSUMMARY, wxID_WIZSAVE,
-] = [wx.NewId() for _init_ctrls in range(6)]
+wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,
+] = [wx.NewId() for _init_ctrls in range(7)]
 
 from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
 import logging
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
+
+
+########################################################################
+class ExistingPage(wiz.WizardPageSimple):
+    def __init__(self, parent, title, service_man, site):
+        """Constructor"""
+        wiz.WizardPageSimple.__init__(self, parent)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = sizer
+        self.SetSizer(sizer)
+        #self.series = series
+
+        title = wx.StaticText(self, -1, title)
+        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
+        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
+        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
+        self.panel=pnlExisting(self)#, id=wxID_PNLEXISTING, name=u'pnlExisting',
+              #pos=wx.Point(536, 285), size=wx.Size(439, 357),
+              #style=wx.TAB_TRAVERSAL)#, sm = service_man, series = series)
+        self.sizer.Add(self.panel, 85, wx.ALL, 5)
+        self._init_data(service_man.get_series_service(), site.id)
+
+
+    def _init_data(self, series_serv, site_id):
+
+        index = 0
+        self.panel.initTable(series_serv, site_id)
+
+            #if q.code == self.qcl.code:
+            #    index = i
+        self.panel.olvSeriesList.Focus(index)
+        self.panel.olvSeriesList.Select(index)
+
+
 
 ########################################################################
 class QCLPage(wiz.WizardPageSimple):
@@ -35,7 +74,7 @@ class QCLPage(wiz.WizardPageSimple):
         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
         sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND|wx.ALL, 5)
-        self.panel=pageQCL.pnlQCL(self, id=wxID_PNLINTRO, name=u'pnlQCL',
+        self.panel=pageQCL.pnlQCL(self, id=wxID_PNLQCL, name=u'pnlQCL',
               pos=wx.Point(536, 285), size=wx.Size(439, 357),
               style=wx.TAB_TRAVERSAL, sm = service_man, qcl = qcl)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
@@ -223,22 +262,36 @@ class IntroPage(wiz.PyWizardPage):
 
     def GetNext(self):
         """If the checkbox is set then return the next page's next page otherwise return the very last page"""
-        if self.pnlIntroduction.rbSave.GetValue():
-            self.next.GetNext().GetNext().GetNext().SetPrev(self)
-            return self.next.GetNext().GetNext().GetNext()
-        elif self.pnlIntroduction.rbSaveAs.GetValue():
+        if self.next:
+            if self.pnlIntroduction.rbSave.GetValue():
+            #self.
 
-            # print self.next
+                n1 = self.next.GetNext()
+                n2 = n1.GetNext()
+                n3 = n2.GetNext()
+                n4 = n3.GetNext()
+                n4.SetPrev(self)
+                return n4
+            elif self.pnlIntroduction.rbSaveAs.GetValue():
 
-            #if self.next is None:
-            #    print "next Page is null"
-            #else:
-            #    print "next Page is NOT null", type(self.next)
+                # print self.nextF
 
-            if self.next is not None:
-                self.next.GetNext().SetPrev(self.next)
-                return self.next
+                #if self.next is None:
+                #    print "next Page is null"
+                #else:
+                #    print "next Page is NOT null", type(self.next)
 
+                if self.next is not None:
+                    self.next.GetNext().SetPrev(self.next)
+                    return self.next
+            elif self.pnlIntroduction.rbSaveExisting:
+                if self.next is not None:
+                    self.next.GetNext().GetNext().GetNext().SetPrev(self)
+                    self.next.GetNext().GetNext().GetNext().GetNext().SetPrev(self.next.GetNext().GetNext().GetNext())
+                return self.next.GetNext().GetNext().GetNext()
+                #return self.next.GetNext()
+        else:
+            return self.next
     def GetPrev(self):
         return self.prev
 
@@ -277,14 +330,16 @@ class wizSave(wx.wizard.Wizard):
 
     def get_metadata(self):
 
-        if self.is_changing_series:
+        if self.page1.pnlIntroduction.rbSaveAs.GetValue():
             method = self.page2.panel.getMethod()
             qcl = self.page3.panel.getQCL()
             variable = self.page4.panel.getVariable()
-        else:
+        elif self.page1.pnlIntroduction.rbSave.GetValue():
             method = self.currSeries.method
             qcl = self.currSeries.quality_control_level
             variable =self.currSeries.variable
+        elif self.page1.pnlIntroduction.rbSaveExisting.GetValue():
+            method, qcl, variable = self.page6.panel.getSeries()
         site = self.currSeries.site
         source = self.currSeries.source
         logger.debug("site: %s, variable: %s, method: %s, source: %s, qcl: %s"% (site.id,variable.id, method.id, source.id, qcl.id))
@@ -294,7 +349,7 @@ class wizSave(wx.wizard.Wizard):
         self._init_ctrls(parent)
         self.series_service = service_man.get_series_service()
         self.record_service = record_service
-        self.is_changing_series = False
+       # self.is_changing_series = False
         self.currSeries = record_service.get_series()
 
         self.page1 = IntroPage(self, "Intro")
@@ -302,7 +357,9 @@ class wizSave(wx.wizard.Wizard):
         self.page2 = MethodPage(self, "Method", service_man, self.currSeries.method)
         self.page3 = QCLPage(self, "Quality Control Level", service_man, self.currSeries.quality_control_level)
         self.page4 = VariablePage(self, "Variable", service_man, self.currSeries.variable)
+        self.page6 = ExistingPage(self, "Existing Series", service_man, self.currSeries.site)
         self.page5 = SummaryPage(self, "Summary", service_man)
+
 
         self.FitToPage(self.page1)
 ##        page5.sizer.Add(wx.StaticText(page5, -1, "\nThis is the last page."))
@@ -317,9 +374,12 @@ class wizSave(wx.wizard.Wizard):
         self.page3.SetNext(self.page4)
 
         self.page4.SetPrev(self.page3)
-        self.page4.SetNext(self.page5)
+        self.page4.SetNext(self.page6)
 
-        self.page5.SetPrev(self.page4)
+        self.page6. SetPrev(self.page4)
+        self.page6.SetNext(self.page5)
+
+        self.page5.SetPrev(self.page5)
 
 ##        fin_btn = self.FindWindowById(wx.ID_FINISH)
 ##        fin_btn.SetLabel("Save Series")
@@ -330,10 +390,10 @@ class wizSave(wx.wizard.Wizard):
     def on_page_changing(self, event):
         if event.Page == self.page5:
             self.page5.fill_summary()
-        elif event.Page==self.page1:
+        '''elif event.Page==self.page1:
             self.is_changing_series = False
         else:
-            self.is_changing_series = True
+            self.is_changing_series = True'''
 
 
     def on_wizard_finished(self, event):
