@@ -249,7 +249,11 @@ class SeriesPlotInfo(object):
         seriesInfo.dataTable = data
         seriesInfo.timeRadius = self.setTimeRadius(series)
         yvals = [y[0] for y in data]
-        seriesInfo.yrange = max(yvals) - min(yvals)
+        if len(data)>0:
+            seriesInfo.yrange = max(yvals) - min(yvals)
+        else:
+            seriesInfo.yrange=0
+
         return seriesInfo
 
     def getSeriesInfo(self, seriesID):

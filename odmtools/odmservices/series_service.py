@@ -110,6 +110,13 @@ class SeriesService():
     def reset_session(self):
         self._edit_session = self._session_factory.get_session()  # Reset the session in order to prevent memory leaks
 
+    def get_series_by_site(self , site_id):
+        try:
+            selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
+            return selectedSeries
+        except:
+            return None
+
     def get_series_by_id(self, series_id):
         try:
             selectedSeries = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()

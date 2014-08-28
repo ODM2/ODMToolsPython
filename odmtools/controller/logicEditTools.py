@@ -221,7 +221,7 @@ class EditTools():
             Publisher.sendMessage("scroll")
         return result
 
-    def save_as_existing(self, var=None, method=None, qcl=None):
+    def save_existing(self, var=None, method=None, qcl=None):
         """
 
         :param var:
@@ -233,7 +233,7 @@ class EditTools():
         result = self._edit_service.save_existing(var=var, method=method, qcl=qcl)
         if self._record:
             self._script(
-                "edit_service.save_as_existing(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
+                "edit_service.save_existing(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
