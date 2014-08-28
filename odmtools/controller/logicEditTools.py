@@ -193,7 +193,8 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save(var=var, method=method, qcl=qcl)
+        #result = self._edit_service.save(var=var, method=method, qcl=qcl)
+        result = self._edit_service.save()
         if self._record:
             self._script(
                 "edit_service.save(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
@@ -229,7 +230,7 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save_as_existing(var=var, method=method, qcl=qcl)
+        result = self._edit_service.save_existing(var=var, method=method, qcl=qcl)
         if self._record:
             self._script(
                 "edit_service.save_as_existing(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
