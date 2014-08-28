@@ -184,9 +184,10 @@ class frmODMToolsMain(wx.Frame):
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Movable().Floatable().Right()
-                          .MinimizeButton(True).MaximizeButton(True).FloatingSize(size=(600, 800)).CloseButton(
-            True).Float().FloatingPosition(pos=(self.Position)).Show(
-            show=False).Hide())
+                          .MinimizeButton(True).MaximizeButton(True).FloatingSize(size=(600, 800))
+                          .CloseButton(True).Float().FloatingPosition(pos=(self.Position))
+                          .Show(show=False).Hide().CloseButton(False)
+        )
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(600, 800)).MinimizeButton(
             True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float().Show(
@@ -222,6 +223,7 @@ class frmODMToolsMain(wx.Frame):
         )
 
         self._mgr.GetPane('Selector').Caption(msg)
+        self._mgr.RefreshCaptions()
 
 
     def onDocking(self, value):
@@ -235,11 +237,11 @@ class frmODMToolsMain(wx.Frame):
 
         elif value == "Script":
             paneDetails = self._mgr.GetPane(self.txtPythonScript)
-            if paneDetails.IsNotebookPage():
-                paneDetails.Float()
+            #if paneDetails.IsNotebookPage():
+            #    paneDetails.Float()
             #if paneDetails.IsFloating():
             #    paneDetails.Dock()
-            paneDetails.FloatingPosition(pos=self.Position)
+            #paneDetails.FloatingPosition(pos=self.Position)
 
         elif value == "Console":
             paneDetails = self._mgr.GetPane(self.txtPythonConsole)
@@ -252,6 +254,8 @@ class frmODMToolsMain(wx.Frame):
             paneDetails.Show(show=False)
         else:
             paneDetails.Show(show=True)
+        print "Shown?", paneDetails.IsShown()
+
 
         self._mgr.Update()
 
@@ -318,11 +322,11 @@ class frmODMToolsMain(wx.Frame):
         if value == wx.ID_OK:
             self.createService()
             self.pnlSelector.resetDB(self.sc)
+            self.refreshConnectionInfo()
             self.pnlPlot.clear()
             #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
             #self.pnlSelector.tableSeries.checkCount = 0
-            self.refreshConnectionInfo()
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
