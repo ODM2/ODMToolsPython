@@ -237,11 +237,11 @@ class frmODMToolsMain(wx.Frame):
 
         elif value == "Script":
             paneDetails = self._mgr.GetPane(self.txtPythonScript)
-            #if paneDetails.IsNotebookPage():
-            #    paneDetails.Float()
-            #if paneDetails.IsFloating():
-            #    paneDetails.Dock()
-            #paneDetails.FloatingPosition(pos=self.Position)
+            if paneDetails.IsNotebookPage():
+                paneDetails.Float()
+            if paneDetails.IsFloating():
+                paneDetails.Dock()
+            paneDetails.FloatingPosition(pos=self.Position)
 
         elif value == "Console":
             paneDetails = self._mgr.GetPane(self.txtPythonConsole)
@@ -254,7 +254,7 @@ class frmODMToolsMain(wx.Frame):
             paneDetails.Show(show=False)
         else:
             paneDetails.Show(show=True)
-        print "Shown?", paneDetails.IsShown()
+        #print "Shown?", paneDetails.IsShown()
 
 
         self._mgr.Update()
@@ -330,6 +330,7 @@ class frmODMToolsMain(wx.Frame):
 
     def createService(self):
         self.sc = self.service_manager.get_series_service()
+        return self.sc
 
     def getDBService(self):
         return self.service_manager

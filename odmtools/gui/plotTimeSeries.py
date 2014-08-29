@@ -199,8 +199,11 @@ class plotTimeSeries(wx.Panel):
         self.lman = None
 
         #self.canvas.mpl_disconnect(self.hoverAction)
-        self.canvas.mpl_disconnect(self.pointPick)
-        self.pointPick = None
+        try:
+            self.canvas.mpl_disconnect(self.pointPick)
+            self.pointPick = None
+        except AttributeError as e:
+            logger.error(e)
 
         self.hoverAction = None
         self.xys = None
@@ -308,7 +311,6 @@ class plotTimeSeries(wx.Panel):
                         )
                     )
 
-
         if count > 1:
             self.setTimeSeriesTitle("")
             plt.subplots_adjust(bottom=.1 + .1)
@@ -316,6 +318,7 @@ class plotTimeSeries(wx.Panel):
             #      ncol=2, prop = self.fontP)
             self.timeSeries.legend(loc='upper center', bbox_to_anchor=(0.5, -1.75),
                                    ncol=2, prop=self.fontP)
+
         elif count == 0:
             self.setTimeSeriesTitle("")
             self.timeSeries.legend_ = None
@@ -335,7 +338,6 @@ class plotTimeSeries(wx.Panel):
 
         #plt.gcf().autofmt_xdate()
         plt.tight_layout()
-        self.configureCursor(None)
         self.canvas.draw()
 
     def updateCursor(self, selectedObject):
@@ -421,8 +423,7 @@ class plotTimeSeries(wx.Panel):
                 if keys[i] == editaxis:
                     keys.pop(i)
                     break
-            #for host subplot set to the first series so that the pick event will work when editing. keys.insert(0, editaxis)
-            #if using add_subplot set it to the last series. keys.append(editaxis)
+
             keys.insert(0, editaxis)
 
         leftadjust = -30
@@ -522,7 +523,8 @@ class Cursor(object):
         self.cid = self.canvas.mpl_connect('motion_notify_event', self)
 
     def disable(self):
-        self.canvas.mpl_disconnect(self.cid)
+        if self.cid:
+            self.canvas.mpl_disconnect(self.cid)
 
     def setSelected(self, selected):
         #logger.debug("Enabling %s" % selected)

@@ -269,15 +269,17 @@ class pnlSeriesSelector(wx.Panel):
 
     def initTableSeries(self):
         """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
-
-        self.memDB = MemoryDatabase(self.dbservice)
-        seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value)
-                         for key, value in series.returnDict().iteritems()]
-        self.tblSeries.SetColumns(seriesColumns)
-        self.tblSeries.CreateCheckStateColumn()
-        object = self.dbservice.get_all_series()
-        self.tblSeries.SetObjects(object)
-        #self.tblSeries.SaveObject(object)
+        try:
+            self.memDB = MemoryDatabase(self.dbservice)
+            seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value)
+                             for key, value in series.returnDict().iteritems()]
+            self.tblSeries.SetColumns(seriesColumns)
+            self.tblSeries.CreateCheckStateColumn()
+            object = self.dbservice.get_all_series()
+            self.tblSeries.SetObjects(object)
+        except AttributeError as e:
+            logger.error(e)
+            #self.tblSeries.SaveObject(object)
 
 
     def initSVBoxes(self):
@@ -286,16 +288,19 @@ class pnlSeriesSelector(wx.Panel):
         self.variable_code = None
 
         #####INIT drop down boxes for Simple Filter
-        self.siteList = self.dbservice.get_all_sites()
-        for site in self.siteList:
-            self.cbSites.Append(site.code + '-' + site.name)
-        self.cbSites.SetSelection(0)
-        self.site_code = self.siteList[0].code
+        try:
+            self.siteList = self.dbservice.get_all_sites()
+            for site in self.siteList:
+                self.cbSites.Append(site.code + '-' + site.name)
+            self.cbSites.SetSelection(0)
+            self.site_code = self.siteList[0].code
 
-        self.varList = self.dbservice.get_all_variables()
-        for var in self.varList:
-            self.cbVariables.Append(var.code + '-' + var.name)
-        self.cbVariables.SetSelection(0)
+            self.varList = self.dbservice.get_all_variables()
+            for var in self.varList:
+                self.cbVariables.Append(var.code + '-' + var.name)
+            self.cbVariables.SetSelection(0)
+        except AttributeError as e:
+            logger.error(e)
 
     def OnTableRightDown(self, event):
         """
@@ -528,7 +533,7 @@ class pnlSeriesSelector(wx.Panel):
         else:
             #logger.debug("%d" % (len(self.tblSeries.GetCheckedObjects())))
             self.parent.Parent.addPlot(self.memDB, object.id)
-
+            Publisher.sendMessage("updateCursor", selectedObject=object)
 
         self.Refresh()
 
@@ -544,7 +549,10 @@ class pnlSeriesSelector(wx.Panel):
         self.tblSeries.currentlySelectedObject = editingObject
 
         ## update Cursor
-        Publisher.sendMessage("updateCursor", selectedObject=editingObject)
+        if self.parent.Parent.pnlPlot.isPlotted(editingObject.id):
+            #print "Updating Cursor", editingObject.id
+            Publisher.sendMessage("updateCursor", selectedObject=editingObject)
+
 
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector"""
