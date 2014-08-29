@@ -18,9 +18,9 @@ import wx.aui
 class pnlIntro(wx.Panel):
     #	id=wxID_PNLINTRO, name=u'pnlIntro',
     #              pos=wx.Point(536, 285), size=wx.Size(439, 357), style=wx.TAB_TRAVERSAL
-    def __init__(self, parent, id, pos, size, style, name):
-        wx.Panel.__init__(self, parent=parent, id=id, pos=pos, size=size, style=style, name=name)
-        #wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL )
+    def __init__(self, parent):#, id, pos, size, style, name):
+        #wx.Panel.__init__(self, parent=parent), id=id, pos=pos, size=size, style=style, name=name)
+        wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL )
 
         self.m_mgr = wx.aui.AuiManager()
         self.m_mgr.SetManagedWindow(self)
@@ -94,12 +94,15 @@ class pnlIntro(wx.Panel):
 
     # Virtual event handlers, overide them in your derived class
     def OnBtnSaveRadiobutton(self, event):
+        print "in parent"
         event.Skip()
 
     def OnBtnSaveAsRadiobutton(self, event):
+        print "in parent"
         event.Skip()
 
     def OnBtnSaveExistingRadiobuton(self, event):
+        print "in parent"
         event.Skip()
 	
 

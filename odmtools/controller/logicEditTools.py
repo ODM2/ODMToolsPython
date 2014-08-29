@@ -193,10 +193,10 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save(var=var, method=method, qcl=qcl)
+        result = self._edit_service.save()
         if self._record:
             self._script(
-                "edit_service.save(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
+                "edit_service.save()\n" ,
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
