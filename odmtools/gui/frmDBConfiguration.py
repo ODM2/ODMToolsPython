@@ -108,7 +108,7 @@ class frmDBConfig(wx.Dialog):
                                       size=wx.Size(447, 168), style=wx.TAB_TRAVERSAL)
 
         self.boxConnection = wx.StaticBox(id=wxID_FRAME1BOXCONNECTION,
-                                          label=u'Microsoft SQL Server', name=u'boxConnection',
+                                          label=u'Database Connection', name=u'boxConnection',
                                           parent=self.pnlConnection, pos=wx.Point(8, 8), size=wx.Size(432, 152),
                                           style=0)
 

@@ -7,6 +7,7 @@ import wx
 from wx.lib.pubsub import pub as Publisher
 from ObjectListView import ColumnDefn
 from ObjectListView.Filter import TextSearch, Chain
+import datetime
 
 import frmQueryBuilder
 
@@ -271,7 +272,8 @@ class pnlSeriesSelector(wx.Panel):
         """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
         try:
             self.memDB = MemoryDatabase(self.dbservice)
-            seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value)
+            seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value,#stringConverter = '%s')
+                                        stringConverter= 'Yy-%m-%d %h:%s' if"date" in key.lower() else'%s')
                              for key, value in series.returnDict().iteritems()]
             self.tblSeries.SetColumns(seriesColumns)
             self.tblSeries.CreateCheckStateColumn()

@@ -105,17 +105,17 @@ class frmCreateVariable(wx.Dialog):
               208), style=0)
 
         self.lblVarCode = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLVARCODE,
-              label=u'Variable Code:', name=u'lblVarCode',
+              label=u'Code:', name=u'lblVarCode',
               parent=self.pnlPtoSelect, pos=wx.Point(24, 40), size=wx.Size(71,
               13), style=0)
 
         self.lblVarName = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLVARNAME,
-              label=u'Variable Name:', name=u'lblVarName',
+              label=u'Name:', name=u'lblVarName',
               parent=self.pnlPtoSelect, pos=wx.Point(24, 72), size=wx.Size(73,
               13), style=0)
 
         self.lblVarUnits = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLVARUNITS,
-              label=u'Variable Units:', name=u'lblVarUnits',
+              label=u'Units:', name=u'lblVarUnits',
               parent=self.pnlPtoSelect, pos=wx.Point(24, 104), size=wx.Size(70,
               13), style=0)
 
@@ -156,7 +156,7 @@ class frmCreateVariable(wx.Dialog):
               pos=wx.Point(280, 104), size=wx.Size(55, 13), style=0)
 
         self.lblNoDV = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLNODV,
-              label=u'NoData Value:', name=u'lblNoDV', parent=self.pnldefinded,
+              label=u'NoDataValue:', name=u'lblNoDV', parent=self.pnldefinded,
               pos=wx.Point(344, 136), size=wx.Size(70, 16), style=0)
 
         self.lblIsRegular = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLISREGULAR,
