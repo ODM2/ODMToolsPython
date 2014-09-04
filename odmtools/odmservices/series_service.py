@@ -164,7 +164,7 @@ class SeriesService():
         # Save As case
         if self.does_exist(series):
             logger.debug(
-                "There is already an existing file with this information. Please select 'Save' to overwrite")
+                "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite")
             return False
         else:
             self._edit_session.add(series)

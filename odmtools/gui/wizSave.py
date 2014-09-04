@@ -312,20 +312,14 @@ class wizSave(wx.wizard.Wizard):
         else:
             closeSuccessful = True
 
-        #if QCL.code == 0:
-        #     #TODO MessageBox "you are overwriting an level 0 dataset, which is usually reserved for raw data
-        #     #  are you sure you want to save?"
-        #     val = wx.MessageBox('Are you Sure?', "you are overwriting an level 0 dataset, which is usually reserved"
-        #                                               " for raw data are you sure you want to save?",  wx.YES_NO | wx.ICON_INFORMATION)
-        #
-        #     if val == wx.OK:
-        #         #TODO Message Box "this action cannot be changed are you sure, you are sure you want to save?"
-        #         val2 = wx.MessageBox('Are you Sure?',"this action cannot be changed are you sure, you are sure "
-        #                                                  "you want to save?",  wx.YES_NO | wx.ICON_INFORMATION)
-        #         if val2 != wx.OK:
-        #closeSuccessful = False
-        #             break
-        #     else: closeSuccessful = False
+        if self.pgIntro.pnlIntroduction.rbSaveExisting:
+            cont = wx.MessageBox("You are about to overwrite an existing series,\nthis action cannot be undone.\nWould you like to continue?\n",
+                                      'Are you  sure?',
+                                      wx.YES_NO | wx.ICON_QUESTION)
+            if cont == 2:
+                closeSuccessful = True
+            else:
+                closeSuccessful = False
 
 
         if closeSuccessful:

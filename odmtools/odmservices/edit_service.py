@@ -442,6 +442,23 @@ class EditService():
             dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
+        logging.debug("original editing series id: %s"%str(series.id))
+#        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
+#                                                             , method if method else series.method_id, series.source_id
+#                                                             , qcl if qcl else series.qcl_id)
+#        print "test query series id:",testseries.id
+        #print a if b else 0
+        if  (var, method, qcl ):
+            tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
+                                                                  var_id=var.id if var else int(series.variable_id),
+                                                                  method_id=method.id if method else int(series.method_id),
+                                                                  source_id= series.source_id,
+                                                                  qcl_id=qcl.id if qcl else int(series.qcl_id))
+            if tseries:
+                logging.debug( "Save existing series ID: %s"% str(series.id))
+                series = tseries
+            else:
+                print "Series doesn't exist ( should be running SaveAs)"
 
         if is_new_series:
             series = series_module.copy_series(series)
@@ -523,11 +540,11 @@ class EditService():
         :return:
         """
         series = self.updateSeries(var, method, qcl, is_new_series=False)
-        if self._series_service.save_new_series(series):
+        if self._series_service.save_series(series):
             logger.debug("series saved!")
             return True
         else:
-            logger.debug("Crap happened")
+            logger.debug("The Save As Existing Function was Unsuccsesful")
             return False
 
     def create_qcl(self, code, definition, explanation):

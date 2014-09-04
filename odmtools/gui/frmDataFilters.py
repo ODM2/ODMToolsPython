@@ -122,10 +122,13 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         # logger.debug("dateAfter: ", repr(dateAfter.day), " + ", repr(dateAfter.month), " + ", repr(dateAfter.year))
         # logger.debug("dateBefore: ", repr(dateBefore.day), " + ", repr(dateBefore.month), " + ", repr(dateBefore.year))
 
-        formattedDateAfter = wx.DateTimeFromDMY(int(dateAfter.day), int(dateAfter.month)-1, int(dateAfter.year), 0, 0, 0)
+        #subtract one from the month because DMY counts from 0 where dateAfter counts months from 1
+        formattedDateAfter = wx.DateTimeFromDMY(day=int(dateAfter.day), month=int(dateAfter.month)-1,
+                                                year=int(dateAfter.year), hour=0, minute=0, second=0)
+        #add an extra day so you can see the full extent of the data(until midnight)
+        formattedDateBefore = wx.DateTimeFromDMY(day=int(dateBefore.day), month=int(dateBefore.month)-1,
+                                                 year=int(dateBefore.year), hour=23, minute=59, second=59)
 
-        formattedDateBefore = wx.DateTimeFromDMY(int(dateBefore.day) + 1, int(dateBefore.month)-1, int(dateBefore.year), 0, 0,
-                                                 0)
         self.dpAfter.SetRange(formattedDateAfter, formattedDateBefore)
         self.dpBefore.SetRange(formattedDateAfter, formattedDateBefore)
         self.dpAfter.SetValue(formattedDateAfter)

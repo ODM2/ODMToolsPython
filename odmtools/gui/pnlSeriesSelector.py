@@ -273,7 +273,7 @@ class pnlSeriesSelector(wx.Panel):
         try:
             self.memDB = MemoryDatabase(self.dbservice)
             seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value,#stringConverter = '%s')
-                                        stringConverter= 'Yy-%m-%d %h:%s' if"date" in key.lower() else'%s')
+                                        stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
                              for key, value in series.returnDict().iteritems()]
             self.tblSeries.SetColumns(seriesColumns)
             self.tblSeries.CreateCheckStateColumn()
@@ -551,9 +551,10 @@ class pnlSeriesSelector(wx.Panel):
         self.tblSeries.currentlySelectedObject = editingObject
 
         ## update Cursor
-        if self.parent.Parent.pnlPlot.isPlotted(editingObject.id):
-            #print "Updating Cursor", editingObject.id
-            Publisher.sendMessage("updateCursor", selectedObject=editingObject)
+        if self.parent.Parent.pnlPlot._seriesPlotInfo:
+            if self.parent.Parent.pnlPlot._seriesPlotInfo.isPlotted(editingObject.id):
+                #print "Updating Cursor", editingObject.id
+                Publisher.sendMessage("updateCursor", selectedObject=editingObject)
 
 
     def onReadyToEdit(self):

@@ -57,7 +57,7 @@ class pnlDataTable(wx.Panel):
         self.record_service = record_service
         self.myOlv.SetColumns(
             ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=-1, width=-1,
-                       stringConverter= '%Y-%m-%d %h:%M:%S' if "date" in x.lower() else'%s')
+                       stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else'%s')
             for x, i in self.memDB.getEditColumns()
         )
 

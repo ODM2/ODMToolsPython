@@ -61,7 +61,7 @@ class pageExisting(wiz.WizardPageSimple):
 
         seriesColumns = [clsExisting.ColumnDefn(key, align="left",
                                                 minimumWidth=-1, valueGetter=value,
-                                                stringConverter= '%Y-%m-%d %h:%M:%S' if 'date' in key.lower() else'%s')
+                                                stringConverter= '%Y-%m-%d %H:%M:%S' if 'date' in key.lower() else '%s')
                          for key, value in series.returnDict().iteritems()]
 
         self.panel.olvSeriesList.SetColumns(seriesColumns)
