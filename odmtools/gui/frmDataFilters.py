@@ -33,10 +33,10 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
 
     def onSetFocus(self, event):
-        logger.debug("event ed : %s" % repr(event.Id))
+        logger.debug("event id : %s" % repr(event.Id))
 
         # DateRange
-        if event.Id in (self.dpAfter.Id, self.dpBefore.Id, self.tpBefore.Id, self.tpAfter.Id):
+        if event.Id in (self.dpAfter.Id, self.dpBefore.Id, self.tpBefore.Id, self.tpAfter.Id, self.sbAfter.Id, self.sbBefore.Id):
             self.rbDate.SetValue(True)
         #Data Gaps
         elif event.Id in ( self.txtGapsVal.Id, self.cbGapTime.Id):
@@ -60,7 +60,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.txtVChangeThresh.Clear()
         self.recordService.reset_filter()
 
-        Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
+        #Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
         event.Skip()
 
 
@@ -97,10 +97,12 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
             dateBefore = self.dpBefore.GetValue()
             timeBefore = self.tpBefore.GetValue(as_wxDateTime=True)
 
-            #print type(timeBefore)
-            #print dir(timeBefore)
-            dtDateAfter = datetime(int(dateAfter.Year), int(dateAfter.Month)+1, int(dateAfter.Day), int(timeAfter.Hour), int(timeAfter.Minute), timeAfter.Second)
-            dtDateBefore = datetime(int(dateBefore.Year), int(dateBefore.Month)+1, int(dateBefore.Day), int(timeBefore.Hour), int(timeBefore.Minute), int(timeBefore.Second))
+
+            #convert to datetime.datetime from wxdatetime time
+            dtDateAfter=_wxdate2pydate(dateAfter, timeAfter)
+            dtDateBefore= _wxdate2pydate(dateBefore, timeBefore)
+            #dtDateAfter = datetime(int(dateAfter.Year), int(dateAfter.Month)+1, int(dateAfter.Day), int(timeAfter.Hour), int(timeAfter.Minute), timeAfter.Second)
+            #dtDateBefore = datetime(int(dateBefore.Year), int(dateBefore.Month)+1, int(dateBefore.Day), int(timeBefore.Hour), int(timeBefore.Minute), int(timeBefore.Second))
             self.recordService.filter_date(dtDateBefore, dtDateAfter)
 
         elif self.rbVChangeThresh.GetValue():
@@ -108,7 +110,6 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
                 self.recordService.value_change_threshold(float(self.txtVChangeGT.GetValue()), '>')
            elif self.txtVChangeLT.GetValue():
                 self.recordService.value_change_threshold(float(self.txtVChangeLT.GetValue()), '<')
-                #self.recordService.value_change_threshold(float(self.txtVChangeThresh.GetValue()))
 
         #Publisher.sendMessage("changeSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
         #Publisher.sendMessage("changeTableSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
@@ -123,13 +124,39 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         # logger.debug("dateBefore: ", repr(dateBefore.day), " + ", repr(dateBefore.month), " + ", repr(dateBefore.year))
 
         #subtract one from the month because DMY counts from 0 where dateAfter counts months from 1
-        formattedDateAfter = wx.DateTimeFromDMY(day=int(dateAfter.day), month=int(dateAfter.month)-1,
-                                                year=int(dateAfter.year), hour=0, minute=0, second=0)
+        #formattedDateAfter = wx.DateTimeFromDMY(day=int(dateAfter.day), month=int(dateAfter.month)-1,
+                                                #year=int(dateAfter.year))
         #add an extra day so you can see the full extent of the data(until midnight)
-        formattedDateBefore = wx.DateTimeFromDMY(day=int(dateBefore.day), month=int(dateBefore.month)-1,
-                                                 year=int(dateBefore.year), hour=23, minute=59, second=59)
+        #formattedDateBefore = wx.DateTimeFromDMY(day=int(dateBefore.day), month=int(dateBefore.month)-1,
+                                                 #year=int(dateBefore.year))
+
+        formattedDateAfter = _pydate2wxdate(dateAfter)
+        formattedDateBefore =_pydate2wxdate(dateBefore)
 
         self.dpAfter.SetRange(formattedDateAfter, formattedDateBefore)
         self.dpBefore.SetRange(formattedDateAfter, formattedDateBefore)
         self.dpAfter.SetValue(formattedDateAfter)
+        self.tpBefore.SetValue(wx.DateTimeFromHMS(hour=23, minute=59, second=59))
         self.dpBefore.SetValue(formattedDateBefore)
+
+
+
+def _pydate2wxdate(date):
+     import datetime
+     assert isinstance(date, (datetime.datetime, datetime.date))
+     tt = date.timetuple()
+     dmy = (tt[2], tt[1]-1, tt[0])
+     return wx.DateTimeFromDMY(*dmy)
+
+
+def _wxdate2pydate(date, time):
+     import datetime
+     assert isinstance(date, wx.DateTime)
+     assert isinstance(time, wx.DateTime)
+     if date.IsValid() and time.IsValid():
+         ymd = map(int, date.FormatISODate().split('-'))
+         hms = map(int, time.FormatISOTime().split(':'))
+         return datetime.datetime(*(ymd+hms))
+     else:
+         return None
+

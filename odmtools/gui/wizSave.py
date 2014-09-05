@@ -251,8 +251,11 @@ class wizSave(wx.wizard.Wizard):
 
 
         # Set the initial order of the pages
-        self.pgIntro.SetNext(self.pgMethod)
+        self.pgIntro.SetNext(self.pgSummary)
+        self.pgSummary.SetPrev(self.pgIntro)
 
+
+        #SaveAs Pages
         self.pgMethod.SetPrev(self.pgIntro)
         self.pgMethod.SetNext(self.pgQCL)
 
@@ -262,11 +265,11 @@ class wizSave(wx.wizard.Wizard):
         self.pgVariable.SetPrev(self.pgQCL)
         self.pgVariable.SetNext(self.pgSummary)
 
-        self.pgSummary.SetPrev(self.pgVariable)
-
-        #existing series page
+                #Save existing  page
         self.pgExisting.SetPrev(self.pgIntro)
         self.pgExisting.SetNext(self.pgSummary)
+
+
 
         self.GetPageAreaSizer().Add(self.pgIntro)
         self.RunWizard(self.pgIntro)
@@ -282,9 +285,11 @@ class wizSave(wx.wizard.Wizard):
         if self.pgIntro.pnlIntroduction.rbSave.GetValue():
             self.pgIntro.SetNext(self.pgSummary)
             self.pgSummary.SetPrev(self.pgIntro)
+
         elif self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             self.pgIntro.SetNext(self.pgMethod)
             self.pgSummary.SetPrev(self.pgVariable)
+
         else:
             self.pgIntro.SetNext(self.pgExisting)
             self.pgSummary.SetPrev(self.pgExisting)
@@ -312,7 +317,7 @@ class wizSave(wx.wizard.Wizard):
         else:
             closeSuccessful = True
 
-        if self.pgIntro.pnlIntroduction.rbSaveExisting:
+        if self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
             cont = wx.MessageBox("You are about to overwrite an existing series,\nthis action cannot be undone.\nWould you like to continue?\n",
                                       'Are you  sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)

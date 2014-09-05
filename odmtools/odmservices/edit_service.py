@@ -448,12 +448,12 @@ class EditService():
 #                                                             , qcl if qcl else series.qcl_id)
 #        print "test query series id:",testseries.id
         #print a if b else 0
-        if  (var, method, qcl ):
+        if  (var or method or qcl ):
             tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
                                                                   var_id=var.id if var else int(series.variable_id),
                                                                   method_id=method.id if method else int(series.method_id),
                                                                   source_id= series.source_id,
-                                                                  qcl_id=qcl.id if qcl else int(series.qcl_id))
+                                                                  qcl_id=qcl.id if qcl else int(series.quality_control_level_id))
             if tseries:
                 logging.debug( "Save existing series ID: %s"% str(series.id))
                 series = tseries

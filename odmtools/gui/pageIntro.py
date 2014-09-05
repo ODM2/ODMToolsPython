@@ -55,12 +55,12 @@ class pageIntro(wiz.PyWizardPage):
         #event.Skip()
 
     def OnBtnSaveAsRadiobutton(self, event):
-        print "in saveASRadioButton"
+        print "in saveAsRadioButton"
         Publisher.sendMessage("wizChangeSave", event = event)        #event.Skip()
 
     def OnBtnSaveExistingRadiobuton(self, event):
         Publisher.sendMessage("wizChangeSave", event = event)
-        print "in saveexistingRadioButton"
+        print "in saveExistingRadioButton"
         #event.Skip()
 	
 	

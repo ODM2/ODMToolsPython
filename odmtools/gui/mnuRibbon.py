@@ -102,14 +102,14 @@ class mnuRibbon(RB.RibbonBar):
 
         self.dpStartDate = wx.DatePickerCtrl(id=wxID_STARTDPDATE, name=u'dpStartDate', parent=self.dateTime_buttonbar,
                                              pos=wx.Point(5, 8), size=wx.Size(120, 24), style=wx.DP_DROPDOWN)
-        self.dpStartDate.SetValue(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0))
-        self.dpStartDate.SetLabel(repr(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0)))
+        #self.dpStartDate.SetValue(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0))
+        #self.dpStartDate.SetLabel(repr(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0)))
         self.dpStartDate.SetToolTipString(u'Start Date')
 
         self.dpEndDate = wx.DatePickerCtrl(id=wxID_ENDDPDATE, name=u'dpEndDate', parent=self.dateTime_buttonbar,
                                            pos=wx.Point(5, 40), size=wx.Size(120, 24), style=wx.DP_DROPDOWN)
-        self.dpEndDate.SetValue(wx.DateTimeFromDMY(01, 04, 2008, 0, 0, 0))
-        self.dpEndDate.SetLabel(repr(wx.DateTimeFromDMY(1, 04, 2008, 0, 0, 0)))
+        #self.dpEndDate.SetValue(wx.DateTimeFromDMY(01, 04, 2008, 0, 0, 0))
+        #self.dpEndDate.SetLabel(repr(wx.DateTimeFromDMY(1, 04, 2008, 0, 0, 0)))
         self.dpEndDate.SetToolTipString(u'End Date')
 
         self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEAPPLY, "Apply", date_setting.GetBitmap(), "")
@@ -302,18 +302,22 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def resetDateRange(self, startDate, endDate, currStart=None, currEnd=None):
-        maxStart = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
-        maxEnd = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
+        #maxStart = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
+        #maxEnd = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
+        maxStart = _pydate2wxdate(startDate)
+        maxEnd = _pydate2wxdate(endDate)
 
         self.dpStartDate.SetRange(maxStart, maxEnd)
         if currStart:
-            self.dpStartDate.SetValue(wx.DateTimeFromDMY(currStart.day, currStart.month - 1, currStart.year))
+            self.dpStartDate.SetValue(_pydate2wxdate(currStart))
+            #self.dpStartDate.SetValue(wx.DateTimeFromDMY(currStart.day, currStart.month - 1, currStart.year))
         else:
             self.dpEndDate.SetValue(self.maxStart)
 
         self.dpEndDate.SetRange(maxStart, maxEnd)
         if currEnd:
-            self.dpEndDate.SetValue(wx.DateTimeFromDMY(currEnd.day, currEnd.month - 1, currEnd.year))
+            self.dpEndDate.SetValue(_pydate2wxdate(currEnd))
+            #self.dpEndDate.SetValue(wx.DateTimeFromDMY(currEnd.day, currEnd.month - 1, currEnd.year))
         else:
             self.dpEndDate.SetValue(self.maxEnd)
 
@@ -646,3 +650,9 @@ class mnuRibbon(RB.RibbonBar):
 
         self.enableDateSelection(not state)
 
+def _pydate2wxdate(date):
+     import datetime
+     assert isinstance(date, (datetime.datetime, datetime.date))
+     tt = date.timetuple()
+     dmy = (tt[2], tt[1]-1, tt[0])
+     return wx.DateTimeFromDMY(*dmy)
