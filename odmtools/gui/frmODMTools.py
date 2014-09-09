@@ -77,19 +77,21 @@ class frmODMToolsMain(wx.Frame):
 
         self.service_manager = ServiceManager()
         self.record_service = None
-        conn_dict = self.service_manager.get_current_connection()
+        conn_dict = self.service_manager.is_valid_connection()
         #there is a connection but it is unsuccessful
-        if (conn_dict == None
-            or (conn_dict != None and not self.service_manager.test_connection(conn_dict))):
+
+        '''
+        if conn_dict == None or conn_dict != None and not self.service_manager.test_connection(conn_dict):
             # Create a DB form which will set a connection for the service manager
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
-        if (conn_dict != None and self.service_manager.get_db_version(conn_dict) != u'1.1.1'):
+
+        if conn_dict != None and self.service_manager.get_db_version(conn_dict) != u'1.1.1':
             wx.MessageBox('The ODM database must be version 1.1.1 to use ODMToolsPython',
                           'Database Version Incompatible', wx.OK)
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
             db_config.ShowModal()
-
+        '''
     ###################### Frame ################
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -123,7 +125,6 @@ class frmODMToolsMain(wx.Frame):
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
-
         self.dataTable = pnlDataTable.pnlDataTable(id=wxID_ODMTOOLSGRID1, name='dataTable',
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
                                                    style=0)
@@ -216,7 +217,7 @@ class frmODMToolsMain(wx.Frame):
     def refreshConnectionInfo(self):
         """Updates the Series Selector Connection Information for the user"""
 
-        conn_dict = self.service_manager.get_current_connection()
+        conn_dict = self.service_manager.get_current_conn_dict()
 
         msg = 'Series: %s://%s@%s/%s' % (
             conn_dict['engine'], conn_dict['user'], conn_dict['address'], conn_dict['db']
@@ -325,7 +326,6 @@ class frmODMToolsMain(wx.Frame):
     def onChangeDBConn(self, event):
         db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
-
 
         #print "Value: ", value
         #print "wxID_FRMDBCONFIGBTNSAVE: ", db_config._init_ctrls[2] #wxID_FRMDBCONFIGBTNSAVE

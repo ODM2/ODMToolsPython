@@ -1,6 +1,6 @@
 from collections import OrderedDict # Requires Python 2.7 >=
 
-from sqlalchemy import *
+from sqlalchemy import Column, Integer, ForeignKey, String, Float, DateTime
 from sqlalchemy.orm import relationship
 
 from base import Base

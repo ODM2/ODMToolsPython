@@ -1,5 +1,4 @@
-from sqlalchemy import *
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String
 from base import Base
 
 class SampleMediumCV(Base):

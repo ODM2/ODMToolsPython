@@ -1,4 +1,4 @@
-from sqlalchemy import *
+from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from base import Base
 from iso_metadata import ISOMetadata

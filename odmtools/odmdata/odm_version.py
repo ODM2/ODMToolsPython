@@ -1,5 +1,4 @@
 from sqlalchemy import String, Column
-from sqlalchemy.orm import relationship
 from base import Base
 
 class ODMVersion(Base):

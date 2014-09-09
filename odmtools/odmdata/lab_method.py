@@ -1,5 +1,4 @@
-from sqlalchemy import *
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Integer
 from base import Base
 
 class LabMethod(Base):

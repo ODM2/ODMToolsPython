@@ -1,6 +1,6 @@
 # Declare a mapped class
-from sqlalchemy import *
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import relationship
 from base import Base
 from spatial_reference import SpatialReference
 
