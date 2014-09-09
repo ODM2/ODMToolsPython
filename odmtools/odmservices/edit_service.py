@@ -562,7 +562,7 @@ class EditService():
 
     def reconcile_dates(self, parent_series_id):
         # FUTURE FEATURE: pull in new field data from another series and add to this series
-        # (i.e one series contains new field data of an ediited series at a higher qcl)
+        # (i.e one series contains new field data of an edited series at a higher qcl)
         pass
 
     def _build_dv_from_tuple(self, dv_tuple):
