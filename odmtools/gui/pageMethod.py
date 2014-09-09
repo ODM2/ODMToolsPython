@@ -122,5 +122,5 @@ class pnlMethod(wx.Panel):
 
 
         elif self.rbCreateNew.Value:
-            m.description = self.txtMethodDescrip.Value()
+            m.description = self.txtMethodDescrip.GetValue()
         return m

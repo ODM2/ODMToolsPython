@@ -400,7 +400,8 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection inof to wizard
         # get site, Variable and Source from current dataset
 
-        savewiz = wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
+        wiz=wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
+        del wiz
         event.Skip()
 
     def onEditFilter(self, event):

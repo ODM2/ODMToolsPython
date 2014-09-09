@@ -294,8 +294,9 @@ class wizSave(wx.wizard.Wizard):
             self.pgIntro.SetNext(self.pgExisting)
             self.pgSummary.SetPrev(self.pgExisting)
 
-
-
+    def on_wizard_finishedtest(self, event):
+        self.Destroy()
+        self.Close()
 
     def on_wizard_finished(self, event):
         Site, Variable, Method, Source, QCL = self.get_metadata()
@@ -375,5 +376,6 @@ class wizSave(wx.wizard.Wizard):
             else:
                 Publisher.sendMessage("refreshSeries")
 
+            self.Destroy()
             self.Close()
-            event.Skip()
+
