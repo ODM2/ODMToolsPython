@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import datetime
+from matplotlib.ticker import FormatStrFormatter
 
 import wx
 import matplotlib
@@ -145,7 +146,7 @@ class plotTimeSeries(wx.Panel):
         if isVisible:
             self.isShowLegendEnabled = True
             plt.subplots_adjust(bottom=.1 + .1)
-            leg = self.timeSeries.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
+            leg = self.timeSeries.legend(loc='upper right', ncol=2, fancybox=True, prop=self.fontP)
             leg.get_frame().set_alpha(.5)
             leg.draggable(state=True)
         else:
@@ -245,7 +246,8 @@ class plotTimeSeries(wx.Panel):
         self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
-                                                         label=oneSeries.plotTitle, zorder =10, alpha=1, picker=5.0, pickradius=5.0)
+                                                         label=oneSeries.plotTitle, zorder=10, alpha=1,
+                                                         picker=5.0, pickradius=5.0)
 
         self.selectedlist = self.parent.record_service.get_filter_list()
 
@@ -256,7 +258,7 @@ class plotTimeSeries(wx.Panel):
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.timeradius = self.editCurve.timeRadius
         #self.radius = self.editCurve.yrange/10
-        self.radius = 10
+        #self.radius = 10
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
 
@@ -306,8 +308,9 @@ class plotTimeSeries(wx.Panel):
                             [x[0] for x in oneSeries.dataTable],
                             self.format, color=oneSeries.color,
                             xdate=True, tz=None, antialiased=True,
-                            label=oneSeries.plotTitle,
-                            alpha = self.alpha, picker=8.0, pickradius=8.0
+                            label=oneSeries.plotTitle, alpha=self.alpha,
+                            picker=5.0, pickradius=5.0,
+                            markersize=4
                         )
                     )
 
@@ -330,13 +333,14 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.set_xlabel("Date", picker=True)
         self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
+        #self.timeSeries.axis[:].set_major_formatter(FormatStrFormatter('%.2f'))
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
         self.timeSeries.axis[:].major_ticklabels.set_picker(True)
 
-        #plt.gcf().autofmt_xdate()
+        plt.gcf().autofmt_xdate()
         plt.tight_layout()
         self.canvas.draw()
 
