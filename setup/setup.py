@@ -24,12 +24,13 @@ ez_setup.use_setuptools()
 
 
 NAME = 'ODMTools'
-APP = ['C:\Users\Jacob\Documents\ODMToolsPython\ODMToolsPython.py']
+APP = ['C:\Users\Jacob\Documents\ODMToolsPython\ODMTools.py']
 extra_options = None
 
 if sys.platform == 'darwin':
+    sys.argv.append('py2app')
     from setuptools import setup
-    APP = ['/Users/stephanie/ODMToolsPython/ODMToolsPython.py']
+    APP = ['/Users/stephanie/ODMToolsPython/ODMTools.py']
     LIBS = ['/usr/X11/lib/libfreetype.6.dylib', '/usr/X11/lib/libstdc++.6.dylib', '/usr/X11/lib/libpng15.15.dylib']
     OPTIONS = {'iconfile': '/Users/stephanie/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
                'includes': ['pymysql', 'appdirs', 'matplotlib', 'sqlalchemy', 'dateutil'], 'frameworks': LIBS}
