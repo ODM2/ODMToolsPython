@@ -3,15 +3,19 @@ import os
 
 import wx
 
-# import wx.lib.agw.ultimatelistctrl as ULC
+
 from wx.lib.pubsub import pub as Publisher
 from ObjectListView import ColumnDefn
 from ObjectListView.Filter import TextSearch, Chain
+import datetime
 
 import frmQueryBuilder
+
 #from clsSeriesTable import clsSeriesTable, TextSearch, Chain, EVT_OVL_CHECK_EVENT
-from clsSeriesTable import clsSeriesTable, EVT_OVL_CHECK_EVENT
+from odmtools.controller.odmObjectListView import EVT_OVL_CHECK_EVENT
+
 from odmtools.common.logger import LoggerTool
+from odmtools.controller import odmObjectListView
 from odmtools.odmdata import MemoryDatabase, series
 from odmtools.odmservices import ServiceManager
 
@@ -46,9 +50,8 @@ class test_ss(wx.Frame):
  wxID_PNLSERIESSELECTORCHECKSITE, wxID_PNLSERIESSELECTORCHECKVARIABLE, wxID_PNLSERIESSELECTORLBLSITE,
  wxID_PNLSERIESSELECTORLBLVARIABLE, wxID_PNLSERIESSELECTORtableSeries, wxID_PNLSERIESSELECTORPANEL1,
  wxID_PNLSERIESSELECTORPANEL2, wxID_PNLSIMPLE, wxID_PNLRADIO, wxID_FRAME1RBADVANCED, wxID_FRAME1RBALL,
- wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER, wxID_PNLSERIESSELECTORtableSeriesTest, ] = [wx.NewId() for
-                                                                                                         _init_ctrls in
-                                                                                                         range(18)]
+ wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER, wxID_PNLSERIESSELECTORtableSeriesTest, ] = [
+    wx.NewId() for _init_ctrls in range(18)]
 
 
 class pnlSeriesSelector(wx.Panel):
@@ -175,7 +178,7 @@ class pnlSeriesSelector(wx.Panel):
                                 pos=wx.Point(3, 0), size=wx.Size(800, 25), style=wx.TAB_TRAVERSAL)
 
         self.cbSites = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBSITES, name=u'cbSites', parent=self.pnlSite,
-                                   pos=wx.Point(100, 0), size=wx.Size(700, 23), style=0, value=u'')
+                                   pos=wx.Point(100, 0), size=wx.Size(700, 23), style=wx.CB_READONLY, value=u'')
 
         self.checkSite = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKSITE, label=u'', name=u'checkSite',
                                      parent=self.pnlSite, pos=wx.Point(3, 0), size=wx.Size(21, 21), style=0)
@@ -189,7 +192,6 @@ class pnlSeriesSelector(wx.Panel):
         self.checkSite.SetValue(True)
         self.checkSite.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKSITE)
 
-
         ### Variable Panel
         self.pnlVar = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL2, name='pnlVar', parent=self.cpnlSimple.GetPane(),
                                pos=wx.Point(3, 26), size=wx.Size(800, 25), style=wx.TAB_TRAVERSAL)
@@ -202,15 +204,17 @@ class pnlSeriesSelector(wx.Panel):
         self.checkVariable.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKVARIABLE)
 
         self.cbVariables = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
-                                       parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25), style=0,
+                                       parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25), style=wx.CB_READONLY,
                                        value='comboBox4')
         self.cbVariables.SetLabel(u'')
         self.cbVariables.Enable(False)
         self.cbVariables.Bind(wx.EVT_COMBOBOX, self.onCbVariablesCombobox, id=wxID_PNLSERIESSELECTORCBVARIABLES)
 
+
         ### New Stuff ##################################################################################################
 
-        self.tblSeries = clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
+        self.tblSeries = odmObjectListView.clsSeriesTable(id=wxID_PNLSERIESSELECTORtableSeries, parent=self.pnlData,
+
                                                name=u'tblSeries', size=wx.Size(950, 108), pos=wx.Point(5, 5),
                                                style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VIRTUAL)
 
@@ -226,20 +230,7 @@ class pnlSeriesSelector(wx.Panel):
         #self.tblSeries.oddRowsBackColor = wx.Colour(143, 188, 188)
         self.tblSeries.oddRowsBackColor = wx.Colour(191, 217, 217)
         self.cpnlSimple.Collapse(True)
-        #self.cpnlSimple.Collapse(True)
         self._init_sizers()
-        ################################################################################################################
-        #self.tableSeries = clsULC(id=wxID_PNLSERIESSELECTORtableSeriesTest,
-        #                          name=u'tableSeries', parent=self.pnlData, pos=wx.Point(5, 5),size=wx.Size(903, 108),
-        #                          agwStyle=ULC.ULC_REPORT | ULC.ULC_HRULES | ULC.ULC_VRULES | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT | ULC.ULC_SINGLE_SEL)
-        #self.tableSeries.Hide()
-
-
-        ##        self.splitter.Initialize(self.tableSeries)
-        #self.tableSeries.Bind(ULC.EVT_LIST_ITEM_CHECKED, self.onTableSeriesListItemSelected,
-        #                      id=wxID_PNLSERIESSELECTORtableSeries)
-        #self.tableSeries.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnTableRightDown,
-        #                      id=wxID_PNLSERIESSELECTORtableSeries)
 
     def initPubSub(self):
         #Publisher.subscribe(self.onEditButton, ("selectEdit"))
@@ -279,15 +270,18 @@ class pnlSeriesSelector(wx.Panel):
 
     def initTableSeries(self):
         """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
-
-        self.memDB = MemoryDatabase(self.dbservice)
-        seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value) for key, value in
-                         series.returnDict().iteritems()]
-        self.tblSeries.SetColumns(seriesColumns)
-        self.tblSeries.CreateCheckStateColumn()
-        object = self.dbservice.get_all_series()
-        self.tblSeries.SetObjects(object)
-        #self.tblSeries.SaveObject(object)
+        try:
+            self.memDB = MemoryDatabase(self.dbservice)
+            seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value,#stringConverter = '%s')
+                                        stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
+                             for key, value in series.returnDict().iteritems()]
+            self.tblSeries.SetColumns(seriesColumns)
+            self.tblSeries.CreateCheckStateColumn()
+            object = self.dbservice.get_all_series()
+            self.tblSeries.SetObjects(object)
+        except AttributeError as e:
+            logger.error(e)
+            #self.tblSeries.SaveObject(object)
 
 
     def initSVBoxes(self):
@@ -296,16 +290,19 @@ class pnlSeriesSelector(wx.Panel):
         self.variable_code = None
 
         #####INIT drop down boxes for Simple Filter
-        self.siteList = self.dbservice.get_all_sites()
-        for site in self.siteList:
-            self.cbSites.Append(site.code + '-' + site.name)
-        self.cbSites.SetSelection(0)
-        self.site_code = self.siteList[0].code
+        try:
+            self.siteList = self.dbservice.get_all_sites()
+            for site in self.siteList:
+                self.cbSites.Append(site.code + '-' + site.name)
+            self.cbSites.SetSelection(0)
+            self.site_code = self.siteList[0].code
 
-        self.varList = self.dbservice.get_all_variables()
-        for var in self.varList:
-            self.cbVariables.Append(var.code + '-' + var.name)
-        self.cbVariables.SetSelection(0)
+            self.varList = self.dbservice.get_all_variables()
+            for var in self.varList:
+                self.cbVariables.Append(var.code + '-' + var.name)
+            self.cbVariables.SetSelection(0)
+        except AttributeError as e:
+            logger.error(e)
 
     def OnTableRightDown(self, event):
         """
@@ -326,9 +323,15 @@ class pnlSeriesSelector(wx.Panel):
         popup_export_metadata = wx.NewId()
         popup_select_all = wx.NewId()
         popup_select_none = wx.NewId()
+
+
         popup_menu = wx.Menu()
-        self.Bind(wx.EVT_MENU, self.onRightPlot, popup_menu.Append(popup_plot_series, 'Plot'))
-        self.Bind(wx.EVT_MENU, self.onRightEdit, popup_menu.Append(popup_edit_series, 'Edit'))
+        plotItem = popup_menu.Append(popup_plot_series, 'Plot')
+        editItem = popup_menu.Append(popup_edit_series, 'Edit')
+
+        self.Bind(wx.EVT_MENU, self.onRightPlot, plotItem)
+        # TODO @jmeline needs to fix edit, it doesn't unedit when a plot is being edited
+        self.Bind(wx.EVT_MENU, self.onRightEdit, editItem)
         # TODO @jmeline will refresh and clear selected as an enhancement
         #self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
         #self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
@@ -336,6 +339,9 @@ class pnlSeriesSelector(wx.Panel):
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))
         self.Bind(wx.EVT_MENU, self.onRightExMeta, popup_menu.Append(popup_export_metadata, 'Export MetaData'))
+
+        if self.isEditing:
+            popup_menu.Enable(popup_edit_series, False)
 
         self.tblSeries.PopupMenu(popup_menu)
         event.Skip()
@@ -538,7 +544,7 @@ class pnlSeriesSelector(wx.Panel):
         else:
             #logger.debug("%d" % (len(self.tblSeries.GetCheckedObjects())))
             self.parent.Parent.addPlot(self.memDB, object.id)
-
+            Publisher.sendMessage("updateCursor", selectedObject=object)
 
         self.Refresh()
 
@@ -554,7 +560,11 @@ class pnlSeriesSelector(wx.Panel):
         self.tblSeries.currentlySelectedObject = editingObject
 
         ## update Cursor
-        Publisher.sendMessage("updateCursor", selectedObject=editingObject)
+        if self.parent.Parent.pnlPlot._seriesPlotInfo:
+            if self.parent.Parent.pnlPlot._seriesPlotInfo.isPlotted(editingObject.id):
+                #print "Updating Cursor", editingObject.id
+                Publisher.sendMessage("updateCursor", selectedObject=editingObject)
+
 
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector"""

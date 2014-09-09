@@ -7,7 +7,7 @@ __author__ = 'Jacob'
 
 import logging
 
-from appdirs import *
+from .appdirs import *
 
 
 class LoggerTool():

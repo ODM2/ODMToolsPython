@@ -9,7 +9,7 @@ import re
 
 from wx.tools import img2py
 
-output = 'icons.py'
+output = 'newIcons.py'
 
 # get the list of BMP files
 #files = [f for f in os.listdir('.') if re.search(r'odm\d*x\d*\.png', f)]
@@ -18,9 +18,10 @@ files = glob.glob('*.png') #TODO: chose your extension here
 
 open(output, 'w')
 
-print files
 # call img2py on each file
 for file in files:
+    print "files: ", file
+
 
     # extract the basename to be used as the image name
     name = os.path.splitext(os.path.basename(file))[0]

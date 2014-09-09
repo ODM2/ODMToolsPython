@@ -33,7 +33,7 @@ Install the following software/libraries.
 +	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/downloads)
 +	[Numpy-1.8.0](http://www.scipy.org/Download)
 +	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/v1.2/ObjectListView-1.2-without-graphics.zip/download)
-+   [Appdirs 1.3.0](https://pypi.python.org/pypi/appdirs/1.3.0)
+
 
 
 Once you have downloaded the source code and all the dependencies installed, run the main application:

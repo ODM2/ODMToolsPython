@@ -2,7 +2,7 @@
 
 import wx
 import frmCreateVariable
-from odmdata import Variable
+from odmtools.odmdata import Variable
 
 [wxID_PNLVARIABLE, wxID_PNLVARIABLELSTVARIABLE, wxID_PNLVARIABLERBCREATE,
  wxID_PNLVARIABLERBCURRENT, wxID_PNLVARIABLERBSELECT,wxID_PNLVARIABLETXTNEWVAR,

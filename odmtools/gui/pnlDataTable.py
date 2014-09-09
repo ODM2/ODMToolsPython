@@ -6,6 +6,7 @@ import wx
 import wx.grid
 from ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
+import datetime
 
 from odmtools.common.logger import LoggerTool
 
@@ -55,7 +56,8 @@ class pnlDataTable(wx.Panel):
         self.memDB = memDB
         self.record_service = record_service
         self.myOlv.SetColumns(
-            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=-1, width=-1)
+            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=-1, width=-1,
+                       stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else'%s')
             for x, i in self.memDB.getEditColumns()
         )
 

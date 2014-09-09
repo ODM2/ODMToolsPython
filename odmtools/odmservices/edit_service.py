@@ -403,23 +403,29 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
-    def save(self, var=None, method=None, qcl=None, saveAs=False):
+    def updateSeries(self, var=None, method=None, qcl=None, is_new_series=False):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param is_new_series:
+        :return:
+        """
         dvs = []
-        is_new_series = False
+
 
         if var is not None:
             logger.debug(var.id)
             self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
-            is_new_series = True
+
         if method is not None:
             logger.debug(method.id)
             self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
-            is_new_series = True
         # check that the code is not zero
-        #if qcl is not None and qcl.code != 0:
+        # if qcl is not None and qcl.code != 0:
         if qcl is not None:
             self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
-            is_new_series = True
         #else:
         #    raise ValueError("Quality Control Level cannot be zero")
 
@@ -436,6 +442,23 @@ class EditService():
             dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
+        logging.debug("original editing series id: %s"%str(series.id))
+#        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
+#                                                             , method if method else series.method_id, series.source_id
+#                                                             , qcl if qcl else series.qcl_id)
+#        print "test query series id:",testseries.id
+        #print a if b else 0
+        if  (var or method or qcl ):
+            tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
+                                                                  var_id=var.id if var else int(series.variable_id),
+                                                                  method_id=method.id if method else int(series.method_id),
+                                                                  source_id= series.source_id,
+                                                                  qcl_id=qcl.id if qcl else int(series.quality_control_level_id))
+            if tseries:
+                logging.debug( "Save existing series ID: %s"% str(series.id))
+                series = tseries
+            else:
+                print "Series doesn't exist ( should be running SaveAs)"
 
         if is_new_series:
             series = series_module.copy_series(series)
@@ -466,6 +489,7 @@ class EditService():
         series.end_date_time_utc = dvs[-1].date_time_utc
         series.value_count = len(dvs)
 
+        ## Override previous save
         if not is_new_series:
             # delete old dvs
             old_dvs = series.data_values
@@ -473,11 +497,54 @@ class EditService():
 
         series.data_values = dvs
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
-        if self._series_service.save_series(series, dvs, saveAs):
+
+        return series
+
+    def save(self):
+        """ Save to an existing catalog
+        :param var:
+        :param method:
+        :param qcl:
+        :return:
+        """
+
+        series = self.updateSeries(is_new_series=False)
+        if self._series_service.save_series(series):
             logger.debug("series saved!")
             return True
         else:
             logger.debug("Crap happened")
+            return False
+
+    def save_as(self, var=None, method=None, qcl=None):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :return:
+        """
+        series = self.updateSeries(var, method, qcl, is_new_series=True)
+        if self._series_service.save_new_series(series):
+            logger.debug("series saved!")
+            return True
+        else:
+            logger.debug("Crap happened")
+            return False
+    def save_existing(self, var=None, method=None, qcl=None):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :return:
+        """
+        series = self.updateSeries(var, method, qcl, is_new_series=False)
+        if self._series_service.save_series(series):
+            logger.debug("series saved!")
+            return True
+        else:
+            logger.debug("The Save As Existing Function was Unsuccsesful")
             return False
 
     def create_qcl(self, code, definition, explanation):
@@ -495,7 +562,7 @@ class EditService():
 
     def reconcile_dates(self, parent_series_id):
         # FUTURE FEATURE: pull in new field data from another series and add to this series
-        # (i.e one series contains new field data of an ediited series at a higher qcl)
+        # (i.e one series contains new field data of an edited series at a higher qcl)
         pass
 
     def _build_dv_from_tuple(self, dv_tuple):

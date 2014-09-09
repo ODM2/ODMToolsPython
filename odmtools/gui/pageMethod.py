@@ -3,7 +3,7 @@
 import wx
 import wx.grid
 import wx.richtext
-from odmdata import Method
+from odmtools.odmdata import Method
 
 [wxID_PNLMETHOD, wxID_PNLMETHODSLISTCTRL1, wxID_PNLMETHODSRBCREATENEW,
  wxID_PNLMETHODSRBGENERATE, wxID_PNLMETHODSRBSELECT,
@@ -122,5 +122,5 @@ class pnlMethod(wx.Panel):
 
 
         elif self.rbCreateNew.Value:
-            m.description = self.txtMethodDescrip.Value()
+            m.description = self.txtMethodDescrip.GetValue()
         return m

@@ -1,7 +1,7 @@
 #Boa:FramePanel:pnlQCL
 
 import wx
-from odmdata import QualityControlLevel
+from odmtools.odmdata import QualityControlLevel
 
 [wxID_PNLQCL, wxID_PNLQCLLBLCODE, wxID_PNLQCLLBLDEFINITION,
  wxID_PNLQCLLBLEXPLANATION, wxID_PNLQCLLSTQCL, wxID_PNLQCLRBCREATE,

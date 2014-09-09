@@ -102,14 +102,14 @@ class mnuRibbon(RB.RibbonBar):
 
         self.dpStartDate = wx.DatePickerCtrl(id=wxID_STARTDPDATE, name=u'dpStartDate', parent=self.dateTime_buttonbar,
                                              pos=wx.Point(5, 8), size=wx.Size(120, 24), style=wx.DP_DROPDOWN)
-        self.dpStartDate.SetValue(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0))
-        self.dpStartDate.SetLabel(repr(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0)))
+        #self.dpStartDate.SetValue(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0))
+        #self.dpStartDate.SetLabel(repr(wx.DateTimeFromDMY(16, 1, 2008, 0, 0, 0)))
         self.dpStartDate.SetToolTipString(u'Start Date')
 
         self.dpEndDate = wx.DatePickerCtrl(id=wxID_ENDDPDATE, name=u'dpEndDate', parent=self.dateTime_buttonbar,
                                            pos=wx.Point(5, 40), size=wx.Size(120, 24), style=wx.DP_DROPDOWN)
-        self.dpEndDate.SetValue(wx.DateTimeFromDMY(01, 04, 2008, 0, 0, 0))
-        self.dpEndDate.SetLabel(repr(wx.DateTimeFromDMY(1, 04, 2008, 0, 0, 0)))
+        #self.dpEndDate.SetValue(wx.DateTimeFromDMY(01, 04, 2008, 0, 0, 0))
+        #self.dpEndDate.SetLabel(repr(wx.DateTimeFromDMY(1, 04, 2008, 0, 0, 0)))
         self.dpEndDate.SetToolTipString(u'End Date')
 
         self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEAPPLY, "Apply", date_setting.GetBitmap(), "")
@@ -150,8 +150,7 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITFLAG, "Flag", flag.GetBitmap(), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITADDPOINT, "Add Point", add.GetBitmap(), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITDELPOINT, "Delete Point", delete.GetBitmap(), "")
-        self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRECORD, "Record", bitmap=record.GetBitmap(), help_string="",
-                                      kind=0x4)
+        #self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRECORD, "Record", bitmap=record.GetBitmap(), help_string="",kind=0x4)
 
         self.edit_bar.EnableButton(wxID_RIBBONEDITFILTER, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITCHGVALUE, False)
@@ -160,7 +159,7 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITFLAG, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITADDPOINT, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, False)
-        self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
+        #self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
 
         self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Recording Options", wx.NullBitmap, wx.DefaultPosition,
                                            wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
@@ -169,7 +168,11 @@ class mnuRibbon(RB.RibbonBar):
         self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New Script", newscript.GetBitmap(), "")
         self.record_bar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open Script", openscript.GetBitmap(), "")
         self.record_bar.AddSimpleButton(wxID_RIBBONRECORDSAVE, "Save Script", savescript.GetBitmap(), "")
-        self.record_panel.Hide()
+        #self.record_panel.Hide()
+
+        self.record_bar.EnableButton(wxID_RIBBONRECORDNEW, False)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDOPEN, False)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDSAVE, False)
 
 
         #-------------------------------------------------------------------------------
@@ -302,18 +305,22 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def resetDateRange(self, startDate, endDate, currStart=None, currEnd=None):
-        maxStart = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
-        maxEnd = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
+        #maxStart = wx.DateTimeFromDMY(startDate.day, startDate.month - 1, startDate.year)
+        #maxEnd = wx.DateTimeFromDMY(endDate.day, endDate.month - 1, endDate.year)
+        maxStart = _pydate2wxdate(startDate)
+        maxEnd = _pydate2wxdate(endDate)
 
         self.dpStartDate.SetRange(maxStart, maxEnd)
         if currStart:
-            self.dpStartDate.SetValue(wx.DateTimeFromDMY(currStart.day, currStart.month - 1, currStart.year))
+            self.dpStartDate.SetValue(_pydate2wxdate(currStart))
+            #self.dpStartDate.SetValue(wx.DateTimeFromDMY(currStart.day, currStart.month - 1, currStart.year))
         else:
             self.dpEndDate.SetValue(self.maxStart)
 
         self.dpEndDate.SetRange(maxStart, maxEnd)
         if currEnd:
-            self.dpEndDate.SetValue(wx.DateTimeFromDMY(currEnd.day, currEnd.month - 1, currEnd.year))
+            self.dpEndDate.SetValue(_pydate2wxdate(currEnd))
+            #self.dpEndDate.SetValue(wx.DateTimeFromDMY(currEnd.day, currEnd.month - 1, currEnd.year))
         else:
             self.dpEndDate.SetValue(self.maxEnd)
 
@@ -324,9 +331,10 @@ class mnuRibbon(RB.RibbonBar):
         self.redrawPlotTable()
 
     def redrawPlotTable(self):
-        recordService = self.parent.getRecordService()
-        Publisher.sendMessage("changeSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
-        Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
+        print "inRedrawPlot"
+        #recordService = self.parent.getRecordService()
+        #Publisher.sendMessage("changeSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
+        #Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
 
 
     def onLineDrift(self, event):
@@ -370,7 +378,6 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onRecordNew(self, event):
-        logger.debug("NEW was pressed")
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
         if not panedet.IsShown():
             panedet.Show(show=True)
@@ -378,7 +385,6 @@ class mnuRibbon(RB.RibbonBar):
         script.OnNew(event)
 
     def onRecordOpen(self, event):
-        logger.debug("Open was pressed")
         script = self.parent.txtPythonScript
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
         if not panedet.IsShown():
@@ -386,7 +392,6 @@ class mnuRibbon(RB.RibbonBar):
         script.OnOpen(event)
 
     def onRecordSave(self, event):
-        logger.debug("Save was pressed")
         script = self.parent.txtPythonScript
         script.OnSaveAs(event)
         #pass
@@ -395,7 +400,8 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection inof to wizard
         # get site, Variable and Source from current dataset
 
-        savewiz = wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
+        wiz=wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
+        del wiz
         event.Skip()
 
     def onEditFilter(self, event):
@@ -412,7 +418,7 @@ class mnuRibbon(RB.RibbonBar):
     def onEditInterpolate(self, event):
         logger.debug("Interpolate!")
         self.parent.getRecordService().interpolate()
-        Publisher.sendMessage(("updateValues"), event=event)
+        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
     def onEditFlag(self, event):
@@ -421,14 +427,14 @@ class mnuRibbon(RB.RibbonBar):
         logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
         if val == 5101:  #wx.ID_OK:
             self.parent.getRecordService().flag(add_flag.GetValue())
-            Publisher.sendMessage(("updateValues"), event=event)
+            #Publisher.sendMessage(("updateValues"), event=event)
         add_flag.Destroy()
         event.Skip()
 
     def onEditAddPoint(self, event):
         add_value = frmAddPoint(self, self.parent.getRecordService())
         add_value.ShowModal()
-        Publisher.sendMessage(("updateValues"), event=event)
+        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
     def onEditDelPoint(self, event):
@@ -437,15 +443,14 @@ class mnuRibbon(RB.RibbonBar):
                             'Deleting Points', wx.YES_NO | wx.ICON_QUESTION)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().delete_points()
-            Publisher.sendMessage(("updateValues"), event=event)
+            #Publisher.sendMessage(("updateValues"), event=event)
         self.redrawPlotTable()
         event.Skip()
 
     def onRestore(self, event):
         self.parent.getRecordService().restore()
-        Publisher.sendMessage(("updateValues"), event=event)
+        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
-
 
     def onToggleEdit(self, checked=True):
         self.main_bar.ToggleButton(self.editbutton.id, checked)
@@ -456,15 +461,23 @@ class mnuRibbon(RB.RibbonBar):
     def onEditSeries(self, event=None):
         #logger.debug(dir(event))
 
+
         if event.IsChecked():
             Publisher.sendMessage("selectEdit", event=event)
             logging.debug("is editing: %s" % self.isEdit)
+
             if not self.isEdit:
                 self.onToggleEdit(False)
                 #self.parent.addEdit()
         else:
             Publisher.sendMessage(("stopEdit"), event=event)
             #self.parent.stopEdit()
+
+            # # Start editing right when a series is being edited
+
+        #self.parent.getRecordService().toggle_record()
+        #record_service.toggle_record()
+        #logger.debug("Recording? %s" % record_service._record)
 
         event.Skip()
 
@@ -558,10 +571,12 @@ class mnuRibbon(RB.RibbonBar):
 
         if event.Id == wxID_RIBBONVIEWSCRIPT:
             value = "Script"
+            ''' TODO add the ability to modify the script outside of editing...
             if self.scriptPanel.IsShown():
                 self.scriptPanel.Hide()
             else:
                 self.scriptPanel.Show()
+            '''
         elif event.Id == wxID_RIBBONVIEWCONSOLE:
             value = "Console"
         elif event.Id == wxID_RIBBONVIEWSERIES:
@@ -639,6 +654,18 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITFLAG, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITADDPOINT, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, state)
-        self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, state)
+        #self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, state)
+
+        self.record_bar.EnableButton(wxID_RIBBONRECORDOPEN, state)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDNEW, state)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDSAVE, state)
+
 
         self.enableDateSelection(not state)
+
+def _pydate2wxdate(date):
+     import datetime
+     assert isinstance(date, (datetime.datetime, datetime.date))
+     tt = date.timetuple()
+     dmy = (tt[2], tt[1]-1, tt[0])
+     return wx.DateTimeFromDMY(*dmy)

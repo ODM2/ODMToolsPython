@@ -60,10 +60,8 @@ class clsDataFilters(wx.Dialog):
 
         bsGaps = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.rbDataGaps = wx.RadioButton(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize)
-        self.rbDataGaps.SetValue(False)
+        self.rbDataGaps = wx.RadioButton(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         bsGaps.Add(self.rbDataGaps, 0, wx.ALL, 5)
-
 
         sbGaps = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, u"Data Gaps"), wx.VERTICAL)
 
@@ -82,8 +80,9 @@ class clsDataFilters(wx.Dialog):
         self.lblGapsTime.Wrap(-1)
         fgSizer2.Add(self.lblGapsTime, 0, wx.ALL, 5)
 
-        cbGapTimeChoices = [ u"second", u"minute", u"hour", u"day" ]
-        self.cbGapTime = wx.ComboBox( self, wx.ID_ANY, u"second", wx.DefaultPosition, wx.Size( 230,-1 ), cbGapTimeChoices, wx.CB_READONLY )
+        cbGapTimeChoices = [u"second", u"minute", u"hour", u"day"]
+        self.cbGapTime = wx.ComboBox(self, wx.ID_ANY, u"second", wx.DefaultPosition, wx.Size(230, -1), cbGapTimeChoices,
+                                     wx.CB_READONLY)
         fgSizer2.Add(self.cbGapTime, 0, wx.ALL, 5)
 
         sbGaps.Add(fgSizer2, 1, wx.EXPAND, 5)
@@ -94,8 +93,7 @@ class clsDataFilters(wx.Dialog):
 
         bsDate = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.rbDate = wx.RadioButton(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize)
-        self.rbDate.SetValue(False)
+        self.rbDate = wx.RadioButton(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         bsDate.Add(self.rbDate, 0, wx.ALL, 5)
 
         sbDate = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, u"Date"), wx.VERTICAL)
@@ -104,37 +102,39 @@ class clsDataFilters(wx.Dialog):
         fgSizer3.SetFlexibleDirection(wx.HORIZONTAL)
         fgSizer3.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.lblDateBefore = wx.StaticText(self, wx.ID_ANY, u"Before: ", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblDateAfter = wx.StaticText(self, wx.ID_ANY, u"Start:", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblDateAfter.Wrap(-1)
+        fgSizer3.Add(self.lblDateAfter, 0, wx.ALL, 5)
+
+        self.dpAfter = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
+                                         wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+        fgSizer3.Add(self.dpAfter, 0, wx.ALL, 5)
+
+        self.sbAfter = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), 0)
+
+        self.tpAfter = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(80, -1),
+                                       name="24 hour control",
+                                       fmt24hr=True, spinButton=self.sbAfter, oob_color="White")
+        #self.tpAfter.Wrap( -1 )
+        fgSizer3.Add(self.tpAfter, 0, wx.ALL, 5)
+
+        fgSizer3.Add(self.sbAfter, 0, wx.ALL, 5)
+
+        self.lblDateBefore = wx.StaticText(self, wx.ID_ANY, u"End: ", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblDateBefore.Wrap(-1)
         fgSizer3.Add(self.lblDateBefore, 0, wx.ALL, 5)
 
         self.dpBefore = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
-                                          wx.DP_DEFAULT|wx.DP_DROPDOWN)
+                                          wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
         fgSizer3.Add(self.dpBefore, 0, wx.ALL, 5)
+        self.sbBefore = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), wx.SP_WRAP)
+        self.tpBefore = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(80, -1),
+                                        name="24 hour control",
+                                        fmt24hr=True, spinButton=self.sbBefore, oob_color='White')
+        #self.tpBefore.Wrap( -1 )
+        fgSizer3.Add(self.tpBefore, 0, wx.ALL, 5)
 
-        self.sbBefore = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), 0)
-        self.tpBefore = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size= wx.Size(80, -1), name="24 hour control",
-                                        fmt24hr=True, spinButton=self.sbBefore, oob_color = 'White')
-        #self.tpBefore = wx.StaticText( self, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
-
-        fgSizer3.Add(self.tpBefore, 0, wx.TOP, 5)
-        fgSizer3.Add(self.sbBefore, 0, wx.TOP, 5)
-
-        self.lblDateAfter = wx.StaticText(self, wx.ID_ANY, u"After:", wx.DefaultPosition, wx.DefaultSize, 0)
-        self.lblDateAfter.Wrap(-1)
-
-
-        self.dpAfter = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
-                                         wx.DP_DEFAULT|wx.DP_DROPDOWN)
-        fgSizer3.Add(self.lblDateAfter, 0, wx.ALL, 5)
-        fgSizer3.Add(self.dpAfter, 0, wx.ALL, 5)
-        self.sbAfter = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), 0)
-
-        #self.tpAfter = wx.StaticText( self, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
-        self.tpAfter = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(80, -1), name="24 hour control",
-                                       fmt24hr=True, spinButton=self.sbAfter,  oob_color = "White")
-        fgSizer3.Add(self.tpAfter, 0, wx.TOP, 5)
-        fgSizer3.Add(self.sbAfter, 0, wx.TOP, 5)
+        fgSizer3.Add(self.sbBefore, 0, wx.ALL, 5)
 
         sbDate.Add(fgSizer3, 1, wx.EXPAND, 5)
 
@@ -144,8 +144,7 @@ class clsDataFilters(wx.Dialog):
 
         bsValChange = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.rbVChangeThresh = wx.RadioButton(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize)
-        self.rbVChangeThresh.SetValue(False)
+        self.rbVChangeThresh = wx.RadioButton(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         bsValChange.Add(self.rbVChangeThresh, 0, wx.ALL, 5)
 
         sbValChange = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, u"Value Change Threshold"), wx.VERTICAL)
@@ -209,8 +208,12 @@ class clsDataFilters(wx.Dialog):
         self.txtThreshValLT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtGapsVal.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.cbGapTime.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
-        self.dpBefore.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.dpAfter.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
+        self.tpAfter.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
+        self.sbAfter.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
+        self.dpBefore.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
+        self.tpBefore.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
+        self.sbBefore.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtVChangeGT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtVChangeLT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.chkToggleFilterSelection.Bind(wx.EVT_CHECKBOX, self.onCheckBox)
@@ -218,7 +221,6 @@ class clsDataFilters(wx.Dialog):
         self.btnOK.Bind(wx.EVT_BUTTON, self.onBtnOKButton)
         self.btnCancel.Bind(wx.EVT_BUTTON, self.onBtnCancelButton)
         self.btnApply.Bind(wx.EVT_BUTTON, self.onBtnApplyButton)
-
 
     def __del__(self):
         pass
@@ -232,20 +234,16 @@ class clsDataFilters(wx.Dialog):
     def onCheckBox(self, event):
         event.Skip()
 
-
     def onBtnClearButton(self, event):
         event.Skip()
-
 
     def onBtnOKButton(self, event):
         event.Skip()
 
-
     def onBtnCancelButton(self, event):
         event.Skip()
 
-
     def onBtnApplyButton(self, event):
         event.Skip()
-
+	
 
