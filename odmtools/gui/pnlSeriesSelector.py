@@ -178,7 +178,7 @@ class pnlSeriesSelector(wx.Panel):
                                 pos=wx.Point(3, 0), size=wx.Size(800, 25), style=wx.TAB_TRAVERSAL)
 
         self.cbSites = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBSITES, name=u'cbSites', parent=self.pnlSite,
-                                   pos=wx.Point(100, 0), size=wx.Size(700, 23), style=0, value=u'')
+                                   pos=wx.Point(100, 0), size=wx.Size(700, 23), style=wx.CB_READONLY, value=u'')
 
         self.checkSite = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKSITE, label=u'', name=u'checkSite',
                                      parent=self.pnlSite, pos=wx.Point(3, 0), size=wx.Size(21, 21), style=0)
@@ -204,7 +204,7 @@ class pnlSeriesSelector(wx.Panel):
         self.checkVariable.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKVARIABLE)
 
         self.cbVariables = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
-                                       parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25), style=0,
+                                       parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25), style=wx.CB_READONLY,
                                        value='comboBox4')
         self.cbVariables.SetLabel(u'')
         self.cbVariables.Enable(False)
