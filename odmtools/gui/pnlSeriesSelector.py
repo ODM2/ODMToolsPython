@@ -323,9 +323,15 @@ class pnlSeriesSelector(wx.Panel):
         popup_export_metadata = wx.NewId()
         popup_select_all = wx.NewId()
         popup_select_none = wx.NewId()
+
+
         popup_menu = wx.Menu()
-        self.Bind(wx.EVT_MENU, self.onRightPlot, popup_menu.Append(popup_plot_series, 'Plot'))
-        self.Bind(wx.EVT_MENU, self.onRightEdit, popup_menu.Append(popup_edit_series, 'Edit'))
+        plotItem = popup_menu.Append(popup_plot_series, 'Plot')
+        editItem = popup_menu.Append(popup_edit_series, 'Edit')
+
+        self.Bind(wx.EVT_MENU, self.onRightPlot, plotItem)
+        # TODO @jmeline needs to fix edit, it doesn't unedit when a plot is being edited
+        self.Bind(wx.EVT_MENU, self.onRightEdit, editItem)
         # TODO @jmeline will refresh and clear selected as an enhancement
         #self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
         #self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
@@ -333,6 +339,9 @@ class pnlSeriesSelector(wx.Panel):
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))
         self.Bind(wx.EVT_MENU, self.onRightExMeta, popup_menu.Append(popup_export_metadata, 'Export MetaData'))
+
+        if self.isEditing:
+            popup_menu.Enable(popup_edit_series, False)
 
         self.tblSeries.PopupMenu(popup_menu)
         event.Skip()

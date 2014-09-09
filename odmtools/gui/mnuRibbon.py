@@ -150,8 +150,7 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITFLAG, "Flag", flag.GetBitmap(), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITADDPOINT, "Add Point", add.GetBitmap(), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITDELPOINT, "Delete Point", delete.GetBitmap(), "")
-        self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRECORD, "Record", bitmap=record.GetBitmap(), help_string="",
-                                      kind=0x4)
+        #self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRECORD, "Record", bitmap=record.GetBitmap(), help_string="",kind=0x4)
 
         self.edit_bar.EnableButton(wxID_RIBBONEDITFILTER, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITCHGVALUE, False)
@@ -160,7 +159,7 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITFLAG, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITADDPOINT, False)
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, False)
-        self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
+        #self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
 
         self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Recording Options", wx.NullBitmap, wx.DefaultPosition,
                                            wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
@@ -169,7 +168,11 @@ class mnuRibbon(RB.RibbonBar):
         self.record_bar.AddSimpleButton(wxID_RIBBONRECORDNEW, "New Script", newscript.GetBitmap(), "")
         self.record_bar.AddSimpleButton(wxID_RIBBONRECORDOPEN, "Open Script", openscript.GetBitmap(), "")
         self.record_bar.AddSimpleButton(wxID_RIBBONRECORDSAVE, "Save Script", savescript.GetBitmap(), "")
-        self.record_panel.Hide()
+        #self.record_panel.Hide()
+
+        self.record_bar.EnableButton(wxID_RIBBONRECORDNEW, False)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDOPEN, False)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDSAVE, False)
 
 
         #-------------------------------------------------------------------------------
@@ -375,7 +378,6 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onRecordNew(self, event):
-        logger.debug("NEW was pressed")
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
         if not panedet.IsShown():
             panedet.Show(show=True)
@@ -383,7 +385,6 @@ class mnuRibbon(RB.RibbonBar):
         script.OnNew(event)
 
     def onRecordOpen(self, event):
-        logger.debug("Open was pressed")
         script = self.parent.txtPythonScript
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
         if not panedet.IsShown():
@@ -391,7 +392,6 @@ class mnuRibbon(RB.RibbonBar):
         script.OnOpen(event)
 
     def onRecordSave(self, event):
-        logger.debug("Save was pressed")
         script = self.parent.txtPythonScript
         script.OnSaveAs(event)
         #pass
@@ -400,7 +400,8 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection inof to wizard
         # get site, Variable and Source from current dataset
 
-        savewiz = wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
+        wiz=wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
+        del wiz
         event.Skip()
 
     def onEditFilter(self, event):
@@ -451,7 +452,6 @@ class mnuRibbon(RB.RibbonBar):
         #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
-
     def onToggleEdit(self, checked=True):
         self.main_bar.ToggleButton(self.editbutton.id, checked)
 
@@ -461,15 +461,23 @@ class mnuRibbon(RB.RibbonBar):
     def onEditSeries(self, event=None):
         #logger.debug(dir(event))
 
+
         if event.IsChecked():
             Publisher.sendMessage("selectEdit", event=event)
             logging.debug("is editing: %s" % self.isEdit)
+
             if not self.isEdit:
                 self.onToggleEdit(False)
                 #self.parent.addEdit()
         else:
             Publisher.sendMessage(("stopEdit"), event=event)
             #self.parent.stopEdit()
+
+            # # Start editing right when a series is being edited
+
+        #self.parent.getRecordService().toggle_record()
+        #record_service.toggle_record()
+        #logger.debug("Recording? %s" % record_service._record)
 
         event.Skip()
 
@@ -646,7 +654,12 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITFLAG, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITADDPOINT, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, state)
-        self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, state)
+        #self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, state)
+
+        self.record_bar.EnableButton(wxID_RIBBONRECORDOPEN, state)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDNEW, state)
+        self.record_bar.EnableButton(wxID_RIBBONRECORDSAVE, state)
+
 
         self.enableDateSelection(not state)
 
