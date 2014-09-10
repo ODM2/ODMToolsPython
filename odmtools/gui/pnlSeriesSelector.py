@@ -1,15 +1,13 @@
-import logging
 import os
-
 import wx
+import logging
+import datetime
+import frmQueryBuilder
 
 
 from wx.lib.pubsub import pub as Publisher
 from ObjectListView import ColumnDefn
 from ObjectListView.Filter import TextSearch, Chain
-import datetime
-
-import frmQueryBuilder
 
 #from clsSeriesTable import clsSeriesTable, TextSearch, Chain, EVT_OVL_CHECK_EVENT
 from odmtools.controller.odmObjectListView import EVT_OVL_CHECK_EVENT

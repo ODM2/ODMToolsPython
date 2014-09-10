@@ -1,7 +1,7 @@
 import logging
 import os
 
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import OperationalError, DBAPIError
 
 from odmtools.common.logger import LoggerTool
 from series_service import SeriesService
@@ -59,9 +59,10 @@ class ServiceManager():
         return self._conn_dicts
 
     def is_valid_connection(self):
-        conn_string = self._build_connection_string(self._current_conn_dict)
-        if self.testEngine(conn_string):
-            return self.get_current_conn_dict()
+        if self._current_conn_dict:
+            conn_string = self._build_connection_string(self._current_conn_dict)
+            if self.testEngine(conn_string):
+                return self.get_current_conn_dict()
         return None
 
     def get_current_conn_dict(self):
@@ -87,16 +88,12 @@ class ServiceManager():
     @classmethod
     def testEngine(self, connection_string):
         s = SessionFactory(connection_string, echo=False)
-        try:
-            if 'mssql' in connection_string:
-                s.ms_test_Session().execute("Select top 1 VariableCode From Variables")
-            elif 'mysql' in connection_string:
-                s.my_test_Session().execute('Select "VariableCode" From variables Limit 1')
-            elif 'postgresql' in connection_string:
-                s.psql_test_Session().execute('Select "VariableCode" From "ODM2Core"."Variables" Limit 1')
-        except Exception as e:
-            print "session was crap ", e.message
-            return False
+        if 'mssql' in connection_string:
+            s.ms_test_Session().execute("Select top 1 VariableCode From Variables")
+        elif 'mysql' in connection_string:
+            s.my_test_Session().execute('Select "VariableCode" From variables Limit 1')
+        elif 'postgresql' in connection_string:
+            s.psql_test_Session().execute('Select "VariableCode" From "ODM2Core"."Variables" Limit 1')
         return True
 
     def test_connection(self, conn_dict):
@@ -104,10 +101,24 @@ class ServiceManager():
             conn_string = self._build_connection_string(conn_dict)
             if self.testEngine(conn_string) and self.get_db_version(conn_dict) == '1.1.1':
                 return True
-        except SQLAlchemyError as e:
-            logger.error("SQLAlchemy Error: %s" % e.message)
+        #except SQLAlchemyError as e:
+        #    logger.error("SQLAlchemy Error: %s" % e.message)
+        #    raise e
+        except OperationalError as e:
+            import re
+            pattern = r"(?<=\(2003, )'(.*)(?=\(\()|(?<=u\")(.*)(?=@)"
+
+            match = re.findall(pattern, e.message)
+            value = (match[0][0] + "\n" + match[1][1]).replace('\\', '').replace(" u'", " '")
+            raise Exception(value, e)
+
+        except DBAPIError as e:
+            raise Exception( "SQL Server does not exist or access denied", e)
+        #except SQLDriverConnect #in pyodbc
+
         except Exception as e:
             logger.error("Error: %s" % e)
+            raise e
         return False
 
     def delete_connection(self, conn_dict):

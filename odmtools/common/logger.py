@@ -6,8 +6,9 @@ By Jacob Meline
 __author__ = 'Jacob'
 
 import logging
+import os
 
-from .appdirs import *
+from .appdirs import user_log_dir
 
 
 class LoggerTool():

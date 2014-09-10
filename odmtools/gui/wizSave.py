@@ -4,14 +4,11 @@ import wx
 import wx.wizard as wiz
 
 # import * from WizardPanels
+from odmtools.controller import pageIntro, pageExisting
 import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
-from wx.lib.pubsub import pub as Publisher
-
-from odmtools.gui.pageExisting import pageExisting
-from odmtools.gui.pageIntro import pageIntro
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
  wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,

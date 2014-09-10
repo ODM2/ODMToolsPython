@@ -6,7 +6,7 @@ import wx
 import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
 
-from frmDataFilters import frmDataFilter
+from odmtools.controller.frmDataFilters import frmDataFilter
 from frmChangeValue import frmChangeValue
 from frmAddPoint import frmAddPoint
 from frmFlagValues import frmFlagValues

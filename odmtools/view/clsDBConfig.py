@@ -16,6 +16,7 @@ import wx.xrc
 
 class clsDBConfiguration(wx.Panel):
     def __init__(self, parent):
+
         wx.Panel.__init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(500, 291),
                           style=wx.SIMPLE_BORDER | wx.TAB_TRAVERSAL)
 
@@ -37,7 +38,7 @@ class clsDBConfiguration(wx.Panel):
         connectionSizer.Add(self.stConnType, 0, wx.ALL | wx.EXPAND, 5)
 
         cbDatabaseTypeChoices = []
-        self.cbDatabaseType = wx.ComboBox(self, wx.ID_ANY, u"", wx.DefaultPosition, wx.DefaultSize,
+        self.cbDatabaseType = wx.ComboBox(self, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize,
                                           cbDatabaseTypeChoices, wx.CB_READONLY | wx.CB_SORT)
         connectionSizer.Add(self.cbDatabaseType, 1, wx.ALL | wx.EXPAND, 5)
 
@@ -51,7 +52,7 @@ class clsDBConfiguration(wx.Panel):
 
         self.stDBName = wx.StaticText(self, wx.ID_ANY, u"Database:", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT)
         self.stDBName.Wrap(-1)
-        #self.stDBName.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
+        self.stDBName.SetFont(wx.Font(wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString))
 
         connectionSizer.Add(self.stDBName, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -61,7 +62,7 @@ class clsDBConfiguration(wx.Panel):
 
         self.stUser = wx.StaticText(self, wx.ID_ANY, u"User:", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT)
         self.stUser.Wrap(-1)
-        #self.stUser.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
+        self.stUser.SetFont(wx.Font(wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString))
 
         connectionSizer.Add(self.stUser, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -71,7 +72,7 @@ class clsDBConfiguration(wx.Panel):
 
         self.stPass = wx.StaticText(self, wx.ID_ANY, u"Password:", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT)
         self.stPass.Wrap(-1)
-        #self.stPass.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
+        self.stPass.SetFont(wx.Font(wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString))
 
         connectionSizer.Add(self.stPass, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -94,6 +95,8 @@ class clsDBConfiguration(wx.Panel):
         btnSizer.Add(self.btnTest, 0, wx.ALL | wx.EXPAND, 5)
 
         self.btnSave = wx.Button(self, wx.ID_ANY, u"Save Connection", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.btnSave.Enable(False)
+
         btnSizer.Add(self.btnSave, 0, wx.ALL | wx.EXPAND, 5)
 
         self.btnCancel = wx.Button(self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -105,6 +108,11 @@ class clsDBConfiguration(wx.Panel):
         self.Layout()
 
         # Connect Events
+        self.cbDatabaseType.Bind(wx.EVT_COMBOBOX, self.OnValueChanged)
+        self.txtServer.Bind(wx.EVT_TEXT, self.OnValueChanged)
+        self.txtDBName.Bind(wx.EVT_TEXT, self.OnValueChanged)
+        self.txtUser.Bind(wx.EVT_TEXT, self.OnValueChanged)
+        self.txtPass.Bind(wx.EVT_TEXT, self.OnValueChanged)
         self.btnTest.Bind(wx.EVT_BUTTON, self.OnBtnTest)
         self.btnSave.Bind(wx.EVT_BUTTON, self.OnBtnSave)
         self.btnCancel.Bind(wx.EVT_BUTTON, self.OnBtnCancel)
@@ -114,6 +122,10 @@ class clsDBConfiguration(wx.Panel):
 
 
     # Virtual event handlers, overide them in your derived class
+    def OnValueChanged(self, event):
+        event.Skip()
+
+
     def OnBtnTest(self, event):
         event.Skip()
 
@@ -122,5 +134,4 @@ class clsDBConfiguration(wx.Panel):
 
     def OnBtnCancel(self, event):
         event.Skip()
-	
 

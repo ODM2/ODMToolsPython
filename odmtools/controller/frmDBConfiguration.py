@@ -19,7 +19,8 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class frmDBConfig(wx.Dialog):
     def __init__(self, parent, service_manager, is_main=False):
-        wx.Dialog.__init__(self, parent, title=u'Database Configuration', style=wx.DEFAULT_DIALOG_STYLE, size=wx.Size(500, 300))
+        wx.Dialog.__init__(self, parent, title=u'Database Configuration',
+                           style=wx.DEFAULT_DIALOG_STYLE, size=wx.Size(500, 315))
         self.panel = pnlDBConfig(self, service_manager, is_main)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.AddWindow(self.panel, 1, border=1, flag=wx.EXPAND | wx.GROW | wx.ALL)
@@ -40,32 +41,74 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
 
         self.set_field_values()
 
+    def OnValueChanged(self, event):
+        """
+
+        :param event:
+        :return:
+        """
+
+        self.btnSave.Enable(False)
+
+        try:
+            curr_dict = self._GetFieldValues()
+            if self.conn_dict == curr_dict:
+                self.btnSave.Enable(True)
+        except:
+            pass
 
 
     # Handlers for clsDBConfiguration events.
     def OnBtnTest(self, event):
         conn_dict = self._GetFieldValues()
-        self.validateInput(conn_dict)
+        if self.validateInput(conn_dict):
+            self.btnSave.Enable(True)
+            self.conn_dict = conn_dict
+
 
     def OnBtnSave(self, event):
         conn_dict = self._GetFieldValues()
-        result = self.validateInput(conn_dict, False)
+        #result = self.validateInput(conn_dict, False)
+        #result = self.validateInput(conn_dict)
 
-        # if result:
-        # self.SetReturnCode(wx.ID_OK)
-        #    self.service_manager.add_connection(conn_dict)
-        #    self.Destroy()
+       # if result:
+        self.parent.SetReturnCode(wx.ID_OK)
+        self.service_manager.add_connection(conn_dict)
+        self.parent.Destroy()
 
     def OnBtnCancel(self, event):
         self.parent.SetReturnCode(wx.ID_CANCEL)
         self.parent.Destroy()
 
-    def validateInput(self, conn_dict, test=True):
+    def validateInput(self, conn_dict):
         message = ""
 
         ## FIXME TODO Fix this crap
-        if conn_dict['user'] and conn_dict['password'] and conn_dict['address'] and conn_dict['db'] and conn_dict[
-            'engine']:
+        '''Check that everything has been filled out'''
+        if not all(x for x in conn_dict.values()):
+            message = "Please complete every field in order to proceed"
+            wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
+            return False
+
+
+        try:
+            if self.service_manager.test_connection(conn_dict):
+                message = "This connection is valid"
+                wx.MessageBox(message, 'Test Connection', wx.OK)
+            else:
+                message = "This connection is not a 1.1.1 Database"
+                wx.MessageBox(message, 'Error Occurred', wx.OK | wx.ICON_ERROR)
+                return False
+        except Exception as e:
+            logger.error(e)
+            wx.MessageBox("This connection is invalid", 'Error Occurred', wx.ICON_ERROR | wx.OK)
+            return False
+            # wx.MessageBox(e.message, 'Error Occurred', wx.ICON_ERROR | wx.OK)
+
+        return True
+
+
+        '''
             if test:
                 if self.service_manager.test_connection(conn_dict):
                     try:
@@ -88,6 +131,7 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
             message = "Please enter valid connection information"
             wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
         return False
+        '''
 
 
     # Returns a dictionary of the database values entered in the form

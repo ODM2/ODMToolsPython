@@ -1,6 +1,6 @@
 #!/usr/bin/env
 #Boa:Frame:ODMTools
-import sys
+from odmtools.controller import frmDBConfiguration
 
 '''
 this_file = os.path.realpath(__file__)
@@ -9,36 +9,22 @@ sys.path.insert(0, directory)
 '''
 
 import wx
-import wx.grid
+import sys
+import os
 import logging
 import mnuRibbon
 import pnlSeriesSelector
 import pnlPlot
 import pnlDataTable
-from odmtools.common import gtk_execute
-from odmtools.common.appdirs import *
-#import wx.aui
-
-try:
-    from agw import aui
-except ImportError:  # if it's not there locally, try the wxPython lib.
-    import wx.lib.agw.aui as aui
-
-import wx.richtext
-import wx.stc
 import wx.lib.agw.aui as aui
-from wx.lib.pubsub import pub as Publisher
 import wx.py.crust
-import frmDBConfiguration
-
+import wx.stc
+from odmtools.common import gtk_execute
+from odmtools.common.appdirs import user_config_dir
+from wx.lib.pubsub import pub as Publisher
 from odmtools.odmservices import ServiceManager
-#from odmtools.odmservices import utilities as util
 from pnlScript import pnlScript
-
-
 from odmtools.common.logger import LoggerTool
-
-
 
 def create(parent):
     return frmODMToolsMain(parent)
@@ -77,21 +63,13 @@ class frmODMToolsMain(wx.Frame):
 
         self.service_manager = ServiceManager()
         self.record_service = None
-        conn_dict = self.service_manager.is_valid_connection()
-        #there is a connection but it is unsuccessful
-
-        '''
-        if conn_dict == None or conn_dict != None and not self.service_manager.test_connection(conn_dict):
-            # Create a DB form which will set a connection for the service manager
+        if not self.service_manager.is_valid_connection():
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
-            db_config.ShowModal()
+            if db_config.ShowModal() == wx.ID_CANCEL:
+                logger.fatal("ODMTools is now closing because there is no database connection.")
+                sys.exit(0)
 
-        if conn_dict != None and self.service_manager.get_db_version(conn_dict) != u'1.1.1':
-            wx.MessageBox('The ODM database must be version 1.1.1 to use ODMToolsPython',
-                          'Database Version Incompatible', wx.OK)
-            db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
-            db_config.ShowModal()
-        '''
+
     ###################### Frame ################
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -99,7 +77,6 @@ class frmODMToolsMain(wx.Frame):
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=prnt,
                           size=wx.Size(1000, 900),
                           style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
-
 
         self.SetIcon(gtk_execute.getIcon())
 
@@ -112,7 +89,6 @@ class frmODMToolsMain(wx.Frame):
 
 
         ################ Docking Tools##############
-
         self.pnlDocking = wx.Panel(id=wxID_ODMTOOLSPANEL1, name='pnlDocking',
                                    parent=self, size=wx.Size(605, 458),
                                    style=wx.TAB_TRAVERSAL)
