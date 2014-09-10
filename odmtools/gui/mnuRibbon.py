@@ -340,6 +340,7 @@ class mnuRibbon(RB.RibbonBar):
     def onLineDrift(self, event):
         lin_drift = frmLinearDrift(self, self.parent.getRecordService())
         lin_drift.ShowModal()
+        lin_drift.Destroy()
         event.Skip()
 
     def onRecord(self, event):
@@ -413,6 +414,7 @@ class mnuRibbon(RB.RibbonBar):
     def onEditChangeValue(self, event):
         change_value = frmChangeValue(self, self.parent.getRecordService())
         change_value.ShowModal()
+        change_value.Destroy()
         event.Skip()
 
     def onEditInterpolate(self, event):
@@ -434,6 +436,7 @@ class mnuRibbon(RB.RibbonBar):
     def onEditAddPoint(self, event):
         add_value = frmAddPoint(self, self.parent.getRecordService())
         add_value.ShowModal()
+        add_value.Destroy()
         #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 

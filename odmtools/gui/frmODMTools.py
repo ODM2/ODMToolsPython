@@ -65,9 +65,13 @@ class frmODMToolsMain(wx.Frame):
         self.record_service = None
         if not self.service_manager.is_valid_connection():
             db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
-            if db_config.ShowModal() == wx.ID_CANCEL:
+            value = db_config.ShowModal()
+            db_config.Destroy()
+
+            if value == wx.ID_CANCEL:
                 logger.fatal("ODMTools is now closing because there is no database connection.")
                 sys.exit(0)
+
 
 
     ###################### Frame ################

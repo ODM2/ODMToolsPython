@@ -59,4 +59,3 @@ class frmLinearDrift(wx.Dialog):
     def OnBtnCancelButton(self, event):
         event.Skip()
         self.Close()
-        self.Destroy()

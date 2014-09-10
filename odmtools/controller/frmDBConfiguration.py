@@ -68,17 +68,15 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
 
     def OnBtnSave(self, event):
         conn_dict = self._GetFieldValues()
-        #result = self.validateInput(conn_dict, False)
-        #result = self.validateInput(conn_dict)
 
-       # if result:
-        self.parent.SetReturnCode(wx.ID_OK)
         self.service_manager.add_connection(conn_dict)
-        self.parent.Destroy()
+        self.parent.EndModal(wx.ID_OK)
+
 
     def OnBtnCancel(self, event):
         self.parent.SetReturnCode(wx.ID_CANCEL)
-        self.parent.Destroy()
+        self.parent.EndModal(wx.ID_CANCEL)
+
 
     def validateInput(self, conn_dict):
         message = ""
@@ -108,30 +106,6 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
         return True
 
 
-        '''
-            if test:
-                if self.service_manager.test_connection(conn_dict):
-                    try:
-                        if self.service_manager.get_db_version(conn_dict) == u'1.1.1':
-                            message = "This connection is valid"
-                            wx.MessageBox(message, 'Test Connection', wx.OK)
-                            return True
-                    except DBAPIError:
-                        message = "Please check the credentials and " \
-                                  "ensure that the database is accessible"
-                        wx.MessageBox(message, 'Login Unsuccessful', wx.OK | wx.ICON_ERROR)
-                else:
-                    message = "This connection is invalid"
-                    wx.MessageBox(message, 'Test Connection', wx.OK | wx.ICON_ERROR)
-            else:
-                self.parent.SetReturnCode(wx.ID_OK)
-                self.service_manager.add_connection(conn_dict)
-                self.parent.Destroy()
-        else:
-            message = "Please enter valid connection information"
-            wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
-        return False
-        '''
 
 
     # Returns a dictionary of the database values entered in the form

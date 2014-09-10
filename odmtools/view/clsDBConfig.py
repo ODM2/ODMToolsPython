@@ -39,7 +39,7 @@ class clsDBConfiguration(wx.Panel):
 
         cbDatabaseTypeChoices = []
         self.cbDatabaseType = wx.ComboBox(self, wx.ID_ANY, u"Combo!", wx.DefaultPosition, wx.DefaultSize,
-                                          cbDatabaseTypeChoices, wx.CB_READONLY | wx.CB_SORT)
+                                          cbDatabaseTypeChoices, wx.CB_READONLY)
         connectionSizer.Add(self.cbDatabaseType, 1, wx.ALL | wx.EXPAND, 5)
 
         self.stServer = wx.StaticText(self, wx.ID_ANY, u"Server:", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT)

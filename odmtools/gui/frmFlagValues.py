@@ -128,9 +128,6 @@ class frmFlagValues(wx.Dialog):
     def GetValue(self):
       return self.qid
 
-    def Destory(self):
-      self.Destroy()
-
     def OnCbQualifCombobox(self, event):
         if self.cbQualif.GetValue()== "Create New.....":            
             self.splitter.SplitHorizontally(self.pnlSelect, self.pnlCreate, 50)

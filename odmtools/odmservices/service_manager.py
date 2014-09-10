@@ -1,7 +1,7 @@
 import logging
 import os
 
-from sqlalchemy.exc import OperationalError, DBAPIError
+from sqlalchemy.exc import SQLAlchemyError#OperationalError, DBAPIError
 
 from odmtools.common.logger import LoggerTool
 from series_service import SeriesService
@@ -101,20 +101,20 @@ class ServiceManager():
             conn_string = self._build_connection_string(conn_dict)
             if self.testEngine(conn_string) and self.get_db_version(conn_dict) == '1.1.1':
                 return True
-        #except SQLAlchemyError as e:
-        #    logger.error("SQLAlchemy Error: %s" % e.message)
-        #    raise e
-        except OperationalError as e:
-            import re
-            pattern = r"(?<=\(2003, )'(.*)(?=\(\()|(?<=u\")(.*)(?=@)"
-
-            match = re.findall(pattern, e.message)
-            value = (match[0][0] + "\n" + match[1][1]).replace('\\', '').replace(" u'", " '")
-            raise Exception(value, e)
-
-        except DBAPIError as e:
-            raise Exception( "SQL Server does not exist or access denied", e)
-        #except SQLDriverConnect #in pyodbc
+        except SQLAlchemyError as e:
+            logger.error("SQLAlchemy Error: %s" % e.message)
+            raise e
+        # except OperationalError as e:
+        #     import re
+        #     pattern = r"(?<=\(2003, )'(.*)(?=\(\()|(?<=u\")(.*)(?=@)"
+        #
+        #     match = re.findall(pattern, e.message)
+        #     value = (match[0][0] + "\n" + match[1][1]).replace('\\', '').replace(" u'", " '")
+        #     raise Exception(value, e)
+        #
+        # except DBAPIError as e:
+        #     raise Exception( "SQL Server does not exist or access denied", e)
+        # #except SQLDriverConnect #in pyodbc
 
         except Exception as e:
             logger.error("Error: %s" % e)

@@ -20,7 +20,7 @@ class SessionFactory():
         self.ms_test_Session = sessionmaker(bind=self.ms_test_engine)
         self.my_test_Session = sessionmaker(bind=self.my_test_engine)
 
-    def getSession(self):
+    def get_session(self):
         return self.Session()
 
     def __repr__(self):
