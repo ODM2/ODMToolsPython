@@ -25,6 +25,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.recordService = series
         clsDataFilters.clsDataFilters.__init__(self, parent)
 
+        self.chkToggleFilterSelection.SetValue(self.recordService.get_toggle())
         self.setDates()
 
 
@@ -66,7 +67,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
     def onBtnOKButton(self, event):
 
-        self.recordService.toggle_filter_previous(self.chkToggleFilterSelection.Value)
+        #self.recordService.toggle_filter_previous(self.chkToggleFilterSelection.Value)
 
         if not self.is_applied:
             self.onBtnApplyButton(event)
@@ -113,6 +114,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
         #Publisher.sendMessage("changeSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
         #Publisher.sendMessage("changeTableSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
+        #self.recordService.toggle_filter_previous()
         event.Skip()
 
 

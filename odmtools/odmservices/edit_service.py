@@ -54,6 +54,7 @@ class EditService():
 
     def get_series_service(self):
         return self._series_service
+
     def _populate_series(self):
         # [(ID, value, datetime), ...]
         self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
@@ -206,6 +207,8 @@ class EditService():
             self._filter_from_selection = value
         else:
             self._filter_from_selection = not self._filter_from_selection
+    def get_toggle(self):
+        return self._filter_from_selection
 
 
 

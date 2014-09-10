@@ -216,7 +216,7 @@ class clsDataFilters(wx.Dialog):
         self.sbBefore.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtVChangeGT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtVChangeLT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
-        self.chkToggleFilterSelection.Bind(wx.EVT_CHECKBOX, self.onCheckBox)
+        self.chkToggleFilterSelection.Bind(wx.EVT_CHECKBOX, self.onCheckbox)
         self.btnClear.Bind(wx.EVT_BUTTON, self.onBtnClearButton)
         self.btnOK.Bind(wx.EVT_BUTTON, self.onBtnOKButton)
         self.btnCancel.Bind(wx.EVT_BUTTON, self.onBtnCancelButton)
