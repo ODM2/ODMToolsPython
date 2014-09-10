@@ -1,7 +1,6 @@
 import logging
 
 from sqlalchemy import distinct
-import sqlalchemy.exc
 
 from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import Site
@@ -153,7 +152,7 @@ class SeriesService():
         else:
             logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
             # there wasn't an existing file to overwrite
-            return False
+            raise Exception("Series does not exist, unable to save. Please select 'Save As'")
 
     def save_new_series(self, series):
         """ Create as a new catalog entry
@@ -163,9 +162,9 @@ class SeriesService():
         """
         # Save As case
         if self.does_exist(series):
-            logger.debug(
-                "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite")
-            return False
+            msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
+            logger.debug(msg)
+            raise Exception(msg)
         else:
             self._edit_session.add(series)
             self._edit_session.add_all(series.data_values)

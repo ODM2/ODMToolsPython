@@ -237,15 +237,14 @@ class wizSave(wx.wizard.Wizard):
         # self.is_changing_series = False
         self.currSeries = record_service.get_series()
 
-        self.pgIntro = pageIntro(self, "Intro")
+        self.pgIntro = pageIntro.pageIntro(self, "Intro")
         self.pgMethod = MethodPage(self, "Method", service_man, self.currSeries.method)
         self.pgQCL = QCLPage(self, "Quality Control Level", service_man, self.currSeries.quality_control_level)
         self.pgVariable = VariablePage(self, "Variable", service_man, self.currSeries.variable)
-        self.pgExisting = pageExisting(self, "Existing Series", service_man, self.currSeries.site)
+        self.pgExisting = pageExisting.pageExisting(self, "Existing Series", service_man, self.currSeries.site)
         self.pgSummary = SummaryPage(self, "Summary", service_man)
 
         self.FitToPage(self.pgIntro)
-
 
         # Set the initial order of the pages
         self.pgIntro.SetNext(self.pgSummary)
@@ -359,19 +358,19 @@ class wizSave(wx.wizard.Wizard):
                 result = self.record_service.saveAs(Variable, Method, QCL, True)
             '''
 
-            if self.pgIntro.pnlIntroduction.rbSave.GetValue():
-                result = self.record_service.save()
-            elif self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
-                result = self.record_service.save_as(Variable, Method, QCL)
-            else:
-                result = self.record_service.save_existing(Variable, Method, QCL)
+            try:
+                if self.pgIntro.pnlIntroduction.rbSave.GetValue():
+                    result = self.record_service.save()
+                elif self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
+                    result = self.record_service.save_as(Variable, Method, QCL)
+                else:
+                    result = self.record_service.save_existing(Variable, Method, QCL)
 
-            #self.page1.pnlIntroduction.rb
-
-            if not result:
-                wx.MessageBox("Save was unsuccessful", "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
-            else:
                 Publisher.sendMessage("refreshSeries")
+
+                    #self.page1.pnlIntroduction.rb
+            except Exception as e:
+                wx.MessageBox("Save was unsuccessful %s" % e.message, "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
 
             self.Destroy()
             self.Close()
