@@ -2,7 +2,7 @@
 
 import wx
 
-import clsAddPoints
+import odmtools.view.clsAddPoints as clsAddPoints
 
 
 
@@ -13,18 +13,29 @@ class AddPoints(clsAddPoints.AddPoints):
         clsAddPoints.AddPoints.__init__(self, parent)
 
     # Handlers for AddPoints events.
-    def onClickAdd(self, event):
+    def onAddBtn(self, event):
+        value = str(len(self.olv.GetObjects()) + 1)
+        self.olv.AddObject(self.Points(value))
+        self.sb.SetStatusText("Added %s" % value)
+        event.Skip()
 
-        pass
+    def onDeleteBtn(self, event):
+        if self.selectedObject:
+            self.olv.RemoveObject(self.selectedObject)
+            self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
+        object = event.GetEventObject()
+        print "Selected Object", object
+        self.selectedObject = None
 
-    def onClose(self, event):
-        # TODO: Implement onClose
-        self.Destroy()
-        pass
+        event.Skip()
+    def onUploadBtn(self, event):
+        event.Skip()
+    def onFinishedBtn(self, event):
+        event.Skip()
 
     def onSelected(self, event):
         object = event.GetEventObject()
-        editingObject = object.innerList[object.FocusedItem]
+        self.selectedObject = object.innerList[object.FocusedItem]
 
 
 class Example(wx.Frame):
