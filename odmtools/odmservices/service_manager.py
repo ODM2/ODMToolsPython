@@ -52,17 +52,18 @@ class ServiceManager():
 
         f.close()
 
-
-
-
     def get_all_conn_dicts(self):
         return self._conn_dicts
 
     def is_valid_connection(self):
         if self._current_conn_dict:
             conn_string = self._build_connection_string(self._current_conn_dict)
-            if self.testEngine(conn_string):
-                return self.get_current_conn_dict()
+            try:
+                if self.testEngine(conn_string):
+                    return self.get_current_conn_dict()
+            except Exception as e:
+                logger.fatal("The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
+                return None
         return None
 
     def get_current_conn_dict(self):
@@ -104,18 +105,6 @@ class ServiceManager():
         except SQLAlchemyError as e:
             logger.error("SQLAlchemy Error: %s" % e.message)
             raise e
-        # except OperationalError as e:
-        #     import re
-        #     pattern = r"(?<=\(2003, )'(.*)(?=\(\()|(?<=u\")(.*)(?=@)"
-        #
-        #     match = re.findall(pattern, e.message)
-        #     value = (match[0][0] + "\n" + match[1][1]).replace('\\', '').replace(" u'", " '")
-        #     raise Exception(value, e)
-        #
-        # except DBAPIError as e:
-        #     raise Exception( "SQL Server does not exist or access denied", e)
-        # #except SQLDriverConnect #in pyodbc
-
         except Exception as e:
             logger.error("Error: %s" % e)
             raise e
