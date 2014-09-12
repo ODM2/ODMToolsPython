@@ -44,11 +44,11 @@ class EditTools():
 
 
 
-    def filter_date(self, before, after):
-        self._edit_service.filter_date(before, after)
+    def filter_date(self, endDate, startDate):
+        self._edit_service.filter_date(endDate, startDate)
         self.refresh_plot()
         if self._record:
-            self._script("edit_service.filter_date(%s, %s)\n" % (repr(before), repr(after)), 'black')
+            self._script("edit_service.filter_date(%s, %s)\n" % (repr(endDate), repr(startDate)), 'black')
             Publisher.sendMessage("scroll")
         else:
             return "Cannot filter: %s" % (self._edit_error)
@@ -75,8 +75,10 @@ class EditTools():
         if self._edit_service._filter_from_selection is not value:
             self._edit_service.toggle_filter_previous(value)
             if self._record:
-                self._script("edit_service.toggle_filter_previous(%s)\n" % (value), 'black')
+                self._script("edit_service.toggle_filter_previous(%s)\n" % value if value else '' , 'black')
                 Publisher.sendMessage("scroll")
+    def get_toggle(self):
+        return self._edit_service.get_toggle()
 
 
     def select_points_tf(self, tf_list):
