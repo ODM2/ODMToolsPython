@@ -32,7 +32,7 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
     def __init__(self, parent, service_manager, is_main=False):
         clsDBConfig.clsDBConfiguration.__init__(self, parent)
 
-        self.choices = {"Microsoft SQL Server": 'mssql', "MySQL": 'mysql'}
+        self.choices = {"Microsoft SQL Server": 'mssql', "MySQL": 'mysql', "PostgreSQL":"postgresql"}
         self.cbDatabaseType.AppendItems(self.choices.keys())
 
         self.parent = parent
