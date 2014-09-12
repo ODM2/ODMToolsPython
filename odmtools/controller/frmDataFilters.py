@@ -29,7 +29,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.setDates()
 
 
-    def onCheckbox(self, event):
+    def onCheckBox(self, event):
         self.recordService.toggle_filter_previous()
 
 
