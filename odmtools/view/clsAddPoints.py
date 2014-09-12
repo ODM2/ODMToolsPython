@@ -78,14 +78,15 @@ class AddPoints(wx.MiniFrame):
         :param mainPanel:
         :return:
         """
-        self.olv = OLV(mainPanel, wx.ID_ANY, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
+        self.olv = OLV(mainPanel, wx.ID_ANY, style=wx.LC_REPORT)
         self.olv.useAlternateBackColors = True
         self.olv.oddRowsBackColor = wx.Colour(191, 239, 255)
         self.olv.cellEditMode = OLV.CELLEDIT_DOUBLECLICK
-        self.olv.SetEmptyListMsg("Add points either by csv or manually")
+        self.olv.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.buildOlv()
         #self.olv.CreateCheckStateColumn()
-        self.olv.SetObjects([self.Points('1'), self.Points('2'), self.Points('3'), self.Points('4')])
+        #self.olv.SetObjects([self.Points('1'), self.Points('2'), self.Points('3'), self.Points('4')])
+        self.olv.SetObjects(None)
 
     def buildOlv(self):
         """
@@ -99,12 +100,12 @@ class AddPoints(wx.MiniFrame):
                    ColumnDefn("DateTimeUTC", "left", -1, valueGetter="dateTimeUTC", minimumWidth=125),
                    ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=125),
                    ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=125),
-                   ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=125, cellEditorCreator=self.sensorCodeEditor),
+                   ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=125, cellEditorCreator=self.censorCodeEditor),
                    ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=125),
                    ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=125)]
         self.olv.SetColumns(columns)
 
-    def sensorCodeEditor(self, olv, rowIndex, subItemIndex):
+    def censorCodeEditor(self, olv, rowIndex, subItemIndex):
         """
 
         :param olv:
@@ -136,9 +137,9 @@ class AddPoints(wx.MiniFrame):
         """
 
         """
-        def __init__(self, dataValue="None", valueAccuracy="None", localDateTime="None", utcOffSet="None",
-                     dateTimeUTC="None", offSetValue="None", offSetType="None", censorCode="None",
-                     qualifierCode="None", labSampleCode="None"):
+
+        def __init__(self, dataValue=" ", valueAccuracy=" ", localDateTime=" ", utcOffSet=" ", dateTimeUTC=" ",
+                     offSetValue=" ", offSetType=" ", censorCode=" ", qualifierCode=" ", labSampleCode=" "):
             self.dataValue = dataValue
             self.valueAccuracy = valueAccuracy
             self.localDateTime = localDateTime
