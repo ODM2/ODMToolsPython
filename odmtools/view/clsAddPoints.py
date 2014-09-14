@@ -11,20 +11,26 @@ from collections import OrderedDict
 import wx
 import wx.xrc
 import wx.combo
+import wx.lib.masked
 import wx.lib.agw.buttonpanel as BP
 
-from ObjectListView import FastObjectListView as OLV, ColumnDefn
+from datetime import datetime
+from ObjectListView import FastObjectListView as OLV, ColumnDefn, EVT_CELL_EDIT_STARTING, EVT_CELL_EDIT_FINISHING
 from odmtools.common.icons.icons import add, stop_edit, deletered
 from odmtools.common.icons.newIcons import appbar_exit, appbar_folder_open, appbar_table_add, appbar_table_delete
 
+
+## Variables
+
+NO_DATA_VALUE = -9999
 
 ###########################################################################
 ## Class AddPoints
 ###########################################################################
 
-class AddPoints(wx.MiniFrame):
+class AddPoints(wx.Frame):
     def __init__(self, parent):
-        wx.MiniFrame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -",
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -",
                               pos=wx.DefaultPosition, size=(1280, 300),
                               style= wx.DEFAULT_FRAME_STYLE)
 
@@ -78,7 +84,7 @@ class AddPoints(wx.MiniFrame):
         :param mainPanel:
         :return:
         """
-        self.olv = OLV(mainPanel, wx.ID_ANY, style=wx.LC_REPORT)
+        self.olv = OLV(mainPanel, wx.ID_ANY, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.olv.useAlternateBackColors = True
         self.olv.oddRowsBackColor = wx.Colour(191, 239, 255)
         self.olv.cellEditMode = OLV.CELLEDIT_DOUBLECLICK
@@ -87,6 +93,8 @@ class AddPoints(wx.MiniFrame):
         #self.olv.CreateCheckStateColumn()
         #self.olv.SetObjects([self.Points('1'), self.Points('2'), self.Points('3'), self.Points('4')])
         self.olv.SetObjects(None)
+        self.olv.Bind(EVT_CELL_EDIT_STARTING, self.onEdit)
+        self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditDone)
 
     def buildOlv(self):
         """
@@ -95,12 +103,14 @@ class AddPoints(wx.MiniFrame):
         """
         columns = [ColumnDefn("DataValue", "left", -1, valueGetter="dataValue", minimumWidth=125),
                    ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=125),
-                   ColumnDefn("LocalDateTime", "left", -1, valueGetter="localDateTime", minimumWidth=125),
+                   ColumnDefn("LocalTime", "left", -1, valueGetter="localTime", minimumWidth=125,
+                              cellEditorCreator=self.localTimeEditor),
                    ColumnDefn("UTCOffset", "left", -1, valueGetter="utcOffSet", minimumWidth=125),
                    ColumnDefn("DateTimeUTC", "left", -1, valueGetter="dateTimeUTC", minimumWidth=125),
                    ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=125),
                    ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=125),
-                   ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=125, cellEditorCreator=self.censorCodeEditor),
+                   ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=125,
+                              cellEditorCreator=self.censorCodeEditor),
                    ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=125),
                    ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=125)]
         self.olv.SetColumns(columns)
@@ -113,10 +123,16 @@ class AddPoints(wx.MiniFrame):
         :param subItemIndex:
         :return:
         """
-        odcb = SensorCodeComboBox(olv)
+        odcb = CensorCodeComboBox(olv)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
+
+    def localTimeEditor(self, olv, rowIndex, subItemIndex):
+        odcb = wx.lib.masked.TimeCtrl(olv, fmt24hr=True)
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return odcb
+
 
     # Virtual event handlers, override them in your derived class
     def onAddBtn(self, event):
@@ -129,6 +145,10 @@ class AddPoints(wx.MiniFrame):
         event.Skip()
     def onSelected(self, event):
         event.Skip()
+    def onEdit(self, event):
+        print "Began editting!", event.cellValue
+    def onEditDone(self, event):
+        print "Finished Editing", event.cellValue
 
     def __del__(self):
         pass
@@ -138,11 +158,12 @@ class AddPoints(wx.MiniFrame):
 
         """
 
-        def __init__(self, dataValue=" ", valueAccuracy=" ", localDateTime=" ", utcOffSet=" ", dateTimeUTC=" ",
-                     offSetValue=" ", offSetType=" ", censorCode=" ", qualifierCode=" ", labSampleCode=" "):
+        def __init__(self, dataValue=NO_DATA_VALUE, valueAccuracy="None", localDateTime="00:00", utcOffSet="None", dateTimeUTC="None",
+                     offSetValue="None", offSetType="None", censorCode="None", qualifierCode="None", labSampleCode="None"):
             self.dataValue = dataValue
             self.valueAccuracy = valueAccuracy
-            self.localDateTime = localDateTime
+            self.localTime = str(datetime.strptime(localDateTime, "%H:%M").time())
+            print "local time: ", self.localTime, type(self.localTime)
             self.utcOffSet = utcOffSet
             self.dateTimeUTC = dateTimeUTC
             self.offSetValue = offSetValue
@@ -152,7 +173,7 @@ class AddPoints(wx.MiniFrame):
             self.labSampleCode = labSampleCode
 
 
-class SensorCodeComboBox(wx.combo.OwnerDrawnComboBox):
+class CensorCodeComboBox(wx.combo.OwnerDrawnComboBox):
     """
 
     """
