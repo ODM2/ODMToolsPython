@@ -15,14 +15,15 @@ import wx.lib.masked
 import wx.lib.agw.buttonpanel as BP
 
 from datetime import datetime
-from ObjectListView import FastObjectListView as OLV, ColumnDefn, EVT_CELL_EDIT_STARTING, EVT_CELL_EDIT_FINISHING
+from odmtools.lib.ObjectListView import FastObjectListView as OLV, ColumnDefn
+from odmtools.lib.ObjectListView import EVT_CELL_EDIT_STARTING, EVT_CELL_EDIT_FINISHING
 from odmtools.common.icons.icons import add, stop_edit, deletered
 from odmtools.common.icons.newIcons import appbar_exit, appbar_folder_open, appbar_table_add, appbar_table_delete
 
 
 ## Variables
 
-NO_DATA_VALUE = -9999
+NO_DATA_VALUE = u'-9999'
 
 ###########################################################################
 ## Class AddPoints
@@ -32,7 +33,7 @@ class AddPoints(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -",
                               pos=wx.DefaultPosition, size=(1280, 300),
-                              style= wx.DEFAULT_FRAME_STYLE)
+                              style= wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL )
 
         mainPanel = wx.Panel(self, -1)
         vSizer = wx.BoxSizer(wx.VERTICAL)
@@ -67,16 +68,20 @@ class AddPoints(wx.Frame):
         deleteRowBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), appbar_table_delete.GetBitmap(), text="Delete Row")
         csvUploadBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), appbar_folder_open.GetBitmap(), text="Upload CSV")
         finishedBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), appbar_exit.GetBitmap(), text="Finished")
+        TestBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), appbar_exit.GetBitmap(), text="Test")
+
 
         self.titleBar.AddButton(addRowBtn)
         self.titleBar.AddButton(deleteRowBtn)
         self.titleBar.AddButton(csvUploadBtn)
         self.titleBar.AddButton(finishedBtn)
+        self.titleBar.AddButton(TestBtn)
 
         self.Bind(wx.EVT_BUTTON, self.onAddBtn, addRowBtn)
         self.Bind(wx.EVT_BUTTON, self.onDeleteBtn, deleteRowBtn)
         self.Bind(wx.EVT_BUTTON, self.onUploadBtn, csvUploadBtn)
         self.Bind(wx.EVT_BUTTON, self.onFinishedBtn, finishedBtn)
+        self.Bind(wx.EVT_BUTTON, self.onTestBtn, TestBtn)
 
     def initiateObjectListView(self, mainPanel):
         """
@@ -93,6 +98,9 @@ class AddPoints(wx.Frame):
         #self.olv.CreateCheckStateColumn()
         #self.olv.SetObjects([self.Points('1'), self.Points('2'), self.Points('3'), self.Points('4')])
         self.olv.SetObjects(None)
+        self.olv.AddNamedImages("error", deletered.GetBitmap(), None)
+
+
         self.olv.Bind(EVT_CELL_EDIT_STARTING, self.onEdit)
         self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditDone)
 
@@ -101,19 +109,58 @@ class AddPoints(wx.Frame):
 
         :return:
         """
-        columns = [ColumnDefn("DataValue", "left", -1, valueGetter="dataValue", minimumWidth=125),
+        columns = [ColumnDefn("DataValue", "left", -1, valueGetter="dataValue", minimumWidth=125,
+                              imageGetter=self.verifyDataValue),
                    ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=125),
                    ColumnDefn("LocalTime", "left", -1, valueGetter="localTime", minimumWidth=125,
-                              cellEditorCreator=self.localTimeEditor),
+                              cellEditorCreator=self.localTimeEditor,
+                              stringConverter=self.localTimeToString),
+                   #ColumnDefn("LocalTime", "left", -1, valueGetter="localTime", minimumWidth=125),
                    ColumnDefn("UTCOffset", "left", -1, valueGetter="utcOffSet", minimumWidth=125),
                    ColumnDefn("DateTimeUTC", "left", -1, valueGetter="dateTimeUTC", minimumWidth=125),
                    ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=125),
                    ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=125),
                    ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=125,
-                              cellEditorCreator=self.censorCodeEditor),
+                              cellEditorCreator=self.censorCodeEditor,
+                              imageGetter=self.verifyCensorCode),
                    ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=125),
                    ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=125)]
         self.olv.SetColumns(columns)
+
+    def verifyDataValue(self, point):
+        """Required Element
+
+        :param point:
+        :return:
+        """
+        if not point.dataValue:
+            return "error"
+
+    def verifyValueAccuracy(self, point):
+        """Not Required
+
+        :param point:
+        :return:
+        """
+        if not point.valueAccuracy:
+            return "error"
+
+    def localTimeToString(self, time):
+        """Required Element
+
+        :param time:
+        :return:
+        """
+        pass
+        #return str(time)
+    def verifyCensorCode(self, point):
+        """Required Element
+
+        :param point:
+        :return:
+        """
+        if not point.censorCode:
+            return "error"
 
     def censorCodeEditor(self, olv, rowIndex, subItemIndex):
         """
@@ -130,7 +177,7 @@ class AddPoints(wx.Frame):
 
     def localTimeEditor(self, olv, rowIndex, subItemIndex):
         odcb = wx.lib.masked.TimeCtrl(olv, fmt24hr=True)
-        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        odcb.Bind(wx.EVT_CHAR, olv._HandleChar)
         return odcb
 
 
@@ -142,6 +189,8 @@ class AddPoints(wx.Frame):
     def onUploadBtn(self, event):
         event.Skip()
     def onFinishedBtn(self, event):
+        event.Skip()
+    def onTestBtn(self, event):
         event.Skip()
     def onSelected(self, event):
         event.Skip()

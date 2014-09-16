@@ -32,6 +32,10 @@ class AddPoints(clsAddPoints.AddPoints):
         event.Skip()
     def onFinishedBtn(self, event):
         event.Skip()
+    def onTestBtn(self, event):
+        object = self.olv.GetObjects()
+
+        event.Skip()
 
     def onSelected(self, event):
         object = event.GetEventObject()
