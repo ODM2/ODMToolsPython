@@ -2,6 +2,8 @@
 
 import wx
 
+import pandas as pd
+
 import odmtools.view.clsAddPoints as clsAddPoints
 
 
@@ -14,27 +16,76 @@ class AddPoints(clsAddPoints.AddPoints):
 
     # Handlers for AddPoints events.
     def onAddBtn(self, event):
-        value = str(len(self.olv.GetObjects()) + 1)
+        """
+
+        :param event:
+        :return:
+        """
         self.olv.AddObject(self.sampleRow())
-        self.sb.SetStatusText("Added %s" % value)
+        self.sb.SetStatusText("Added a row")
         event.Skip()
 
+    def onClearAllBtn(self, event):
+        """
+
+        :param event:
+        :return:
+        """
+        if len(self.olv.GetObjects()) < 1:
+            wx.MessageBox("Nothing to remove here", " ", wx.OK)
+            return
+        msg = wx.MessageDialog(None, 'Are you sure you want to delete your work?', 'Clear Everything?', wx.YES_NO | wx.ICON_WARNING |wx.NO_DEFAULT )
+        value = msg.ShowModal()
+        if value == wx.ID_YES:
+            self.olv.SetObjects(None)
+        return
+
     def onDeleteBtn(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         if self.selectedObject:
+            print "selectedOBjects: ", self.selectedObject
             self.olv.RemoveObject(self.selectedObject)
             self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
-        object = event.GetEventObject()
-        print "Selected Object", object
         self.selectedObject = None
 
         event.Skip()
+
     def onUploadBtn(self, event):
+        """Reads csv into pandas object
+
+        Parameters
+        ----------
+        filepath : string
+            path to csv file
+        skip : int
+            indicates the skip amount to begin reading
+        """
+
+        #filepath = wx.FileDialog()
+        #if not filepath:
+        #    raise RuntimeError("FilePath cannot be null")
+
+        #logger.debug("filepath: %s" % filepath)
+        #logger.debug("sep: %s" % sep)
+        #logger.debug("skiprows: %s" % skip)
+        '''
+        try:
+            data = pd.read_csv(filepath, sep=str(sep), index_col=0, parse_dates=True, skiprows=int(skip))
+            return data.sort()
+        except:
+            return None
+        '''
         event.Skip()
     def onFinishedBtn(self, event):
-        event.Skip()
-    def onTestBtn(self, event):
-        object = self.olv.GetObjects()
+        """
 
+        :param event:
+        :return:
+        """
         event.Skip()
 
     def onSelected(self, event):
