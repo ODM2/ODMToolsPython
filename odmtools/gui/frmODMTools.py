@@ -1,6 +1,5 @@
 #!/usr/bin/env
 #Boa:Frame:ODMTools
-from odmtools.controller import frmDBConfiguration
 
 '''
 this_file = os.path.realpath(__file__)
@@ -13,6 +12,7 @@ import sys
 import os
 import logging
 import mnuRibbon
+from odmtools.gui.frmConsole import ODMConsole
 import pnlSeriesSelector
 import pnlPlot
 import pnlDataTable
@@ -20,11 +20,13 @@ import wx.lib.agw.aui as aui
 import wx.py.crust
 import wx.stc
 from odmtools.common import gtk_execute
-from odmtools.common.appdirs import user_config_dir
+from odmtools.lib.Appdirs.appdirs import user_config_dir
 from wx.lib.pubsub import pub as Publisher
 from odmtools.odmservices import ServiceManager
 from pnlScript import pnlScript
 from odmtools.common.logger import LoggerTool
+from odmtools.controller import frmDBConfig
+
 
 def create(parent):
     return frmODMToolsMain(parent)
@@ -64,7 +66,7 @@ class frmODMToolsMain(wx.Frame):
         self.service_manager = ServiceManager()
         self.record_service = None
         if not self.service_manager.is_valid_connection():
-            db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
+            db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
             value = db_config.ShowModal()
             db_config.Destroy()
 
@@ -118,17 +120,10 @@ class frmODMToolsMain(wx.Frame):
 
 
         ############# Script & Console ###############
-        myIntroText = (
-            "ODMTOOLS Python Welcomes You\n"
-            "Python %s on %s, wxPython %s\n"
-            % (sys.version.split()[0], sys.platform, wx.version()))
-        #self.pnlConsole = wx.Panel(self.pnlDocking, wxID_TXTPYTHONCONSOLE, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
-        #self.txtPythonConsole = wx.py.crust.Crust(self.pnlConsole, intro=myIntroText, showInterpIntro=False,
-        #                                               size=wx.Size(200, 200), style=wx.NO_BORDER)  #,  style=1)
-
         logger.debug("Loading Python Console ...")
-        self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE, showInterpIntro=False,
-                                                       size=wx.Size(200, 200), style=wx.NO_BORDER)
+        self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200), )
+        #self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE,
+        #    showInterpIntro=False, size=wx.Size(200, 200), style=wx.NO_BORDER)
         wx.CallAfter(self._postStartup)
         # Console tools object for usability
 
@@ -270,16 +265,16 @@ class frmODMToolsMain(wx.Frame):
             Publisher.sendMessage("setEdit", isEdit=True)
             logger.debug("Enabling Edit")
             self.record_service.toggle_record()
-            self._mgr.GetPane(self.txtPythonScript).Show(show=True)
+            #self._mgr.GetPane(self.txtPythonScript).Show(show=True)
 
 
         else:
             logger.debug("disabling Edit")
             Publisher.sendMessage("setEdit", isEdit=False)
             self.record_service.toggle_record()
-            self._mgr.GetPane(self.txtPythonScript).Show(show=False)
+            #self._mgr.GetPane(self.txtPythonScript).Show(show=False)
 
-        self._mgr.Update()
+        #self._mgr.Update()
 
         logger.debug("Recording? %s" % self.record_service._record)
 
@@ -304,7 +299,7 @@ class frmODMToolsMain(wx.Frame):
         return self.record_service
 
     def onChangeDBConn(self, event):
-        db_config = frmDBConfiguration.frmDBConfig(None, self.service_manager, False)
+        db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
         value = db_config.ShowModal()
 
         #print "Value: ", value

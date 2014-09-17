@@ -8,7 +8,7 @@ __author__ = 'Jacob'
 import logging
 import os
 
-from .appdirs import user_log_dir
+from odmtools.lib.Appdirs.appdirs import user_log_dir
 
 
 class LoggerTool():

@@ -9,7 +9,7 @@ import re
 
 from wx.tools import img2py
 
-output = 'newIcons.py'
+output = 'tempIcons.py'
 
 # get the list of BMP files
 #files = [f for f in os.listdir('.') if re.search(r'odm\d*x\d*\.png', f)]

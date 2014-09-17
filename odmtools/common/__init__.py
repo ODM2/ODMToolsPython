@@ -1,8 +1,9 @@
 __author__ = 'Jacob'
 from icons.icons import *
+from icons.icons4addpoint import *
 from logger import LoggerTool
-__all__=["add",
 
+__all__=["add",
         "binning",
         "bitmap_editor",
         "blank",
@@ -53,6 +54,10 @@ __all__=["add",
         "newscript",
         "openscript",
         "savescript",
-        "deletered"
+        "deletered",
+
+
+
+
 
         ]

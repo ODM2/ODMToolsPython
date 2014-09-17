@@ -111,9 +111,12 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltProb.onPlotType(ptype)
 
     def onShowLegend(self, event, isVisible):
-        self.pltTS.onShowLegend(isVisible)
-        self.pltProb.onShowLegend(isVisible)
-        self.legendVisible = isVisible
+        try:
+            self.pltTS.onShowLegend(isVisible)
+            self.pltProb.onShowLegend(isVisible)
+            self.legendVisible = isVisible
+        except AttributeError:
+            pass
 
     def stopEdit(self):
         self._seriesPlotInfo.stopEditSeries()
