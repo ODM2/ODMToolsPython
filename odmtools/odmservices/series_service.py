@@ -31,8 +31,21 @@ class SeriesService():
         return self._edit_session.query(ODMVersion).first().version_number
 
     # Site methods
+    #def get_all_sites(self):
+    #    return self._edit_session.query(Site).order_by(Site.code).all()
     def get_all_sites(self):
-        return self._edit_session.query(Site).order_by(Site.code).all()
+
+        try:
+            site_ids = [x[0] for x in self._edit_session.query(distinct(Series.site_id)).all()]
+        except:
+            site_ids = None
+
+        Sites = []
+        for site_id in site_ids:
+            Sites.append(self._edit_session.query(Site).filter_by(id=site_id).one())
+
+        return Sites
+
 
     def get_site_by_id(self, site_id):
         try:

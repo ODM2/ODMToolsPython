@@ -14,6 +14,7 @@ from mpl_toolkits.axes_grid1 import host_subplot
 
 from matplotlib.lines import Line2D
 from matplotlib.text import Text
+from  matplotlib.colors import ColorConverter
 
 from matplotlib.font_manager import FontProperties
 from wx.lib.pubsub import pub as Publisher
@@ -30,6 +31,7 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class plotTimeSeries(wx.Panel):
     def __init__(self, parent, id, pos, size, style, name):
         self._init_ctrls(parent)
+
 
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
@@ -113,22 +115,31 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
-    def changePlotSelection(self, sellist=None, datetime_list=None):
+    def changePlotSelection(self, sellist=[], datetime_list=[]):
+        cc= ColorConverter()
         # k black,    # r red
         # needs to have graph first
+        selected = cc.to_rgba('r', 1)
+        unselected = cc.to_rgba('k', 0.1)
+        allunselected = cc.to_rgba('k', 1)
         if self.editPoint:
             if len(sellist)>0:
                 #list of True False
-                self.editPoint.set_color(['k' if x == 0 else 'r' for x in sellist])
-            else:
-                tflist=[False] *len(self.editCurve.dataTable)
+                colorlist= [unselected if x == 0 else selected for x in sellist]
+
+            elif len(datetime_list)>0:
+                colorlist=[None] *len(self.editCurve.dataTable)
+
                 for i in xrange(len(self.editCurve.dataTable)):
-                    if self.editCurve.dataTable[i][1] in datetime_list:
-                        tflist[i] = 'r' #set the value as selected
+                    if  self.editCurve.dataTable[i][1] in datetime_list:
+                        colorlist[i]=selected
                     else:
-                        tflist[i]='k'
-                self.editPoint.set_color(tflist)
-                #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
+                        colorlist[i]=unselected
+            else:
+                colorlist=[allunselected]*len(self.editCurve.dataTable)
+
+            self.editPoint.set_color(colorlist)
+            #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
             self.canvas.draw()
 
     def changeSelection(self, sellist=[], datetime_list=[]):
@@ -331,7 +342,7 @@ class plotTimeSeries(wx.Panel):
             self.timeSeries.legend_ = None
 
         self.timeSeries.set_xlabel("Date", picker=True)
-        self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
+        #self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
         #self.timeSeries.axis[:].set_major_formatter(FormatStrFormatter('%.2f'))
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)

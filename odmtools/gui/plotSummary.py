@@ -2,7 +2,7 @@
 
 import wx
 import wx.grid
-from wx.lib import wordwrap
+from wx.lib.wordwrap import wordwrap
 
 [wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY,
 ] = [wx.NewId() for _init_ctrls in range(2)]
@@ -73,7 +73,7 @@ class plotSummary(wx.Panel):
 
 
     def setColLabel(self, col, label):
-        self.grdSummary.SetColLabelValue(col, wordwrap.wordwrap(label,
+        self.grdSummary.SetColLabelValue(col, wordwrap(label,
                           self.grdSummary.GetColSize(col), wx.ClientDC(self), breakLongWords=False))
         self.resizeLabel()
 
