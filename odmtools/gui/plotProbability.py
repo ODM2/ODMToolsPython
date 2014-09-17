@@ -97,7 +97,7 @@ class plotProb(wx.Panel):
     def onShowLegend(self, isVisible):
         self.islegendvisible = isVisible
         if isVisible:
-            leg = self.plots.legend(loc='best', ncol=2, fancybox=True, prop=self.fontP)
+            leg = self.plots.legend(loc='upper right', ncol=2, fancybox=True, prop=self.fontP)
             leg.get_frame().set_alpha(.5)
             leg.draggable(state=True)
 

@@ -263,7 +263,7 @@ class CellEdit():
         # odcb = masked.TimeCtrl(olv, fmt24hr=True)
         odcb = TimePicker(olv, fmt24hr=True)
 
-        odcb.Bind(wx.EVT_CHAR, olv._HandleChar)
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
 
@@ -280,7 +280,7 @@ class TimePicker(masked.TimeCtrl):
         """
         kwargs['fmt24hr'] = True
         kwargs['value'] = "00:00:00"
-        kwargs['style'] = wx.TE_PROCESS_ENTER | wx.TE_PROCESS_TAB
+        #kwargs['style'] = wx.TE_PROCESS_ENTER
         masked.TimeCtrl.__init__(self, *args, **kwargs)
 
     def SetValue(self, value):

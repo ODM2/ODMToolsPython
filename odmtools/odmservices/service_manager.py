@@ -9,7 +9,7 @@ from cv_service import CVService
 from edit_service import EditService
 from odmtools.controller import EditTools
 from export_service import ExportService
-from odmtools.common.appdirs import user_config_dir
+from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmdata.session_factory import SessionFactory
 
 
