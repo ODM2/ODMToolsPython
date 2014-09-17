@@ -7,7 +7,7 @@ from matplotlib import path
 from matplotlib import dates
 
 from odmtools.common.logger import LoggerTool
-from odmtools.common import select, scroll_left, scroll_right
+from odmtools.common.icons.plotToolbar import *
 
 
 tools = LoggerTool()
@@ -42,7 +42,7 @@ class MyCustomToolbar(NavigationToolbar):
             self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT, select.GetBitmap(), 'Lasso Select',
                                                   'Select datavalues from the graph', isToggle=True)
 
-            self.zoom_to_data = self.AddSimpleTool(self.ON_ZOOM_DATA_SELECT, select.GetBitmap(), 'Zoom to Data',
+            self.zoom_to_data = self.AddSimpleTool(self.ON_ZOOM_DATA_SELECT, zoom_data.GetBitmap(), 'Zoom to Data',
                                                   'Zoom to data without NoDataValues')
 
             wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self.on_toggle_lasso_tool)
