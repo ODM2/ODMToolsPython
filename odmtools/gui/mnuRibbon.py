@@ -403,7 +403,7 @@ class mnuRibbon(RB.RibbonBar):
         #pass
 
     def onSave(self, event):
-        # send  db connection inof to wizard
+        # send  db connection info to wizard
         # get site, Variable and Source from current dataset
 
         wiz=wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
@@ -424,8 +424,11 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditInterpolate(self, event):
         logger.debug("Interpolate!")
-        self.parent.getRecordService().interpolate()
-        #Publisher.sendMessage(("updateValues"), event=event)
+        val = wx.MessageBox("You have chosen to interpolate the selected points.\nDo you want to continue?" ,
+                            'Interpolation', wx.YES_NO | wx.ICON_QUESTION)
+        if val == 2:  # wx.ID_YES:
+            self.parent.getRecordService().interpolate()
+
         event.Skip()
 
     def onEditFlag(self, event):
@@ -434,7 +437,7 @@ class mnuRibbon(RB.RibbonBar):
         logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
         if val == 5101:  #wx.ID_OK:
             self.parent.getRecordService().flag(add_flag.GetValue())
-            #Publisher.sendMessage(("updateValues"), event=event)
+            # Publisher.sendMessage(("updateValues"), event=event)
         add_flag.Destroy()
         event.Skip()
 

@@ -37,10 +37,10 @@ class MyCustomToolbar(NavigationToolbar):
         (None, None, None, None),
         ('Pan', 'Pan axes with left mouse, zoom with right', move, 'pan'),
         ('Zoom', 'Zoom to rectangle', zoom_to_rect, 'zoom'),
-        ('PanLeft', 'Pan graph to the left', scroll_left, '_on_custom_pan_left'),
-        ('PanRight', 'Pan graph to the right', scroll_right, '_on_custom_pan_right'),
         (None, None, None, None),
         ('Subplots', 'Configure subplots', subplots, 'configure_subplots'),
+        ('PanLeft', 'Pan graph to the left', scroll_left, '_on_custom_pan_left'),
+        ('PanRight', 'Pan graph to the right', scroll_right, '_on_custom_pan_right'),
         ('Save', 'Save the figure', filesave, 'save_figure'),
       )
 #        self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
