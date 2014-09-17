@@ -5,25 +5,6 @@ import numpy
 
 
 
-#class PlotOptions(object):
-
-    # def __init__(self, TSMethod, showLegend, useCensoredData):
-    #
-    #
-    #     self.timeSeriesMethod = TSMethod
-    #     self.showLegend = showLegend
-    #     self.useCensoredData = useCensoredData
-    #
-    #     self.numBins = 25
-    #     self.binWidth = 1.5
-    #
-    #     # self.timeSeriesMethod ="Both"
-    #     self.boxWhiskerMethod = "Monthly"
-    #
-    #     self.displayFullDate = True
-
-
-
 class OneSeriesPlotInfo(object):
     def __init__(self, prnt):
         self.parent = prnt

@@ -4,6 +4,7 @@ import wx
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 from matplotlib.widgets import Lasso
 from matplotlib import path
+from matplotlib import dates
 
 from odmtools.common.logger import LoggerTool
 from odmtools.common import select, scroll_left, scroll_right
@@ -18,6 +19,7 @@ class MyCustomToolbar(NavigationToolbar):
     ON_CUSTOM_RIGHT = wx.NewId()
     ON_CUSTOM_SEL = wx.NewId()
     ON_LASSO_SELECT = wx.NewId()
+    ON_ZOOM_DATA_SELECT = wx.NewId()
 
     # rather than copy and edit the whole (rather large) init function, we run
     # the super-classes init function as usual, then go back and delete the
@@ -40,7 +42,12 @@ class MyCustomToolbar(NavigationToolbar):
             self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT, select.GetBitmap(), 'Lasso Select',
                                                   'Select datavalues from the graph', isToggle=True)
 
+            self.zoom_to_data = self.AddSimpleTool(self.ON_ZOOM_DATA_SELECT, select.GetBitmap(), 'Zoom to Data',
+                                                  'Zoom to data without NoDataValues')
+
             wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self.on_toggle_lasso_tool)
+            wx.EVT_TOOL(self, self.ON_ZOOM_DATA_SELECT, self.on_toggle_zoom_data_tool)
+
             # Get the ids for the existing tools
             self.pan_tool = self.FindById(self.wx_ids['Pan'])
             self.zoom_tool = self.FindById(self.wx_ids['Zoom'])
@@ -48,6 +55,7 @@ class MyCustomToolbar(NavigationToolbar):
             wx.EVT_TOOL(self, self.pan_tool.Id, self.on_toggle_pan_zoom)
             self.lassoAction = None
             self.select_tool.Enable(False)
+            self.zoom_to_data.Enable(False)
 
         self.SetToolBitmapSize(wx.Size(16, 16))
 
@@ -67,6 +75,7 @@ class MyCustomToolbar(NavigationToolbar):
         self.xys = xys
         self.editCurve = edit
         self.select_tool.Enable(True)
+        self.zoom_to_data.Enable(True)
         self.Realize()
 
     def stopEdit(self):
@@ -77,6 +86,7 @@ class MyCustomToolbar(NavigationToolbar):
         self.lassoAction = None
         # disable select button
         self.select_tool.Enable(False)
+        self.zoom_to_data.Enable(False)
         self.Realize()
         #untoggle lasso button
         self.ToggleTool(self.select_tool.Id, False)
@@ -109,10 +119,6 @@ class MyCustomToolbar(NavigationToolbar):
         axes.set_xlim(x1 + ONE_SCREEN, x2 + ONE_SCREEN)
         self.canvas.draw()
 
-    def _on_custom_sel_point(self, evt):
-        print "select points button"
-        # self.canvas.mpl_connect('button_press_event', onclick)
-        pass
 
     def _onPress(self, event):
         self.myEvent = event
@@ -164,14 +170,23 @@ class MyCustomToolbar(NavigationToolbar):
             self.lassoAction = None
 
     def on_toggle_pan_zoom(self, event):
-        """
-        Called when pan or zoom is toggled.
-            Toggles off Lasso and disconnects it from the canvas
-        event -- button_press_event
-        """
+        #reset the extents to exclude any no data values
         if event.Checked():
             self.ToggleTool(self.ON_LASSO_SELECT, False)
             self.canvas.mpl_disconnect(self.lassoAction)
             self.lassoAction = None
         # Make sure the regular pan/zoom handlers get the event
         event.Skip()
+
+    def on_toggle_zoom_data_tool(self, event):
+        if self._views.empty():
+            self.push_current()
+        dvs = [x[0] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
+        date= [x[1] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
+
+        axes = self.canvas.figure.axes[0]
+        axes.set_ylim(min(dvs), max(dvs))
+        axes.set_xlim(dates.date2num([min(date), max(date)]))
+
+        self.push_current()
+        self.canvas.draw()

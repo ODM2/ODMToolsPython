@@ -20,7 +20,7 @@ import wx.lib.agw.aui as aui
 import wx.py.crust
 import wx.stc
 from odmtools.common import gtk_execute
-from odmtools.common.appdirs import user_config_dir
+from appdirs import user_config_dir
 from wx.lib.pubsub import pub as Publisher
 from odmtools.odmservices import ServiceManager
 from pnlScript import pnlScript
