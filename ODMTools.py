@@ -21,6 +21,7 @@ sys.path.insert(0, directory)
 '''
 
 import wx
+wx.Log.SetLogLevel(0)
 from odmtools.gui import frmODMTools
 
 
