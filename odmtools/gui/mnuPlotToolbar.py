@@ -7,11 +7,20 @@ from matplotlib import path
 from matplotlib import dates
 
 from odmtools.common.logger import LoggerTool
-from odmtools.common.icons.plotToolbar import *
+from odmtools.common.icons.plotToolbar import back, filesave, select, scroll_right, \
+    scroll_left, zoom_data, zoom_to_rect, subplots, forward, home, move
+
 
 
 tools = LoggerTool()
 logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
+def bind(actor,event,action,id=None):
+        if id is not None:
+            event(actor, id, action)
+        else:
+            event(actor,action)
+
 
 
 class MyCustomToolbar(NavigationToolbar):
@@ -21,22 +30,61 @@ class MyCustomToolbar(NavigationToolbar):
     ON_LASSO_SELECT = wx.NewId()
     ON_ZOOM_DATA_SELECT = wx.NewId()
 
+    toolitems = (
+        ('Home', 'Reset original view', home, 'home'),
+        ('Back', 'Back to  previous view', back, 'back'),
+        ('Forward', 'Forward to next view', forward, 'forward'),
+        (None, None, None, None),
+        ('Pan', 'Pan axes with left mouse, zoom with right', move, 'pan'),
+        ('Zoom', 'Zoom to rectangle', zoom_to_rect, 'zoom'),
+        ('PanLeft', 'Pan graph to the left', scroll_left, '_on_custom_pan_left'),
+        ('PanRight', 'Pan graph to the right', scroll_right, '_on_custom_pan_right'),
+        (None, None, None, None),
+        ('Subplots', 'Configure subplots', subplots, 'configure_subplots'),
+        ('Save', 'Save the figure', filesave, 'save_figure'),
+      )
+#        self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
+ #       self.AddSimpleTool(self.ON_CUSTOM_RIGHT, scroll_right.GetBitmap(), 'Pan to the right', 'Pan graph to the right')
     # rather than copy and edit the whole (rather large) init function, we run
     # the super-classes init function as usual, then go back and delete the
     # button we don't want
+    def _init_toolbar(self):
+
+        self._parent = self.canvas.GetParent()
+
+
+        self.wx_ids = {}
+        for text, tooltip_text, image_file, callback in self.toolitems:
+            if text is None:
+                self.AddSeparator()
+                continue
+            self.wx_ids[text] = wx.NewId()
+            if text in ['Pan', 'Zoom', 'Lasso']:
+               self.AddCheckTool(self.wx_ids[text], image_file.GetBitmap(),
+                                 shortHelp=text, longHelp=tooltip_text)
+            else:
+               self.AddSimpleTool(self.wx_ids[text], image_file.GetBitmap(),
+                                  text, tooltip_text)
+            bind(self, wx.EVT_TOOL, getattr(self, callback), id=self.wx_ids[text])
+
+        self.Realize()
+
+
     def __init__(self, plotCanvas, multPlots=False, allowselect=False):
         NavigationToolbar.__init__(self, plotCanvas)
+        #self.ClearTools()
+
 
         # delete the toolbar button we don't want
         if (not multPlots):
             CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 7
             self.DeleteToolByPos(CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION)
 
-        self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
-        self.AddSimpleTool(self.ON_CUSTOM_RIGHT, scroll_right.GetBitmap(), 'Pan to the right', 'Pan graph to the right')
+        #self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
+        #self.AddSimpleTool(self.ON_CUSTOM_RIGHT, scroll_right.GetBitmap(), 'Pan to the right', 'Pan graph to the right')
 
-        wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
-        wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
+        #wx.EVT_TOOL(self, self.ON_CUSTOM_LEFT, self._on_custom_pan_left)
+        #wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
 
         if allowselect:
             self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT, select.GetBitmap(), 'Lasso Select',
