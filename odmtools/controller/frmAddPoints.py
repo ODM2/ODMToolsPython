@@ -21,7 +21,7 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
-        self.olv.AddObject(self.sampleRow())
+        self.olv.AddObject(self.olv.sampleRow())
         self.sb.SetStatusText("Added a row")
         event.Skip()
 
@@ -91,9 +91,6 @@ class AddPoints(clsAddPoints.AddPoints):
     def onSelected(self, event):
         object = event.GetEventObject()
         self.selectedObject = object.innerList[object.FocusedItem]
-
-    def sampleRow(self):
-        return self.Points()
 
 
 class Example(wx.Frame):
