@@ -113,7 +113,6 @@ class frmODMToolsMain(wx.Frame):
 
         ############# Graph ###############
         logger.debug("Loading Plot ...")
-
         self.pnlPlot = pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
                                        parent=self.pnlDocking, size=wx.Size(605, 458),
                                        style=wx.TAB_TRAVERSAL)
@@ -122,21 +121,14 @@ class frmODMToolsMain(wx.Frame):
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
         self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200), )
-        #self.txtPythonConsole = wx.py.crust.CrustFrame(id=wxID_TXTPYTHONCONSOLE,
-        #    showInterpIntro=False, size=wx.Size(200, 200), style=wx.NO_BORDER)
         wx.CallAfter(self._postStartup)
-        # Console tools object for usability
-
 
         # FIXME closing the txtPythonConsole from menu crashes the python console. We will need to extend pyCrust to remove this so that we don't have issues in the future.
 
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
-        #self.console_tools = ConsoleTools(self._ribbon)
-
         self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
-
 
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,

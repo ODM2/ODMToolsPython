@@ -3,7 +3,7 @@
 # ##########################################################################
 # # Python code generated with wxFormBuilder (version Jun  5 2014)
 # # http://www.wxformbuilder.org/
-##
+# #
 ## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
 
@@ -15,9 +15,8 @@ import wx.lib.agw.buttonpanel as BP
 
 from odmtools.controller.olvAddPoint import OLVAddPoint
 from odmtools.lib.ObjectListView import EVT_CELL_EDIT_STARTING, EVT_CELL_EDIT_FINISHING
-
-#from odmtools.common.icons.icons import add, stop_edit, deletered
 from odmtools.common.icons.icons4addpoint import *
+
 
 
 
@@ -26,10 +25,10 @@ from odmtools.common.icons.icons4addpoint import *
 ## Class AddPoints
 ###########################################################################
 
-class AddPoints(wx.Frame):
+class AddPoints(wx.MiniFrame):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition, size=(1175, 425),
-                          style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
+        wx.MiniFrame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
+                          size=(1175, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         mainPanel = wx.Panel(self, -1)
         vSizer = wx.BoxSizer(wx.VERTICAL)
@@ -58,26 +57,26 @@ class AddPoints(wx.Frame):
         """
         self.titleBar = BP.ButtonPanel(mainPanel, -1, "Add points to ODMTools\n"
                                                       "Pressing 'c' when editing time "
-                                                      "will set the value to the localtime", alignment=BP.BP_ALIGN_LEFT)
+                                                      "will set the value to the localtime",
+                                       alignment=BP.BP_ALIGN_LEFT)
 
-        addRowBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), plus_6_64.GetBitmap(), text="Add Row")
-        deleteRowBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), minus_6_64.GetBitmap(), text="Delete Row")
-        clearRowsBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), delete_64.GetBitmap(), text="Clear All")
-        csvUploadBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), csv_64.GetBitmap(), text="Upload CSV")
-        finishedBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), exit_64.GetBitmap(), text="Finished")
+        self.addRowBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), plus_6_64.GetBitmap(), text="Add Row")
+        self.deleteRowBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), minus_6_64.GetBitmap(), text="Delete Row")
+        self.clearRowsBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), delete_64.GetBitmap(), text="Clear All")
+        self.csvUploadBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), csv_64.GetBitmap(), text="Upload CSV")
+        self.finishedBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), exit_64.GetBitmap(), text="Finished")
 
+        self.titleBar.AddButton(self.addRowBtn)
+        self.titleBar.AddButton(self.deleteRowBtn)
+        self.titleBar.AddButton(self.clearRowsBtn)
+        self.titleBar.AddButton(self.csvUploadBtn)
+        self.titleBar.AddButton(self.finishedBtn)
 
-        self.titleBar.AddButton(addRowBtn)
-        self.titleBar.AddButton(deleteRowBtn)
-        self.titleBar.AddButton(clearRowsBtn)
-        self.titleBar.AddButton(csvUploadBtn)
-        self.titleBar.AddButton(finishedBtn)
-
-        self.Bind(wx.EVT_BUTTON, self.onAddBtn, addRowBtn)
-        self.Bind(wx.EVT_BUTTON, self.onDeleteBtn, deleteRowBtn)
-        self.Bind(wx.EVT_BUTTON, self.onClearAllBtn, clearRowsBtn)
-        self.Bind(wx.EVT_BUTTON, self.onUploadBtn, csvUploadBtn)
-        self.Bind(wx.EVT_BUTTON, self.onFinishedBtn, finishedBtn)
+        self.Bind(wx.EVT_BUTTON, self.onAddBtn, self.addRowBtn)
+        self.Bind(wx.EVT_BUTTON, self.onDeleteBtn, self.deleteRowBtn)
+        self.Bind(wx.EVT_BUTTON, self.onClearAllBtn, self.clearRowsBtn)
+        self.Bind(wx.EVT_BUTTON, self.onUploadBtn, self.csvUploadBtn)
+        self.Bind(wx.EVT_BUTTON, self.onFinishedBtn, self.finishedBtn)
 
     def initiateObjectListView(self, mainPanel):
         """
@@ -90,7 +89,7 @@ class AddPoints(wx.Frame):
         self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditFinish)
         self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
         self.olv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onSelected)
-
+        self.olv.Bind(wx.EVT_CHAR, self.onChar)
 
 
     # Virtual event handlers, override them in your derived class
@@ -115,6 +114,9 @@ class AddPoints(wx.Frame):
     def onSelected(self, event):
         event.Skip()
 
+    def onChar(self, event):
+        pass
+
     def onEdit(self, event):
         ## Ignore editing on first cell
         if event.subItemIndex == 0:
@@ -129,7 +131,5 @@ class AddPoints(wx.Frame):
 
     def __del__(self):
         pass
-
-
 
 
