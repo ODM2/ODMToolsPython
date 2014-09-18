@@ -47,9 +47,13 @@ class AddPoints(clsAddPoints.AddPoints):
         :return:
         """
         if self.selectedObject:
-            print "selectedOBjects: ", self.selectedObject
-            self.olv.RemoveObject(self.selectedObject)
-            self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
+            if len(self.selectedObject) > 1:
+                length = len(self.selectedObject)
+                self.olv.RemoveObjects(self.selectedObject)
+                self.sb.SetStatusText("Removed %s items" % length)
+            else:
+                self.olv.RemoveObject(self.selectedObject)
+                self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
         self.selectedObject = None
 
         event.Skip()
@@ -89,8 +93,16 @@ class AddPoints(clsAddPoints.AddPoints):
         event.Skip()
 
     def onSelected(self, event):
-        object = event.GetEventObject()
-        self.selectedObject = object.innerList[object.FocusedItem]
+        object = event.GetEventObject().GetSelectedObjects()
+        try:
+            if len(object) > 1:
+                print "Grabbing more than one object"
+                self.selectedObject = object
+            else:
+                print "Grabbing one object"
+                self.selectedObject = object[0]
+        except TypeError:
+            pass
 
 
 class Example(wx.Frame):

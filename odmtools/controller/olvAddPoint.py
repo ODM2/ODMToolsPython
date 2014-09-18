@@ -53,16 +53,19 @@ class OLVAddPoint(FastObjectListView):
         """
         FastObjectListView.__init__(self, *args, **kwargs)
         ## Cell Verification and Editors Init
+
+
         self.vfyDataValue = None
         self.vfyValueAcc = None
         self.localtime2Str = None
         self.timeEditor = None
+        self.initiateCellValidators()
+
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
         self.AddNamedImages("star", star_16.GetBitmap(), star_32.GetBitmap())
 
-        self.initiateCellValidators()
         self.buildOlv()
 
         self.useAlternateBackColors = True

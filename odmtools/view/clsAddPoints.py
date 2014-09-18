@@ -49,8 +49,6 @@ class AddPoints(wx.Frame):
         self.titleBar.DoLayout()
         vSizer.Layout()
 
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelected, id=self.olv.GetId())
-
 
     def buildButtonPanel(self, mainPanel):
         """
@@ -89,8 +87,10 @@ class AddPoints(wx.Frame):
         """
         self.olv = OLVAddPoint(parent=mainPanel, id=wx.ID_ANY, style=wx.LC_REPORT)
         self.olv.Bind(EVT_CELL_EDIT_STARTING, self.onEdit)
-        self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditDone)
+        self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditFinish)
         self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
+        self.olv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onSelected)
+
 
 
     # Virtual event handlers, override them in your derived class
@@ -116,14 +116,15 @@ class AddPoints(wx.Frame):
         event.Skip()
 
     def onEdit(self, event):
-        print "Began editting!", event.cellValue
+        ## Ignore editing on first cell
         if event.subItemIndex == 0:
             event.Veto()
 
-    def onEditDone(self, event):
-        print "Finished Editing", event.cellValue
+    def onEditFinish(self, event):
+        pass
 
     def onColClick(self, event):
+        ## Ignore col clicking
         pass
 
     def __del__(self):
