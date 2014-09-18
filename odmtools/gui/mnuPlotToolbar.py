@@ -37,10 +37,10 @@ class MyCustomToolbar(NavigationToolbar):
         (None, None, None, None),
         ('Pan', 'Pan axes with left mouse, zoom with right', move, 'pan'),
         ('Zoom', 'Zoom to rectangle', zoom_to_rect, 'zoom'),
-        ('PanLeft', 'Pan graph to the left', scroll_left, '_on_custom_pan_left'),
-        ('PanRight', 'Pan graph to the right', scroll_right, '_on_custom_pan_right'),
         (None, None, None, None),
         ('Subplots', 'Configure subplots', subplots, 'configure_subplots'),
+        ('PanLeft', 'Pan graph to the left', scroll_left, '_on_custom_pan_left'),
+        ('PanRight', 'Pan graph to the right', scroll_right, '_on_custom_pan_right'),
         ('Save', 'Save the figure', filesave, 'save_figure'),
       )
 #        self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
@@ -68,6 +68,26 @@ class MyCustomToolbar(NavigationToolbar):
             bind(self, wx.EVT_TOOL, getattr(self, callback), id=self.wx_ids[text])
 
         self.Realize()
+
+
+    def release_zoom(self, event):
+        super(self.__class__, self).release_zoom(event)
+        self.canvas.draw()
+    def press_pan(self, event):
+        super(self.__class__, self).press_pan(event)
+        self.canvas.draw()
+    def back(self, event):
+        super(self.__class__, self).back(event)
+        self.canvas.draw()
+    def forward(self, event):
+        super(self.__class__, self).forward(event)
+        self.canvas.draw()
+    def home(self, event):
+        super(self.__class__, self).home(event)
+        self.canvas.draw()
+
+
+
 
 
     def __init__(self, plotCanvas, multPlots=False, allowselect=False):
@@ -140,14 +160,6 @@ class MyCustomToolbar(NavigationToolbar):
         self.ToggleTool(self.select_tool.Id, False)
 
 
-    # in theory this should never get called, because we delete the toolbar
-    # button that calls it. but in case it does get called (e.g. if there
-    # is a keyboard shortcut I don't know about) then we override the method
-    # that gets called - to protect against the exceptions that it throws
-    # def configure_subplot(self, evt):
-    #     if (not multPlots):
-    #         print 'ERROR: This application does not support subplots'
-
     # pan the graph to the left    
     def _on_custom_pan_left(self, evt):
         ONE_SCREEN = 7  # we default to 1 week
@@ -191,6 +203,7 @@ class MyCustomToolbar(NavigationToolbar):
         self.canvas.draw_idle()
         #self.canvas.widgetlock.release(self.lasso)
         del self.lasso
+
 
 
     def untoggle_mpl_tools(self):
