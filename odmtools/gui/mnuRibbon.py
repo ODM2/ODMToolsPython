@@ -7,7 +7,7 @@ import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
 from wx import AboutBox, AboutDialogInfo, ClientDC
 from wx.lib.wordwrap import wordwrap
-
+from odmtools.controller.frmAddPoints import AddPoints
 
 from odmtools.controller.frmDataFilters import frmDataFilter
 from frmChangeValue import frmChangeValue
@@ -442,6 +442,10 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditAddPoint(self, event):
+        recordService = self.parent.getRecordService()
+        serviceManager = self.parent.getDBService()
+
+        #addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
         add_value = frmAddPoint(self, self.parent.getRecordService())
         add_value.ShowModal()
         add_value.Destroy()

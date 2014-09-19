@@ -4,7 +4,7 @@
 import wx
 
 from datetime import datetime
-from odmtools.common import x_mark_16, star_16, star_32, x_mark_32
+from odmtools.common import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
 from odmtools.controller.logicCellEdit import CellEdit
 
 __author__ = 'Jacob'
@@ -12,7 +12,7 @@ __author__ = 'Jacob'
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
 # # Specific Settings
-NO_DATA_VALUE = u'-9999'
+NO_DATA_VALUE = -9999
 
 
 class Points(object):
@@ -20,16 +20,15 @@ class Points(object):
 
     """
 
-    def __init__(self, dataValue=NO_DATA_VALUE, valueAccuracy="NULL", time="00:00:00",
+    def __init__(self, dataValue="-9999", valueAccuracy="NULL", time="00:00:00",
                  date="", utcOffSet="NULL", dateTimeUTC="NULL", offSetValue="NULL",
-                 offSetType="NULL", censorCode="NULL", qualifierCode="NULL", qualifierDesc="NULL",
+                 offSetType="NULL", censorCode="NULL", qualifierCode="NULL",
+                 qualifierDesc="NULL",
                  labSampleCode="NULL"):
         self.dataValue = dataValue
         self.valueAccuracy = valueAccuracy
         self.time = str(time)
-        #print "time: ", self.time, type(self.time)
         self.date = datetime.now().date()
-        #print "date: ", self.date, type(self.date)
         self.utcOffSet = utcOffSet
         self.dateTimeUTC = dateTimeUTC
         self.offSetValue = offSetValue
@@ -38,6 +37,10 @@ class Points(object):
         self.qualifierCode = qualifierCode
         self.qualifierDesc = qualifierDesc
         self.labSampleCode = labSampleCode
+
+        ## determines whether a row is in correct format or now
+        self.isCorrect = True
+
 
 
 class OLVAddPoint(FastObjectListView):
@@ -51,20 +54,42 @@ class OLVAddPoint(FastObjectListView):
         :param kwargs:
         :return:
         """
+        self.serviceManager = kwargs.pop("serviceManager")
+        self.recordService = kwargs.pop("recordService")
+
         FastObjectListView.__init__(self, *args, **kwargs)
-        ## Cell Verification and Editors Init
 
+        cellEdit = CellEdit(self.serviceManager, self.recordService)
 
-        self.vfyDataValue = None
-        self.vfyValueAcc = None
-        self.localtime2Str = None
-        self.timeEditor = None
-        self.initiateCellValidators()
+        # # Custom Image Getters
+        self.imgGetterDataValue = cellEdit.imgGetterDataValue
+        self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
+        self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
+        self.imgGetterValueAcc = cellEdit.imgGetterValueAcc
 
+        ## Custom Value Getters
+        self.valueGetterValueAcc = cellEdit.valueGetterValueAccuracy
+
+        ## Custom Value Setters
+        ## Sets the value, can modify rules for setting value
+        self.valueSetterDataValue = cellEdit.valueSetterDataValue
+        self.valueSetterUTCOffset = cellEdit.valueSetterUTCOffset
+
+        ## Custom String Converters
+        ## Changes how the string will appear in the cell after editing
+        self.localtime2Str = cellEdit.strConverterLocalTime
+        self.str2DataValue = cellEdit.strConverterDataValue
+
+        ## Custom CellEditors
+        self.timeEditor = cellEdit.localTimeEditor
+        self.censorEditor = cellEdit.censorCodeEditor
+        self.labSampleEditor = cellEdit.labSampleCodeEditor
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
         self.AddNamedImages("star", star_16.GetBitmap(), star_32.GetBitmap())
+        self.AddNamedImages("check", check_mark_3_16.GetBitmap(), check_mark_3_32.GetBitmap())
+
 
         self.buildOlv()
 
@@ -75,36 +100,41 @@ class OLVAddPoint(FastObjectListView):
     def buildOlv(self):
         columns = [
             ColumnDefn("", "left", -1, valueSetter=self.emptyCol),
-            ColumnDefn("DataValue", "left", -1, valueGetter="dataValue", minimumWidth=100,
-                      imageGetter=self.vfyDataValue, headerImage="star"),
-            ColumnDefn("Date", "left", -1, valueGetter="date", minimumWidth=85, headerImage="star"),
+            ColumnDefn("DataValue", "left", -1, minimumWidth=100,
+                       valueGetter='dataValue',
+                       valueSetter=self.valueSetterDataValue,
+                       imageGetter=self.imgGetterDataValue,
+                       stringConverter=self.str2DataValue,
+                       headerImage="star"),
+            ColumnDefn("Date", "left", -1,  minimumWidth=85,
+                       valueGetter="date",
+                       headerImage="star"),
             ColumnDefn("Time", "left", -1, valueGetter="time", minimumWidth=75,
-                      cellEditorCreator=self.timeEditor, stringConverter=self.localtime2Str,
-                      headerImage="star"),
-            ColumnDefn("UTCOffset", "left", -1, valueGetter="utcOffSet", minimumWidth=100,
-                      headerImage="star"),
+                       cellEditorCreator=self.timeEditor,
+                       stringConverter=self.localtime2Str,
+                       headerImage="star"),
+            ColumnDefn("UTCOffset", "left", -1, minimumWidth=100,
+                       valueGetter="utcOffSet",
+                       valueSetter=self.valueSetterUTCOffset,
+                       imageGetter=self.imgGetterUTCOffset,
+                       headerImage="star"),
             ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=110,
-                      cellEditorCreator=self.censorEditor, imageGetter=self.vfyCensorCode,
-                      headerImage="star"),
-            ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=100),
+                       cellEditorCreator=self.censorEditor,
+                       imageGetter=self.imgGetterCensorCode,
+                       headerImage="star"),
+            ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=100,
+                       imageGetter=self.imgGetterValueAcc,
+                       ),
             ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100),
             ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100),
             ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=100),
             ColumnDefn("QualifierDesc", "left", -1, valueGetter="qualifierDesc", minimumWidth=150),
-            ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=100)
+            ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=100,
+                       cellEditorCreator=self.labSampleEditor)
         ]
 
         self.SetColumns(columns)
         self.SetObjects(None)
-
-    def initiateCellValidators(self):
-        self.vfyDataValue = CellEdit().verifyDataValue
-        self.vfyValueAcc = CellEdit().verifyValueAccuracy
-        self.localtime2Str = CellEdit().localTimeToString
-        self.vfyCensorCode = CellEdit().verifyCensorCode
-
-        self.timeEditor = CellEdit().localTimeEditor
-        self.censorEditor = CellEdit().censorCodeEditor
 
     def sampleRow(self):
         return Points()

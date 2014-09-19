@@ -26,7 +26,7 @@ from odmtools.common.icons.icons4addpoint import *
 ###########################################################################
 
 class AddPoints(wx.MiniFrame):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
         wx.MiniFrame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
                           size=(1175, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
@@ -39,7 +39,7 @@ class AddPoints(wx.MiniFrame):
         self.selectedObject = None
 
         self.buildButtonPanel(mainPanel)
-        self.initiateObjectListView(mainPanel)
+        self.initiateObjectListView(mainPanel, **kwargs)
         self.sb = self.CreateStatusBar()
 
         vSizer.Add(self.titleBar, 0, wx.EXPAND | wx.ALL)
@@ -78,13 +78,13 @@ class AddPoints(wx.MiniFrame):
         self.Bind(wx.EVT_BUTTON, self.onUploadBtn, self.csvUploadBtn)
         self.Bind(wx.EVT_BUTTON, self.onFinishedBtn, self.finishedBtn)
 
-    def initiateObjectListView(self, mainPanel):
+    def initiateObjectListView(self, mainPanel, **kwargs):
         """
 
         :param mainPanel:
         :return:
         """
-        self.olv = OLVAddPoint(parent=mainPanel, id=wx.ID_ANY, style=wx.LC_REPORT)
+        self.olv = OLVAddPoint(parent=mainPanel, id=wx.ID_ANY, style=wx.LC_REPORT, **kwargs)
         self.olv.Bind(EVT_CELL_EDIT_STARTING, self.onEdit)
         self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditFinish)
         self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)

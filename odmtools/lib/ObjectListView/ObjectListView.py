@@ -2372,7 +2372,10 @@ class AbstractVirtualObjectListView(ObjectListView):
         # Cache the last result (the hit rate is normally good: 5-10 hits to 1 miss)
         if index != self.lastGetObjectIndex:
             self.lastGetObjectIndex = index
-            self.lastGetObject = self.objectGetter(index)
+            try:
+                self.lastGetObject = self.objectGetter(index)
+            except IndexError:
+                pass
 
         return self.lastGetObject
 

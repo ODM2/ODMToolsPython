@@ -8,10 +8,14 @@ import odmtools.view.clsAddPoints as clsAddPoints
 
 # Implementing AddPoints
 class AddPoints(clsAddPoints.AddPoints):
-    def __init__(self, parent):
-        #super(AddPoints, self).__init__(parent)
-        clsAddPoints.AddPoints.__init__(self, parent)
+    def __init__(self, parent, **kwargs):
+        clsAddPoints.AddPoints.__init__(self, parent, **kwargs)
         self.frame = BulkInsert(self)
+
+        #self.cvService = serviceManager.get_cv_service()
+        #self.recordService = recordService
+
+        self.Show()
 
 
     # Handlers for AddPoints events.
@@ -53,12 +57,16 @@ class AddPoints(clsAddPoints.AddPoints):
                     self.olv.RemoveObjects(self.selectedObject)
                     self.sb.SetStatusText("Removed %s items" % length)
                 else:
+                    print "This is called!"
                     self.olv.RemoveObject(self.selectedObject)
                     self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
-            self.selectedObject = None
-        except TypeError:
+        except TypeError as e:
+            print e
+            self.olv.RemoveObject(self.selectedObject)
+            self.sb.SetStatusText("Removing %s" % self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue))
             pass
 
+        self.selectedObject = None
         event.Skip()
 
     def onUploadBtn(self, event):
@@ -89,7 +97,8 @@ class AddPoints(clsAddPoints.AddPoints):
                 self.selectedObject = object
             else:
                 self.selectedObject = object[0]
-        except TypeError:
+        except TypeError as e:
+            print e
             pass
 
 
@@ -97,7 +106,6 @@ class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
         wx.Frame.__init__(self, parent, *args, **kwargs)
         m = AddPoints(parent)
-        m.Show()
 
 
 if __name__ == '__main__':

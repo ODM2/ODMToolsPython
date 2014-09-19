@@ -23,12 +23,12 @@ arrow_204_32 = PyEmbeddedImage(
 
 #----------------------------------------------------------------------
 check_mark_3_16 = PyEmbeddedImage(
-    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA80lEQVQ4jaXSoUvEABTH8Y/H"
-    "zT9CDJeMYjHYxqymE9Gi9UD9D7RdMFgsgskscg4Ek8LYn2EcBptgMIgrhhuym9vc4a+9x+/3"
-    "fe/B459agCjNYYhBx1yGOAkD/aIxxN2cw7cR94qi6+QJPsuZXqP1t66wi4tysyvgGkdYwcG8"
-    "gAeMsIwnLLUBvrCD16LOsI9F3BeQGVUBt0kYTLCBZ4ySMHjHGdbq1qsC9qI0P0zC4AXrSRg8"
-    "Rmm+iuOm+6qAPi6jNB/jo+id1PhmAnU6xVuU5jemT9aoJgCcY/MPz89qWQN8qyWblTeITX97"
-    "0DatEo47etv1DTcSMIiVWcuyAAAAAElFTkSuQmCC")
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA9ElEQVQ4jaXSoUvEABTH8Y/H"
+    "4R+wKIZLRrEYzJYF04lo0TQ4UP8DbRcMFotgGGaRcyAYhv4jxmGwOQwGMRluyG5uc4e/9h6/"
+    "3/e9B49/agGCOIUhBh1zGZI8CvWLxhB3cw7fRtIriq6TJ/gsZ3qN1t+6wi4uys2ugGscYQUH"
+    "8wIeMMIynrDUBvjCDl6LOsM+FnFfQGZUBdzmUTjBBp4xyqPwHWdYq1uvCtgL4vQwj8IXrOdR"
+    "+BjE6SqOm+6rAvq4DOJ0jI+id1LjmwnU6RRvQZzemD5Zo5oAcI7NPzw/q2UN8K2WbFbeIDH9"
+    "7UHbtEo46eht1zfVvTCInm1v5AAAAABJRU5ErkJggg==")
 
 #----------------------------------------------------------------------
 check_mark_3_32 = PyEmbeddedImage(
