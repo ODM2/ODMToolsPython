@@ -19,7 +19,7 @@ class frmAbout(wx.Dialog):
             " ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.",
             350, ClientDC(panel))
         info.WebSite = ("http://uchic.github.io/ODMToolsPython/", "ODMTools home page")
-        info.Developers = ["Jeffrey S. Horsburgh",
+        info.Developers = ["Jeffery S. Horsburgh",
                            "Amber Spackman Jones",
                            "Stephanie L. Reeder",
                            "Jacob Meline"

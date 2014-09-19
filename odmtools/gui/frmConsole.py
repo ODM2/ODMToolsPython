@@ -18,8 +18,10 @@ class ModifiedFrame(Frame):
             subMenuItem = mb.FindItemById(id)
             subMenu = subMenuItem.GetMenu()
             subMenu.RemoveItem(subMenuItem)
-
-        remove(253)
+        try:
+            remove(wx.ID_EXIT)
+        except:
+            remove(253)
         remove(wx.ID_ABOUT)
 
 class ODMConsole(ModifiedFrame, ShellFrameMixin):

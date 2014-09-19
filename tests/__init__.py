@@ -3,4 +3,5 @@ from odmtools.common.logger import LoggerTool
 
 __all__ =[
     'LoggerTool'
+    'test_util'
 ]

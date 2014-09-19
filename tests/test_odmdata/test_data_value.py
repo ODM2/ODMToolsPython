@@ -1,6 +1,6 @@
 from odmtools.odmdata import *
 
-from tests import test_util1_1_1 as test_util
+from tests import test_util
 
 
 class TestDataValue:

@@ -1,7 +1,7 @@
 #Boa:FramePanel:pnlVariable
 
 import wx
-import frmCreateVariable
+from odmtools.controller.frmCreateVariable import frmCreateVariable
 from odmtools.odmdata import Variable
 
 [wxID_PNLVARIABLE, wxID_PNLVARIABLELSTVARIABLE, wxID_PNLVARIABLERBCREATE,
@@ -96,7 +96,7 @@ class pnlVariable(wx.Panel):
     def OnRbCreateRadiobutton(self, event):
         self.lstVariable.Enable(False)
 
-        create_Var = frmCreateVariable.frmCreateVariable(self, self.service_man, self.prev_val)
+        create_Var = frmCreateVariable(self, self.service_man, self.prev_val)
         create_Var.ShowModal()
         # if cancelled return to previous radio button
         # else enable text box and enter the text info.

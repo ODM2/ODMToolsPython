@@ -30,7 +30,7 @@ class frmCreateVariable(wx.Dialog):
         # generated method, don't edit
 
         parent.AddWindow(self.pnlPtoSelect, 35, border=2, flag=wx.GROW | wx.ALL)
-        parent.AddWindow(self.pnldefinded, 55, border=2, flag=wx.GROW | wx.ALL)
+        parent.AddWindow(self.pnldefined, 55, border=2, flag=wx.GROW | wx.ALL)
         parent.AddSizer(self.boxSizer2, 10, border=0, flag=wx.ALL | wx.GROW)
 
     def _init_coll_boxSizer2_Items(self, parent):
@@ -73,10 +73,10 @@ class frmCreateVariable(wx.Dialog):
               name=u'pnlPtoSelect', parent=self.panel1, pos=wx.Point(2, 2),
               size=wx.Size(527, 128), style=wx.TAB_TRAVERSAL)
 
-        self.pnldefinded = wx.Panel(id=wxID_FRMCREATEVARIABLEPNLDEFINDED,
+        self.pnldefined = wx.Panel(id=wxID_FRMCREATEVARIABLEPNLDEFINDED,
               name=u'pnldefinded', parent=self.panel1, pos=wx.Point(2, 134),
               size=wx.Size(527, 205), style=wx.TAB_TRAVERSAL)
-        self.pnldefinded.SetLabel(u'panel3')
+        self.pnldefined.SetLabel(u'panel3')
 
         self.btnCreate = wx.Button(id=wxID_FRMCREATEVARIABLEBTNCREATE,
               label=u'Create', name=u'btnCreate', parent=self.panel1,
@@ -101,7 +101,7 @@ class frmCreateVariable(wx.Dialog):
 
         self.boxDefined = wx.StaticBox(id=wxID_FRMCREATEVARIABLEBOXDEFINED,
               label=u'Defined Parameters', name=u'boxDefined',
-              parent=self.pnldefinded, pos=wx.Point(8, 8), size=wx.Size(528,
+              parent=self.pnldefined, pos=wx.Point(8, 8), size=wx.Size(528,
               208), style=0)
 
         self.lblVarCode = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLVARCODE,
@@ -120,30 +120,30 @@ class frmCreateVariable(wx.Dialog):
               13), style=0)
 
         self.lblTimeSupport= wx.StaticBox(id=wxID_FRMCREATEVARIABLESTATICBOX3,
-              label=u'Time Support', name='lblTimeSupport', parent=self.pnldefinded,
+              label=u'Time Support', name='lblTimeSupport', parent=self.pnldefined,
               pos=wx.Point(32, 32), size=wx.Size(488, 48), style=0)
 
         self.lblTSValue = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLTSVALUE,
-              label=u'Value:', name=u'lblTSValue', parent=self.pnldefinded,
+              label=u'Value:', name=u'lblTSValue', parent=self.pnldefined,
               pos=wx.Point(56, 56), size=wx.Size(31, 13), style=0)
 
         self.lblTSUnits = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLTSUNITS,
-              label=u'Units:', name=u'lblTSUnits', parent=self.pnldefinded,
+              label=u'Units:', name=u'lblTSUnits', parent=self.pnldefined,
               pos=wx.Point(264, 56), size=wx.Size(29, 13), style=0)
 
         self.lblValueType = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLVALUETYPE,
               label=u'Value Type:', name=u'lblValueType',
-              parent=self.pnldefinded, pos=wx.Point(40, 104), size=wx.Size(58,
+              parent=self.pnldefined, pos=wx.Point(40, 104), size=wx.Size(58,
               13), style=0)
 
         self.lblGenCat = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLGENCAT,
               label=u'General Category:', name=u'lblGenCat',
-              parent=self.pnldefinded, pos=wx.Point(40, 136), size=wx.Size(90,
+              parent=self.pnldefined, pos=wx.Point(40, 136), size=wx.Size(90,
               13), style=0)
 
         self.lblSampleM = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLSAMPLEM,
               label=u'Sample Medium:', name=u'lblSampleM',
-              parent=self.pnldefinded, pos=wx.Point(40, 168), size=wx.Size(78,
+              parent=self.pnldefined, pos=wx.Point(40, 168), size=wx.Size(78,
               13), style=0)
 
         self.lblSpeciation = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLSPECIATION,
@@ -152,16 +152,16 @@ class frmCreateVariable(wx.Dialog):
               13), style=0)
 
         self.lblDataType = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLDATATYPE,
-              label=u'Data Type:', name=u'lblDataType', parent=self.pnldefinded,
+              label=u'Data Type:', name=u'lblDataType', parent=self.pnldefined,
               pos=wx.Point(280, 104), size=wx.Size(55, 13), style=0)
 
         self.lblNoDV = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLNODV,
-              label=u'NoDataValue:', name=u'lblNoDV', parent=self.pnldefinded,
+              label=u'NoDataValue:', name=u'lblNoDV', parent=self.pnldefined,
               pos=wx.Point(344, 136), size=wx.Size(70, 16), style=0)
 
         self.lblIsRegular = wx.StaticText(id=wxID_FRMCREATEVARIABLELBLISREGULAR,
               label=u'Is Regular:', name=u'lblIsRegular',
-              parent=self.pnldefinded, pos=wx.Point(360, 168), size=wx.Size(54,
+              parent=self.pnldefined, pos=wx.Point(360, 168), size=wx.Size(54,
               13), style=0)
 
         self.txtVarCode = wx.TextCtrl(id=wxID_FRMCREATEVARIABLETXTVARCODE,
@@ -204,7 +204,7 @@ class frmCreateVariable(wx.Dialog):
 ##              id=wxID_FRMCREATEVARIABLECBSPECIATION)
 
         self.txtTSValue = wx.TextCtrl(id=wxID_FRMCREATEVARIABLETXTTSVALUE,
-              name=u'txtTSValue', parent=self.pnldefinded, pos=wx.Point(96, 48),
+              name=u'txtTSValue', parent=self.pnldefined, pos=wx.Point(96, 48),
               size=wx.Size(152, 21), style=0, value='')
 
         if self.old_var:
@@ -214,13 +214,13 @@ class frmCreateVariable(wx.Dialog):
             val_list=['units']
         self.cbTSUnits=wx.ComboBox(choices=val_list,
               id=wxID_FRMCREATEVARIABLECBVARUNITS, name=u'cbTSUnits',
-              parent=self.pnldefinded, pos=wx.Point(296, 48), size=wx.Size(200,
+              parent=self.pnldefined, pos=wx.Point(296, 48), size=wx.Size(200,
               21), style=wx.CB_DROPDOWN | wx.CB_READONLY, value='')
 
         val_list =[x.term for x in cv_service.get_value_type_cvs()]
         self.cbValueType = wx.ComboBox(choices=val_list,
               id=wxID_FRMCREATEVARIABLETXTVALUETYPE, name=u'cbValueType',
-              parent=self.pnldefinded, pos=wx.Point(104, 96), size=wx.Size(168,
+              parent=self.pnldefined, pos=wx.Point(104, 96), size=wx.Size(168,
               21), style=wx.CB_READONLY, value='')
 ##        self.cbValueType.Bind(wx.EVT_COMBOBOX, self.OnTxtValueTypeCombobox,
 ##              id=wxID_FRMCREATEVARIABLETXTVALUETYPE)
@@ -228,13 +228,13 @@ class frmCreateVariable(wx.Dialog):
         val_list =[x.term for x in cv_service.get_data_type_cvs()]
         self.cbDataType = wx.ComboBox(choices=val_list,
               id=wxID_FRMCREATEVARIABLETXTDATATYPE, name=u'txtcbDataType',
-              parent=self.pnldefinded, pos=wx.Point(336, 96), size=wx.Size(184,
+              parent=self.pnldefined, pos=wx.Point(336, 96), size=wx.Size(184,
               21), style=wx.CB_READONLY, value='')
 ##        self.cbDataType.Bind(wx.EVT_COMBOBOX, self.OnTxtDataTypeCombobox,
 ##              id=wxID_FRMCREATEVARIABLETXTDATATYPE)
 
         self.txtGenCat = wx.TextCtrl(id=wxID_FRMCREATEVARIABLETXTGENCAT,
-              name=u'txtGenCat', parent=self.pnldefinded, pos=wx.Point(136,
+              name=u'txtGenCat', parent=self.pnldefined, pos=wx.Point(136,
               128), size=wx.Size(200, 21), style=0, value='')
 
         if self.old_var:
@@ -243,16 +243,16 @@ class frmCreateVariable(wx.Dialog):
             val_list =[x.term for x in cv_service.get_sample_medium_cvs()]
         self.cbSampleMedium = wx.ComboBox(choices=val_list,
               id=wxID_FRMCREATEVARIABLETXTDATATYPE, name=u'cbSampleMedium',
-              parent=self.pnldefinded, pos=wx.Point(120, 160), size=wx.Size(216,
+              parent=self.pnldefined, pos=wx.Point(120, 160), size=wx.Size(216,
               21), style=wx.CB_READONLY, value='')
 
         self.txtNoDV = wx.TextCtrl(id=wxID_FRMCREATEVARIABLETXTNODV,
-              name=u'txtNoDV', parent=self.pnldefinded, pos=wx.Point(416, 128),
+              name=u'txtNoDV', parent=self.pnldefined, pos=wx.Point(416, 128),
               size=wx.Size(104, 21), style=0, value='')
 
         self.cbIsRegular = wx.ComboBox(choices=['True', 'False'],
               id=wxID_FRMCREATEVARIABLETXTISREGULAR, name=u'cbIsRegular',
-              parent=self.pnldefinded, pos=wx.Point(416, 160), size=wx.Size(104,
+              parent=self.pnldefined, pos=wx.Point(416, 160), size=wx.Size(104,
               21), style=wx.CB_READONLY, value='')
 ##        self.cbIsRegular.Bind(wx.EVT_COMBOBOX, self.OnTxtIsRegularCombobox,
 ##              id=wxID_FRMCREATEVARIABLETXTISREGULAR)

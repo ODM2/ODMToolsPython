@@ -520,7 +520,7 @@ class mnuRibbon(RB.RibbonBar):
             " ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.",
             350, ClientDC(self))
         info.WebSite = ("http://uchic.github.io/ODMToolsPython/", "ODMTools home page")
-        info.Developers = ["Jeffrey S. Horsburgh",
+        info.Developers = ["Jeffery S. Horsburgh",
                            "Amber Spackman Jones",
                            "Stephanie L. Reeder",
                            "Jacob Meline",
