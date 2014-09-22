@@ -7,7 +7,7 @@ import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
 from wx import AboutBox, AboutDialogInfo, ClientDC
 from wx.lib.wordwrap import wordwrap
-from odmtools.controller.frmAddPoints import AddPoints
+#from odmtools.controller.frmAddPoints import AddPoints
 
 from odmtools.controller.frmDataFilters import frmDataFilter
 from frmChangeValue import frmChangeValue
