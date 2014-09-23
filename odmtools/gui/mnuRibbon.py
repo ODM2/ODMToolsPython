@@ -446,9 +446,11 @@ class mnuRibbon(RB.RibbonBar):
         serviceManager = self.parent.getDBService()
 
         #addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
+
         add_value = frmAddPoint(self, self.parent.getRecordService())
         add_value.ShowModal()
         add_value.Destroy()
+
         #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 

@@ -20,17 +20,28 @@ class Points(object):
 
     """
 
-    def __init__(self, dataValue="-9999", valueAccuracy="NULL", time="00:00:00",
-                 date="", utcOffSet="NULL", dateTimeUTC="NULL", offSetValue="NULL",
-                 offSetType="NULL", censorCode="NULL", qualifierCode="NULL",
-                 qualifierDesc="NULL",
-                 labSampleCode="NULL"):
-        self.dataValue = dataValue
+    def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet="-7",
+                 censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL", offSetType="NULL", qualifierCode="NULL",
+                 qualifierDesc="NULL", labSampleCode="NULL"):
+        try:
+            self.dataValue = str(dataValue)
+        except:
+            self.dataValue = dataValue
+
         self.valueAccuracy = valueAccuracy
-        self.time = str(time)
-        self.date = datetime.now().date()
-        self.utcOffSet = utcOffSet
-        self.dateTimeUTC = dateTimeUTC
+
+        try:
+            self.time = str(time)
+        except:
+            self.time = time
+
+        try:
+            self.date = datetime.strptime(str(date), '%Y-%m-%d').date()
+        except Exception as e:
+            print e
+            self.date = datetime.now().date()
+        self.utcOffSet = int(utcOffSet)
+        #self.dateTimeUTC = dateTimeUTC
         self.offSetValue = offSetValue
         self.offSetType = offSetType
         self.censorCode = censorCode
@@ -40,6 +51,7 @@ class Points(object):
 
         ## determines whether a row is in correct format or now
         self.isCorrect = True
+
 
 
 
@@ -54,8 +66,15 @@ class OLVAddPoint(FastObjectListView):
         :param kwargs:
         :return:
         """
-        self.serviceManager = kwargs.pop("serviceManager")
-        self.recordService = kwargs.pop("recordService")
+        try:
+            self.serviceManager = kwargs.pop("serviceManager")
+        except:
+            self.serviceManager = None
+        try:
+            self.recordService = kwargs.pop("recordService")
+        except:
+            self.recordService = None
+
 
         FastObjectListView.__init__(self, *args, **kwargs)
 
@@ -89,7 +108,6 @@ class OLVAddPoint(FastObjectListView):
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
         self.AddNamedImages("star", star_16.GetBitmap(), star_32.GetBitmap())
         self.AddNamedImages("check", check_mark_3_16.GetBitmap(), check_mark_3_32.GetBitmap())
-
 
         self.buildOlv()
 
@@ -129,7 +147,7 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100),
             ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=100),
             ColumnDefn("QualifierDesc", "left", -1, valueGetter="qualifierDesc", minimumWidth=150),
-            ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=100,
+            ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=130,
                        cellEditorCreator=self.labSampleEditor)
         ]
 

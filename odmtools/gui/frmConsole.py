@@ -12,6 +12,8 @@ class ModifiedFrame(Frame):
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
 
+        self.Unbind(wx.EVT_MENU, id=wx.ID_ABOUT)
+
         ## Remove unneeded menu items ##
         def remove(id):
             mb = self.fileMenu.GetMenuBar()

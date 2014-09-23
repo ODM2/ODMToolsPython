@@ -11,15 +11,22 @@ __author__ = 'Jacob'
 
 #### Options ####
 utcOffSetBounds = (-12, 12)
+NULL = "NULL"
 
 class CellEdit():
     def __init__(self, serviceManager, recordService):
-        self.serviceManager = serviceManager
         self.recordService = recordService
-        self.cvService = serviceManager.get_cv_service()
-        self.censorCodeChoices = ["NULL"] + [x.term for x in self.cvService.get_censor_code_cvs()]
-        d = {x.lab_sample_code: x.id for x in self.cvService.get_samples()}
-        self.labSampleChoices = ["NULL"] + OrderedDict(d).keys()
+        if serviceManager:
+            self.serviceManager = serviceManager
+            self.cvService = serviceManager.get_cv_service()
+            self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
+            d = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
+            self.labSampleChoices = [NULL] + d.keys()
+        else:
+            self.censorCodeChoices = [NULL]
+            self.labSampleChoices = [NULL]
+
+
 
     """
         --------------------
@@ -57,7 +64,9 @@ class CellEdit():
         """
         if not point.censorCode:
             return "error"
-        if not point.censorCode in censorCodeOptions:
+        if point.censorCode == NULL:
+            return "error"
+        if not point.censorCode in self.censorCodeChoices:
             return "error"
         return "check"
 
@@ -88,6 +97,15 @@ class CellEdit():
         value = point.valueAccuracy
         if not value:
             return "error"
+
+    def imgGetterLabSampleCode(self, point):
+
+        if point.labSampleCode == NULL:
+            return
+
+        if not point.labSampleCode in self.labSampleChoices:
+            return "error"
+        return "check"
 
 
     """
@@ -147,7 +165,7 @@ class CellEdit():
         try:
             return str(value)
         except Exception as e:
-            return str("NULL")
+            return str(NULL)
 
     def strConverterLocalTime(self, time):
         """Required Element

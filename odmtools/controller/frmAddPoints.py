@@ -92,6 +92,7 @@ class AddPoints(clsAddPoints.AddPoints):
 
     def onSelected(self, event):
         object = event.GetEventObject().GetSelectedObjects()
+        event.GetEventObject().SetToolTipString("test")
         try:
             if len(object) > 1:
                 self.selectedObject = object
