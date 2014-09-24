@@ -3,6 +3,8 @@
 import wx
 import wx.grid
 from wx.lib.wordwrap import wordwrap
+import os
+#import pandas as pd
 
 [wxID_PLOTSUMMARY, wxID_PLOTSUMMARYGRDSUMMARY,
 ] = [wx.NewId() for _init_ctrls in range(2)]
@@ -17,7 +19,8 @@ class plotSummary(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.grdSummary, 100, border=0, flag=wx.GROW)
+        parent.AddWindow(self.grdSummary, 1, border=5, flag=wx.EXPAND|wx.GROW)
+        parent.Add(self.btnExport, 0 , border = 5  )
 
     def _init_sizers(self):
         # generated method, don't edit
@@ -39,10 +42,44 @@ class plotSummary(wx.Panel):
                                        size=wx.Size(421, 439), style=wx.HSCROLL | wx.VSCROLL)
         self.grdSummary.SetLabel(u'')
         self.grdSummary.EnableEditing(False)
+
+        self.btnExport = wx.Button( self, wx.ID_ANY, u"Export Statistics", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.btnExport.Enable(False)
+        self.btnExport.Bind( wx.EVT_BUTTON, self.onBtnExport )
         self.grdSummary.Bind(wx.grid.EVT_GRID_COL_SIZE, self.onListColEndDrag)
 
         self.initPlot()
         self._init_sizers()
+
+    def onBtnExport(self, event):
+
+        dlg = wx.FileDialog(self, "Choose a save location", '', "", "*.csv", wx.SAVE | wx.OVERWRITE_PROMPT)
+        if dlg.ShowModal() == wx.ID_OK:
+            full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
+            print full_path
+
+
+            import csv
+            ex_file = open(full_path, 'w')
+            ex_writer = csv.writer(ex_file)
+
+            #self.grdSummary
+            titles = [u'Name']+ [self.grdSummary.GetRowLabelValue(x) for x in xrange(self.grdSummary.GetNumberRows())]
+            data = []
+            for c in xrange(self.grdSummary.GetNumberCols()):
+                row = []
+                row.append(self.grdSummary.GetColLabelValue(c).replace('\n', ' '))
+                for r in xrange(self.grdSummary.GetNumberRows()):
+                    row.append(self.grdSummary.GetCellValue(r,c).replace('\n', ' '))
+
+                data.append(row)
+
+
+            vals  = [titles] + data
+
+
+            ex_writer.writerows(vals)
+            ex_file.close()
 
     def onListColEndDrag(self, event):
         col= event.GetRowOrCol()
@@ -54,6 +91,8 @@ class plotSummary(wx.Panel):
         self.clear()
         for oneSeries in seriesPlotInfo.getAllSeries():
             if len(oneSeries.dataTable) >0:
+                if not self.btnExport.IsEnabled():
+                    self.btnExport.Enable(True)
                 self.addCol(oneSeries)
 
     def resizeLabel(self):
@@ -67,6 +106,7 @@ class plotSummary(wx.Panel):
         self.grdSummary.ColLabelSize=numlines*16#(16 is the number of pixels per line)
 
     def clear(self):
+        self.btnExport.Enable(False)
         if self.grdSummary.GetNumberCols() > 0:
             # for col in range(self.grdSummary.GetNumberCols())
             self.grdSummary.DeleteCols(pos=0, numCols=self.grdSummary.GetNumberCols(), updateLabels=True)

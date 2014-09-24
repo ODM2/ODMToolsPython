@@ -108,7 +108,7 @@ class frmODMToolsMain(wx.Frame):
             self.menu_bar  = wx.MenuBar()
             self.help_menu = wx.Menu()
 
-            self.help_menu.Append(wx.ID_ABOUT,   "&About MyApp")
+            self.help_menu.Append(wx.ID_ABOUT,   "&About ODMTools")
             self.menu_bar.Append(self.help_menu, "&Help")
 
             self.SetMenuBar(self.menu_bar)
