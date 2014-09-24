@@ -44,7 +44,7 @@
             <property name="minimum_size"></property>
             <property name="name">clsCreateVariable</property>
             <property name="pos"></property>
-            <property name="size">455,388</property>
+            <property name="size">445,388</property>
             <property name="style">wxDEFAULT_DIALOG_STYLE</property>
             <property name="subclass"></property>
             <property name="title"></property>
@@ -100,11 +100,11 @@
                 <property name="permission">none</property>
                 <property name="rows">0</property>
                 <property name="vgap">0</property>
-                <object class="sizeritem" expanded="0">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxALL|wxEXPAND</property>
                     <property name="proportion">1</property>
-                    <object class="wxFlexGridSizer" expanded="0">
+                    <object class="wxFlexGridSizer" expanded="1">
                         <property name="cols">2</property>
                         <property name="flexible_direction">wxHORIZONTAL</property>
                         <property name="growablecols"></property>
@@ -547,22 +547,15 @@
                                 <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem" expanded="0">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxFlexGridSizer" expanded="0">
-                                <property name="cols">4</property>
-                                <property name="flexible_direction">wxVERTICAL</property>
-                                <property name="growablecols"></property>
-                                <property name="growablerows"></property>
-                                <property name="hgap">0</property>
+                            <object class="wxBoxSizer" expanded="1">
                                 <property name="minimum_size"></property>
-                                <property name="name">fgSizer4</property>
-                                <property name="non_flexible_grow_mode">wxFLEX_GROWMODE_SPECIFIED</property>
+                                <property name="name">bSizer21</property>
+                                <property name="orient">wxHORIZONTAL</property>
                                 <property name="permission">none</property>
-                                <property name="rows">0</property>
-                                <property name="vgap">0</property>
                                 <object class="sizeritem" expanded="0">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL|wxEXPAND</property>
@@ -598,7 +591,7 @@
                                         <property name="id">wxID_ANY</property>
                                         <property name="max_size"></property>
                                         <property name="maximize_button">0</property>
-                                        <property name="maximum_size">10,100</property>
+                                        <property name="maximum_size">-1,-1</property>
                                         <property name="min_size"></property>
                                         <property name="minimize_button">0</property>
                                         <property name="minimum_size"></property>

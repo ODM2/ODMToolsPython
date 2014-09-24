@@ -26,6 +26,7 @@ from odmtools.odmservices import ServiceManager
 from pnlScript import pnlScript
 from odmtools.common.logger import LoggerTool
 from odmtools.controller import frmDBConfig
+from odmtools.controller.frmAbout import  frmAbout
 
 
 def create(parent):
@@ -74,11 +75,7 @@ class frmODMToolsMain(wx.Frame):
                 logger.fatal("ODMTools is now closing because there is no database connection.")
                 sys.exit(0)
     def on_about_request(self, event):
-        dlg = wx.MessageDialog(self, "This is a small program to test\n"
-                                     "the use of menus on Mac, etc.\n",
-                                "About Me", wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
-        dlg.Destroy()
+        frmAbout(self)
 
 
     def MacReopenApp(self):
@@ -107,18 +104,17 @@ class frmODMToolsMain(wx.Frame):
         self._ribbon = mnuRibbon.mnuRibbon(parent=self, id=wx.ID_ANY, name='ribbon')
 
 
+        if sys.platform == 'darwin':
+            self.menu_bar  = wx.MenuBar()
+            self.help_menu = wx.Menu()
 
-        '''self.menu_bar  = wx.MenuBar()
-        self.help_menu = wx.Menu()
+            self.help_menu.Append(wx.ID_ABOUT,   "&About MyApp")
+            self.menu_bar.Append(self.help_menu, "&Help")
 
-        self.help_menu.Append(wx.ID_ABOUT,   "&About MyApp")
-        self.menu_bar.Append(self.help_menu, "&Help")
+            self.SetMenuBar(self.menu_bar)
+            self.Bind(wx.EVT_MENU, self.on_about_request, id=wx.ID_ABOUT)
 
-        self.SetMenuBar(self.menu_bar)
-        self.Bind(wx.EVT_MENU, self.on_about_request, id=wx.ID_ABOUT)
-
-#        self.menu_bar.SetAutoWindowMenu()
-        self.menu_bar.Show(False)'''
+    #        self.menu_bar.SetAutoWindowMenu()
 
 
         ################ Docking Tools##############

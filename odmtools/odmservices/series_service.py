@@ -42,14 +42,14 @@ class SeriesService():
 
         Sites = []
         for site_id in site_ids:
-            Sites.append(self._edit_session.query(Site).filter_by(id=site_id).one())
+            Sites.append(self._edit_session.query(Site).filter_by(id=site_id).first())
 
         return Sites
 
 
     def get_site_by_id(self, site_id):
         try:
-            return self._edit_session.query(Site).filter_by(id=site_id).one()
+            return self._edit_session.query(Site).filter_by(id=site_id).first()
         except:
             return None
 
@@ -59,13 +59,13 @@ class SeriesService():
 
     def get_variable_by_id(self, variable_id):
         try:
-            return self._edit_session.query(Variable).filter_by(id=variable_id).one()
+            return self._edit_session.query(Variable).filter_by(id=variable_id).first()
         except:
             return None
 
     def get_variable_by_code(self, variable_code):
         try:
-            return self._edit_session.query(Variable).filter_by(code=variable_code).one()
+            return self._edit_session.query(Variable).filter_by(code=variable_code).first()
         except:
             return None
 
@@ -78,7 +78,7 @@ class SeriesService():
 
         variables = []
         for var_id in var_ids:
-            variables.append(self._edit_session.query(Variable).filter_by(id=var_id).one())
+            variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
 
         return variables
 
@@ -88,13 +88,13 @@ class SeriesService():
 
     def get_unit_by_name(self, unit_name):
         try:
-            return self._edit_session.query(Unit).filter_by(name=unit_name).one()
+            return self._edit_session.query(Unit).filter_by(name=unit_name).first()
         except:
             return None
 
     def get_unit_by_id(self, unit_id):
         try:
-            return self._edit_session.query(Unit).filter_by(id=unit_id).one()
+            return self._edit_session.query(Unit).filter_by(id=unit_id).first()
         except:
             return None
 
@@ -131,7 +131,7 @@ class SeriesService():
 
     def get_series_by_id(self, series_id):
         try:
-            selectedSeries = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).one()
+            selectedSeries = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).first()
             return selectedSeries
         except:
             return None
@@ -140,7 +140,7 @@ class SeriesService():
         try:
             return self._edit_session.query(Series).filter_by(
                 site_id=site_id, variable_id=var_id, method_id=method_id,
-                source_id=source_id, quality_control_level_id=qcl_id).one()
+                source_id=source_id, quality_control_level_id=qcl_id).first()
         except:
             return None
 
@@ -202,7 +202,7 @@ class SeriesService():
                 method_id=method_id,
                 source_id=source_id,
                 quality_control_level_id=qcl_id
-            ).one()
+            ).first()
 
             return True
         except:
@@ -210,7 +210,7 @@ class SeriesService():
 
     def get_data_value_by_id(self, id):
         try:
-            return self._edit_session.query(DataValue).filter_by(id=id).one()
+            return self._edit_session.query(DataValue).filter_by(id=id).first()
         except:
             return None
 
@@ -219,13 +219,13 @@ class SeriesService():
 
     def get_qcl_by_id(self, qcl_id):
         try:
-            return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).one()
+            return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
         except:
             return None
 
     def get_qcl_by_code(self, qcl_code):
         try:
-            return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).one()
+            return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).first()
         except:
             return None
 
@@ -235,14 +235,14 @@ class SeriesService():
 
     def get_method_by_id(self, method_id):
         try:
-            result = self._edit_session.query(Method).filter_by(id=method_id).one()
+            result = self._edit_session.query(Method).filter_by(id=method_id).first()
         except:
             result = None
         return result
 
     def get_method_by_description(self, method_code):
         try:
-            result = self._edit_session.query(Method).filter_by(description=method_code).one()
+            result = self._edit_session.query(Method).filter_by(description=method_code).first()
         except:
             result = None
         return result
@@ -336,14 +336,14 @@ class SeriesService():
 
     def qcl_exists(self, q):
         try:
-            result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
+            result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).first()
             return True
         except:
             return False
 
     def method_exists(self, m):
         try:
-            result = self._edit_session.query(Method).filter_by(description=m.description).one()
+            result = self._edit_session.query(Method).filter_by(description=m.description).first()
             return True
         except:
             return False
@@ -358,7 +358,7 @@ class SeriesService():
                                                                   time_support=v.time_support,
                                                                   time_unit_id=v.time_unit_id, data_type=v.data_type,
                                                                   general_category=v.general_category,
-                                                                  no_data_value=v.no_data_value).one()
-            return True
+                                                                  no_data_value=v.no_data_value).first()
+            return result
         except:
-            return False
+            return None
