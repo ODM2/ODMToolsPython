@@ -33,6 +33,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.recordService.toggle_filter_previous()
 
 
+
     def onSetFocus(self, event):
         logger.debug("event id : %s" % repr(event.Id))
 
