@@ -30,9 +30,9 @@ extra_options = None
 if sys.platform == 'darwin':
     sys.argv.append('py2app')
     from setuptools import setup
-    APP = ['/Users/stephanie/ODMToolsPython/ODMTools.py']
+    APP = ['/Users/stephanie/DEV/ODMToolsPython/ODMTools.py']
     LIBS = ['/usr/X11/lib/libfreetype.6.dylib', '/usr/X11/lib/libstdc++.6.dylib', '/usr/X11/lib/libpng15.15.dylib']
-    OPTIONS = {'iconfile': '/Users/stephanie/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
+    OPTIONS = {'iconfile': '/Users/stephanie/DEV/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
                'includes': ['pymysql', 'appdirs', 'matplotlib', 'sqlalchemy', 'dateutil'], 'frameworks': LIBS}
     extra_options = dict(app=APP, setup_requires=['py2app'], options={'py2app': OPTIONS})
 
