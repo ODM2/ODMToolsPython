@@ -5,9 +5,10 @@ import datetime
 import wx
 import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
-#from wx import AboutBox, AboutDialogInfo, ClientDC
-#from wx.lib.wordwrap import wordwrap
 #from odmtools.controller.frmAddPoints import AddPoints
+from wx import AboutBox, AboutDialogInfo, ClientDC
+from wx.lib.wordwrap import wordwrap
+from odmtools.controller.frmAddPoints import AddPoints
 
 from odmtools.controller.frmDataFilters import frmDataFilter
 from frmChangeValue import frmChangeValue
@@ -449,11 +450,13 @@ class mnuRibbon(RB.RibbonBar):
         recordService = self.parent.getRecordService()
         serviceManager = self.parent.getDBService()
 
-        #addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
+        addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
 
+        '''
         add_value = frmAddPoint(self, self.parent.getRecordService())
         add_value.ShowModal()
         add_value.Destroy()
+        '''
 
         #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()

@@ -1,12 +1,11 @@
 """
     Bulk Insert of points
 """
-import datetime
 import wx
 import odmtools.view.clsBulkInsert as clsBulkInsert
 import odmtools.controller.olvAddPoint as olv
 import pandas as pd
-import numpy as np
+from pandas.parser import CParserError
 
 __author__ = 'Jacob'
 
@@ -14,6 +13,7 @@ __author__ = 'Jacob'
 class BulkInsert(clsBulkInsert.BulkInsert):
     def __init__(self, parent):
         clsBulkInsert.BulkInsert.__init__(self, parent)
+
         self.parent = parent
 
 
@@ -37,50 +37,93 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         filepath = openFileDialog.GetPath()
 
         try:
-            data = pd.read_csv(filepath, dtype={'UTCOffset': np.int32}, converters={
+            data = pd.read_csv(filepath, converters={
                 "DataValue": self.checkDataValue,
                 "Date": self.checkDate,
-                #"CensorCode": self.checkCensorCode,
+                "CensorCode": self.checkCensorCode,
+                "ValueAccuracy": self.checkValueAcc,
+                "OffSetValue": self.checkOffsetValue,
+                "OffSetType": self.checkOffsetType,
+                "QualifierCode": self.checkQualifierCode,
+                "LabSampleCode": self.checkLabSample
+
             })
-            pointList = []
-            for i in data.columns[4:]:
-                data[i] = data[i].astype(str)
+        except CParserError as e:
+            msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
+                                         "Please compare your csv with the template version as the file you provided "
+                                         "doesn't work", 'Issue with csv', wx.OK | wx.ICON_WARNING | wx.OK_DEFAULT)
+            value = msg.ShowModal()
+            return
 
-            for count, row in data.iterrows():
-                try:
-                    values = row.tolist()
-                    pointList.append(olv.Points(*values))
-                    #p = olv.Points(*values)
-                except Exception as e:
-                    print "Inside: ", e
-                    continue
+        pointList = []
+        for i in data.columns[3:]:
+            data[i] = data[i].astype(str)
 
 
-            #self.parent.olv.AddObjects(data.to_dict())
-        except Exception as e:
-            print "Outside:", e
-            return None
+        dlg = wx.ProgressDialog("Upload Progress", "Uploading %s objects" % len(data), maximum=len(data), parent=self,
+                                style=0 | wx.PD_APP_MODAL | wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME |
+                                      wx.PD_ESTIMATED_TIME | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE)
 
+        keepGoing = True
+        for count, row in data.iterrows():
+            if not keepGoing:
+                break
+            try:
+                values = row.tolist()
+                pointList.append(olv.Points(*values))
+                (keepGoing, _) = dlg.Update(count)
+
+            except TypeError as e:
+                dlg.Destroy()
+                msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
+                                             "Please check to see if there could be more columns or values than"
+                                             " the program expects",
+                                       'Issue with csv', wx.OK | wx.ICON_WARNING | wx.OK_DEFAULT)
+                value = msg.ShowModal()
+                return
+
+        dlg.Destroy()
         self.parent.olv.AddObjects(pointList)
-
         self.Hide()
-
-        #print "On Upload!"
-        # filepath = wx.FileDialog()
-        #if not filepath:
-        #    raise RuntimeError("FilePath cannot be null")
-
-        #logger.debug("filepath: %s" % filepath)
-        #logger.debug("sep: %s" % sep)
-        #logger.debug("skiprows: %s" % skip)
+        self.parent.Raise()
 
         event.Skip()
     def onTemplate(self, event):
-        #print "On template!"
-        event.Skip()
+        """
+                DataValues: Floats or -9999 (No data value)
+                Date: --+ String
+                        |-- Later to be combined into one
+                Time: --+ String
+
+                UTFOffSet: -12 - 12
+                CensorCode: 'gt|nc|lt|nd|pnq'
+                ValueAccuracy: Float
+                OffsetValue: Float
+                OffsetType: String
+                QualifierCode: String
+
+        :param event:
+        :return:
+        """
+        saveFileDialog = wx.FileDialog(self, "Save Bulk Insert Template", "", "", "CSV files (*.csv)|*.csv", wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
+        value = saveFileDialog.ShowModal()
+        if value == wx.ID_CANCEL:
+            return
+        filepath = saveFileDialog.GetPath()
+        col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue', 'OffSetType',
+               'QualifierCode', 'LabSampleCode']
+        df = pd.DataFrame(columns=col)
+        df.loc[0] = ['FLOAT|INT', 'YYYY-MM-DD', 'HH:MM:SS', 'INT', 'gt|nc|lt|nd|pnq', 'FLOAT', 'INT', 'String',
+                     'INT', 'String']
+        df.loc[1] = ['-9999', '2005-06-29', '14:20:15', '-7', 'nc', "1.2", "1", "NULL", "NULL", "NULL"]
+        df.to_csv(filepath, index=False)
+
+        self.Hide()
+        self.parent.Raise()
+
     def onClose(self, event):
         self.Hide()
-        event.Skip()
+        self.parent.Raise()
 
     def checkDataValue(self, item):
         try:
@@ -91,14 +134,9 @@ class BulkInsert(clsBulkInsert.BulkInsert):
             if isinstance(value, float):
                 return value
         except:
-            return "NULL"
+            return item
 
     def checkDate(self, item):
-        try:
-            format = '%Y-%m-%d'
-            value = datetime
-        except:
-            pass
         return item
 
     def checkCensorCode(self, item):
@@ -107,6 +145,38 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         except:
             return item
 
+    def checkLabSample(self, item):
+        try:
+            return str(item)
+        except:
+            return "NULL"
+    def checkQualifierCode(self, item):
+        try:
+            return str(item)
+        except:
+            return "NULL"
+    def checkOffsetType(self, item):
+        try:
+            return str(item)
+        except:
+            return "NULL"
+
+    def checkOffsetValue(self, item):
+        try:
+            value = int(item)
+            if isinstance(value, int):
+                return value
+            value = float(item)
+            if isinstance(value, float):
+                return value
+        except:
+            return item
+
+    def checkValueAcc(self, item):
+        try:
+            return str(item)
+        except:
+            return "NULL"
 
 if __name__ == '__main__':
     app = wx.App(useBestVisual=True)

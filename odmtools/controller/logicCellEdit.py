@@ -12,6 +12,7 @@ __author__ = 'Jacob'
 #### Options ####
 utcOffSetBounds = (-12, 12)
 NULL = "NULL"
+NEW = "[New Qualifier]"
 
 class CellEdit():
     def __init__(self, serviceManager, recordService):
@@ -19,12 +20,22 @@ class CellEdit():
         if serviceManager:
             self.serviceManager = serviceManager
             self.cvService = serviceManager.get_cv_service()
+            offsetChoices = OrderedDict((x.description, x.id) for x in
+                                        self.cvService.get_offset_type_cvs())
+            qualifierChoices = OrderedDict((x.code, x.id) for x in self.cvService.get_qualifiers())
+            labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
+
             self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
-            d = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
-            self.labSampleChoices = [NULL] + d.keys()
+            self.offSetTypeChoices = [NULL] + offsetChoices.keys()
+            self.qualifierCodeChoices = [NULL] + qualifierChoices.keys() + [NEW]
+            self.labSampleChoices = [NULL] + labChoices.keys()
+
         else:
             self.censorCodeChoices = [NULL]
             self.labSampleChoices = [NULL]
+            self.offSetTypeChoices = [NULL]
+            self.qualifierCodeChoices = [NULL]
+            self.offSetTypeChoices = [NULL]
 
 
 
@@ -89,6 +100,9 @@ class CellEdit():
                         return "check"
             except ValueError as e:
                 pass
+        elif isinstance(value, int):
+            if utcOffSetBounds[0] <= value <= utcOffSetBounds[1]:
+                return "check"
         return "error"
 
     def imgGetterValueAcc(self, point):
@@ -97,11 +111,27 @@ class CellEdit():
         value = point.valueAccuracy
         if not value:
             return "error"
+        return "check"
+
+    def imgGetterOffSetType(self, point):
+        """
+        """
+
+        if not point.offSetType in self.offSetTypeChoices:
+            return "error"
+        return "check"
+
+    def imgGetterQualifierCode(self, point):
+        """
+        """
+
+        if not point.qualifierCode in self.qualifierCodeChoices:
+            return "error"
+        return "check"
 
     def imgGetterLabSampleCode(self, point):
-
-        if point.labSampleCode == NULL:
-            return
+        """
+        """
 
         if not point.labSampleCode in self.labSampleChoices:
             return "error"
@@ -145,10 +175,7 @@ class CellEdit():
             except ValueError:
                 continue
         '''
-        # dv = point.dataValue
-        #if not dv:
-        #    return "NULL"
-        #return "NULL"
+
     def valueSetterUTCOffset(self, point, newValue):
         point.utcOffSet = newValue
 
@@ -179,6 +206,12 @@ class CellEdit():
             # print "Error! in the unicode encoding..."
             return str("00:00:00")
 
+    def strConverterUTCOffset(self, value):
+        """
+        """
+        return str(value)
+
+
     """
         ------------------
         Custom CellEditors
@@ -200,6 +233,43 @@ class CellEdit():
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
+    def offSetTypeEditor(self, olv, rowIndex, subItemIndex):
+        """
+
+        :param olv:
+        :param rowIndex:
+        :param subItemIndex:
+        :return:
+        """
+
+        odcb = CustomComboBox(olv, choices=self.offSetTypeChoices, style=wx.CB_READONLY)
+        # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return odcb
+
+    def qualifierCodeEditor(self, olv, rowIndex, subItemIndex):
+        """
+
+        :param olv:
+        :param rowIndex:
+        :param subItemIndex:
+        :return:
+        """
+        def cbHandler(event):
+            """
+            :param event:
+                :type wx.EVT_COMBOBOX:
+            """
+
+            if event.GetEventObject().Value == NEW:
+                print "NEW!"
+
+        odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)
+        # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        odcb.Bind(wx.EVT_COMBOBOX, cbHandler)
+        return odcb
+
     def censorCodeEditor(self, olv, rowIndex, subItemIndex):
         """
 
@@ -209,7 +279,7 @@ class CellEdit():
         :return:
         """
 
-        odcb = CustomComboBox(olv, choices=self.censorCodeChoices)
+        odcb = CustomComboBox(olv, choices=self.censorCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
@@ -223,7 +293,7 @@ class CellEdit():
         :return:
         """
 
-        odcb = CustomComboBox(olv, choices=self.labSampleChoices)
+        odcb = CustomComboBox(olv, choices=self.labSampleChoices, style=wx.CB_READONLY)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
@@ -246,7 +316,7 @@ class TimePicker(masked.TimeCtrl):
 
     def SetValue(self, value):
         """Put a new value into the editor"""
-        print "In SetValue ", value, type(value)
+        #print "In SetValue ", value, type(value)
         newValue = value or ""
         try:
             super(self.__class__, self).SetValue(newValue)
@@ -260,7 +330,7 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
     """
     def __init__(self, *args, **kwargs):
         self.popupRowHeight = kwargs.pop("popupRowHeight", 24)
-        kwargs['style'] = kwargs.get('style', 0) | wx.CB_READONLY
+        #kwargs['style'] = kwargs.get('style', 0) | wx.CB_READONLY
         self.evenRowBackground = kwargs.pop("evenRowBackground", wx.WHITE)
         self.oddRowBackground = kwargs.pop("oddRowBackground", wx.Colour(191, 239, 255))
         wx.combo.OwnerDrawnComboBox.__init__(self, *args, **kwargs)

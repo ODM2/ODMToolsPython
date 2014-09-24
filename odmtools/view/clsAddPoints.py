@@ -28,7 +28,7 @@ from odmtools.common.icons.icons4addpoint import *
 class AddPoints(wx.MiniFrame):
     def __init__(self, parent, **kwargs):
         wx.MiniFrame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
-                          size=(1215, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
+                          size=(1055, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         mainPanel = wx.Panel(self, -1)
         vSizer = wx.BoxSizer(wx.VERTICAL)
@@ -89,7 +89,7 @@ class AddPoints(wx.MiniFrame):
         self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditFinish)
         self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
         self.olv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onSelected)
-        self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onTooltip)
+        #self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onTooltip)
         self.olv.Bind(wx.EVT_CHAR, self.onChar)
 
 

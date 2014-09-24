@@ -54,17 +54,26 @@ class AddPoints(clsAddPoints.AddPoints):
             if self.selectedObject:
                 if len(self.selectedObject) > 1:
                     length = len(self.selectedObject)
-                    self.olv.RemoveObjects(self.selectedObject)
-                    self.sb.SetStatusText("Removed %s items" % length)
+                    msg = wx.MessageDialog(None, 'Are you sure you want to delete %d items' % length,
+                                           'Clear items?',
+                                           wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
+                    value = msg.ShowModal()
+                    if value == wx.ID_YES:
+                        self.olv.RemoveObjects(self.selectedObject)
+                        self.sb.SetStatusText("Removed %s items" % length)
+
                 else:
                     print "This is called!"
                     self.olv.RemoveObject(self.selectedObject)
                     self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
         except TypeError as e:
-            print e
-            self.olv.RemoveObject(self.selectedObject)
-            self.sb.SetStatusText("Removing %s" % self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue))
-            pass
+
+            msg = wx.MessageDialog(None, 'Are you sure you want to delete your work?', 'Clear items?',
+                                   wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
+            value = msg.ShowModal()
+            if value == wx.ID_YES:
+                self.olv.RemoveObject(self.selectedObject)
+                self.sb.SetStatusText("Removing %s" % self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue))
 
         self.selectedObject = None
         event.Skip()
@@ -88,11 +97,13 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
+        self.Close()
         event.Skip()
 
     def onSelected(self, event):
         object = event.GetEventObject().GetSelectedObjects()
-        event.GetEventObject().SetToolTipString("test")
+
+        #event.GetEventObject().SetToolTipString("test")
         try:
             if len(object) > 1:
                 self.selectedObject = object

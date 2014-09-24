@@ -11,9 +11,6 @@ __author__ = 'Jacob'
 
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
-# # Specific Settings
-NO_DATA_VALUE = -9999
-
 
 class Points(object):
     """
@@ -22,7 +19,7 @@ class Points(object):
 
     def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet="-7",
                  censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL", offSetType="NULL", qualifierCode="NULL",
-                 qualifierDesc="NULL", labSampleCode="NULL"):
+                 labSampleCode="NULL"):
         try:
             self.dataValue = str(dataValue)
         except:
@@ -40,17 +37,22 @@ class Points(object):
         except Exception as e:
             print e
             self.date = datetime.now().date()
-        self.utcOffSet = int(utcOffSet)
+        self.utcOffSet = utcOffSet
         #self.dateTimeUTC = dateTimeUTC
         self.offSetValue = offSetValue
         self.offSetType = offSetType
         self.censorCode = censorCode
         self.qualifierCode = qualifierCode
-        self.qualifierDesc = qualifierDesc
         self.labSampleCode = labSampleCode
 
         ## determines whether a row is in correct format or now
-        self.isCorrect = True
+        self.validDataValue = True
+        self.validUTCOffset = True
+        self.validCensorCode = True
+        self.validValueAcc = True
+        self.valid = True
+        self.validValueAcc = True
+        self.validValueAcc = True
 
 
 
@@ -66,6 +68,8 @@ class OLVAddPoint(FastObjectListView):
         :param kwargs:
         :return:
         """
+
+
         try:
             self.serviceManager = kwargs.pop("serviceManager")
         except:
@@ -85,6 +89,10 @@ class OLVAddPoint(FastObjectListView):
         self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
         self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
         self.imgGetterValueAcc = cellEdit.imgGetterValueAcc
+        self.imgGetterlabSample = cellEdit.imgGetterLabSampleCode
+        self.imgGetterQualifier = cellEdit.imgGetterQualifierCode
+        self.imgGetterOffSetType = cellEdit.imgGetterOffSetType
+
 
         ## Custom Value Getters
         self.valueGetterValueAcc = cellEdit.valueGetterValueAccuracy
@@ -98,10 +106,14 @@ class OLVAddPoint(FastObjectListView):
         ## Changes how the string will appear in the cell after editing
         self.localtime2Str = cellEdit.strConverterLocalTime
         self.str2DataValue = cellEdit.strConverterDataValue
+        self.utcOffSet2Str = cellEdit.strConverterUTCOffset
 
         ## Custom CellEditors
+        ## Custom cell editors for each cell
         self.timeEditor = cellEdit.localTimeEditor
         self.censorEditor = cellEdit.censorCodeEditor
+        self.offSetTypeEditor = cellEdit.offSetTypeEditor
+        self.qualifierCodeEditor = cellEdit.qualifierCodeEditor
         self.labSampleEditor = cellEdit.labSampleCodeEditor
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
@@ -143,11 +155,17 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=100,
                        imageGetter=self.imgGetterValueAcc,
                        ),
-            ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100),
-            ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100),
-            ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=100),
-            ColumnDefn("QualifierDesc", "left", -1, valueGetter="qualifierDesc", minimumWidth=150),
+            ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100,
+                       stringConverter=self.utcOffSet2Str,
+                       ),
+            ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
+                       imageGetter=self.imgGetterOffSetType,
+                       cellEditorCreator=self.offSetTypeEditor),
+            ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=100,
+                       imageGetter=self.imgGetterQualifier,
+                       cellEditorCreator=self.qualifierCodeEditor),
             ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=130,
+                       imageGetter=self.imgGetterlabSample,
                        cellEditorCreator=self.labSampleEditor)
         ]
 
