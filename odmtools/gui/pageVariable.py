@@ -98,6 +98,8 @@ class pnlVariable(wx.Panel):
 
         create_Var = frmCreateVariable(self, self.service_man, self.prev_val)
         create_Var.ShowModal()
+        self.createdVar= create_Var.getVariable()
+        create_Var.Destroy()
         # if cancelled return to previous radio button
         # else enable text box and enter the text info.
         # get Variable object
@@ -115,12 +117,11 @@ class pnlVariable(wx.Panel):
             index = self.lstVariable.GetFirstSelected()
             logger.debug(self.lstVariable.GetItem(index,-1).GetText())
             v= self.series_service.get_variable_by_code(self.lstVariable.GetItem(index,-1).GetText())
-##            index = self.lstVariable.GetFocusedItem()
-##            v.id = self.lstVariable.GetItem(index,-1)
-##            v.code = self.lstVariables.GetItem(index, 0)
-##            v.definition= self.lstVariables.GetItem(index, 1)
-##            v.explanation=self.lstVariable.GetItem(index, 2)
+
 
         elif self.rbCreate.Value:
-            print "Created"
+            #q.code = self.txtCode.Value
+            #q.definition= self.txtDefinition.Value
+            #q.explanation = self.txtExplanation.Value
+            v = self.createdVar
         return v

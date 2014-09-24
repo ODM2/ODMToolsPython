@@ -73,8 +73,21 @@ class frmODMToolsMain(wx.Frame):
             if value == wx.ID_CANCEL:
                 logger.fatal("ODMTools is now closing because there is no database connection.")
                 sys.exit(0)
+    def on_about_request(self, event):
+        dlg = wx.MessageDialog(self, "This is a small program to test\n"
+                                     "the use of menus on Mac, etc.\n",
+                                "About Me", wx.OK | wx.ICON_INFORMATION)
+        dlg.ShowModal()
+        dlg.Destroy()
 
 
+    def MacReopenApp(self):
+        """Called when the doc icon is clicked, and ???"""
+
+        try: # it's possible for this event to come when the frame is closed
+            self.GetTopWindow().Raise()
+        except:
+            pass
 
     ###################### Frame ################
     def _init_ctrls(self, prnt):
@@ -92,6 +105,20 @@ class frmODMToolsMain(wx.Frame):
         ############### Ribbon ###################
         logger.debug("Loading Ribbon Menu...")
         self._ribbon = mnuRibbon.mnuRibbon(parent=self, id=wx.ID_ANY, name='ribbon')
+
+
+
+        '''self.menu_bar  = wx.MenuBar()
+        self.help_menu = wx.Menu()
+
+        self.help_menu.Append(wx.ID_ABOUT,   "&About MyApp")
+        self.menu_bar.Append(self.help_menu, "&Help")
+
+        self.SetMenuBar(self.menu_bar)
+        self.Bind(wx.EVT_MENU, self.on_about_request, id=wx.ID_ABOUT)
+
+#        self.menu_bar.SetAutoWindowMenu()
+        self.menu_bar.Show(False)'''
 
 
         ################ Docking Tools##############

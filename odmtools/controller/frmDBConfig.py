@@ -94,7 +94,12 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
                 message = "This connection is valid"
                 wx.MessageBox(message, 'Test Connection', wx.OK)
             else:
-                message = "This connection is not a 1.1.1 Database"
+                #TODO add error message if user cannont connect to the database ( not using VPN) but the db is still 1.1.1)
+                if not (self.service_manager.get_db_version(conn_dict)):
+                    message = "Cannot connect to the database"
+                else:
+                    message = "This connection is not a 1.1.1 Database"
+
                 wx.MessageBox(message, 'Error Occurred', wx.OK | wx.ICON_ERROR)
                 return False
         except Exception as e:

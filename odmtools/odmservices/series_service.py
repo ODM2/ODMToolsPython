@@ -287,6 +287,14 @@ class SeriesService():
         self._edit_session.commit()
         return meth
 
+    def create_variable_by_var(self, var):
+        try:
+            self._edit_session.add(var)
+            self._edit_session.commit()
+            return var
+        except:
+            return None
+
     def create_variable(
             self, code, name, speciation, variable_unit_id, sample_medium,
             value_type, is_regular, time_support, time_unit_id, data_type,

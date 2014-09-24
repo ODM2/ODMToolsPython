@@ -24,14 +24,16 @@ def bind(actor,event,action,id=None):
 
 
 class MyCustomToolbar(NavigationToolbar):
-    ON_CUSTOM_LEFT = wx.NewId()
+    '''ON_CUSTOM_LEFT = wx.NewId()
     ON_CUSTOM_RIGHT = wx.NewId()
     ON_CUSTOM_SEL = wx.NewId()
     ON_LASSO_SELECT = wx.NewId()
-    ON_ZOOM_DATA_SELECT = wx.NewId()
+    ON_ZOOM_DATA_SELECT = wx.NewId()'''
 
     toolitems = (
         ('Home', 'Reset original view', home, 'home'),
+        ('Zoom to Data', 'Zoom to data without NoDataValues', zoom_data, 'on_toggle_zoom_data_tool'),
+
         ('Back', 'Back to  previous view', back, 'back'),
         ('Forward', 'Forward to next view', forward, 'forward'),
         (None, None, None, None),
@@ -42,12 +44,15 @@ class MyCustomToolbar(NavigationToolbar):
         ('PanLeft', 'Pan graph to the left', scroll_left, '_on_custom_pan_left'),
         ('PanRight', 'Pan graph to the right', scroll_right, '_on_custom_pan_right'),
         ('Save', 'Save the figure', filesave, 'save_figure'),
+        ('Select', 'Select datavalues from the graph', select, 'on_toggle_lasso_tool'),
       )
-#        self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
- #       self.AddSimpleTool(self.ON_CUSTOM_RIGHT, scroll_right.GetBitmap(), 'Pan to the right', 'Pan graph to the right')
+
+
+
+
     # rather than copy and edit the whole (rather large) init function, we run
     # the super-classes init function as usual, then go back and delete the
-    # button we don't want
+    # buttons we don't want
     def _init_toolbar(self):
 
         self._parent = self.canvas.GetParent()
@@ -59,7 +64,7 @@ class MyCustomToolbar(NavigationToolbar):
                 self.AddSeparator()
                 continue
             self.wx_ids[text] = wx.NewId()
-            if text in ['Pan', 'Zoom', 'Lasso']:
+            if text in ['Pan', 'Zoom', 'Select']:
                self.AddCheckTool(self.wx_ids[text], image_file.GetBitmap(),
                                  shortHelp=text, longHelp=tooltip_text)
             else:
@@ -68,24 +73,6 @@ class MyCustomToolbar(NavigationToolbar):
             bind(self, wx.EVT_TOOL, getattr(self, callback), id=self.wx_ids[text])
 
         self.Realize()
-
-
-    def release_zoom(self, event):
-        super(self.__class__, self).release_zoom(event)
-        self.canvas.draw()
-    def press_pan(self, event):
-        super(self.__class__, self).press_pan(event)
-        self.canvas.draw()
-    def back(self, event):
-        super(self.__class__, self).back(event)
-        self.canvas.draw()
-    def forward(self, event):
-        super(self.__class__, self).forward(event)
-        self.canvas.draw()
-    def home(self, event):
-        super(self.__class__, self).home(event)
-        self.canvas.draw()
-
 
 
 
@@ -97,7 +84,7 @@ class MyCustomToolbar(NavigationToolbar):
 
         # delete the toolbar button we don't want
         if (not multPlots):
-            CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 7
+            CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION = 8
             self.DeleteToolByPos(CONFIGURE_SUBPLOTS_TOOLBAR_BTN_POSITION)
 
         #self.AddSimpleTool(self.ON_CUSTOM_LEFT, scroll_left.GetBitmap(), ' Pan to the left', 'Pan graph to the left')
@@ -107,23 +94,33 @@ class MyCustomToolbar(NavigationToolbar):
         #wx.EVT_TOOL(self, self.ON_CUSTOM_RIGHT, self._on_custom_pan_right)
 
         if allowselect:
-            self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT, select.GetBitmap(), 'Lasso Select',
+            """self.select_tool = self.AddSimpleTool(self.ON_LASSO_SELECT, select.GetBitmap(), 'Lasso Select',
                                                   'Select datavalues from the graph', isToggle=True)
 
             self.zoom_to_data = self.AddSimpleTool(self.ON_ZOOM_DATA_SELECT, zoom_data.GetBitmap(), 'Zoom to Data',
                                                   'Zoom to data without NoDataValues')
 
             wx.EVT_TOOL(self, self.ON_LASSO_SELECT, self.on_toggle_lasso_tool)
-            wx.EVT_TOOL(self, self.ON_ZOOM_DATA_SELECT, self.on_toggle_zoom_data_tool)
+            wx.EVT_TOOL(self, self.ON_ZOOM_DATA_SELECT, self.on_toggle_zoom_data_tool)"""
 
             # Get the ids for the existing tools
             self.pan_tool = self.FindById(self.wx_ids['Pan'])
             self.zoom_tool = self.FindById(self.wx_ids['Zoom'])
+            self.select_tool=self.FindById(self.wx_ids['Select'])
+            self.zoom_to_data = self.FindById(self.wx_ids['Zoom to Data'])
+
             wx.EVT_TOOL(self, self.zoom_tool.Id, self.on_toggle_pan_zoom)
             wx.EVT_TOOL(self, self.pan_tool.Id, self.on_toggle_pan_zoom)
             self.lassoAction = None
             self.select_tool.Enable(False)
             self.zoom_to_data.Enable(False)
+
+        else:
+            ZOOM_DATA_BTN_POSITION = 1
+            SELECT_DATA_BTN_POSTITION = self.ToolsCount-1
+            self.DeleteToolByPos(SELECT_DATA_BTN_POSTITION)
+            self.DeleteToolByPos(ZOOM_DATA_BTN_POSITION)
+
 
         self.SetToolBitmapSize(wx.Size(16, 16))
 
@@ -233,7 +230,8 @@ class MyCustomToolbar(NavigationToolbar):
     def on_toggle_pan_zoom(self, event):
         #reset the extents to exclude any no data values
         if event.Checked():
-            self.ToggleTool(self.ON_LASSO_SELECT, False)
+
+            self.ToggleTool(self.select_tool.Id, False)
             self.canvas.mpl_disconnect(self.lassoAction)
             self.lassoAction = None
         # Make sure the regular pan/zoom handlers get the event
@@ -250,4 +248,22 @@ class MyCustomToolbar(NavigationToolbar):
         axes.set_xlim(dates.date2num([min(date), max(date)]))
 
         self.push_current()
+        self.canvas.draw()
+
+
+#must add these methods for mac functionality
+    def release_zoom(self, event):
+        super(self.__class__, self).release_zoom(event)
+        self.canvas.draw()
+    def press_pan(self, event):
+        super(self.__class__, self).press_pan(event)
+        self.canvas.draw()
+    def back(self, event):
+        super(self.__class__, self).back(event)
+        self.canvas.draw()
+    def forward(self, event):
+        super(self.__class__, self).forward(event)
+        self.canvas.draw()
+    def home(self, event):
+        super(self.__class__, self).home(event)
         self.canvas.draw()

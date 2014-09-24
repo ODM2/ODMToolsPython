@@ -13,23 +13,27 @@ class frmCreateVariable(clsCreateVariable):
         self.series_service = self.service_man.get_series_service()
 
         clsCreateVariable.__init__(self, parent)
+        self.variable= None
         self.__init_boxes(old_var, cv_service)
 
     def __init_boxes(self, old_var, cv_service):
 
-        if old_var:
-            name_list = [old_var.name]
-            var_unit =  [old_var.variable_unit.name]
-            time_unit =  [old_var.time_unit.name]
-            sample_list = [old_var.sample_medium]
-            spec_list = [old_var.speciation]
+        # if old_var:
+        #     name_list = [old_var.name]
+        #     time_unit =  [x.term for x in cv_service.get_units()]#[old_var.time_unit.name]
+        #     var_unit =  [old_var.variable_unit.name]
+        #     sample_list = [old_var.sample_medium]
+        #     spec_list = [old_var.speciation]
 
-        else:
-            name_list = [x.term for x in cv_service.get_variable_name_cvs()]
-            var_unit=['units']
-            time_unit=['units']
-            sample_list =[x.term for x in cv_service.get_sample_medium_cvs()]
-            spec_list =[x.term for x in cv_service.get_speciation_cvs()]
+        #else:
+        name_list = [x.term for x in cv_service.get_variable_name_cvs()]
+        var_unit=[x.name for x in cv_service.get_units_names()]
+        time_unit=[x.name for x in cv_service.get_units()]#['units']
+        #time_unit = [old_var.time_unit.name]
+        #var_unit =  [old_var.variable_unit.name]
+        sample_list =[x.term for x in cv_service.get_sample_medium_cvs()]
+        spec_list =[x.term for x in cv_service.get_speciation_cvs()]
+
 
         val_type =[x.term for x in cv_service.get_value_type_cvs()]
         data_type =[x.term for x in cv_service.get_data_type_cvs()]
@@ -42,31 +46,67 @@ class frmCreateVariable(clsCreateVariable):
         self.cbValueType.AppendItems(val_type)
         self.cbDataType.AppendItems(data_type)
 
+        if old_var:
+            self.cbVarName.SetValue(old_var.name)
+            self.cbVarUnits.SetValue(old_var.variable_unit.name)
+            self.cbTSUnits.SetValue(old_var.time_unit.name)
+            self.cbSampleMedium.SetValue(old_var.sample_medium)
+            self.cbSpeciation.SetValue(old_var.speciation)
+            self.cbValueType.SetValue(old_var.value_type)
+            self.cbDataType.SetValue(old_var.data_type)
+            self.txtNoDV.SetValue(str(old_var.no_data_value))
+            self.txtGenCat.SetValue(str(old_var.general_category))
+            self.txtTSValue.SetValue(str(old_var.time_support))
 
+    def getVariable(self):
+        return self.variable
 
+    def all_fields_full(self):
+        return self.cbVarName.HasValue() and \
+        self.cbVarUnits.HasValue()and \
+        self.cbTSUnits.HasValue() and \
+        self.cbSampleMedium.HasValue() and \
+        self.cbSpeciation.HasValue() and \
+        self.cbValueType.HasValue() and \
+        self.cbDataType.HasValue() and \
+        self.txtNoDV.HasValue() and \
+        self.txtGenCat.HasValue()and \
+        self.txtTSValue.HasValue() and \
+        self.txtVarCode.HasValue()
 
 
     def OnBtnCreateButton(self, event):
-        var = self.createVariable()
-        if self.series_service.create_variable(var):
-            self.Destroy()
+        self.variable = self.createVariable()
+
+        if self.all_fields_full():
+            self.Close()
         else:
-            wx.MessageDialog("Variable was not create", "", wx.OK)
+            wx.MessageDialog(None, "Variable was not created", " ", wx.OK)
+
+
+        #if self.series_service.create_variable(self.variable):
+        #    self.Close()
+        #else:
+        #    wx.MessageDialog("Variable was not create", "", wx.OK)
 
     def createVariable(self):
         v = Variable()
-        v.code = self.txtVarCode.GetValue()
-        v.name = self.cbVarName.GetValue()
-        v.speciation = self.cbSpeciation.GetValue()
-        v.variable_unit_id = self.cbVarUnits.GetValue()
-        v.sample_medium = self.cbSampleMedium.GetValue()
-        v.value_type = self.cbValueType.GetValue()
-        v.is_regular = self.cbIsRegular.GetValue()
-        v.time_support = self.txtTSValue.GetValue()
-        v.time_unit_id = self.cbTSUnits.GetValue()
-        v.data_type = self.cbDataType.GetValue()
-        v.general_category = self.txtGenCat.GetValue()
-        v.no_data_value = self.txtNoDV.GetValue()
+
+
+
+        v.code = self.txtVarCode.GetValue() if self.txtVarCode.GetValue() <> u'' else None
+        v.name = self.cbVarName.GetValue() if self.cbVarName.GetValue() <> u'' else None
+        v.speciation = self.cbSpeciation.GetValue() if self.cbSpeciation.GetValue() <> u'' else None
+        v.variable_unit_id = self.cbVarUnits.GetValue() if self.cbVarUnits.GetValue() <> u'' else None
+        v.sample_medium = self.cbSampleMedium.GetValue() if self.cbSampleMedium.GetValue() <> u'' else None
+        v.value_type = self.cbValueType.GetValue() if self.cbValueType.GetValue() <> u'' else None
+        v.is_regular = self.cbIsRegular.GetValue() if self.cbIsRegular.GetValue() <> u'' else None
+        v.time_support = self.txtTSValue.GetValue() if self.txtTSValue.GetValue() <> u'' else None
+        v.time_unit_id = self.cbTSUnits.GetValue() if self.cbTSUnits.GetValue() <> u'' else None
+        v.data_type = self.cbDataType.GetValue() if self.cbDataType.GetValue() <> u'' else None
+        v.general_category = self.txtGenCat.GetValue() if self.txtGenCat.GetValue() <> u'' else None
+        v.no_data_value = self.txtNoDV.GetValue() if self.txtNoDV.GetValue() <> u'' else None
+        return v
 
     def OnBtnCancelButton(self, event):
         self.Destroy()

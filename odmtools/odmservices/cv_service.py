@@ -16,6 +16,7 @@ from odmtools.odmdata import OffsetType
 from odmtools.odmdata import Sample
 from odmtools.odmdata import Qualifier
 from odmtools.odmdata import Unit
+from sqlalchemy import not_
 
 
 class CVService():
@@ -113,6 +114,18 @@ class CVService():
     def get_units(self):
         session = self._session_factory.get_session()
         result = self._edit_session.query(Unit).all()
+        session.close()
+        return result
+
+    def get_units_not_uni(self):
+        session = self._session_factory.get_session()
+        result = self._edit_session.query(Unit).filter(not_(Unit.name.contains('angstrom'))).all()
+        session.close()
+        return result
+
+    def get_units_names(self):
+        session = self._session_factory.get_session()
+        result = self._edit_session.query(Unit.name).all()
         session.close()
         return result
 

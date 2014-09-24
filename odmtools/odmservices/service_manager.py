@@ -101,7 +101,7 @@ class ServiceManager():
     def test_connection(self, conn_dict):
         try:
             conn_string = self._build_connection_string(conn_dict)
-            if self.testEngine(conn_string) and self.get_db_version(conn_dict) == '1.1.1':
+            if self.testEngine(conn_string) and self.get_db_version(conn_string) == '1.1.1':
                 return True
         except SQLAlchemyError as e:
             logger.error("SQLAlchemy Error: %s" % e.message)
@@ -115,8 +115,11 @@ class ServiceManager():
         self._conn_dicts[:] = [x for x in self._conn_dicts if x != conn_dict]
 
     # Create and return services based on the currently active connection
-    def get_db_version(self, conn_dict):
+    def get_db_version_dict(self, conn_dict):
         conn_string = self._build_connection_string(conn_dict)
+        self.get_db_version(conn_string)
+
+    def get_db_version(self, conn_string):
         service = SeriesService(conn_string)
         if not self.version:
             try:

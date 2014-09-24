@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Unicode
 from base import Base
 
 class Unit(Base):
@@ -7,7 +7,7 @@ class Unit(Base):
 	id 			 = Column('UnitsID', Integer, primary_key=True)
 	name  	   	 = Column('UnitsName', String)
 	type  	   	 = Column('UnitsType', String)
-	abbreviation = Column('UnitsAbbreviation', String(convert_unicode=True))
+	abbreviation = Column('UnitsAbbreviation', String)#(convert_unicode=True))
 
 	def __repr__(self):
 		return "<Unit('%s', '%s', '%s')>" % (self.id, self.name, self.type)
