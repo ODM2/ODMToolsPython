@@ -5,7 +5,7 @@ import wx
 
 from datetime import datetime
 from odmtools.common import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
-from odmtools.controller.logicCellEdit import CellEdit
+from odmtools.controller.logicCellEdit import CellEdit, NULL
 
 __author__ = 'Jacob'
 
@@ -35,8 +35,8 @@ class Points(object):
         try:
             self.date = datetime.strptime(str(date), '%Y-%m-%d').date()
         except Exception as e:
-            print e
             self.date = datetime.now().date()
+
         self.utcOffSet = utcOffSet
         #self.dateTimeUTC = dateTimeUTC
         self.offSetValue = offSetValue
@@ -46,15 +46,24 @@ class Points(object):
         self.labSampleCode = labSampleCode
 
         ## determines whether a row is in correct format or now
-        self.validDataValue = True
-        self.validUTCOffset = True
-        self.validCensorCode = True
-        self.validValueAcc = True
-        self.valid = True
-        self.validValueAcc = True
-        self.validValueAcc = True
+        self.validDataValue = False
+        self.validUTCOffSet = False
+        self.validCensorCode = False
+        self.validValueAcc = False
+        self.validOffSetValue = False
+        self.validOffSetType = False
+        self.validQualifierCode = False
+        self.validLabSampleCode = False
 
+    def isCorrect(self):
+        valid = [
+            self.validDataValue, self.validUTCOffSet, self.validCensorCode, self.validValueAcc,
+            self.validOffSetValue, self.validOffSetType, self.validQualifierCode, self.validLabSampleCode
+        ]
 
+        if all(valid):
+            return True
+        return False
 
 
 class OLVAddPoint(FastObjectListView):
@@ -92,10 +101,7 @@ class OLVAddPoint(FastObjectListView):
         self.imgGetterlabSample = cellEdit.imgGetterLabSampleCode
         self.imgGetterQualifier = cellEdit.imgGetterQualifierCode
         self.imgGetterOffSetType = cellEdit.imgGetterOffSetType
-
-
-        ## Custom Value Getters
-        self.valueGetterValueAcc = cellEdit.valueGetterValueAccuracy
+        self.imgGetterOffSetValue = cellEdit.imgGetterOffSetValue
 
         ## Custom Value Setters
         ## Sets the value, can modify rules for setting value
@@ -153,11 +159,10 @@ class OLVAddPoint(FastObjectListView):
                        imageGetter=self.imgGetterCensorCode,
                        headerImage="star"),
             ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=100,
-                       imageGetter=self.imgGetterValueAcc,
-                       ),
+                       imageGetter=self.imgGetterValueAcc),
             ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100,
                        stringConverter=self.utcOffSet2Str,
-                       ),
+                       imageGetter=self.imgGetterOffSetValue),
             ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
                        imageGetter=self.imgGetterOffSetType,
                        cellEditorCreator=self.offSetTypeEditor),

@@ -38,7 +38,6 @@ class CellEdit():
             self.offSetTypeChoices = [NULL]
 
 
-
     """
         --------------------
         Custom Image Getters
@@ -51,6 +50,7 @@ class CellEdit():
         :return:
         """
 
+        point.validDataValue = False
         if not point.dataValue:
             return "error"
         if isinstance(point.dataValue, basestring):
@@ -58,12 +58,15 @@ class CellEdit():
                 try:
                     value = type(point.dataValue)
                     if isinstance(value, type):
+                        point.validDataValue = True
                         return "check"
                 except ValueError:
                     continue
         elif isinstance(point.dataValue, int):
+            point.validDataValue = True
             return "check"
         elif isinstance(point.dataValue, float):
+            point.validDataValue = True
             return "check"
         return "error"
 
@@ -73,12 +76,15 @@ class CellEdit():
         :param point:
         :return:
         """
+        point.validCensorCode = False
         if not point.censorCode:
             return "error"
         if point.censorCode == NULL:
             return "error"
         if not point.censorCode in self.censorCodeChoices:
             return "error"
+
+        point.validCensorCode = True
         return "check"
 
     def imgGetterUTCOFFset(self, point):
@@ -89,19 +95,21 @@ class CellEdit():
         """
 
         value = point.utcOffSet
+        point.validUTCOffSet = False
         if not value:
             return "error"
-
         if isinstance(value, basestring):
             try:
                 newValue = int(value)
                 if isinstance(newValue, int):
                     if utcOffSetBounds[0] <= newValue <= utcOffSetBounds[1]:
+                        point.validUTCOffSet = True
                         return "check"
             except ValueError as e:
                 pass
         elif isinstance(value, int):
             if utcOffSetBounds[0] <= value <= utcOffSetBounds[1]:
+                point.validUTCOffSet = True
                 return "check"
         return "error"
 
@@ -109,48 +117,67 @@ class CellEdit():
         """
         """
         value = point.valueAccuracy
+        point.validValueAcc = False
         if not value:
             return "error"
+        point.validValueAcc = True
         return "check"
 
     def imgGetterOffSetType(self, point):
         """
         """
-
+        point.validOffSetType = False
         if not point.offSetType in self.offSetTypeChoices:
             return "error"
+        point.validOffSetType = True
         return "check"
+
+    def imgGetterOffSetValue(self, point):
+        """
+        """
+
+        point.validOffSetValue = False
+        if point.offSetValue == NULL:
+            point.validOffSetValue = True
+            return "check"
+
+        if isinstance(point.offSetValue, basestring):
+            for type in [int, float]:
+                try:
+                    value = type(point.offSetValue)
+                    if isinstance(value, type):
+                        point.validOffSetValue = True
+                        return "check"
+                except ValueError:
+                    continue
+        elif isinstance(point.offSetValue, int):
+            point.validOffSetValue = True
+            return "check"
+        elif isinstance(point.offSetValue, float):
+            point.validOffSetValue = True
+            return "check"
+        #return "error"
+
 
     def imgGetterQualifierCode(self, point):
         """
         """
 
+        point.validQualifierCode = False
         if not point.qualifierCode in self.qualifierCodeChoices:
             return "error"
+        point.validQualifierCode = True
         return "check"
 
     def imgGetterLabSampleCode(self, point):
         """
         """
 
+        point.validLabSampleCode = False
         if not point.labSampleCode in self.labSampleChoices:
             return "error"
+        point.validLabSampleCode = True
         return "check"
-
-
-    """
-        --------------------
-        Custom Value Getters
-        --------------------
-    """
-    def valueGetterValueAccuracy(self, point):
-        """Not Required
-
-        :param point:
-        :return:
-        """
-        if not point.valueAccuracy:
-            return "error"
 
     """
         --------------------

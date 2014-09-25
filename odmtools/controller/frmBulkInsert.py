@@ -13,9 +13,7 @@ __author__ = 'Jacob'
 class BulkInsert(clsBulkInsert.BulkInsert):
     def __init__(self, parent):
         clsBulkInsert.BulkInsert.__init__(self, parent)
-
         self.parent = parent
-
 
     def onUpload(self, event):
         """Reads csv into pandas object
@@ -50,8 +48,10 @@ class BulkInsert(clsBulkInsert.BulkInsert):
             })
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
-                                         "Please compare your csv with the template version as the file you provided "
-                                         "doesn't work", 'Issue with csv', wx.OK | wx.ICON_WARNING | wx.OK_DEFAULT)
+                                         "Please compare your csv with the template version as the file"
+                                         " you provided "
+                                         "doesn't work", 'Issue with csv', wx.OK | wx.ICON_WARNING |
+                                   wx.OK_DEFAULT)
             value = msg.ShowModal()
             return
 
@@ -59,8 +59,8 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         for i in data.columns[3:]:
             data[i] = data[i].astype(str)
 
-
-        dlg = wx.ProgressDialog("Upload Progress", "Uploading %s objects" % len(data), maximum=len(data), parent=self,
+        dlg = wx.ProgressDialog("Upload Progress", "Uploading %s values" % len(data), maximum=len(data),
+                                parent=self,
                                 style=0 | wx.PD_APP_MODAL | wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME |
                                       wx.PD_ESTIMATED_TIME | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE)
 
@@ -71,12 +71,13 @@ class BulkInsert(clsBulkInsert.BulkInsert):
             try:
                 values = row.tolist()
                 pointList.append(olv.Points(*values))
-                (keepGoing, _) = dlg.Update(count)
+                (keepGoing, _) = dlg.Update(count, "%s/%s Objects Uploaded" % (count, len(data)))
 
             except TypeError as e:
                 dlg.Destroy()
                 msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
-                                             "Please check to see if there could be more columns or values than"
+                                             "Please check to see if there could be more columns or"
+                                             " values than"
                                              " the program expects",
                                        'Issue with csv', wx.OK | wx.ICON_WARNING | wx.OK_DEFAULT)
                 value = msg.ShowModal()
@@ -84,6 +85,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
         dlg.Destroy()
         self.parent.olv.AddObjects(pointList)
+        pointList = None
         self.Hide()
         self.parent.Raise()
 
@@ -110,11 +112,11 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         if value == wx.ID_CANCEL:
             return
         filepath = saveFileDialog.GetPath()
-        col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue', 'OffSetType',
-               'QualifierCode', 'LabSampleCode']
+        col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue',
+               'OffSetType', 'QualifierCode', 'LabSampleCode']
         df = pd.DataFrame(columns=col)
-        df.loc[0] = ['FLOAT|INT', 'YYYY-MM-DD', 'HH:MM:SS', 'INT', 'gt|nc|lt|nd|pnq', 'FLOAT', 'INT', 'String',
-                     'INT', 'String']
+        df.loc[0] = ['FLOAT|INT', 'YYYY-MM-DD', 'HH:MM:SS', 'INT', 'gt|nc|lt|nd|pnq', 'FLOAT', 'FLOAT',
+                     'String', 'String', 'String']
         df.loc[1] = ['-9999', '2005-06-29', '14:20:15', '-7', 'nc', "1.2", "1", "NULL", "NULL", "NULL"]
         df.to_csv(filepath, index=False)
 
