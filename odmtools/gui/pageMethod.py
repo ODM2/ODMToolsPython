@@ -116,8 +116,10 @@ class pnlMethod(wx.Panel):
 
         elif self.rbSelect.Value:
             index = self.lstMethods.GetFirstSelected()
-            logger.debug(self.lstMethods.GetItem(index,-1).GetText())
-            m= self.series_service.get_method_by_description(self.lstMethods.GetItem(index,-1).GetText())
+            desc= self.lstMethods.GetItem(index, 0).GetText()
+
+            logger.debug(desc)
+            m= self.series_service.get_method_by_description(desc)
 
 
 

@@ -119,8 +119,9 @@ class pnlQCL(wx.Panel):
         elif self.rbSelect.Value:
             index = self.GetLstSelection()
             logger.debug("lstQCL: %s" %(self.lstQCL))
-            logger.debug(self.lstQCL.GetItem(index,-1).GetText())
-            q= self.series_service.get_qcl_by_code(self.lstQCL.GetItem(index,-1).GetText())
+            code= self.lstQCL.GetItem(index, 0).GetText()
+            logger.debug(code)
+            q= self.series_service.get_qcl_by_code(code)
 
 ##            q.id = self.lstQCL.GetItem(index,3).GetText()
 ##            q.code = self.lstQCL.GetItem(index, 0).GetText()

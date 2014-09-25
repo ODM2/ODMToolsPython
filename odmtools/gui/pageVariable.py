@@ -115,8 +115,9 @@ class pnlVariable(wx.Panel):
             v= self.prev_val
         elif self.rbSelect.Value:
             index = self.lstVariable.GetFirstSelected()
-            logger.debug(self.lstVariable.GetItem(index,-1).GetText())
-            v= self.series_service.get_variable_by_code(self.lstVariable.GetItem(index,-1).GetText())
+            code= self.lstVariable.GetItem(index, 0).GetText()
+            logger.debug(code)
+            v= self.series_service.get_variable_by_code(code)
 
 
         elif self.rbCreate.Value:

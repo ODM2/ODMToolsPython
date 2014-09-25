@@ -408,7 +408,7 @@ class mnuRibbon(RB.RibbonBar):
         # get site, Variable and Source from current dataset
 
         wiz=wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
-        del wiz
+        wiz.Destroy()
         event.Skip()
 
     def onEditFilter(self, event):

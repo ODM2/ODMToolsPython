@@ -369,7 +369,8 @@ class wizSave(wx.wizard.Wizard):
                     #self.page1.pnlIntroduction.rb
             except Exception as e:
                 wx.MessageBox("Save was unsuccessful %s" % e.message, "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
-
-            self.Destroy()
+            event.Skip()
             self.Close()
+
+
 
