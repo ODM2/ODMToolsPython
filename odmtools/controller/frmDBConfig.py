@@ -51,7 +51,7 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
         self.btnSave.Enable(False)
 
         try:
-            curr_dict = self._GetFieldValues()
+            curr_dict = self.getFieldValues()
             if self.conn_dict == curr_dict:
                 self.btnSave.Enable(True)
         except:
@@ -60,16 +60,14 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
 
     # Handlers for clsDBConfiguration events.
     def OnBtnTest(self, event):
-        conn_dict = self._GetFieldValues()
+        conn_dict = self.getFieldValues()
         if self.validateInput(conn_dict):
             self.btnSave.Enable(True)
             self.conn_dict = conn_dict
 
 
     def OnBtnSave(self, event):
-        conn_dict = self._GetFieldValues()
 
-        self.service_manager.add_connection(conn_dict)
         self.parent.EndModal(wx.ID_OK)
 
 
@@ -114,7 +112,7 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
 
 
     # Returns a dictionary of the database values entered in the form
-    def _GetFieldValues(self):
+    def getFieldValues(self):
         conn_dict = {}
 
         conn_dict['engine'] = self.choices[self.cbDatabaseType.GetValue()]

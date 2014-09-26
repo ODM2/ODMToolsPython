@@ -6,8 +6,10 @@ import frmQueryBuilder
 
 
 from wx.lib.pubsub import pub as Publisher
-from ObjectListView import ColumnDefn
-from ObjectListView.Filter import TextSearch, Chain
+from odmtools.lib.ObjectListView import ColumnDefn
+#from ObjectListView import ColumnDefn
+#from ObjectListView.Filter import TextSearch, Chain
+from odmtools.lib.ObjectListView.Filter import TextSearch, Chain
 
 #from clsSeriesTable import clsSeriesTable, TextSearch, Chain, EVT_OVL_CHECK_EVENT
 from odmtools.controller.olvSeriesSelector import EVT_OVL_CHECK_EVENT
@@ -158,10 +160,7 @@ class pnlSeriesSelector(wx.Panel):
                                          parent=self.pnlRadio, pos=wx.Point(193, 0), size=wx.Size(104, 20), style=0)
 
         self.rbAll.SetValue(True)
-        #self.rbAll.Bind(wx.EVT_RADIOBUTTON, self.onRbAllRadiobutton, id=wxID_FRAME1RBALL)
-        wx.EVT_RADIOBUTTON(self, self.rbAll.Id, self.onRbAllRadiobutton)
-        self.rbSimple.Bind(wx.EVT_RADIOBUTTON, self.onRbSimpleRadiobutton, id=wxID_FRAME1RBSIMPLE)
-        self.rbAdvanced.Bind(wx.EVT_RADIOBUTTON, self.onRbAdvancedRadiobutton, id=wxID_FRAME1RBADVANCED)
+
         self.rbAdvanced.Enable(False)
 
         ## Splitter panel
@@ -169,7 +168,6 @@ class pnlSeriesSelector(wx.Panel):
                                 size=wx.Size(900, 349), style=wx.TAB_TRAVERSAL)
 
         self.cpnlSimple = wx.CollapsiblePane(self.pnlData, label="", style=wx.CP_DEFAULT_STYLE | wx.CP_NO_TLW_RESIZE)
-        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.onPaneChanged, self.cpnlSimple)
 
         ## Site Panel
         self.pnlSite = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL1, name='pnlSite', parent=self.cpnlSimple.GetPane(),
@@ -186,9 +184,7 @@ class pnlSeriesSelector(wx.Panel):
         self.lblSite.SetToolTipString(u'staticText1')
 
         self.cbSites.SetLabel(u'')
-        self.cbSites.Bind(wx.EVT_COMBOBOX, self.onCbSitesCombobox, id=wxID_PNLSERIESSELECTORCBSITES)
-        self.checkSite.SetValue(True)
-        self.checkSite.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKSITE)
+        #self.checkSite.SetValue(False)
 
         ### Variable Panel
         self.pnlVar = wx.Panel(id=wxID_PNLSERIESSELECTORPANEL2, name='pnlVar', parent=self.cpnlSimple.GetPane(),
@@ -199,13 +195,22 @@ class pnlSeriesSelector(wx.Panel):
 
         self.checkVariable = wx.CheckBox(id=wxID_PNLSERIESSELECTORCHECKVARIABLE, label=u'', name=u'checkVariable',
                                          parent=self.pnlVar, pos=wx.Point(3, 0), size=wx.Size(21, 21), style=0)
-        self.checkVariable.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKVARIABLE)
 
         self.cbVariables = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
                                        parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25), style=wx.CB_READONLY,
                                        value='comboBox4')
         self.cbVariables.SetLabel(u'')
         self.cbVariables.Enable(False)
+
+        #self.rbAll.Bind(wx.EVT_RADIOBUTTON, self.onRbAllRadiobutton, id=wxID_FRAME1RBALL)
+        wx.EVT_RADIOBUTTON(self, self.rbAll.Id, self.onRbAllRadiobutton)
+        self.rbSimple.Bind(wx.EVT_RADIOBUTTON, self.onRbSimpleRadiobutton, id=wxID_FRAME1RBSIMPLE)
+        self.rbAdvanced.Bind(wx.EVT_RADIOBUTTON, self.onRbAdvancedRadiobutton, id=wxID_FRAME1RBADVANCED)
+
+        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.onPaneChanged, self.cpnlSimple)
+        self.checkSite.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKSITE)
+        self.checkVariable.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKVARIABLE)
+        self.cbSites.Bind(wx.EVT_COMBOBOX, self.onCbSitesCombobox, id=wxID_PNLSERIESSELECTORCBSITES)
         self.cbVariables.Bind(wx.EVT_COMBOBOX, self.onCbVariablesCombobox, id=wxID_PNLSERIESSELECTORCBVARIABLES)
 
 
@@ -276,7 +281,10 @@ class pnlSeriesSelector(wx.Panel):
             self.tblSeries.SetColumns(seriesColumns)
             self.tblSeries.CreateCheckStateColumn()
             object = self.dbservice.get_all_series()
-            self.tblSeries.SetObjects(object)
+            if object:
+                self.tblSeries.SetObjects(object)
+            else:
+                self.tblSeries.SetObjects(None)
         except AttributeError as e:
             logger.error(e)
             #self.tblSeries.SaveObject(object)
@@ -370,6 +378,11 @@ class pnlSeriesSelector(wx.Panel):
 
         self.cpnlSimple.Expand()
         self.Layout()
+
+        if not self.checkSite.GetValue() and not self.checkVariable.GetValue():
+            self.setFilter()
+            return
+
         self.setFilter(self.site_code, self.variable_code)
 
         event.Skip()
@@ -432,25 +445,27 @@ class pnlSeriesSelector(wx.Panel):
         event.Skip()
 
     def onCbSitesCombobox(self, event):
-        self.site_code = self.siteList[event.GetSelection()].code
-        self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
+        if self.checkSite.GetValue():
+            self.site_code = self.siteList[event.GetSelection()].code
+            self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
 
-        self.cbVariables.Clear()
-        for var in self.varList:
-            self.cbVariables.Append(var.code + '-' + var.name)
-        self.cbVariables.SetSelection(0)
+            self.cbVariables.Clear()
+            for var in self.varList:
+                self.cbVariables.Append(var.code + '-' + var.name)
+            self.cbVariables.SetSelection(0)
 
-        if (self.checkSite.GetValue() and not self.checkVariable.GetValue()):
-            self.variable_code = None
+            if (self.checkSite.GetValue() and not self.checkVariable.GetValue()):
+                self.variable_code = None
 
-        self.setFilter(site_code=self.site_code, var_code=self.variable_code)
+            self.setFilter(site_code=self.site_code, var_code=self.variable_code)
         event.Skip()
 
     def onCbVariablesCombobox(self, event):
-        self.variable_code = self.varList[event.GetSelection()].code
-        if (not self.checkSite.GetValue() and self.checkVariable.GetValue()):
-            self.site_code = None
-        self.setFilter(site_code=self.site_code, var_code=self.variable_code)
+        if self.checkVariable.GetValue():
+            self.variable_code = self.varList[event.GetSelection()].code
+            if (not self.checkSite.GetValue() and self.checkVariable.GetValue()):
+                self.site_code = None
+            self.setFilter(site_code=self.site_code, var_code=self.variable_code)
         event.Skip()
 
     def siteAndVariables(self):
@@ -494,7 +509,12 @@ class pnlSeriesSelector(wx.Panel):
 
     def onCheck(self, event):
         # self.tableSeries.DeleteAllItems()
-        if self.checkSite.GetValue():
+        if not self.checkSite.GetValue() and not self.checkVariable.GetValue():
+            self.setFilter()
+            self.cbSites.Enabled = False
+            self.cbVariables.Enabled = False
+
+        elif self.checkSite.GetValue():
             if self.checkVariable.GetValue():
                 self.siteAndVariables()
             else:

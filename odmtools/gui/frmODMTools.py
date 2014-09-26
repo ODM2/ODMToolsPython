@@ -45,7 +45,6 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
         self._init_database()
-        self.createService()
         self._init_ctrls(parent)
         self.Refresh()
 
@@ -66,17 +65,52 @@ class frmODMToolsMain(wx.Frame):
 
         self.service_manager = ServiceManager()
         self.record_service = None
-        if not self.service_manager.is_valid_connection():
-            db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
-            value = db_config.ShowModal()
-            db_config.Destroy()
 
-            if value == wx.ID_CANCEL:
-                logger.fatal("ODMTools is now closing because there is no database connection.")
-                sys.exit(0)
+        while True:
+            ## If the database connection isn't valid, prompt user
+            if not self.service_manager.is_valid_connection():
+                db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
+                value = db_config.ShowModal()
+                if value == wx.ID_CANCEL:
+                    logger.fatal("ODMTools is now closing because there is no database connection.")
+                    sys.exit(0)
+
+                conn_dict = db_config.panel.getFieldValues()
+                service = self.createService(conn_dict)
+                if self.servicesValid(service):
+                    self.service_manager.add_connection(conn_dict)
+                    db_config.Destroy()
+                    break
+            else:
+                ## Database connection is valid, therefore proceed through the rest of the program
+                self.createService()
+                break
+
+    def servicesValid(self, service, displayMsg=True):
+        """
+
+        :param displayMsg:
+            Option to display a message box if there is an issue with a service. Default: True
+        :return:
+        """
+        valid = True
+
+        ## Test if Series Catalog is empty
+        if not service.get_all_sites():
+            if displayMsg:
+                msg = wx.MessageDialog(None, 'Series Catalog cannot be empty. Please enter in a new database connection',
+                                           'Series Catalog is empty', wx.OK | wx.ICON_ERROR )
+                msg.ShowModal()
+            valid = False
+
+        # @TODO If Jeff runs into other issues with services not being available, we can simply test different services here
+        #if not service.get_all_variables():
+        #    valid = False
+
+        return valid
+
     def on_about_request(self, event):
         frmAbout(self)
-
 
     def MacReopenApp(self):
         """Called when the doc icon is clicked, and ???"""
@@ -298,8 +332,6 @@ class frmODMToolsMain(wx.Frame):
         self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False, verbose=False)
 
-
-
     def stopEdit(self, event):
 
         self.pnlSelector.stopEdit()
@@ -314,16 +346,24 @@ class frmODMToolsMain(wx.Frame):
         return self.record_service
 
     def onChangeDBConn(self, event):
-        db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
-        value = db_config.ShowModal()
 
-        #print "Value: ", value
-        #print "wxID_FRMDBCONFIGBTNSAVE: ", db_config._init_ctrls[2] #wxID_FRMDBCONFIGBTNSAVE
-        #print "wxID_FRMDBCONFIGBTNCANCEL: ", db_config._init_ctrls[3] #wxID_FRMDBCONFIGBTNCANCEL
-        #print "wxID_FRMDBCONFIGBTNTEST: ", db_config._init_ctrls[4] #wxID_FRMDBCONFIGBTNTEST
+        value = None
+        while True:
+            db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
+            value = db_config.ShowModal()
+
+            if value == wx.ID_CANCEL:
+                return
+
+            conn_dict = db_config.panel.getFieldValues()
+            service = self.createService(conn_dict)
+            if self.servicesValid(service):
+                self.service_manager.add_connection(conn_dict)
+                db_config.Destroy()
+                break
 
         if value == wx.ID_OK:
-            self.createService()
+            #self.createService()
             self.pnlSelector.resetDB(self.sc)
             self.refreshConnectionInfo()
             self.pnlPlot.clear()
@@ -331,8 +371,16 @@ class frmODMToolsMain(wx.Frame):
             self.dataTable.clear()
             #self.pnlSelector.tableSeries.checkCount = 0
 
-    def createService(self):
-        self.sc = self.service_manager.get_series_service()
+    def createService(self, conn_dict=""):
+        """
+
+        :param conn_dict:
+            Provides the ability to send in your own conn_dict instead
+            of relying on reading one in from connection.config
+        :return:
+        """
+
+        self.sc = self.service_manager.get_series_service(conn_dict=conn_dict)
         return self.sc
 
     def getDBService(self):

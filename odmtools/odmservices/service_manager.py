@@ -129,8 +129,12 @@ class ServiceManager():
                 return None
         return self.version
 
-    def get_series_service(self):
-        conn_string = self._build_connection_string(self._current_conn_dict)
+    def get_series_service(self, conn_dict=""):
+        conn_string = ""
+        if conn_dict:
+            conn_string = self._build_connection_string(conn_dict)
+        else:
+            conn_string = self._build_connection_string(self._current_conn_dict)
         return SeriesService(conn_string, self.debug)
 
     def get_cv_service(self):

@@ -2,7 +2,8 @@ import logging
 
 import wx
 import wx.lib.newevent
-from ObjectListView.ObjectListView import FastObjectListView
+#from ObjectListView.ObjectListView import FastObjectListView
+from odmtools.lib.ObjectListView import FastObjectListView
 
 from odmtools.common.logger import LoggerTool
 
