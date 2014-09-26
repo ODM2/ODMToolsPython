@@ -2,15 +2,21 @@
 import datetime
 
 import wx
+
 from odmtools.controller.frmBulkInsert import BulkInsert
 import odmtools.view.clsAddPoints as clsAddPoints
+try:
+    from agw import genericmessagedialog as GMD
+except ImportError: # if it's not there locally, try the wxPython lib.
+    import wx.lib.agw.genericmessagedialog as GMD
 
 
 
 # Implementing AddPoints
 class AddPoints(clsAddPoints.AddPoints):
     def __init__(self, parent, **kwargs):
-        self.recordService = kwargs['recordService']
+        if 'recordService' in kwargs:
+            self.recordService = kwargs['recordService']
         clsAddPoints.AddPoints.__init__(self, parent, **kwargs)
         self.frame = BulkInsert(self)
 
@@ -94,6 +100,30 @@ class AddPoints(clsAddPoints.AddPoints):
             self.frame.Hide()
 
         event.Skip()
+
+    def onInfoBtn(self, event):
+        """
+
+        :param event:
+        :return:
+        """
+        message = "DataValue: FLOAT\n" \
+                  "Date: YYYY-MM-DD\n" \
+                  "Time: HH:MM:SS\n" \
+                  "UTCOffSet: INT (Range [-12,12])\n" \
+                  "CensorCode: gt|nc|lt|nd|pnq\n" \
+                  "ValueAccuracy: FLOAT\n" \
+                  "OffSetValue: INT\n" \
+                  "OffSetType: STRING\n" \
+                  "QualifierCode: STRING\n" \
+                  "LabSampleCode: STRING\n"
+
+        dlg = GMD.GenericMessageDialog(self, message, "Format Guide", agwStyle=wx.ICON_INFORMATION
+                                                                                     |wx.OK
+                                                                                     |GMD.GMD_USE_GRADIENTBUTTONS)
+        dlg.ShowModal()
+        event.Skip()
+
     def onFinishedBtn(self, event):
         """
 

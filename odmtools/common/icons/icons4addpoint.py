@@ -3,6 +3,8 @@
 #
 from wx.lib.embeddedimage import PyEmbeddedImage
 
+## Icon colors: 129CB8 from iconsdb.com
+
 arrow_204_16 = PyEmbeddedImage(
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAtElEQVQ4je3NMQrCQBBG4Wcw"
     "IlbiCcTaQoJYh1FvIBbq5cTC0iKFiBD2DJLCQ1jYbwqb2aBhV7QUnG7J/77A/6oTYztirHyw"
@@ -137,6 +139,22 @@ exit_64 = PyEmbeddedImage(
     "5Zrcf1Qt7K5sVwo34UhRVp/gNE5ikb4WEcjqvn+ZyT/F6/gKv6qF+GA3w85CtE5943lgyMRT"
     "uAc357vCb9iDd9Acy7N4rnFo74KN+AhXD5n8KO5KMZzI8S7BftzQsjms/vNyrBuBbRbv60Ex"
     "j4MphtM5FnVNuMg/lXQaHzdF6n+DvwFmLfiTQplM6AAAAABJRU5ErkJggg==")
+
+#----------------------------------------------------------------------
+info_5_32 = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACcElEQVRYhc2Xv2sUQRTHP5Ej"
+    "WMllFAW5gBwhjcHG6MkhpLgi01mIjRBU2MbCNFYiV11hZxEspwvY5A/INIKiHCQEJYekEAmC"
+    "ZwqJm6tExMJiZzeze3e7M3cHybeaGd6b73d+vDdv4IQx5esglK4Ai8AcMGOGj4CvwE4YyO7E"
+    "BQily0AArADXCsw7wDqgwkD2xhIglC4Bq0ATKLuItdADWsBaGMh/3gKE0peBDaDuSZxFG7gX"
+    "BvLAWYBQeh54A1TGJI/RBRphIL8UCjAr35oguS2ilt2JMxnyEtG2u5J/BmrAJeAJMPSszZwb"
+    "hiNBKWO0it+ZPwgD+dG0XwmlrwMPc+zrhuNlPJDsgAm1pgc5wGFBfxCahistgCjOfUPthVB6"
+    "GkAovUD+6mPEOaVPwIonOcB94IdQehf4BFxw9Eu4piBJr99HEDAOZsNAduMdWPRw/AA8Bq4C"
+    "s8AdonfAFzfhOArmHJ3awDOio9sLAwnQFUp/A3Y9BVTh+A7M5BjaqAPvgXfAbWu8Q34OGITz"
+    "toBR8Mdql+nPKU6IBRx5+v0mWnWMUR6sX7YA30v0NgzkX6u/PIKAfVvAjqfzZqYvRxCwnQgw"
+    "ZVQn1zwNHTeE0leAeU/yTly62Zdw3dH5kPSR3fIkT3HZAhRRGVWEnyb+Y0x7kvcMV1qAKSBb"
+    "DhNUhdIXrf5roAHcwO0yt+xiNRu7a8Bd8sPqLLAplH4O7AHngAXgEcUZtW04EpyukgzAGDSM"
+    "wyTJG4Mq44Gp2FSvNaItGxdtopX3VcRDBRgRB8AS8BS36MiiZ3yXhv0J4LR/zYaIqRAVE1XM"
+    "k0r0sOwD276f0xPHf6HEsnBXOOjPAAAAAElFTkSuQmCC")
 
 #----------------------------------------------------------------------
 minus_6_64 = PyEmbeddedImage(

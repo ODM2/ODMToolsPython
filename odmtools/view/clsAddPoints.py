@@ -64,18 +64,21 @@ class AddPoints(wx.MiniFrame):
         self.deleteRowBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), minus_6_64.GetBitmap(), text="Delete Row")
         self.clearRowsBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), delete_64.GetBitmap(), text="Clear All")
         self.csvUploadBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), csv_64.GetBitmap(), text="Upload CSV")
+        self.infoBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), info_5_32.GetBitmap(), text="Format Guide")
         self.finishedBtn = BP.ButtonInfo(self.titleBar, wx.NewId(), exit_64.GetBitmap(), text="Finished")
 
         self.titleBar.AddButton(self.addRowBtn)
         self.titleBar.AddButton(self.deleteRowBtn)
         self.titleBar.AddButton(self.clearRowsBtn)
         self.titleBar.AddButton(self.csvUploadBtn)
+        self.titleBar.AddButton(self.infoBtn)
         self.titleBar.AddButton(self.finishedBtn)
 
         self.Bind(wx.EVT_BUTTON, self.onAddBtn, self.addRowBtn)
         self.Bind(wx.EVT_BUTTON, self.onDeleteBtn, self.deleteRowBtn)
         self.Bind(wx.EVT_BUTTON, self.onClearAllBtn, self.clearRowsBtn)
         self.Bind(wx.EVT_BUTTON, self.onUploadBtn, self.csvUploadBtn)
+        self.Bind(wx.EVT_BUTTON, self.onInfoBtn, self.infoBtn)
         self.Bind(wx.EVT_BUTTON, self.onFinishedBtn, self.finishedBtn)
 
     def initiateObjectListView(self, mainPanel, **kwargs):
@@ -109,7 +112,7 @@ class AddPoints(wx.MiniFrame):
     def onFinishedBtn(self, event):
         event.Skip()
 
-    def onTestBtn(self, event):
+    def onInfoBtn(self, event):
         event.Skip()
 
     def onSelected(self, event):
