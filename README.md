@@ -33,6 +33,7 @@ Install the following software/libraries.
 +	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/downloads)
 +	[Numpy-1.8.0](http://www.scipy.org/Download)
 +	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/v1.2/ObjectListView-1.2-without-graphics.zip/download)
++	[Pandas 0.14.1](http://pandas.pydata.org/pandas-docs/stable/install.html)
 
 
 
