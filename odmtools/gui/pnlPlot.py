@@ -176,7 +176,8 @@ class pnlPlot(fnb.FlatNotebook):
 
         :return:
         """
-        for seriesID in self._seriesPlotInfo.getSeriesIDs():
-            self._seriesPlotInfo.update(seriesID, False)
-        self.redrawPlots()
+        if self._seriesPlotInfo:
+            for seriesID in self._seriesPlotInfo.getSeriesIDs():
+                self._seriesPlotInfo.update(seriesID, False)
+            self.redrawPlots()
 

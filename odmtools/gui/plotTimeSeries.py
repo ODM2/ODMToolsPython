@@ -95,6 +95,7 @@ class plotTimeSeries(wx.Panel):
         self.editCurve = None
         self.editPoint =None
         self.hoverAction = None
+        self.selplot= None
 
         self.cursors = []
 
@@ -110,12 +111,12 @@ class plotTimeSeries(wx.Panel):
     def init_plot(self, figure):
         self.timeSeries.plot([], [], picker=5)
         self.setTimeSeriesTitle("No Data to Plot")
-        
+
         self.canvas = FigCanvas(self, -1, figure)
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
-    def changePlotSelection(self, sellist=[], datetime_list=[]):
+    '''def changePlotSelection(self, sellist=[], datetime_list=[]):
         cc= ColorConverter()
         # k black,    # r red
         # needs to have graph first
@@ -140,7 +141,25 @@ class plotTimeSeries(wx.Panel):
 
             self.editPoint.set_color(colorlist)
             #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
-            self.canvas.draw()
+            self.canvas.draw()'''
+    def changePlotSelection(self, sellist=[], datetime_list=[]):
+        #for entire list of points if selected add to new lists
+        newx= []
+        newy=[]
+        if self.selplot:
+            self.editAxis.lines.remove(self.selplot)
+            del (self.selplot)
+        for x, y, a, b, c in self.editCurve.dataTable:
+            if y in datetime_list:
+                newx.append(x)
+                newy.append(y)
+
+        self.selplot = self.editAxis.scatter( newy, newx,
+                                          s=35, c='red', edgecolors='none',
+                                          zorder=12, marker='s', alpha=1)
+        self.canvas.draw()
+
+
 
     def changeSelection(self, sellist=[], datetime_list=[]):
         self.changePlotSelection(sellist, datetime_list)
@@ -204,6 +223,8 @@ class plotTimeSeries(wx.Panel):
         #plt.clf()
         self.timeSeries.plot([], [], picker=5)
 
+
+
     def stopEdit(self):
         self.clear()
         self.selectedlist = None
@@ -252,9 +273,9 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
 
     def drawEditPlot(self, oneSeries):
-        curraxis = self.axislist[oneSeries.axisTitle]
-        curraxis.set_zorder(10)
-        self.lines[self.curveindex] = curraxis.plot_date([x[1] for x in oneSeries.dataTable],
+        self.editAxis = self.axislist[oneSeries.axisTitle]
+        self.editAxis.set_zorder(10)
+        self.lines[self.curveindex] = self.editAxis.plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
                                                          label=oneSeries.plotTitle, zorder=10, alpha=1,
@@ -262,7 +283,7 @@ class plotTimeSeries(wx.Panel):
 
         self.selectedlist = self.parent.record_service.get_filter_list()
 
-        self.editPoint = curraxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
+        self.editPoint = self.editAxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
                                           s=35, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none',
                                           zorder=11, marker='s', alpha=1)# >, <, v, ^,s
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
@@ -298,7 +319,6 @@ class plotTimeSeries(wx.Panel):
         count = self.seriesPlotInfo.count()
         self.setUpYAxis()
         self.lines = []
-
 
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             #is this the series to be edited
