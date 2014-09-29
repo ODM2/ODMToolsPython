@@ -51,7 +51,7 @@ class SeriesPlotInfo(object):
         self.memDB = memDB
         self._seriesInfos = {}
         self.editID = None
-        self.colorList = ['blue', 'green',  'cyan', 'orange', 'purple',  'yellow', 'magenta', 'teal','red']
+        self.colorList = ['blue', 'green',  'cyan', 'orange', 'purple',  'saddlebrown', 'magenta', 'teal','red']
         self.startDate = datetime.datetime(2100, 12, 31)
         self.endDate= datetime.datetime(1800, 01, 01)
         self.currentStart=self.startDate

@@ -172,6 +172,11 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltTS.close()
 
     def clear(self):
+
+        for seriesID in self._seriesPlotInfo.getSeriesIDs():
+            self._seriesPlotInfo.update(seriesID, False)
+        #self._seriesPlotInfo._seriesInfos={}
+        self.redrawPlots()
         #self.pltTS.init_plot()
         '''
         if self.pltSum:
@@ -188,12 +193,12 @@ class pnlPlot(fnb.FlatNotebook):
         if self.pltBox:
             #self.pltBox.clear()
             self.pltBox.close()
-        '''
+
         if self.pltTS:
             #self.pltTS.clear()
             self.pltTS.close()
 
             # Set title of TimeSeries to default
-            self.pltTS.setTimeSeriesTitle("No Data To Plot")
+            self.pltTS.setTimeSeriesTitle("No Data To Plot")'''
 
         #self._seriesPlotInfo = None

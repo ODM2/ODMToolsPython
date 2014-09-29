@@ -272,8 +272,6 @@ class plotTimeSeries(wx.Panel):
         #self.radius = 10
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
-
-
     def _setColor(self, color):
         """Set figure and canvas colours to be the same.
         :rtype : object
@@ -300,6 +298,7 @@ class plotTimeSeries(wx.Panel):
         count = self.seriesPlotInfo.count()
         self.setUpYAxis()
         self.lines = []
+
 
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             #is this the series to be edited
@@ -353,6 +352,10 @@ class plotTimeSeries(wx.Panel):
 
         plt.gcf().autofmt_xdate()
         plt.tight_layout()
+        if not self.toolbar._views.empty():
+            for v in self.toolbar._views:
+                del(v)
+            self.toolbar.push_current()
         self.canvas.draw()
 
     def updateCursor(self, selectedObject):
