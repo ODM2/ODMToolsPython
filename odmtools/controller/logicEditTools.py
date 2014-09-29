@@ -71,13 +71,23 @@ class EditTools():
             Publisher.sendMessage("scroll")
 
 
-    def toggle_filter_previous(self, value=None):
+    def filter_from_previous(self, value):
+        '''
+
+        :param value: boolean
+        :return:
+        '''
         if self._edit_service._filter_from_selection is not value:
-            self._edit_service.toggle_filter_previous(value)
+            self._edit_service.filter_from_previous(value)
             if self._record:
-                self._script("edit_service.toggle_filter_previous(%s)\n" % (value if value else '') , 'black')
+                self._script("edit_service.filter_from_previous(%s)\n" % value , 'black')
                 Publisher.sendMessage("scroll")
+
     def get_toggle(self):
+        '''
+
+        :return: boolean
+        '''
         return self._edit_service.get_toggle()
 
 

@@ -30,9 +30,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
 
     def onCheckBox(self, event):
-        self.recordService.toggle_filter_previous()
-
-
+        self.recordService.filter_from_previous(self.chkToggleFilterSelection.GetValue())
 
     def onSetFocus(self, event):
         logger.debug("event id : %s" % repr(event.Id))
@@ -59,24 +57,29 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.txtThreshValLT.Clear()
         self.txtGapsVal.Clear()
         self.cbGapTime.SetStringSelection("second")
-        self.txtVChangeThresh.Clear()
+        #self.txtVChangeThresh.Clear()
+        self.txtVChangeLT.Clear()
+        self.txtVChangeGT.Clear()
         self.recordService.reset_filter()
+        self.chkToggleFilterSelection.SetValue(False)
 
-        #Publisher.sendMessage(("changePlotSelection"), sellist=self.recordService.get_filter_list())
         event.Skip()
 
 
     def onBtnOKButton(self, event):
 
-        #self.recordService.toggle_filter_previous(self.chkToggleFilterSelection.Value)
 
         if not self.is_applied:
             self.onBtnApplyButton(event)
+        if self.chkToggleFilterSelection.GetValue():
+            self.recordService.filter_from_previous(False)
         event.Skip()
         self.Close()
 
 
     def onBtnCancelButton(self, event):
+        if self.chkToggleFilterSelection.GetValue():
+            self.recordService.filter_from_previous(False)
         event.Skip()
         self.Close()
 
@@ -103,8 +106,6 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
             #convert to datetime.datetime from wxdatetime time
             dtDateAfter=_wxdate2pydate(dateAfter, timeAfter)
             dtDateBefore= _wxdate2pydate(dateBefore, timeBefore)
-            #dtDateAfter = datetime(int(dateAfter.Year), int(dateAfter.Month)+1, int(dateAfter.Day), int(timeAfter.Hour), int(timeAfter.Minute), timeAfter.Second)
-            #dtDateBefore = datetime(int(dateBefore.Year), int(dateBefore.Month)+1, int(dateBefore.Day), int(timeBefore.Hour), int(timeBefore.Minute), int(timeBefore.Second))
             self.recordService.filter_date(dtDateBefore, dtDateAfter)
 
         elif self.rbVChangeThresh.GetValue():
@@ -113,9 +114,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
            elif self.txtVChangeLT.GetValue():
                 self.recordService.value_change_threshold(float(self.txtVChangeLT.GetValue()), '<')
 
-        #Publisher.sendMessage("changeSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
-        #Publisher.sendMessage("changeTableSelection", sellist=self.recordService.get_filter_list(), datetime_list=[])
-        #self.recordService.toggle_filter_previous()
+
         event.Skip()
 
 
@@ -123,15 +122,6 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         dateAfter = self.recordService.get_series_points()[0][2]
         dateBefore = self.recordService.get_series_points()[-1][2]
 
-        # logger.debug("dateAfter: ", repr(dateAfter.day), " + ", repr(dateAfter.month), " + ", repr(dateAfter.year))
-        # logger.debug("dateBefore: ", repr(dateBefore.day), " + ", repr(dateBefore.month), " + ", repr(dateBefore.year))
-
-        #subtract one from the month because DMY counts from 0 where dateAfter counts months from 1
-        #formattedDateAfter = wx.DateTimeFromDMY(day=int(dateAfter.day), month=int(dateAfter.month)-1,
-                                                #year=int(dateAfter.year))
-        #add an extra day so you can see the full extent of the data(until midnight)
-        #formattedDateBefore = wx.DateTimeFromDMY(day=int(dateBefore.day), month=int(dateBefore.month)-1,
-                                                 #year=int(dateBefore.year))
 
         formattedDateAfter = _pydate2wxdate(dateAfter)
         formattedDateBefore =_pydate2wxdate(dateBefore)
