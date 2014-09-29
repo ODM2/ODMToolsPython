@@ -48,6 +48,7 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class mnuRibbon(RB.RibbonBar):
     def _init_ctrls(self, prnt):
         RB.RibbonBar.__init__(self, name='ribbon', parent=prnt, id=wxID_PANEL1)
+        #self.SetArtProvider(RB.RibbonMSWArtProvider())
         self.SetArtProvider(RB.RibbonAUIArtProvider())
         self.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
 

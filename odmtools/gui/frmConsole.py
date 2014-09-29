@@ -33,7 +33,7 @@ class ODMConsole(ModifiedFrame, ShellFrameMixin):
                                style=wx.NO_BORDER, shellName='PyCrust')
         ShellFrameMixin.__init__(self, config=None, dataDir=None)
 
-        self.SetSize((800, 600))
+        self.SetSize((400, 300))
 
         intro = ''
         if 'version' in kwargs:
