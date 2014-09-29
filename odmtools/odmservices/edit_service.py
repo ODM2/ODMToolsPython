@@ -282,7 +282,6 @@ class EditService():
     def add_points(self, points):
         #todo: add the ability to send in multiple datetimes to a single 'point'
 
-        logger.debug(points)
         query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
         query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"

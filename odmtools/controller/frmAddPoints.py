@@ -152,7 +152,6 @@ class AddPoints(clsAddPoints.AddPoints):
             else:
                 self.selectedObject = object[0]
         except TypeError as e:
-            print e
             pass
 
     def parseTable(self):

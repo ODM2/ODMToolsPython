@@ -117,7 +117,6 @@ class EditTools():
     def add_points(self, points):
         self._edit_service.add_points(points)
         self.refresh_plot()
-        print points
         if self._record:
             self._script("edit_service.add_points({list})\n".format(list=points))
             Publisher.sendMessage("scroll")
