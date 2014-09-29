@@ -197,30 +197,37 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.SetManagedWindow(self.pnlDocking)
 
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane()
-                          .Name("Plot").Caption("Plot").MaximizeButton(True))
+                          .Name("Plot").Caption("Plot").MaximizeButton(True).DestroyOnClose(False)
+
+        )
 
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
                           Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
-                          Position(1).MinimizeButton(True).MaximizeButton(True))
+                          Position(1).MinimizeButton(True).MaximizeButton(True).DestroyOnClose(False)
+
+        )
 
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector").MinSize(wx.Size(50, 200)).
-                          Movable().Floatable().Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True))
-        self.refreshConnectionInfo()
+                          Movable().Floatable().Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True)
+                          .DestroyOnClose(False)
+        )
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Movable().Floatable().Right()
-                          .MinimizeButton(True).MaximizeButton(True).FloatingSize(size=(600, 800))
+                          .MinimizeButton(True).MaximizeButton(True).FloatingSize(size=(400, 400))
                           .CloseButton(True).Float().FloatingPosition(pos=(self.Position))
-                          .Show(show=False).Hide().CloseButton(False)
+                          .Hide().CloseButton(True).DestroyOnClose(False)
         )
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-                          Name("Console").FloatingSize(size=(600, 800)).MinimizeButton(
-            True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float().Show(
-            show=False).Hide())
+                          Name("Console").FloatingSize(size=(300, 400)).MinimizeButton(
+            True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float()
+                          .FloatingPosition(pos=(self.Position)).Hide().DestroyOnClose(False)
+        )
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.
         #self.loadDockingSettings()
 
+        self.refreshConnectionInfo()
         self._mgr.Update()
         self.Bind(wx.EVT_CLOSE, self.onClose)
 
@@ -262,26 +269,19 @@ class frmODMToolsMain(wx.Frame):
 
         elif value == "Script":
             paneDetails = self._mgr.GetPane(self.txtPythonScript)
-            if paneDetails.IsNotebookPage():
-                paneDetails.Float()
-            if paneDetails.IsFloating():
-                paneDetails.Dock()
-            paneDetails.FloatingPosition(pos=self.Position)
 
         elif value == "Console":
             paneDetails = self._mgr.GetPane(self.txtPythonConsole)
             self.txtPythonConsole.crust.OnSashDClick(event=None)
-            if paneDetails.IsNotebookPage():
-                paneDetails.Float()
+
+        if paneDetails.IsNotebookPage() or paneDetails.dock_direction == 0:
             paneDetails.FloatingPosition(pos=self.Position)
+            paneDetails.Float()
 
         if paneDetails.IsShown():
             paneDetails.Show(show=False)
         else:
             paneDetails.Show(show=True)
-        #print "Shown?", paneDetails.IsShown()
-
-
         self._mgr.Update()
 
     def onPlotSelection(self, value):

@@ -18,34 +18,34 @@ ID_EXECUTE_LINE_BUTTON = 302
 wildcard = "Python source (*.py)|*.py|" \
             "All files (*.*)|*.*"
 
-class pnlScript(wx.Panel):
+class pnlScript(wx.Frame):
     def __init__(self, parent, id=wx.ID_ANY, name="", pos=(0, 0), size=(200, 200)):
         #super(pnlScript, self).__init__(parent, id, name=name, pos=pos, size=size, style=0)
-        wx.Panel.__init__(self, parent, id)
+        wx.Frame.__init__(self, parent, id, style=0)
         self.console = parent.txtPythonConsole
         self.control = odmHighlightSTC.highlightSTC(self)
         self.parent = parent
         # self.control = stc.StyledTextCtrl(self, 1, style=wx.TE_MULTILINE)
 
-        # Set up menu
-        #filemenu = wx.Menu()
-        # use ID_ for future easy reference -- much better than "48", "404", etc.
-        # The & character indicates the shortcut key
-        #filemenu.Append(ID_NEW, "&New", "New file")
-        #filemenu.Append(ID_OPEN, "&Open Existing", "Append to an existing file")
-        #filemenu.AppendSeparator()
-        #filemenu.Append(ID_SAVE, "&Save", " Save current file")
-        #filemenu.Append(ID_SAVE_AS, "Save &As...", " Save to specific file")
+        #Set up menu
+        filemenu = wx.Menu()
+        #use ID_ for future easy reference -- much better than "48", "404", etc.
+        #The & character indicates the shortcut key
+        filemenu.Append(ID_NEW, "&New", "New file")
+        filemenu.Append(ID_OPEN, "&Open Existing", "Append to an existing file")
+        filemenu.AppendSeparator()
+        filemenu.Append(ID_SAVE, "&Save", " Save current file")
+        filemenu.Append(ID_SAVE_AS, "Save &As...", " Save to specific file")
 
-        # create the menubar
-        #menuBar = wx.MenuBar()
-        #menuBar.Append(filemenu, "&File")
-        #self.SetMenuBar(menuBar)
+        #create the menubar
+        menuBar = wx.MenuBar()
+        menuBar.Append(filemenu, "&File")
+        self.SetMenuBar(menuBar)
 
-        #wx.EVT_MENU(self, ID_NEW, self.OnNew)
-        #wx.EVT_MENU(self, ID_OPEN, self.OnOpen)
-        #wx.EVT_MENU(self, ID_SAVE, self.OnSave)
-        #wx.EVT_MENU(self, ID_SAVE_AS, self.OnSaveAs)
+        wx.EVT_MENU(self, ID_NEW, self.OnNew)
+        wx.EVT_MENU(self, ID_OPEN, self.OnOpen)
+        wx.EVT_MENU(self, ID_SAVE, self.OnSave)
+        wx.EVT_MENU(self, ID_SAVE_AS, self.OnSaveAs)
 
         # Set up execute buttons
         self.sizer2 = wx.BoxSizer(wx.HORIZONTAL)
