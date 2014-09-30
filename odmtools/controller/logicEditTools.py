@@ -117,10 +117,7 @@ class EditTools():
     def add_points(self, points):
         self._edit_service.add_points(points)
         self.refresh_plot()
-<<<<<<< HEAD
-        #print points
-=======
->>>>>>> 7c88ef039b7e8c1ee78b841e7e3a8dcc252c44d4
+
         if self._record:
             self._script(
                 "points = [\n\t{list}][0]\n".format(list=points))

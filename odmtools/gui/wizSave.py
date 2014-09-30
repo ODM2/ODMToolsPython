@@ -303,7 +303,7 @@ class wizSave(wx.wizard.Wizard):
                                 "Are you sure you want to save?",
                                 'Are you Sure?',
                                 wx.YES_NO | wx.ICON_QUESTION)
-            if val == 2:
+            if val == 2 and not self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
                 logger.debug("User selected yes to save a level 0 dataset")
                 val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure, you are sure?\n",
                                       'Are you REALLY sure?',
