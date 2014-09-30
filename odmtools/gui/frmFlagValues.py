@@ -14,6 +14,8 @@ def create(parent):
  wxID_FRMFLAGVALUESTXTCODE, wxID_FRMFLAGVALUESTXTDESC, 
 ] = [wx.NewId() for _init_ctrls in range(14)]
 
+NEW = "[New Qualifier]"
+
 class frmFlagValues(wx.Dialog):
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
@@ -65,7 +67,7 @@ class frmFlagValues(wx.Dialog):
               label=u'Qualifier:', name=u'lblQualifier', parent=self.pnlSelect,
               pos=wx.Point(16, 8), size=wx.Size(45, 13), style=0)
 
-        self.cbQualif = wx.ComboBox(choices=[key for key in self.qualchoices.keys()]+["Create New....."],
+        self.cbQualif = wx.ComboBox(choices=self.qualchoices,
               id=wxID_FRMFLAGVALUESCBQUALIF, name=u'cbQualif',
               parent=self.pnlSelect, pos=wx.Point(16, 25), size=wx.Size(376, 21),
               style=wx.CB_READONLY, value=u'')
@@ -115,12 +117,15 @@ class frmFlagValues(wx.Dialog):
 
         self._init_sizers()
 
-    def __init__(self, parent):
+    def __init__(self, parent, cv_service, choices):
          #create cv service
-        service_man=parent.parent.getDBService()
-        self.cv_service = service_man.get_cv_service()
-        #populate dropdown id-code
-        self.qualchoices ={x.code +"-"+x.description:x.id for x in self.cv_service.get_qualifiers()}
+        self.cv_service = cv_service
+
+        self.qualchoices = None
+        if isinstance(choices, list):
+            self.qualchoices = choices
+        else:
+            self.qualchoices = choices.keys() + [NEW]
       
 
         self._init_ctrls(parent)
@@ -129,7 +134,7 @@ class frmFlagValues(wx.Dialog):
       return self.qid
 
     def OnCbQualifCombobox(self, event):
-        if self.cbQualif.GetValue()== "Create New.....":            
+        if self.cbQualif.GetValue() == NEW:
             self.splitter.SplitHorizontally(self.pnlSelect, self.pnlCreate, 50)
         else: 
             if self.splitter.IsSplit():

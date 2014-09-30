@@ -91,7 +91,7 @@ class OLVAddPoint(FastObjectListView):
 
         FastObjectListView.__init__(self, *args, **kwargs)
 
-        cellEdit = CellEdit(self.serviceManager, self.recordService)
+        cellEdit = CellEdit(self, self.serviceManager, self.recordService)
 
         # # Custom Image Getters
         self.imgGetterDataValue = cellEdit.imgGetterDataValue
@@ -113,6 +113,7 @@ class OLVAddPoint(FastObjectListView):
         self.localtime2Str = cellEdit.strConverterLocalTime
         self.str2DataValue = cellEdit.strConverterDataValue
         self.utcOffSet2Str = cellEdit.strConverterUTCOffset
+        self.offSetValue2Str = cellEdit.strConverterOffSetValue
 
         ## Custom CellEditors
         ## Custom cell editors for each cell
@@ -161,7 +162,7 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=100,
                        imageGetter=self.imgGetterValueAcc),
             ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100,
-                       stringConverter=self.utcOffSet2Str,
+                       stringConverter=self.offSetValue2Str,
                        imageGetter=self.imgGetterOffSetValue),
             ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
                        imageGetter=self.imgGetterOffSetType,

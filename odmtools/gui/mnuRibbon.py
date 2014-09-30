@@ -1,4 +1,5 @@
 # Boa:FramePanel:Panel1
+from collections import OrderedDict
 
 import datetime
 
@@ -438,7 +439,12 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditFlag(self, event):
-        add_flag = frmFlagValues(self)
+        serviceManager = self.parent.getDBService()
+        cv_service = serviceManager.get_cv_service()
+        qualifierChoices = OrderedDict((x.code, x.description) for x in cv_service.get_qualifiers())
+        choices = qualifierChoices.keys() + ["Create New....."]
+
+        add_flag = frmFlagValues(self, cv_service, qualifierChoices)
         val = add_flag.ShowModal()
         logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
         if val == 5101:  #wx.ID_OK:

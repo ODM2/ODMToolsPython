@@ -6,6 +6,7 @@ from collections import OrderedDict
 import wx
 import wx.combo
 from wx.lib import masked
+from odmtools.gui.frmFlagValues import frmFlagValues
 
 __author__ = 'Jacob'
 
@@ -15,14 +16,15 @@ NULL = "NULL"
 NEW = "[New Qualifier]"
 
 class CellEdit():
-    def __init__(self, serviceManager, recordService):
+    def __init__(self, parent, serviceManager, recordService):
+        self.parent = parent
         self.recordService = recordService
         if serviceManager:
             self.serviceManager = serviceManager
             self.cvService = serviceManager.get_cv_service()
             offsetChoices = OrderedDict((x.description, x.id) for x in
                                         self.cvService.get_offset_type_cvs())
-            qualifierChoices = OrderedDict((x.code, x.id) for x in self.cvService.get_qualifiers())
+            qualifierChoices = OrderedDict((x.code, x.description) for x in self.cvService.get_qualifiers())
             labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
 
             self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
@@ -120,6 +122,8 @@ class CellEdit():
         point.validValueAcc = False
         if not value:
             return "error"
+        if isinstance(value, basestring):
+            return "error"
         point.validValueAcc = True
         return "check"
 
@@ -141,6 +145,10 @@ class CellEdit():
             point.validOffSetValue = True
             return "check"
 
+        if isinstance(point.offSetValue, unicode):
+            point.validOffSetValue = True
+            return "check"
+
         if isinstance(point.offSetValue, basestring):
             for type in [int, float]:
                 try:
@@ -156,7 +164,7 @@ class CellEdit():
         elif isinstance(point.offSetValue, float):
             point.validOffSetValue = True
             return "check"
-        #return "error"
+        return "error"
 
 
     def imgGetterQualifierCode(self, point):
@@ -238,6 +246,13 @@ class CellEdit():
         """
         return str(value)
 
+    def strConverterOffSetValue(self, value):
+        """
+        """
+        try:
+            return str(value)
+        except UnicodeEncodeError:
+            return str(NULL)
 
     """
         ------------------
@@ -289,7 +304,9 @@ class CellEdit():
             """
 
             if event.GetEventObject().Value == NEW:
-                print "NEW!"
+                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierCodeChoices)
+                dlg.ShowModal()
+
 
         odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
