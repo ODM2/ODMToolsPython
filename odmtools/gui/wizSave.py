@@ -299,12 +299,12 @@ class wizSave(wx.wizard.Wizard):
         #if qcl exits use its its
         closeSuccessful = False
         if QCL.id == 0:
-            val = wx.MessageBox("You are overwriting an level 0 dataset, which is usually reserved for raw data.\n"
+            val = wx.MessageBox("You are writing a level 0 dataset, which is usually reserved for raw data.\n"
                                 "Are you sure you want to save?",
                                 'Are you Sure?',
                                 wx.YES_NO | wx.ICON_QUESTION)
             if val == 2:
-                logger.debug("user selected yes to save a level 0 dataset")
+                logger.debug("User selected yes to save a level 0 dataset")
                 val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure, you are sure?\n",
                                       'Are you REALLY sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)

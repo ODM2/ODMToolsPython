@@ -147,16 +147,19 @@ class plotTimeSeries(wx.Panel):
         newx= []
         newy=[]
         if self.selplot:
+            self.editAxis.lines.pop(self.selplot)
             self.editAxis.lines.remove(self.selplot)
-            del (self.selplot)
-        for x, y, a, b, c in self.editCurve.dataTable:
-            if y in datetime_list:
-                newx.append(x)
-                newy.append(y)
+            del self.selplot
+            self.selplot = None
+        if len( datetime_list) >0:
+            for x, y, a, b, c in self.editCurve.dataTable:
+                if y in datetime_list:
+                    newx.append(x)
+                    newy.append(y)
 
-        self.selplot = self.editAxis.scatter( newy, newx,
-                                          s=35, c='red', edgecolors='none',
-                                          zorder=12, marker='s', alpha=1)
+            self.selplot = self.editAxis.scatter( newy, newx,
+                                              s=35, c='red', edgecolors='none',
+                                              zorder=12, marker='s', alpha=1)
         self.canvas.draw()
 
 

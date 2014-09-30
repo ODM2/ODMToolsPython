@@ -18,9 +18,9 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class plotSummary(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
-
+        parent.Add(self.btnExport, 0 , border = 5 )
         parent.AddWindow(self.grdSummary, 1, border=5, flag=wx.EXPAND|wx.GROW)
-        parent.Add(self.btnExport, 0 , border = 5  )
+
 
     def _init_sizers(self):
         # generated method, don't edit
