@@ -338,10 +338,10 @@ class mnuRibbon(RB.RibbonBar):
         self.redrawPlotTable()
 
     def redrawPlotTable(self):
-        print "inRedrawPlot"
         #recordService = self.parent.getRecordService()
         #Publisher.sendMessage("changeSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
         #Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
+        pass
 
 
     def onLineDrift(self, event):
@@ -354,7 +354,7 @@ class mnuRibbon(RB.RibbonBar):
 
         record_service = self.parent.getRecordService()
         record_service.toggle_record()
-        logger.debug("Recording? %s" % record_service._record)
+        #logger.debug("Recording? %s" % record_service._record)
 
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
         if event.IsChecked():

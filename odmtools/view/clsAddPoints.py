@@ -90,7 +90,7 @@ class AddPoints(wx.MiniFrame):
         self.olv = OLVAddPoint(parent=mainPanel, id=wx.ID_ANY, style=wx.LC_REPORT, **kwargs)
         self.olv.Bind(EVT_CELL_EDIT_STARTING, self.onEdit)
         self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditFinish)
-        self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
+        #self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
         self.olv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onSelected)
         #self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onTooltip)
         self.olv.Bind(wx.EVT_CHAR, self.onChar)
