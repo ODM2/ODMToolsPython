@@ -275,7 +275,7 @@ class pnlSeriesSelector(wx.Panel):
         """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
         try:
             self.memDB = MemoryDatabase(self.dbservice)
-            seriesColumns = [ColumnDefn(key, align="left", minimumWidth=-1, valueGetter=value,#stringConverter = '%s')
+            seriesColumns = [ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,#stringConverter = '%s')
                                         stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
                              for key, value in series.returnDict().iteritems()]
             self.tblSeries.SetColumns(seriesColumns)

@@ -141,7 +141,8 @@ class plotTimeSeries(wx.Panel):
 
             self.editPoint.set_color(colorlist)
             #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
-            self.canvas.draw()'''
+            self.canvas.draw()
+    '''
     def changePlotSelection(self, sellist=[], datetime_list=[]):
         #for entire list of points if selected add to new lists
         newx= []
@@ -162,7 +163,7 @@ class plotTimeSeries(wx.Panel):
                                               zorder=12, marker='s', alpha=1)
         self.canvas.draw()
 
-'''
+    '''
 
     def changeSelection(self, sellist=[], datetime_list=[]):
         self.changePlotSelection(sellist, datetime_list)
