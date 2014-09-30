@@ -116,7 +116,7 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
-    '''def changePlotSelection(self, sellist=[], datetime_list=[]):
+    def changePlotSelection(self, sellist=[], datetime_list=[]):
         cc= ColorConverter()
         # k black,    # r red
         # needs to have graph first
@@ -162,7 +162,7 @@ class plotTimeSeries(wx.Panel):
                                               zorder=12, marker='s', alpha=1)
         self.canvas.draw()
 
-
+'''
 
     def changeSelection(self, sellist=[], datetime_list=[]):
         self.changePlotSelection(sellist, datetime_list)
