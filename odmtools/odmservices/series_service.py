@@ -218,9 +218,10 @@ class SeriesService():
                 method_id=method_id,
                 source_id=source_id,
                 quality_control_level_id=qcl_id
-            ).first()
+            ).one()
 
             return True
+
         except:
             return False
 
@@ -352,14 +353,14 @@ class SeriesService():
 
     def qcl_exists(self, q):
         try:
-            result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).first()
+            result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
             return True
         except:
             return False
 
     def method_exists(self, m):
         try:
-            result = self._edit_session.query(Method).filter_by(description=m.description).first()
+            result = self._edit_session.query(Method).filter_by(description=m.description).one()
             return True
         except:
             return False
@@ -374,7 +375,7 @@ class SeriesService():
                                                                   time_support=v.time_support,
                                                                   time_unit_id=v.time_unit_id, data_type=v.data_type,
                                                                   general_category=v.general_category,
-                                                                  no_data_value=v.no_data_value).first()
+                                                                  no_data_value=v.no_data_value).one()
             return result
         except:
             return None

@@ -12,9 +12,11 @@ from quality_control_level import QualityControlLevel
 
 def copy_series(from_series):
     new = Series()
+    new.site = from_series.site
     new.site_id = from_series.site_id
     new.site_code = from_series.site_code
     new.site_name = from_series.site_name
+    new.variable = from_series.variable
     new.variable_id = from_series.variable_id
     new.variable_code = from_series.variable_code
     new.variable_name = from_series.variable_name
@@ -28,12 +30,15 @@ def copy_series(from_series):
     new.time_units_name = from_series.time_units_name
     new.data_type = from_series.data_type
     new.general_category = from_series.general_category
+    new.method= from_series.method
     new.method_id = from_series.method_id
     new.method_description = from_series.method_description
+    new.source = from_series.source
     new.source_id = from_series.source_id
     new.source_description = from_series.source_description
     new.organization = from_series.organization
     new.citation = from_series.citation
+    new.quality_control_level = from_series.quality_control_level
     new.quality_control_level_id = from_series.quality_control_level_id
     new.quality_control_level_code = from_series.quality_control_level_code
     new.begin_date_time = from_series.begin_date_time

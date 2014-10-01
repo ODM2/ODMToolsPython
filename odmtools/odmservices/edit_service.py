@@ -456,11 +456,12 @@ class EditService():
                 logging.debug( "Save existing series ID: %s"% str(series.id))
                 series = tseries
             else:
-                print "Series doesn't exist ( should be running SaveAs)"
+                print "Series doesn't exist (if you are not, you should be running SaveAs)"
 
         if is_new_series:
             series = series_module.copy_series(series)
             if var:
+                series.variable = var
                 series.variable_id = var.id
                 series.variable_code = var.code
                 series.variable_name = var.name
@@ -475,9 +476,11 @@ class EditService():
                 series.data_type = var.data_type
                 series.general_category = var.general_category
             if method:
+                series.method=method
                 series.method_id = method.id
                 series.method_description = method.description
             if qcl:
+                series.quality_control_level=qcl
                 series.quality_control_level_id = qcl.id
                 series.quality_control_level_code = qcl.code
 
