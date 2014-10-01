@@ -3,9 +3,10 @@ import logging
 import wx
 import wx.lib.newevent
 #from ObjectListView.ObjectListView import FastObjectListView
-from odmtools.lib.ObjectListView import FastObjectListView
+from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
 from odmtools.common.logger import LoggerTool
+from odmtools.odmdata import series
 
 
 tool = LoggerTool()
@@ -15,17 +16,26 @@ OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 
 
 class clsSeriesTable(FastObjectListView):
-    """Max Number of Allowed Plots"""
-    allowedLimit = 6
+    def __init__(self, *args, **kwargs):
+        FastObjectListView.__init__(self, *args, **kwargs)
+        """Max Number of Allowed Plots"""
+        self.allowedLimit = 6
 
-    """List of modelObjects"""
-    _modelObjects = []
+        """List of modelObjects"""
+        self._modelObjects = []
 
-    """Focused Object"""
-    currentlySelectedObject = None
+        """Focused Object"""
+        self.currentlySelectedObject = None
 
-    """Object being edited"""
-    editingObject = None
+        """Object being edited"""
+        self.editingObject = None
+
+        seriesColumns = [ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,
+          # stringConverter = '%s')
+                                    stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
+                         for key, value in series.returnDict().iteritems()]
+        self.SetColumns(seriesColumns)
+        self.CreateCheckStateColumn()
 
     """User can select using the space bar """
     def SetCheckState(self, modelObject, state):

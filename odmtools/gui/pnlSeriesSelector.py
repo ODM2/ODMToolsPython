@@ -12,7 +12,7 @@ from odmtools.lib.ObjectListView import ColumnDefn
 from odmtools.lib.ObjectListView.Filter import TextSearch, Chain
 
 #from clsSeriesTable import clsSeriesTable, TextSearch, Chain, EVT_OVL_CHECK_EVENT
-from odmtools.controller.olvSeriesSelector import EVT_OVL_CHECK_EVENT
+from odmtools.controller.olvSeriesSelector import EVT_OVL_CHECK_EVENT, FastObjectListView
 
 from odmtools.common.logger import LoggerTool
 from odmtools.controller import olvSeriesSelector
@@ -260,7 +260,10 @@ class pnlSeriesSelector(wx.Panel):
         self.varList = None
 
         #with Timer() as t:
+        #checkedObjs = self.tblSeries.GetCheckedObjects()
         self.initTableSeries()
+        #for x in checkedObjs:
+        #    self.tblSeries.SetCheckState(x, True)
         #logger.debug("self.initTableSeries(): %d" % t.interval)
 
         #with Timer() as t:
@@ -275,20 +278,41 @@ class pnlSeriesSelector(wx.Panel):
         """Set up columns and objects to be used in the objectlistview to be visible in the series selector"""
         try:
             self.memDB = MemoryDatabase(self.dbservice)
-            seriesColumns = [ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,#stringConverter = '%s')
-                                        stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
-                             for key, value in series.returnDict().iteritems()]
-            self.tblSeries.SetColumns(seriesColumns)
-            self.tblSeries.CreateCheckStateColumn()
             object = self.dbservice.get_all_series()
+
             if object:
                 self.tblSeries.SetObjects(object)
             else:
                 self.tblSeries.SetObjects(None)
+
         except AttributeError as e:
             logger.error(e)
             #self.tblSeries.SaveObject(object)
 
+    def refreshTableSeries(self, db):
+        """ Refreshes the objectlistview to include newly saved database series and preserve which series was 'checked'
+        for plotting/editing
+
+        :return:
+        """
+        self.memDB = MemoryDatabase(db)
+        object = self.dbservice.get_all_series()
+        #checkedObjs = self.tblSeries.GetCheckedObjects()
+        idList = [x.id for x in self.tblSeries.modelObjects]
+
+        for x in object:
+            if x.id not in idList:
+                self.tblSeries.AddObject(x)
+
+        #for x in checkedObjs:
+        #    super(FastObjectListView, self.tblSeries).SetCheckState(x, True)
+
+    def refreshSeries(self):
+        self.dbservice = None
+        self.dbservice = self.parent.Parent.createService()
+        self.refreshTableSeries(self.dbservice)
+        #self.resetDB(self.dbservice)
+        logger.debug("Refresh Occurred")
 
     def initSVBoxes(self):
 
@@ -408,11 +432,7 @@ class pnlSeriesSelector(wx.Panel):
         #self.
         event.Skip()
 
-    def refreshSeries(self):
-        self.dbservice = None
-        self.dbservice = self.parent.Parent.createService()
-        self.resetDB(self.dbservice)
-        logger.debug("Refresh Occurred")
+
 
     def onRightExData(self, event):
         dlg = wx.FileDialog(self, "Choose a save location", '', "", "*.csv", wx.SAVE | wx.OVERWRITE_PROMPT)
