@@ -221,7 +221,6 @@ class SeriesService():
             ).one()
 
             return True
-
         except:
             return False
 

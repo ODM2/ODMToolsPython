@@ -8,6 +8,7 @@ from odmtools.odmdata import Variable
 class frmCreateVariable(clsCreateVariable):
     # Handlers for clsCreateVariable events.
     def __init__(self, parent, service_man, old_var=None):
+        self.parent = parent
         self.service_man = service_man
         cv_service = self.service_man.get_cv_service()
         self.series_service = self.service_man.get_series_service()
@@ -80,7 +81,7 @@ class frmCreateVariable(clsCreateVariable):
         self.variable = self.createVariable()
 
         if self.all_fields_full():
-            self.Close()
+            self.EndModal(wx.ID_OK)
         else:
             wx.MessageDialog(None, "Variable was not created, A Value is missing", " ", wx.OK).ShowModal()
 
@@ -109,7 +110,7 @@ class frmCreateVariable(clsCreateVariable):
         return v
 
     def OnBtnCancelButton(self, event):
-        self.Destroy()
+        self.EndModal(wx.ID_CANCEL)
 
 
 

@@ -71,10 +71,29 @@ class pnlVariable(wx.Panel):
               self.OnListCtrl1ListItemSelected, id=wxID_PNLVARIABLELSTVARIABLE)
 
         self.lstVariable.Enable(False)
-
+        '''
         self.txtNewVar =  wx.TextCtrl(id=wxID_PNLVARIABLETXTNEWVAR,
                   name=u'txtNewVar', parent=self, pos=wx.Point(16,
                  276), size=wx.Size(392, 21), style=0, value=u'')
+        '''
+
+        self.txtNewVar = wx.ListCtrl(id=wxID_PNLVARIABLELSTVARIABLE,
+              name=u'txtNewVar', parent=self,  pos=wx.Point(16, 276),
+              size=wx.Size(392, 70), style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
+        self.txtNewVar.InsertColumn(0, 'Code')
+        self.txtNewVar.InsertColumn(1, 'Name')
+        self.txtNewVar.InsertColumn(2, 'Speciation')
+        self.txtNewVar.InsertColumn(3, 'Units')
+        self.txtNewVar.InsertColumn(4, 'Sample Medium')
+        self.txtNewVar.InsertColumn(5, 'Value Type')
+        self.txtNewVar.InsertColumn(6, 'IsRegular')
+        self.txtNewVar.InsertColumn(7, 'Time Support')
+        self.txtNewVar.InsertColumn(8, 'Time Units')
+        self.txtNewVar.InsertColumn(9, 'DataType')
+        self.txtNewVar.InsertColumn(10, 'General Category')
+        self.txtNewVar.InsertColumn(11, 'NoDataValue')
+        self.txtNewVar.SetColumnWidth(0, 50)
+        self.txtNewVar.SetColumnWidth(1, 100)
         self.txtNewVar.Enable(False)
 
     def __init__(self, parent, id, pos, size, style, name, sm, var):
@@ -85,24 +104,33 @@ class pnlVariable(wx.Panel):
 
     def OnRbCurrentRadiobutton(self, event):
         self.lstVariable.Enable(False)
+        self.txtNewVar.Enable(False)
 
         event.Skip()
 
     def OnRbSelectRadiobutton(self, event):
         self.lstVariable.Enable(True)
+        self.txtNewVar.Enable(False)
 
         event.Skip()
 
     def OnRbCreateRadiobutton(self, event):
         self.lstVariable.Enable(False)
 
+
         create_Var = frmCreateVariable(self, self.service_man, self.prev_val)
-        create_Var.ShowModal()
+        returnVal = create_Var.ShowModal()
         self.createdVar= create_Var.getVariable()
         create_Var.Destroy()
-        # if cancelled return to previous radio button
+
+
+        # TODO if cancelled return to previous radio button
         # else enable text box and enter the text info.
         # get Variable object
+        if returnVal == wx.ID_CANCEL:
+            self.rbCurrent.SetValue(True)
+        else:
+            self.show_new_var(self.createdVar)
         event.Skip()
 
     def OnListCtrl1ListItemSelected(self, event):
@@ -118,11 +146,28 @@ class pnlVariable(wx.Panel):
             code= self.lstVariable.GetItem(index, 0).GetText()
             logger.debug(code)
             v= self.series_service.get_variable_by_code(code)
-
-
         elif self.rbCreate.Value:
-            #q.code = self.txtCode.Value
-            #q.definition= self.txtDefinition.Value
-            #q.explanation = self.txtExplanation.Value
             v = self.createdVar
         return v
+
+
+    def show_new_var(self, var):
+
+        self.txtNewVar.InsertStringItem(0, str(var.code))
+        self.txtNewVar.SetStringItem(0, 1, str(var.name))
+        self.txtNewVar.SetStringItem(0, 2, str(var.speciation))
+        self.txtNewVar.SetStringItem(0, 3, str(var.variable_unit.name))
+        self.txtNewVar.SetStringItem(0, 4, str(var.sample_medium))
+        self.txtNewVar.SetStringItem(0, 5, str(var.value_type))
+        self.txtNewVar.SetStringItem(0, 6, str(var.is_regular))
+        self.txtNewVar.SetStringItem(0, 7, str(var.time_support))
+        self.txtNewVar.SetStringItem(0, 8, str(var.time_unit.name))
+        self.txtNewVar.SetStringItem(0, 9, str(var.data_type))
+        self.txtNewVar.SetStringItem(0, 10, str(var.general_category))
+        self.txtNewVar.SetStringItem(0, 11, str(var.no_data_value))
+        #self.txtNewVar.SetStringItem(num_items, 12, str(var.id))
+
+
+        self.txtNewVar.Focus(0)
+        self.txtNewVar.Select(0)
+        self.txtNewVar.Enable(True)
