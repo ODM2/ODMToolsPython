@@ -96,7 +96,7 @@ class frmODMToolsMain(wx.Frame):
         valid = True
 
         ## Test if Series Catalog is empty
-        if not service.get_all_sites():
+        if not service.get_all_used_sites():
             if displayMsg:
                 msg = wx.MessageDialog(None, 'Series Catalog cannot be empty. Please enter in a new database connection',
                                            'Series Catalog is empty', wx.OK | wx.ICON_ERROR )

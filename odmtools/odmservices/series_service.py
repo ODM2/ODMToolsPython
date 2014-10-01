@@ -31,9 +31,10 @@ class SeriesService():
         return self._edit_session.query(ODMVersion).first().version_number
 
     # Site methods
-    #def get_all_sites(self):
-    #    return self._edit_session.query(Site).order_by(Site.code).all()
     def get_all_sites(self):
+        return self._edit_session.query(Site).order_by(Site.code).all()
+
+    def get_all_used_sites(self):
 
         try:
             site_ids = [x[0] for x in self._edit_session.query(distinct(Series.site_id)).all()]
@@ -54,6 +55,21 @@ class SeriesService():
             return None
 
     # Variables methods
+    def get_all_used_variables(self):
+        #get list of used variable ids
+        try:
+            var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).all()]
+        except:
+            var_ids = None
+
+        Variables = []
+
+        #create list of variables from the list of ids
+        for var_id in var_ids:
+            Variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
+
+        return Variables
+
     def get_all_variables(self):
         return self._edit_session.query(Variable).all()
 

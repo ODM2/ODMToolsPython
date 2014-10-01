@@ -116,7 +116,8 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
-    def changePlotSelection(self, sellist=[], datetime_list=[]):
+    '''
+    def changePlotSelection(self, datetime_list=[]):
         cc= ColorConverter()
         # k black,    # r red
         # needs to have graph first
@@ -124,56 +125,48 @@ class plotTimeSeries(wx.Panel):
         unselected = cc.to_rgba('k', 0.1)
         allunselected = cc.to_rgba('k', 1)
         if self.editPoint:
-            if len(sellist)>0:
-                #list of True False
-                colorlist= [unselected if x == 0 else selected for x in sellist]
-
-            elif len(datetime_list)>0:
-                colorlist=[None] *len(self.editCurve.dataTable)
-
+            colorlist=[allunselected] *len(self.editCurve.dataTable)
+            if len(datetime_list)>0:
                 for i in xrange(len(self.editCurve.dataTable)):
                     if  self.editCurve.dataTable[i][1] in datetime_list:
                         colorlist[i]=selected
                     else:
                         colorlist[i]=unselected
-            else:
-                colorlist=[allunselected]*len(self.editCurve.dataTable)
 
             self.editPoint.set_color(colorlist)
             #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
             self.canvas.draw()
+
     '''
-    def changePlotSelection(self, sellist=[], datetime_list=[]):
+
+
+    def changePlotSelection(self,  datetime_list=[]):
+
         #for entire list of points if selected add to new lists
         newx= []
         newy=[]
         if self.selplot:
-            self.editAxis.lines.pop(self.selplot)
-            self.editAxis.lines.remove(self.selplot)
-            del self.selplot
+            self.selplot.remove()
+            del(self.selplot)
             self.selplot = None
+
+
         if len( datetime_list) >0:
             for x, y, a, b, c in self.editCurve.dataTable:
                 if y in datetime_list:
                     newx.append(x)
                     newy.append(y)
 
-            self.selplot = self.editAxis.scatter( newy, newx,
+            self.selplot =  self.axislist[self.editSeries.axisTitle].scatter( newy, newx,
                                               s=35, c='red', edgecolors='none',
                                               zorder=12, marker='s', alpha=1)
         self.canvas.draw()
 
-    '''
+    def changeSelection(self, datetime_list=[]):
+        self.changePlotSelection( datetime_list)
 
-    def changeSelection(self, sellist=[], datetime_list=[]):
-        self.changePlotSelection(sellist, datetime_list)
-        if len(sellist)>0:
-            self.parent.record_service.select_points_tf(sellist)
-            Publisher.sendMessage(("changeTableSelection"), sellist=sellist, datetime_list = [])
-
-        else:
-            self.parent.record_service.select_points(datetime_list=datetime_list)
-            Publisher.sendMessage(("changeTableSelection"), sellist= [], datetime_list= datetime_list)
+        self.parent.record_service.select_points(datetime_list=datetime_list)
+        Publisher.sendMessage(("changeTableSelection"),  datetime_list= datetime_list)
 
 
     def onShowLegend(self, isVisible):
@@ -233,6 +226,7 @@ class plotTimeSeries(wx.Panel):
         self.clear()
         self.selectedlist = None
         self.editPoint = None
+        self.selplot = None
         self.lman = None
 
         #self.canvas.mpl_disconnect(self.hoverAction)
@@ -277,24 +271,26 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
 
     def drawEditPlot(self, oneSeries):
-        self.editAxis = self.axislist[oneSeries.axisTitle]
-        self.editAxis.set_zorder(10)
-        self.lines[self.curveindex] = self.editAxis.plot_date([x[1] for x in oneSeries.dataTable],
+        self.editSeries = oneSeries
+        self.axislist[self.editSeries.axisTitle].set_zorder(10)
+        self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle].\
+                                                    plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-",
                                                          color=oneSeries.color, xdate=True, tz=None,
                                                          label=oneSeries.plotTitle, zorder=10, alpha=1,
                                                          picker=5.0, pickradius=5.0)
 
-        self.selectedlist = self.parent.record_service.get_filter_list()
+        #self.selectedlist = self.parent.record_service.get_filter_list()
 
-        self.editPoint = self.editAxis.scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                          s=35, c=['k' if x == 0 else 'r' for x in self.selectedlist], edgecolors='none',
+        self.editPoint = self.axislist[self.editSeries.axisTitle].\
+                                    scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
+                                          s=35, c='k', edgecolors='none',
                                           zorder=11, marker='s', alpha=1)# >, <, v, ^,s
+
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.timeradius = self.editCurve.timeRadius
-        #self.radius = self.editCurve.yrange/10
-        #self.radius = 10
+
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
     def _setColor(self, color):
@@ -314,9 +310,13 @@ class plotTimeSeries(wx.Panel):
         self.seriesPlotInfo = seriesPlotInfo
         self.updatePlot()
         # resets the home view - will remove any previous zooming
-        self.toolbar._views.clear()
-        self.toolbar._positions.clear()
-        self.toolbar._update_view()
+        self.toolbar.update()
+        self.toolbar.push_current()
+
+
+        #self._views.home()
+        #self._positions.home()
+        #self.set_history_buttons()
 
     def updatePlot(self):
         self.clear()

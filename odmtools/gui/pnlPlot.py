@@ -86,8 +86,8 @@ class pnlPlot(fnb.FlatNotebook):
     def onUpdateValues(self, event):
         self.pltTS.updateValues()
 
-    def onChangeSelection(self, sellist, datetime_list):
-        self.pltTS.changePlotSelection(sellist, datetime_list)
+    def onChangeSelection(self, datetime_list):
+        self.pltTS.changePlotSelection( datetime_list)
 
     def onNumBins(self, numBins):
         self.pltHist.changeNumOfBins(numBins)

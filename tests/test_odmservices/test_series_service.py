@@ -18,14 +18,14 @@ class TestSeriesService:
         assert version.version_number == db_version
 
     def test_get_all_sites_empty(self):
-        sites = self.series_service.get_all_sites()
+        sites = self.series_service.get_all_used_sites()
         assert len(sites) == 0
         assert sites == []
 
     def test_get_all_sites(self):
-        assert self.series_service.get_all_sites() == []
+        assert self.series_service.get_all_used_sites() == []
         site = test_util.add_site(self.session)
-        sites = self.series_service.get_all_sites()
+        sites = self.series_service.get_all_used_sites()
         assert len(sites) == 1
         assert site.code == sites[0].code
 

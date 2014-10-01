@@ -28,9 +28,9 @@ class frmCreateVariable(clsCreateVariable):
         #else:
         name_list = [x.term for x in cv_service.get_variable_name_cvs()]
         var_unit=[x.name for x in cv_service.get_units_names()]
-        time_unit=[x.name for x in cv_service.get_units()]#['units']
-        #time_unit = [old_var.time_unit.name]
-        #var_unit =  [old_var.variable_unit.name]
+        time_unit=[x.name for x in cv_service.get_units()]
+
+        gen_list = [x.term for x in cv_service.get_general_category_cvs()]
         sample_list =[x.term for x in cv_service.get_sample_medium_cvs()]
         spec_list =[x.term for x in cv_service.get_speciation_cvs()]
 
@@ -45,6 +45,7 @@ class frmCreateVariable(clsCreateVariable):
         self.cbSpeciation.AppendItems(spec_list)
         self.cbValueType.AppendItems(val_type)
         self.cbDataType.AppendItems(data_type)
+        self.cbGenCat.AppendItems(gen_list)
 
         if old_var:
             self.cbVarName.SetValue(old_var.name)
@@ -55,7 +56,7 @@ class frmCreateVariable(clsCreateVariable):
             self.cbValueType.SetValue(old_var.value_type)
             self.cbDataType.SetValue(old_var.data_type)
             self.txtNoDV.SetValue(str(old_var.no_data_value))
-            self.txtGenCat.SetValue(str(old_var.general_category))
+            self.cbGenCat.SetValue(str(old_var.general_category))
             self.txtTSValue.SetValue(str(old_var.time_support))
 
     def getVariable(self):
@@ -71,7 +72,7 @@ class frmCreateVariable(clsCreateVariable):
             (self.cbValueType.GetValue() is not None) and \
             (self.cbDataType.GetValue() is not None) and \
             (self.txtNoDV.GetValue() <> '') and \
-            (self.txtGenCat.GetValue() <> '') and \
+            (self.cbGenCat.GetValue() is not None) and \
             (self.txtTSValue.GetValue() <> '')
 
 
@@ -103,7 +104,7 @@ class frmCreateVariable(clsCreateVariable):
         v.time_unit_id = v.time_unit.id
 
         v.data_type = self.cbDataType.GetValue() if self.cbDataType.GetValue() <> u'' else None
-        v.general_category = self.txtGenCat.GetValue() if self.txtGenCat.GetValue() <> u'' else None
+        v.general_category = self.cbGenCat.GetValue() if self.cbGenCat.GetValue() <> u'' else None
         v.no_data_value = self.txtNoDV.GetValue() if self.txtNoDV.GetValue() <> u'' else None
         return v
 

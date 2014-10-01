@@ -380,5 +380,5 @@ class EditTools():
 ###############
     def refresh_plot(self):
         Publisher.sendMessage("updateValues", event=None)
-        Publisher.sendMessage("changePlotSelection", sellist=[], datetime_list=self.get_filtered_dates())
-        Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=self.get_filtered_dates())
+        Publisher.sendMessage("changePlotSelection",  datetime_list=self.get_filtered_dates())
+        Publisher.sendMessage("changeTableSelection", datetime_list=self.get_filtered_dates())

@@ -298,12 +298,12 @@ class wizSave(wx.wizard.Wizard):
         Site, Variable, Method, Source, QCL = self.get_metadata()
         #if qcl exits use its its
         closeSuccessful = False
-        if QCL.id == 0:
+        if QCL.id == 0 and not self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             val = wx.MessageBox("You are writing a level 0 dataset, which is usually reserved for raw data.\n"
                                 "Are you sure you want to save?",
                                 'Are you Sure?',
                                 wx.YES_NO | wx.ICON_QUESTION)
-            if val == 2 and not self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
+            if val == 2 :
                 logger.debug("User selected yes to save a level 0 dataset")
                 val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure, you are sure?\n",
                                       'Are you REALLY sure?',

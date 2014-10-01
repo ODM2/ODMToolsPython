@@ -123,8 +123,12 @@ class clsCreateVariable(wx.Dialog):
         self.stGenCat.Wrap(-1)
         fgSizer6.Add(self.stGenCat, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
-        self.txtGenCat = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
-        fgSizer6.Add(self.txtGenCat, 0, wx.ALL | wx.EXPAND, 5)
+        #self.txtGenCat = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
+        #fgSizer6.Add(self.txtGenCat, 0, wx.ALL | wx.EXPAND, 5)
+
+        cbGenCatChoices = []
+        self.cbGenCat = wx.ComboBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, cbGenCatChoices, wx.CB_READONLY|wx.CB_SORT )
+        fgSizer6.Add( self.cbGenCat, 0, wx.ALL|wx.EXPAND, 5 )
 
         self.stNoDV = wx.StaticText(self, wx.ID_ANY, u"NoDataValue:", wx.DefaultPosition, wx.DefaultSize, 0)
         self.stNoDV.Wrap(-1)

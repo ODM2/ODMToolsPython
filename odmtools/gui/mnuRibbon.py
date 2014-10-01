@@ -340,8 +340,8 @@ class mnuRibbon(RB.RibbonBar):
 
     def redrawPlotTable(self):
         #recordService = self.parent.getRecordService()
-        #Publisher.sendMessage("changeSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
-        #Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=recordService.get_filtered_dates())
+        #Publisher.sendMessage("changeSelection", datetime_list=recordService.get_filtered_dates())
+        #Publisher.sendMessage("changeTableSelection",  datetime_list=recordService.get_filtered_dates())
         pass
 
 

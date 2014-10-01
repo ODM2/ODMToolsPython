@@ -195,7 +195,7 @@ class MyCustomToolbar(NavigationToolbar):
                 seldatetimes.append(self.editCurve.dataTable[i][1])
                 # print seldatetimes
 
-        self._parent.changeSelection(sellist=[], datetime_list=seldatetimes)
+        self._parent.changeSelection(datetime_list=seldatetimes)
 
         self.canvas.draw_idle()
         #self.canvas.widgetlock.release(self.lasso)

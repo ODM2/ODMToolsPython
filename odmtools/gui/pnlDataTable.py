@@ -89,17 +89,13 @@ class pnlDataTable(wx.Panel):
 
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot
-        Publisher.sendMessage(("changeSelection"), sellist=[], datetime_list=[x[3] for x in self.currentItem])
+        Publisher.sendMessage(("changeSelection"),  datetime_list=[x[3] for x in self.currentItem])
 
 
-    def onChangeSelection(self, sellist=[], datetime_list=[]):
+    def onChangeSelection(self,  datetime_list=[]):
         objlist = []
-        if len(sellist) > 0:
-            for i in range(len(sellist)):
-                if sellist[i]:
-                    objlist.append(self.myOlv.GetObjectAt(i))
-        else:
-            objlist = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
+
+        objlist = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
 
         if len(objlist) > 0:
             self.myOlv.SelectObject(objlist[0], deselectOthers=True, ensureVisible=True)
@@ -142,26 +138,6 @@ class pnlDataTable(wx.Panel):
             listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
 
 
-    '''
-    def onKeyPress(self, event):
-        """Checks for when user inputs Ctrl+A"""
-        keycode = event.GetKeyCode()
-        logger.debug("keycode %s" % keycode)
-        if keycode == 1:
-            #logger.debug("OnKeyPress! Ctrl+A was pressed")
-            self.myOlv.SelectAll()
-            self.currentItem = self.myOlv.GetSelectedObjects()
-            #logger.debug("itemtype %s" % self.currentItem)
-
-            if len(self.currentItem) > 0:
-                pass
-            #print "self.currentItem: ", self.currentItem
-            #print "len: ", len(self.currentItem)
-
-            #selectedids = self.getSelectedIDs(self.myOlv.GetSelectedObjects())
-            self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
-            Publisher.sendMessage("changeSelection", sellist=[], datetime_list=[x[3] for x in self.currentItem])
-    '''
 
 
 
