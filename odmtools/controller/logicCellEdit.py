@@ -24,12 +24,13 @@ class CellEdit():
             self.cvService = serviceManager.get_cv_service()
             offsetChoices = OrderedDict((x.description, x.id) for x in
                                         self.cvService.get_offset_type_cvs())
-            qualifierChoices = OrderedDict((x.code, x.description) for x in self.cvService.get_qualifiers())
+            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+                                           for x in self.cvService.get_qualifiers() if x.code and x.description)
             labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
 
             self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
             self.offSetTypeChoices = [NULL] + offsetChoices.keys()
-            self.qualifierCodeChoices = [NULL] + qualifierChoices.keys() + [NEW]
+            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
             self.labSampleChoices = [NULL] + labChoices.keys()
 
         else:
@@ -308,8 +309,10 @@ class CellEdit():
             """
 
             if event.GetEventObject().Value == NEW:
-                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierCodeChoices)
+                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierChoices)
                 dlg.ShowModal()
+                event.GetEventObject().SetValue(dlg.selectedValue)
+
 
 
         odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)

@@ -1,20 +1,21 @@
-#Boa:Dialog:frmFlagValues
+# Boa:Dialog:frmFlagValues
 
 import wx
+
 from odmtools.odmdata import Qualifier
+
 
 def create(parent):
     return frmFlagValues(parent)
 
-[wxID_FRMFLAGVALUES, wxID_FRMFLAGVALUESBTNCANCEL, wxID_FRMFLAGVALUESBTNOK, wxID_FRMFLAGVALUESCBQUALIF, 
- wxID_FRMFLAGVALUESLBLCODE, wxID_FRMFLAGVALUESLBLDESC, 
- wxID_FRMFLAGVALUESLBLQUALIFIER, wxID_FRMFLAGVALUESPANEL1, 
- wxID_FRMFLAGVALUESPNLCREATE, wxID_FRMFLAGVALUESPNLFILLER, 
- wxID_FRMFLAGVALUESPNLSELECT, wxID_FRMFLAGVALUESSPLITTER, 
- wxID_FRMFLAGVALUESTXTCODE, wxID_FRMFLAGVALUESTXTDESC, 
-] = [wx.NewId() for _init_ctrls in range(14)]
+
+[wxID_FRMFLAGVALUES, wxID_FRMFLAGVALUESBTNCANCEL, wxID_FRMFLAGVALUESBTNOK, wxID_FRMFLAGVALUESCBQUALIF,
+ wxID_FRMFLAGVALUESLBLCODE, wxID_FRMFLAGVALUESLBLDESC, wxID_FRMFLAGVALUESLBLQUALIFIER, wxID_FRMFLAGVALUESPANEL1,
+ wxID_FRMFLAGVALUESPNLCREATE, wxID_FRMFLAGVALUESPNLFILLER, wxID_FRMFLAGVALUESPNLSELECT, wxID_FRMFLAGVALUESSPLITTER,
+ wxID_FRMFLAGVALUESTXTCODE, wxID_FRMFLAGVALUESTXTDESC, ] = [wx.NewId() for _init_ctrls in range(14)]
 
 NEW = "[New Qualifier]"
+
 
 class frmFlagValues(wx.Dialog):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -45,115 +46,102 @@ class frmFlagValues(wx.Dialog):
 
     def _init_ctrls(self, prnt):
         # generated method, don't edit
-        wx.Dialog.__init__(self, id=wxID_FRMFLAGVALUES, name=u'frmFlagValues',
-              parent=prnt, pos=wx.Point(554, 325), size=wx.Size(507, 206),
-              style=wx.DEFAULT_DIALOG_STYLE, title=u'Flag Values')
+        wx.Dialog.__init__(self, id=wxID_FRMFLAGVALUES, name=u'frmFlagValues', parent=prnt, pos=wx.Point(554, 325),
+                           size=wx.Size(507, 206), style=wx.DEFAULT_DIALOG_STYLE, title=u'Flag Values')
         self.SetClientSize(wx.Size(491, 168))
 
-        self.splitter = wx.SplitterWindow(id=wxID_FRMFLAGVALUESSPLITTER,
-              name='splitter', parent=self, pos=wx.Point(0, 0),
-              size=wx.Size(491, 142), style=wx.BORDER_SUNKEN)
+        self.splitter = wx.SplitterWindow(id=wxID_FRMFLAGVALUESSPLITTER, name='splitter', parent=self,
+                                          pos=wx.Point(0, 0), size=wx.Size(491, 142), style=wx.BORDER_SUNKEN)
         self.splitter.SetLabel(u'')
-        self.pnlSelect = wx.Panel(id=wxID_FRMFLAGVALUESPNLSELECT,
-              name='pnlSelect', parent=self.splitter, pos=wx.Point(0, 0),
-              size=wx.Size(491, 10), style=wx.TAB_TRAVERSAL)
+        self.pnlSelect = wx.Panel(id=wxID_FRMFLAGVALUESPNLSELECT, name='pnlSelect', parent=self.splitter,
+                                  pos=wx.Point(0, 0), size=wx.Size(491, 10), style=wx.TAB_TRAVERSAL)
 
-        self.pnlCreate = wx.Panel(id=wxID_FRMFLAGVALUESPNLCREATE,
-              name='pnlCreate', parent=self.splitter, pos=wx.Point(0, 14),
-              size=wx.Size(491, 178), style=wx.TAB_TRAVERSAL)
+        self.pnlCreate = wx.Panel(id=wxID_FRMFLAGVALUESPNLCREATE, name='pnlCreate', parent=self.splitter,
+                                  pos=wx.Point(0, 14), size=wx.Size(491, 178), style=wx.TAB_TRAVERSAL)
         self.pnlCreate.Show(False)
 
-        self.lblQualifier = wx.StaticText(id=wxID_FRMFLAGVALUESLBLQUALIFIER,
-              label=u'Qualifier:', name=u'lblQualifier', parent=self.pnlSelect,
-              pos=wx.Point(16, 8), size=wx.Size(45, 13), style=0)
+        self.lblQualifier = wx.StaticText(id=wxID_FRMFLAGVALUESLBLQUALIFIER, label=u'Qualifier:', name=u'lblQualifier',
+                                          parent=self.pnlSelect, pos=wx.Point(16, 8), size=wx.Size(45, 13), style=0)
 
-        self.cbQualif = wx.ComboBox(choices=self.qualchoices,
-              id=wxID_FRMFLAGVALUESCBQUALIF, name=u'cbQualif',
-              parent=self.pnlSelect, pos=wx.Point(16, 25), size=wx.Size(376, 21),
-              style=wx.CB_READONLY, value=u'')
+        self.cbQualif = wx.ComboBox(choices=[x for x in self.qualchoices.keys()] + [NEW], id=wxID_FRMFLAGVALUESCBQUALIF, name=u'cbQualif',
+                                    parent=self.pnlSelect, pos=wx.Point(16, 25), size=wx.Size(376, 21),
+                                    style=wx.CB_READONLY, value=u'')
         self.cbQualif.SetLabel(u'')
-        self.cbQualif.Bind(wx.EVT_COMBOBOX, self.OnCbQualifCombobox,
-              id=wxID_FRMFLAGVALUESCBQUALIF)
+        self.cbQualif.Bind(wx.EVT_COMBOBOX, self.OnCbQualifCombobox, id=wxID_FRMFLAGVALUESCBQUALIF)
 
-        self.lblCode = wx.StaticText(id=wxID_FRMFLAGVALUESLBLCODE,
-              label=u'Code:', name=u'lblCode', parent=self.pnlCreate,
-              pos=wx.Point(16, 8), size=wx.Size(30, 13), style=0)
+        self.lblCode = wx.StaticText(id=wxID_FRMFLAGVALUESLBLCODE, label=u'Code:', name=u'lblCode',
+                                     parent=self.pnlCreate, pos=wx.Point(16, 8), size=wx.Size(30, 13), style=0)
 
-        self.lblDesc = wx.StaticText(id=wxID_FRMFLAGVALUESLBLDESC,
-              label=u'Description:', name=u'lblDesc', parent=self.pnlCreate,
-              pos=wx.Point(16, 35), size=wx.Size(58, 13), style=0)
+        self.lblDesc = wx.StaticText(id=wxID_FRMFLAGVALUESLBLDESC, label=u'Description:', name=u'lblDesc',
+                                     parent=self.pnlCreate, pos=wx.Point(16, 35), size=wx.Size(58, 13), style=0)
 
-        self.txtCode = wx.TextCtrl(id=wxID_FRMFLAGVALUESTXTCODE,
-              name=u'txtCode', parent=self.pnlCreate, pos=wx.Point(75, 8),
-              size=wx.Size(100, 21), style=0, value=u'')
+        self.txtCode = wx.TextCtrl(id=wxID_FRMFLAGVALUESTXTCODE, name=u'txtCode', parent=self.pnlCreate,
+                                   pos=wx.Point(75, 8), size=wx.Size(100, 21), style=0, value=u'')
 
-        self.txtDesc = wx.TextCtrl(id=wxID_FRMFLAGVALUESTXTDESC,
-              name=u'txtDesc', parent=self.pnlCreate, pos=wx.Point(75, 35),
-              size=wx.Size(296, 24), style=0, value=u'')
+        self.txtDesc = wx.TextCtrl(id=wxID_FRMFLAGVALUESTXTDESC, name=u'txtDesc', parent=self.pnlCreate,
+                                   pos=wx.Point(75, 35), size=wx.Size(296, 24), style=0, value=u'')
 
-        self.panel1 = wx.Panel(id=wxID_FRMFLAGVALUESPANEL1, name='panel1',
-              parent=self, pos=wx.Point(0, 142), size=wx.Size(491, 26),
-              style=wx.TAB_TRAVERSAL)
+        self.panel1 = wx.Panel(id=wxID_FRMFLAGVALUESPANEL1, name='panel1', parent=self, pos=wx.Point(0, 142),
+                               size=wx.Size(491, 26), style=wx.TAB_TRAVERSAL)
 
-        self.pnlFiller = wx.Panel(id=wxID_FRMFLAGVALUESPNLFILLER,
-              name=u'pnlFiller', parent=self.panel1, pos=wx.Point(0, 0),
-              size=wx.Size(333, 100), style=wx.TAB_TRAVERSAL)
+        self.pnlFiller = wx.Panel(id=wxID_FRMFLAGVALUESPNLFILLER, name=u'pnlFiller', parent=self.panel1,
+                                  pos=wx.Point(0, 0), size=wx.Size(333, 100), style=wx.TAB_TRAVERSAL)
 
-        self.btnOK = wx.Button(id=wxID_FRMFLAGVALUESBTNOK, label=u'OK',
-              name=u'btnOK', parent=self.panel1, pos=wx.Point(333, 0),
-              size=wx.Size(75, 23), style=0)
-        self.btnOK.Bind(wx.EVT_BUTTON, self.OnBtnOKButton,
-              id=wxID_FRMFLAGVALUESBTNOK)
+        self.btnOK = wx.Button(id=wxID_FRMFLAGVALUESBTNOK, label=u'OK', name=u'btnOK', parent=self.panel1,
+                               pos=wx.Point(333, 0), size=wx.Size(75, 23), style=0)
+        self.btnOK.Bind(wx.EVT_BUTTON, self.OnBtnOKButton, id=wxID_FRMFLAGVALUESBTNOK)
 
-        self.btnCancel = wx.Button(id=wxID_FRMFLAGVALUESBTNCANCEL,
-              label=u'Cancel', name=u'btnCancel', parent=self.panel1,
-              pos=wx.Point(416, 0), size=wx.Size(75, 23), style=0)
-        self.btnCancel.Bind(wx.EVT_BUTTON, self.OnBtnCancelButton,
-              id=wxID_FRMFLAGVALUESBTNCANCEL)
-              
-              
+        self.btnCancel = wx.Button(id=wxID_FRMFLAGVALUESBTNCANCEL, label=u'Cancel', name=u'btnCancel',
+                                   parent=self.panel1, pos=wx.Point(416, 0), size=wx.Size(75, 23), style=0)
+        self.btnCancel.Bind(wx.EVT_BUTTON, self.OnBtnCancelButton, id=wxID_FRMFLAGVALUESBTNCANCEL)
+
         self.splitter.Initialize(self.pnlSelect)
-        
 
         self._init_sizers()
 
     def __init__(self, parent, cv_service, choices):
-         #create cv service
         self.cv_service = cv_service
 
-        self.qualchoices = None
-        if isinstance(choices, list):
-            self.qualchoices = choices
-        else:
-            self.qualchoices = choices.keys() + [NEW]
-      
+        self.qualchoices = choices
+        self.selectedValue = None
 
         self._init_ctrls(parent)
 
     def GetValue(self):
-      return self.qid
+        return self.qid
 
     def OnCbQualifCombobox(self, event):
         if self.cbQualif.GetValue() == NEW:
             self.splitter.SplitHorizontally(self.pnlSelect, self.pnlCreate, 50)
-        else: 
+        else:
             if self.splitter.IsSplit():
                 self.splitter.Unsplit(self.pnlCreate)
                 self.splitter.Initialize(self.pnlSelect)
         event.Skip()
 
     def OnBtnOKButton(self, event):
-      #new
+        # new
         if self.splitter.IsSplit():
-          q=Qualifier()
-          q.code=self.txtCode.GetValue()
-          q.description=self.txtDesc.GetValue()
+            code = self.txtCode.GetValue()
+            desc = self.txtDesc.GetValue()
+            if not code or not desc:
+                msg = "Please double check that you have entered values into the code field and description field"
+                dlg = wx.MessageDialog(None, msg, "Code or Description cannot be empty",
+                                       wx.OK | wx.OK_DEFAULT | wx.ICON_WARNING)
+                dlg.ShowModal()
+                return
 
-          self.cv_service.create_qualifier(q)
-          self.qid=q.id
+            q = Qualifier()
+            q.code = code
+            q.description = desc
+
+            self.cv_service.create_qualifier(q)
+            self.qid = q.id
+            self.selectedValue = q.code + '-' + q.description
 
         else:
-          self.qid = self.qualchoices[self.cbQualif.GetValue()]
+            self.qid = self.qualchoices[self.cbQualif.GetValue()]
+            self.selectedValue = self.cbQualif.GetValue()
 
         event.Skip()
         self.Close()
