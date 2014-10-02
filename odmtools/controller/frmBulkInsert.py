@@ -43,9 +43,9 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                 "OffSetValue": self.checkOffsetValue,
                 "OffSetType": self.checkOffsetType,
                 "QualifierCode": self.checkQualifierCode,
-                "LabSampleCode": self.checkLabSample
-
-            })
+                "LabSampleCode": self.checkLabSample},
+                skiprows=1
+            )
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
                                          "Please compare your csv with the template version as the file"

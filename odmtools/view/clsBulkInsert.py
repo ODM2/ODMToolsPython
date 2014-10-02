@@ -25,8 +25,7 @@ from odmtools.common.icons.icons4addpoint import *
 class BulkInsert(wx.MiniFrame):
     def __init__(self, parent):
         wx.MiniFrame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools Bulk Insert -",
-                              size=(400, 600), style=wx.CAPTION | wx.TAB_TRAVERSAL |
-                                                     wx.FRAME_FLOAT_ON_PARENT)
+                              size=(400, 600), style=wx.CAPTION | wx.TAB_TRAVERSAL)
         mainPanel = wx.Panel(self, -1)
         self.SetSizeHintsSz(wx.DefaultSize, wx.DefaultSize)
 
