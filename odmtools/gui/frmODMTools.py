@@ -44,8 +44,10 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
+        wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=parent,
+            size=wx.Size(650, 750), style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self._init_database()
-        self._init_ctrls(parent)
+        self._init_ctrls()
         self.Refresh()
 
     #############Entire Form Sizers##########
@@ -121,12 +123,10 @@ class frmODMToolsMain(wx.Frame):
             pass
 
     ###################### Frame ################
-    def _init_ctrls(self, prnt):
+    def _init_ctrls(self):
         # generated method, don't edit
         logger.debug("Loading frame...")
-        wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=prnt,
-                          size=wx.Size(1000, 900),
-                          style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+
 
         self.SetIcon(gtk_execute.getIcon())
 
