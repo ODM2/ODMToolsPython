@@ -225,7 +225,7 @@ class plotTimeSeries(wx.Panel):
     def stopEdit(self):
         self.clear()
         self.selectedlist = None
-        self.editPoint = None
+
         self.selplot = None
         self.lman = None
 
@@ -257,9 +257,6 @@ class plotTimeSeries(wx.Panel):
             for l in curraxis.lines:
                 if l.get_label() == self.editCurve.plotTitle:
                     curraxis.lines.remove(l)
-            if self.editPoint:
-                self.editPoint.remove()
-
 
             #redraw editpoints and curve
             self.seriesPlotInfo.updateEditSeries()
@@ -276,18 +273,18 @@ class plotTimeSeries(wx.Panel):
         self.axislist[self.editSeries.axisTitle].set_zorder(10)
         self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle].\
                                                     plot_date([x[1] for x in oneSeries.dataTable],
-                                                         [x[0] for x in oneSeries.dataTable], "-",
+                                                         [x[0] for x in oneSeries.dataTable], "-s",
                                                          color=oneSeries.color, xdate=True, tz=None,
                                                          label=oneSeries.plotTitle, zorder=10, alpha=1,
-                                                         picker=5.0, pickradius=5.0)
+                                                         picker=5.0, pickradius=5.0, markersize=4.5)
 
         #self.selectedlist = self.parent.record_service.get_filter_list()
 
-        self.editPoint = self.axislist[self.editSeries.axisTitle].\
+        '''self.editPoint = self.axislist[self.editSeries.axisTitle].\
                                     scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
                                           s=35, c='k', edgecolors='none',
                                           zorder=11, marker='s', alpha=1)# >, <, v, ^,s
-
+'''
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.timeradius = self.editCurve.timeRadius
