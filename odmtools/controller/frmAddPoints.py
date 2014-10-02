@@ -130,14 +130,37 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
-        msg = wx.MessageDialog(None, 'Are you ready to add points?', 'Add Points?',
+
+        points, isIncorrect = self.parseTable()
+
+        message = ""
+
+        if not points:
+            message = "Unfortunately there are no points to add, " \
+                      "please check that the data was entered correctly " \
+                      "and try again"
+            dlg = wx.MessageDialog(None, message, "Nothing to add...",
+                                   wx.OK | wx.OK_DEFAULT | wx.ICON_WARNING)
+            dlg.ShowModal()
+            return
+        elif isIncorrect:
+            message = "Are you ready to add points? " \
+                      "There are rows that are incorrectly formatted, " \
+                      "those rows will not be added. Continue?"
+        else:
+            message = "Are you ready to add points? " \
+                      "There weren't any format errors, would you like to continue?"
+
+        msg = wx.MessageDialog(None, message, 'Add Points?',
                                wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
 
         value = msg.ShowModal()
         if value == wx.ID_NO:
             return
 
-        self.parseTable()
+        self.recordService.add_points(points)
+
+
 
         self.Close()
         event.Skip()
@@ -164,7 +187,9 @@ class AddPoints(clsAddPoints.AddPoints):
 
         objects = self.olv.GetObjects()
 
+        isIncorrect = False
         points = []
+
         for i in objects:
             if i.isCorrect():
                 row = [None] * 10
@@ -195,9 +220,10 @@ class AddPoints(clsAddPoints.AddPoints):
 
                 points.append(tuple(row))
             else:
-                pass
+                isIncorrect = True
                 #print i, "Isn't formatted correctly"
-        self.recordService.add_points(points)
+
+        return points, isIncorrect
 
     def combineDateTime(self, date, time):
         t = datetime.datetime.strptime(time, "%H:%M:%S").time()

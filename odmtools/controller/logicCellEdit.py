@@ -122,6 +122,10 @@ class CellEdit():
         point.validValueAcc = False
         if not value:
             return "error"
+        if value == NULL:
+            point.validValueAcc = True
+            return "check"
+
         if isinstance(value, basestring):
             return "error"
         point.validValueAcc = True
