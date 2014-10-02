@@ -1,5 +1,7 @@
 import math
 import datetime
+from pandas import DataFrame
+import pandas
 
 import numpy
 
@@ -29,16 +31,14 @@ class OneSeriesPlotInfo(object):
         self.numBins = 25
         self.binWidth = 1.5
         self.boxWhiskerMethod = "Monthly"
-        self.useCensoredData = False
-        self.yrange=0
 
+        self.yrange=0
         self.color = ""
 
         #edit functions
         self.edit = False
         #the color the plot should be when not editing
         self.plotcolor = None
-        self.timeRadius= None
 
 
 
@@ -211,10 +211,13 @@ class SeriesPlotInfo(object):
         dataType = series.data_type
         noDataValue = series.variable.no_data_value
         if self.editID == seriesID:
-            data = self.memDB.getEditDataValuesforGraph()
+            #d= DataFrame(pandas.read_sql())
+            data = DataFrame(self.memDB.getEditDataValuesforGraph())
+
         else:
             # using current variable keeps the series subsetted
-            data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
+            data = DataFrame(self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd))
+        data.columns = self.memDB.columns
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
 
@@ -228,10 +231,9 @@ class SeriesPlotInfo(object):
         seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
-        seriesInfo.timeRadius = self.setTimeRadius(series)
-        yvals = [y[0] for y in data]
+
         if len(data)>0:
-            seriesInfo.yrange = max(yvals) - min(yvals)
+            seriesInfo.yrange = data['DataValue'].max() - data['DataValue'].min()
         else:
             seriesInfo.yrange=0
 
@@ -280,21 +282,10 @@ class SeriesPlotInfo(object):
     def build(self, seriesInfo):
         data = seriesInfo.dataTable
         seriesInfo.Probability = Probability(data, seriesInfo.noDataValue)
-        seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
+        seriesInfo.Statistics = Statistics(data,  seriesInfo.noDataValue)
         seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
-    def setTimeRadius(self, series):
-        ts = series.time_support
-        if ts ==0:  ts = 1
 
-        if series.time_units_name == 'second':
-            return ts/2
-        elif series.time_units_name == 'minute':
-            return ts/2 *60 #convert minutes to seconds
-        elif series.time_units_name == 'hour':
-            return ts/2 *120 #120 converts hours to seconds
-        else:
-            return 43200 #12 hours in seconds
 
 
     def updateDateRange(self, startDate=None, endDate=None):
@@ -320,13 +311,10 @@ class SeriesPlotInfo(object):
 
 
 class Statistics(object):
-    def __init__(self, dataTable, useCensoredData, noDataValue):
-        useCensoredData=True
-        #TODO do we plot censored datavalues
-        if useCensoredData:
-            dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
-        else:
-            dataValues = [x[0] for x in dataTable if x[2] == 'nc' if x[0] <> noDataValue]
+    def __init__(self, dataTable,  noDataValue):
+
+
+        dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         data = sorted(dataValues)
         count = self.NumberofObservations = len(data)
         self.NumberofCensoredObservations = count-len([x[0] for x in dataTable if x[2] == 'nc'])  #self.cursor.fetchone()[0]
@@ -441,6 +429,7 @@ class BoxWhisker(object):
             med = numpy.median(data)
             mean = numpy.mean(data)
             stdDev = math.sqrt(numpy.var(data))
+            #(confidence interval, confidence level)
             ci95low = mean - 10 * (1.96 * (stdDev / math.sqrt(1)))
             ci95up = mean + 10 * (1.96 * (stdDev / math.sqrt(1)))
 

@@ -10,6 +10,8 @@ class MemoryDatabase(object):
         self.conn = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
         self.editLoaded= False
+        self.columns = ['DataValue', 'LocalDateTime', 'CensorCode', 'DateMonth', 'DateYear']
+
         self.initDB()
         self.initSC()
 
@@ -34,7 +36,7 @@ class MemoryDatabase(object):
         self.cursor.execute(query)
         return [list(x) for x in  self.cursor.fetchall()]
 
-    def getEditDataValuesforGraph(self):   
+    def getEditDataValuesforGraph(self):
         query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, strftime('%Y', LocalDateTime) as DateYear FROM DataValues ORDER BY LocalDateTime"
         self.cursor.execute(query)
         return [list(x) for x in  self.cursor.fetchall()]# return a list of lists orig returns a list of cursors
@@ -60,12 +62,14 @@ class MemoryDatabase(object):
         ]
         return DataValues
 
+
+
     def getSeriesCatalog(self):
         sql = "SELECT * FROM SeriesCatalog"
         self.cursor.execute(sql)    
         return [list(x) for x in self.cursor.fetchall()]
 
-    def getSeriesCatelogColumns(self):
+    def getSeriesCatalogColumns(self):
         sql = "SELECT * FROM SeriesCatalog WHERE 1=0"
         self.cursor.execute(sql)
         return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]

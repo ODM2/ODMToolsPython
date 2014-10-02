@@ -290,7 +290,7 @@ class plotTimeSeries(wx.Panel):
 
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
-        self.timeradius = self.editCurve.timeRadius
+
 
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
