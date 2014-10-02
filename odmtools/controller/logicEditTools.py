@@ -244,14 +244,17 @@ class EditTools():
         :return:
         """
         result = self._edit_service.save_existing(var=var, method=method, qcl=qcl)
-        if self._record:
-            self._script(
-                "edit_service.save_existing(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
-                'black')
-            #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
-            Publisher.sendMessage("scroll")
         if result:
             print "Save worked!"
+
+            if self._record:
+
+                self._script(
+                    "edit_service.save_existing(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
+                    'black')
+                #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
+                Publisher.sendMessage("scroll")
+
         else:
             print "Save didn't work!"
         return result
@@ -380,5 +383,5 @@ class EditTools():
 ###############
     def refresh_plot(self):
         Publisher.sendMessage("updateValues", event=None)
-        Publisher.sendMessage("changePlotSelection", sellist=[], datetime_list=self.get_filtered_dates())
-        Publisher.sendMessage("changeTableSelection", sellist=[], datetime_list=self.get_filtered_dates())
+        Publisher.sendMessage("changePlotSelection",  datetime_list=self.get_filtered_dates())
+        Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())

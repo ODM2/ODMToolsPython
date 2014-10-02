@@ -257,7 +257,8 @@ class plotTimeSeries(wx.Panel):
             for l in curraxis.lines:
                 if l.get_label() == self.editCurve.plotTitle:
                     curraxis.lines.remove(l)
-            self.editPoint.remove()
+            if self.editPoint:
+                self.editPoint.remove()
 
 
             #redraw editpoints and curve

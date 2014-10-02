@@ -79,7 +79,7 @@ class pnlPlot(fnb.FlatNotebook):
         Publisher.subscribe(self.onShowLegend, "onShowLegend")
         Publisher.subscribe(self.onNumBins, "onNumBins")
         Publisher.subscribe(self.onRemovePlot, "removePlot")
-        Publisher.subscribe(self.onChangeSelection, "changeSelection")
+        Publisher.subscribe(self.onChangeSelection, "changePlotSelection")
         Publisher.subscribe(self.onUpdateValues, "updateValues")
         Publisher.subscribe(self.clear, "clearPlot")
 

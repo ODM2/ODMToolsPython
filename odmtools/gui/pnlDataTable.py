@@ -89,7 +89,7 @@ class pnlDataTable(wx.Panel):
 
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot
-        Publisher.sendMessage(("changeSelection"),  datetime_list=[x[3] for x in self.currentItem])
+        Publisher.sendMessage(("changePlotSelection"),  datetime_list=[x[3] for x in self.currentItem])
 
 
     def onChangeSelection(self,  datetime_list=[]):
