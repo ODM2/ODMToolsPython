@@ -18,9 +18,9 @@ import wx.lib.masked as masked
 class clsDataFilters(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=u"Data Filter", pos=wx.Point(599, 384),
-                           size=wx.Size(367, 452), style=wx.DEFAULT_DIALOG_STYLE)
+                           size=wx.Size(367, 600), style=wx.DEFAULT_DIALOG_STYLE)
 
-        self.SetSizeHintsSz(wx.Size(358, 452), wx.DefaultSize)
+        self.SetSizeHintsSz(wx.Size(358, 600), wx.DefaultSize)
 
         bSizer1 = wx.BoxSizer(wx.VERTICAL)
 
