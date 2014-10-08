@@ -311,18 +311,19 @@ class SeriesPlotInfo(object):
 
 
 class Statistics(object):
-    def __init__(self, dataTable,  noDataValue):
+    def __init__(self, data,  noDataValue):
 
 
-        dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
-        data = sorted(dataValues)
-        count = self.NumberofObservations = len(data)
-        self.NumberofCensoredObservations = count-len([x[0] for x in dataTable if x[2] == 'nc'])  #self.cursor.fetchone()[0]
-        self.ArithemticMean = round(numpy.mean(data), 5)
+        #dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
+        #data = sorted(dataValues)
+        d = data[data["DataValue"]!= noDataValue].describe(percentiles = [.10,.25,.5,.75,.90])
+        count = self.NumberofObservations = d["DataValue"]["count"]
+        self.NumberofCensoredObservations = data[data["CensorCode"]!= "nc"].count()
+        self.ArithemticMean = round(d["DataValue"]["mean"], 5)
 
         sumval = 0
         sign = 1
-        for dv in data:
+        for dv in data["DataValue"]:
             if dv == 0:
                 sumval = sumval + numpy.log2(1)
             else:
@@ -332,23 +333,17 @@ class Statistics(object):
 
         if count > 0:
             self.GeometricMean = round(sign * (2 ** float(sumval / float(count))), 5)
-            self.Maximum = round(max(data), 5)
-            self.Minimum = round(min(data), 5)
-            self.StandardDeviation = round(numpy.std(data), 5)
-            self.CoefficientofVariation = round(numpy.var(data), 5)
-
+            self.Maximum = round(d["DataValue"]["max"], 5)
+            self.Minimum = round(d["DataValue"]["min"], 5)
+            self.StandardDeviation = round(d["DataValue"]["std"], 5)
+            self.CoefficientofVariation = round(data[data["DataValue"]!= noDataValue].var(), 5)
 
             ##Percentiles
-            self.Percentile10 = round(data[int(math.floor(count / 10))], 5)
-            self.Percentile25 = round(data[int(math.floor(count / 4))], 5)
-
-            if count % 2 == 0:
-                self.Percentile50 = round((data[int(math.floor((count / 2) - 1))] + data[int(count / 2)]) / 2, 5)
-            else:
-                self.Percentile50 = round(data[int(numpy.ceil(count / 2))], 5)
-
-            self.Percentile75 = round(data[int(math.floor(count / 4 * 3))], 5)
-            self.Percentile90 = round(data[int(math.floor(count / 10 * 9))], 5)
+            self.Percentile10 = round(d["DataValue"]["10%"], 5)
+            self.Percentile25 = round(d["DataValue"]["25%"], 5)
+            self.Percentile50 = round(d["DataValue"]["50%"], 5)
+            self.Percentile75 = round(d["DataValue"]["75%"], 5)
+            self.Percentile90 = round(d["DataValue"]["90%"], 5)
 
 
 class BoxWhisker(object):
@@ -356,42 +351,76 @@ class BoxWhisker(object):
 
         self.intervals = {}
         self.method = method
+        mean = []
+        median=[]
+        confint=[]
+        conflimit=[]
+        values=[]
+        names =[]
+        from scipy import stats
 
         # for x in dataTable:
         #     print x, x[3]
+        data =dataTable[dataTable["DataValue"]!=noDataValue]
+
+        mean.append(data.mean())
+        median.append(data.median())
+        confint.append(stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data)))))
+        conflimit.append(stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data)))))
 
 
-        data = [x[0] for x in dataTable if x[0] <> noDataValue]
-        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data, [''], self.calcConfInterval([data,]))
 
-        years = sorted(list(set([x[4] for x in dataTable])))
-        data = []
-        for y in years:
-            data.append([x[0] for x in dataTable if x[4] == y if x[0] <> noDataValue])
-        self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", data, years, self.calcConfInterval(data))
+        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data["DataValue"], [''], [median, conflimit, mean, confint])
 
+        mean = []
+        median=[]
+        confint=[]
+        conflimit=[]
+        values=[]
+        y=data.groupby("DateYear")
+
+        for name, group in y:
+            values.append(group)
+            names.append(name)
+            mean.append(group.mean())
+            median.append(group.median())
+            confint.append(stats.norm.interval(.95, group.mean(), scale = 10*(group.std()/math.sqrt(len(group)))))
+            conflimit.append(stats.norm.interval(.95, group.median(), scale = (group.std()/math.sqrt(len(group)))))
+        # return medians, conflimit, means, confint
+        self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", values, names,[ median, conflimit, mean, confint])
+
+
+
+
+        mean = []
+        median=[]
+        confint=[]
+        conflimit=[]
+        values=[]
+        m=data.groupby("DateMonth")
+
+        for name, group in m:
+            values.append(group)
+            mean.append(m.mean())
+            median.append(m.median())
+            confint.append(stats.norm.interval(.95,group.mean(), scale = 10*(group.std()/math.sqrt(len(group)))))
+            conflimit.append(stats.norm.interval(.95,group.median(), scale = (group.std()/math.sqrt(len(group)))))
+
+
+
+        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", values,
+                                                       ['Jan', 'Feb', 'Mar', 'Apr', 'May','June', 'July',
+                                                        'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                                       [median, conflimit, mean, confint])
+
+        '''
         data = [[x[0] for x in dataTable if x[1].month in (1, 2, 3) if x[0] <> noDataValue],
                 [x[0] for x in dataTable if x[1].month in (4, 5, 6) if x[0] <> noDataValue],
                 [x[0] for x in dataTable if x[1].month in (7, 8, 9) if x[0] <> noDataValue],
                 [x[0] for x in dataTable if x[1].month in (10, 11, 12) if x[0] <> noDataValue]]
         self.intervals["Seasonally"] = BoxWhiskerPlotInfo("Seasonally", data, ['Winter', 'Spring', 'Summer', 'Fall'],
                                                           self.calcConfInterval(data))
-
-        data = [[x[0] for x in dataTable if x[1].month == 1 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 2 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 3 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 4 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 5 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 6 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 7 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 8 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 9 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 10 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 11 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 12 if x[0] <> noDataValue]]
-        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", data,
-                                                       ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep',
-                                                        'Oct', 'Nov', 'Dec'], self.calcConfInterval(data))
+        '''
         self.currinterval = self.intervals[self.method]
 
 
@@ -399,57 +428,9 @@ class BoxWhisker(object):
         self.method = title
         self.currinterval = self.intervals[self.method]
 
-    def calcConfInterval(self, PlotData):
-        medians = []
-        confint = []
-        conflimit = []
-        means = []
-        '''if len(PlotData) > 12:
-            vals = self.indivConfInter(PlotData)
-            medians.append(vals[0])
-            means.append(vals[1])
-            conflimit.append((vals[4], vals[5]))
-            confint.append((vals[2], vals[3]))
-            # print vals
-
-        else:'''
-        for data in PlotData:
-            vals = self.indivConfInter(data)
-            medians.append(vals[0])
-            means.append(vals[1])
-            conflimit.append((vals[4], vals[5]))
-            confint.append((vals[2], vals[3]))
-            # print vals
-
-        return medians, conflimit, means, confint
 
 
-    def indivConfInter(self, data):
-        if type(data) is float:
-            med = numpy.median(data)
-            mean = numpy.mean(data)
-            stdDev = math.sqrt(numpy.var(data))
-            #(confidence interval, confidence level)
-            ci95low = mean - 10 * (1.96 * (stdDev / math.sqrt(1)))
-            ci95up = mean + 10 * (1.96 * (stdDev / math.sqrt(1)))
 
-            cl95low = med - (1.96 * (stdDev / math.sqrt(1)))
-            cl95up = med + (1.96 * (stdDev / math.sqrt(1)))
-
-            return [med, mean, ci95low, ci95up, cl95low, cl95up]
-        elif len(data) > 0:
-            med = numpy.median(data)
-            mean = numpy.mean(data)
-            stdDev = math.sqrt(numpy.var(data))
-            ci95low = mean - 10 * (1.96 * (stdDev / math.sqrt(len(data))))
-            ci95up = mean + 10 * (1.96 * (stdDev / math.sqrt(len(data))))
-
-            cl95low = med - (1.96 * (stdDev / math.sqrt(len(data))))
-            cl95up = med + (1.96 * (stdDev / math.sqrt(len(data))))
-
-            return [med, mean, ci95low, ci95up, cl95low, cl95up]
-        else:
-            return [None, None, None, None, None, None]
 
 
 class BoxWhiskerPlotInfo(object):

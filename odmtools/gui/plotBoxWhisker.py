@@ -133,6 +133,7 @@ class PlotBox(wx.Panel):
         ci = oneSeries.BoxWhisker.currinterval.conflimit
         bp = self.plots[index - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True, bootstrap=5000,
                                            conf_intervals=cl)
+        oneSeries.BoxWhisker.currinterval.data
 
 
         # Plot Mean and its confidence interval
