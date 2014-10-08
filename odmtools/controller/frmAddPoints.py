@@ -166,7 +166,8 @@ class AddPoints(clsAddPoints.AddPoints):
         event.Skip()
 
     def onSelected(self, event):
-        object = event.GetEventObject().GetSelectedObjects()
+        obj = event.GetEventObject()
+        object = obj.innerList[obj.FocusedItem]
 
         #event.GetEventObject().SetToolTipString("test")
         try:

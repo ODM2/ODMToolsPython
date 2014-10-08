@@ -45,7 +45,7 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=parent,
-            size=wx.Size(650, 750), style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+            size=wx.Size(850, 950), style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self._init_database()
         self._init_ctrls()
         self.Refresh()
@@ -177,15 +177,13 @@ class frmODMToolsMain(wx.Frame):
 
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
-        self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200), )
+        self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200) )
         wx.CallAfter(self._postStartup)
-
-        # FIXME closing the txtPythonConsole from menu crashes the python console. We will need to extend pyCrust to remove this so that we don't have issues in the future.
 
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
         self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
-        self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
+        #self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,
@@ -221,7 +219,7 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(300, 400)).MinimizeButton(
             True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float()
-                          .FloatingPosition(pos=(self.Position)).Hide().DestroyOnClose(False)
+                          .FloatingPosition(pos=(self.Position)).Show(show=False).DestroyOnClose(False)
         )
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.

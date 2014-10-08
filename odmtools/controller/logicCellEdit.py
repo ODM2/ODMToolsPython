@@ -150,9 +150,11 @@ class CellEdit():
             point.validOffSetValue = True
             return "check"
 
+        '''
         if isinstance(point.offSetValue, unicode):
             point.validOffSetValue = True
             return "check"
+        '''
 
         if isinstance(point.offSetValue, basestring):
             for type in [int, float]:
