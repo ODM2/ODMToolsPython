@@ -9,7 +9,7 @@
 
 import wx
 import wx.xrc
-from ObjectListView import FastObjectListView as objectListView, ColumnDefn
+from odmtools.lib.ObjectListView import FastObjectListView as objectListView, ColumnDefn
 
 ###########################################################################
 ## Class pnlExisting

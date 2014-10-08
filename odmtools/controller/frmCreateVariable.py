@@ -101,7 +101,7 @@ class frmCreateVariable(clsCreateVariable):
         v.is_regular = self.cbIsRegular.GetValue() if self.cbIsRegular.GetValue() <> u'' else None
         v.time_support = self.txtTSValue.GetValue() if self.txtTSValue.GetValue() <> u'' else None
 
-        v.time_unit = self.series_service.get_unit_by_name(self.cbVarUnits.GetValue())
+        v.time_unit = self.series_service.get_unit_by_name(self.cbTSUnits.GetValue())
         v.time_unit_id = v.time_unit.id
 
         v.data_type = self.cbDataType.GetValue() if self.cbDataType.GetValue() <> u'' else None
