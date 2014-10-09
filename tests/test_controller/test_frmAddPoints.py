@@ -25,14 +25,34 @@ class TestAddPoints:
         assert len(self.olv.GetObjects()) == 2
         assert not len(self.olv.GetObjects()) == 3
 
-        sb = self.frame.sb
-        assert sb
-        text = sb.GetStatusText()
-        assert not text
-        string = "Added a row"
-        sb.SetStatusText(string)
-        text = sb.GetStatusText()
-        assert text == string
+        self.olv.SetObjects(None)
+        assert not self.olv.GetObjects()
+
+
+
+        '''
+        Note:
+        If you need this event to
+        be processed synchronously use
+        (self.GetEventhandler().ProcessEvent(event)) to fire the event instead
+        that way it will get handled before the next part of your code is
+        executed.
+
+        So for example
+
+        def FireEvent(self):
+            evt = MyEvent(...)
+            self.GetEventHandler().ProcessEvent(evt)
+            self.updateDrawing()
+        '''
+
+        evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.frame.addRowBtn.GetId())
+        #wx.PostEvent(self.frame.addRowBtn, evt)
+        self.frame.GetEventHandler().ProcessEvent(evt)
+        assert self.olv.GetObjects()
+
+
+
 
     def test_onDeleteBtn(self):
         size = 10000
@@ -40,9 +60,6 @@ class TestAddPoints:
         assert values and len(values) == size
         self.olv.AddObjects(values)
         assert len(self.olv.GetObjects()) == size
-        sb = self.frame.sb
-        assert sb
-        assert not sb.GetStatusText()
 
         selectedObjs = self.olv.GetObjects()
         assert selectedObjs
@@ -50,9 +67,6 @@ class TestAddPoints:
             length = len(selectedObjs)
             self.olv.RemoveObjects(selectedObjs)
             assert len(self.olv.GetObjects()) == 0
-            string = "Removed %s items" % length
-            sb.SetStatusText(string)
-            assert sb.GetStatusText() == string
         else:
             assert False
 
@@ -61,11 +75,7 @@ class TestAddPoints:
         if len(selectedObjs) > 1:
             assert False
         self.olv.RemoveObjects(selectedObjs)
-        sb.SetStatusText("")
-        assert sb.GetStatusText() == ""
-        string = "Removing %s" % selectedObjs
-        sb.SetStatusText(string)
-        assert sb.GetStatusText() == string
+
 
 
     def test_onClearAllBtn(self):
