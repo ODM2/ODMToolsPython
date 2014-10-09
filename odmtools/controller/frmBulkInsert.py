@@ -38,13 +38,16 @@ class BulkInsert(clsBulkInsert.BulkInsert):
             data = pd.read_csv(filepath, converters={
                 "DataValue": self.checkDataValue,
                 "Date": self.checkDate,
+                "UTCOffset": self.checkUTCOffSet,
                 "CensorCode": self.checkCensorCode,
                 "ValueAccuracy": self.checkValueAcc,
                 "OffSetValue": self.checkOffsetValue,
                 "OffSetType": self.checkOffsetType,
                 "QualifierCode": self.checkQualifierCode,
-                "LabSampleCode": self.checkLabSample},
-                skiprows=1
+                "LabSampleCode": self.checkLabSample,
+                },
+                skiprows=1,
+                engine='c'
             )
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
@@ -54,6 +57,8 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                    wx.OK_DEFAULT)
             value = msg.ShowModal()
             return
+
+        data.fillna('NULL', inplace=True)
 
         pointList = []
         for i in data.columns[3:]:
@@ -140,6 +145,12 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
     def checkDate(self, item):
         return item
+
+    def checkUTCOffSet(self, item):
+        try:
+            return int(item)
+        except:
+            return item
 
     def checkCensorCode(self, item):
         try:
