@@ -25,9 +25,9 @@ from odmtools.common.icons.icons4addpoint import *
 ## Class AddPoints
 ###########################################################################
 
-class AddPoints(wx.MiniFrame):
+class AddPoints(wx.Frame):
     def __init__(self, parent, **kwargs):
-        wx.MiniFrame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
                           size=(1055, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         mainPanel = wx.Panel(self, -1)

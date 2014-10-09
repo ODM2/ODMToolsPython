@@ -538,7 +538,7 @@ class plotTimeSeries(wx.Panel):
 
         elif isinstance(event.artist, Text):
             text = event.artist
-            print "Picking Label: ", text.get_text()
+            #print "Picking Label: ", text.get_text()
 
     def _onFigureLeave(self, event):
         """Catches mouse leaving the figure

@@ -135,21 +135,33 @@ class AddPoints(clsAddPoints.AddPoints):
 
         message = ""
 
-        if not points:
+        if not points and not isIncorrect:
+            print "Leaving..."
+            self.Close()
+            return
+
+        elif not points:
             message = "Unfortunately there are no points to add, " \
                       "please check that the data was entered correctly " \
-                      "and try again"
-            dlg = wx.MessageDialog(None, message, "Nothing to add...",
-                                   wx.OK | wx.OK_DEFAULT | wx.ICON_WARNING)
-            dlg.ShowModal()
-            return
+                      "and try again. "
+            dlg = GMD.GenericMessageDialog(None, message, "Nothing to add",
+                                           agwStyle=wx.ICON_WARNING | wx.CANCEL | wx.OK | GMD.GMD_USE_GRADIENTBUTTONS)
+            dlg.SetOKCancelLabels(ok="Return to AddPoint Menu", cancel="Quit to ODMTools")
+            value = dlg.ShowModal()
+
+            if value == wx.ID_OK:
+                return
+            else:
+                self.Close()
+                return
+
         elif isIncorrect:
             message = "Are you ready to add points? " \
                       "There are rows that are incorrectly formatted, " \
                       "those rows will not be added. Continue?"
         else:
             message = "Are you ready to add points? " \
-                      "There weren't any format errors, would you like to continue?"
+                      "Ready to add points to the database?"
 
         msg = wx.MessageDialog(None, message, 'Add Points?',
                                wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
@@ -159,8 +171,6 @@ class AddPoints(clsAddPoints.AddPoints):
             return
 
         self.recordService.add_points(points)
-
-
 
         self.Close()
         event.Skip()
@@ -235,8 +245,7 @@ class Example(wx.Frame):
         wx.Frame.__init__(self, parent, *args, **kwargs)
         m = AddPoints(parent)
 
-
 if __name__ == '__main__':
-    app = wx.App(useBestVisual=True)
+    app = wx.App()
     ex = Example(None)
     app.MainLoop()
