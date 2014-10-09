@@ -90,7 +90,7 @@ class AddPoints(wx.Frame):
         self.olv = OLVAddPoint(parent=mainPanel, id=wx.ID_ANY, style=wx.LC_REPORT, **kwargs)
         self.olv.Bind(EVT_CELL_EDIT_STARTING, self.onEdit)
         self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditFinish)
-        #self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
+        self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
         self.olv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onSelected)
         #self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onTooltip)
         self.olv.Bind(wx.EVT_CHAR, self.onChar)
@@ -125,12 +125,16 @@ class AddPoints(wx.Frame):
         pass
 
     def onEdit(self, event):
+        print "Editing Cell!", event.subItemIndex
         ## Ignore editing on first cell
-        if event.subItemIndex == 0:
-            event.Veto()
+
+        ## TODO this is needed for the windows version
+        #if event.subItemIndex == 0:
+        #    event.Veto()
 
     def onEditFinish(self, event):
-        pass
+        self.olv.RefreshItem(event.subItemIndex)
+        print "Finished Editing Cell!", event.subItemIndex
 
     def onColClick(self, event):
         ## Ignore col clicking

@@ -136,7 +136,8 @@ class OLVAddPoint(FastObjectListView):
 
     def buildOlv(self):
         columns = [
-            ColumnDefn("", "left", -1, valueSetter=self.emptyCol),
+            ## TODO This is needed for the windows version
+            #ColumnDefn("", "left", -1, valueSetter=self.emptyCol),
             ColumnDefn("DataValue", "left", -1, minimumWidth=100,
                        valueGetter='dataValue',
                        valueSetter=self.valueSetterDataValue,
@@ -167,12 +168,17 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
                        imageGetter=self.imgGetterOffSetType,
                        cellEditorCreator=self.offSetTypeEditor),
+
+
             ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=100,
                        imageGetter=self.imgGetterQualifier,
-                       cellEditorCreator=self.qualifierCodeEditor),
+                       cellEditorCreator=self.qualifierCodeEditor
+                       ),
+
             ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=130,
                        imageGetter=self.imgGetterlabSample,
-                       cellEditorCreator=self.labSampleEditor)
+                       cellEditorCreator=self.labSampleEditor
+                       ),
         ]
 
         self.SetColumns(columns)

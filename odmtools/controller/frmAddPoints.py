@@ -7,10 +7,8 @@ from odmtools.controller.frmBulkInsert import BulkInsert
 import odmtools.view.clsAddPoints as clsAddPoints
 try:
     from agw import genericmessagedialog as GMD
-except ImportError: # if it's not there locally, try the wxPython lib.
+except ImportError:
     import wx.lib.agw.genericmessagedialog as GMD
-
-
 
 # Implementing AddPoints
 class AddPoints(clsAddPoints.AddPoints):
@@ -47,7 +45,7 @@ class AddPoints(clsAddPoints.AddPoints):
         if len(self.olv.GetObjects()) < 1:
             wx.MessageBox("Nothing to remove here", " ", wx.OK)
             return
-        msg = wx.MessageDialog(None, 'Are you sure you want to delete your work?', 'Clear Everything?', wx.YES_NO | wx.ICON_WARNING |wx.NO_DEFAULT )
+        msg = GMD.GenericMessageDialog(None, 'Are you sure you want to delete your work?', 'Clear Everything?', wx.YES_NO | wx.ICON_WARNING |wx.NO_DEFAULT )
         value = msg.ShowModal()
         if value == wx.ID_YES:
             self.olv.SetObjects(None)
@@ -63,7 +61,7 @@ class AddPoints(clsAddPoints.AddPoints):
             if self.selectedObject:
                 if len(self.selectedObject) > 1:
                     length = len(self.selectedObject)
-                    msg = wx.MessageDialog(None, 'Are you sure you want to delete %d items' % length,
+                    msg = GMD.GenericMessageDialog(None, 'Are you sure you want to delete %d items' % length,
                                            'Clear items?',
                                            wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
                     value = msg.ShowModal()
@@ -72,12 +70,11 @@ class AddPoints(clsAddPoints.AddPoints):
                         self.sb.SetStatusText("Removed %s items" % length)
 
                 else:
-                    print "This is called!"
                     self.olv.RemoveObject(self.selectedObject)
                     self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
         except TypeError as e:
 
-            msg = wx.MessageDialog(None, 'Are you sure you want to delete your work?', 'Clear items?',
+            msg = GMD.GenericMessageDialog(None, 'Are you sure you want to delete your work?', 'Clear items?',
                                    wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
             value = msg.ShowModal()
             if value == wx.ID_YES:
@@ -118,9 +115,8 @@ class AddPoints(clsAddPoints.AddPoints):
                   "QualifierCode: STRING\n" \
                   "LabSampleCode: STRING\n"
 
-        dlg = GMD.GenericMessageDialog(self, message, "Format Guide", agwStyle=wx.ICON_INFORMATION
-                                                                                     |wx.OK
-                                                                                     |GMD.GMD_USE_GRADIENTBUTTONS)
+        dlg = GMD.GenericMessageDialog(self, message, "Format Guide",
+                                       agwStyle=wx.ICON_INFORMATION | wx.OK | GMD.GMD_USE_GRADIENTBUTTONS)
         dlg.ShowModal()
         event.Skip()
 
@@ -163,8 +159,8 @@ class AddPoints(clsAddPoints.AddPoints):
             message = "Are you ready to add points? " \
                       "Ready to add points to the database?"
 
-        msg = wx.MessageDialog(None, message, 'Add Points?',
-                               wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
+        msg = GMD.GenericMessageDialog(None, message, 'Add Points?',
+                               wx.YES_NO | wx.ICON_QUESTION | wx.NO_DEFAULT | GMD.GMD_USE_GRADIENTBUTTONS)
 
         value = msg.ShowModal()
         if value == wx.ID_NO:

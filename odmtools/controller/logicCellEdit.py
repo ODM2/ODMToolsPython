@@ -2,11 +2,13 @@
     ADD Point Cell Editor Logic
 """
 from collections import OrderedDict
+import datetime
 
 import wx
 import wx.combo
 from wx.lib import masked
 from odmtools.gui.frmFlagValues import frmFlagValues
+from odmtools.lib.ObjectListView import CellEditor
 
 __author__ = 'Jacob'
 
@@ -31,7 +33,9 @@ class CellEdit():
             self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
             self.offSetTypeChoices = [NULL] + offsetChoices.keys()
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
+
             self.labSampleChoices = [NULL] + labChoices.keys()
+            print "LabSampleChoices: ", self.labSampleChoices
 
         else:
             self.censorCodeChoices = [NULL]
@@ -101,6 +105,12 @@ class CellEdit():
         point.validUTCOffSet = False
         if not value:
             return "error"
+
+        if isinstance(value, int):
+            if utcOffSetBounds[0] <= value <= utcOffSetBounds[1]:
+                point.validUTCOffSet = True
+                return "check"
+
         if isinstance(value, basestring):
             try:
                 newValue = int(value)
@@ -110,10 +120,7 @@ class CellEdit():
                         return "check"
             except ValueError as e:
                 pass
-        elif isinstance(value, int):
-            if utcOffSetBounds[0] <= value <= utcOffSetBounds[1]:
-                point.validUTCOffSet = True
-                return "check"
+
         return "error"
 
     def imgGetterValueAcc(self, point):
@@ -123,14 +130,21 @@ class CellEdit():
         point.validValueAcc = False
         if not value:
             return "error"
+
         if value == NULL:
             point.validValueAcc = True
             return "check"
 
         if isinstance(value, basestring):
-            return "error"
-        point.validValueAcc = True
-        return "check"
+            for type in [int, float]:
+                try:
+                    value = type(value)
+                    if isinstance(value, type):
+                        point.validValueAcc = True
+                        return "check"
+                except ValueError:
+                    continue
+        return "error"
 
     def imgGetterOffSetType(self, point):
         """
@@ -149,12 +163,6 @@ class CellEdit():
         if point.offSetValue == NULL:
             point.validOffSetValue = True
             return "check"
-
-        '''
-        if isinstance(point.offSetValue, unicode):
-            point.validOffSetValue = True
-            return "check"
-        '''
 
         if isinstance(point.offSetValue, basestring):
             for type in [int, float]:
@@ -331,7 +339,7 @@ class CellEdit():
         :param subItemIndex:
         :return:
         """
-
+        print "censorCodeEditor Entered!"
         odcb = CustomComboBox(olv, choices=self.censorCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
@@ -345,11 +353,38 @@ class CellEdit():
         :param subItemIndex:
         :return:
         """
+        print "LabSampleCodeEditor Entered!"
 
         odcb = CustomComboBox(olv, choices=self.labSampleChoices, style=wx.CB_READONLY)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
+class DateEditor(wx.DatePickerCtrl):
+    """
+    This control uses standard datetime.
+    wx.DatePickerCtrl works only with wx.DateTime, but they are strange beasts.
+    wx.DataTime use 0 indexed months, i.e. January==0 and December==11.
+    """
+
+    def __init__(self, *args, **kwargs):
+        wx.DatePickerCtrl.__init__(self, *args, **kwargs)
+        self.SetValue(None)
+
+    def SetValue(self, value):
+        if value:
+            dt = wx.DateTime()
+            dt.Set(value.day, value.month-1, value.year)
+        else:
+            dt = wx.DateTime.Today()
+        wx.DatePickerCtrl.SetValue(self, dt)
+
+    def GetValue(self):
+        "Get the value from the editor"
+        dt = wx.DatePickerCtrl.GetValue(self)
+        if dt.IsOk():
+            return datetime.date(dt.Year, dt.Month+1, dt.Day)
+        else:
+            return None
 
 class TimePicker(masked.TimeCtrl):
     """
