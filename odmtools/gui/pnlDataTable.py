@@ -85,7 +85,7 @@ class pnlDataTable(wx.Panel):
         """
         #self.currentItem = event.GetEventObject().GetSelectedObjects()
         self.currentItem = self.myOlv.GetSelectedObjects()
-        #logger.debug("selectedObjects %s" % self.currentItem)
+        logger.debug("selectedObjects %s" % self.currentItem)
 
         self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
         #update plot

@@ -16,7 +16,6 @@ class TestLogicCellEdit:
         ## Test unicode, int, float,
         tests = [u'-9999', 10, 14.5, -9999]
 
-
         for test in tests:
             result = CellEdit(self.parent, self.serviceManager, self.recordService)\
                 .imgGetterDataValue(Points(dataValue=test))

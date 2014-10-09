@@ -66,11 +66,11 @@ class AddPoints(clsAddPoints.AddPoints):
                                            wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
                     value = msg.ShowModal()
                     if value == wx.ID_YES:
-                        self.olv.RemoveObjects(self.selectedObject)
+                        self.customRemove(self.selectedObject)
                         self.sb.SetStatusText("Removed %s items" % length)
 
                 else:
-                    self.olv.RemoveObject(self.selectedObject)
+                    self.customRemove(self.selectedObject)
                     self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue)
         except TypeError as e:
 
@@ -78,11 +78,26 @@ class AddPoints(clsAddPoints.AddPoints):
                                    wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT)
             value = msg.ShowModal()
             if value == wx.ID_YES:
-                self.olv.RemoveObject(self.selectedObject)
-                self.sb.SetStatusText("Removing %s" % self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue))
+                self.customRemove(self.selectedObject)
+                #self.sb.SetStatusText("Removing %s" % self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue))
 
         self.selectedObject = None
         event.Skip()
+
+    def customRemove(self, object):
+        """
+
+
+        :param object:
+        :return:
+        """
+        obj = self.olv.GetObjects()
+        if isinstance(object, list):
+            for x in object:
+                obj.remove(x)
+        else:
+            obj.remove(object)
+        self.olv.SetObjects(obj)
 
     def onUploadBtn(self, event):
         """
@@ -93,6 +108,7 @@ class AddPoints(clsAddPoints.AddPoints):
         if not self.frame.IsShown():
             self.frame.CenterOnParent()
             self.frame.Show()
+            self.frame.SetFocus()
         else:
             self.frame.Hide()
 
@@ -132,7 +148,7 @@ class AddPoints(clsAddPoints.AddPoints):
         message = ""
 
         if not points and not isIncorrect:
-            print "Leaving..."
+            #print "Leaving..."
             self.Close()
             return
 
@@ -174,6 +190,11 @@ class AddPoints(clsAddPoints.AddPoints):
     def onSelected(self, event):
         obj = event.GetEventObject()
         object = obj.innerList[obj.FocusedItem]
+        object = self.olv.GetSelectedObjects()
+
+        #print event, dir(event)
+
+        #print "Objects: ", object
 
         #event.GetEventObject().SetToolTipString("test")
         try:
@@ -183,6 +204,10 @@ class AddPoints(clsAddPoints.AddPoints):
                 self.selectedObject = object[0]
         except TypeError as e:
             pass
+        except IndexError as e:
+            pass
+
+        event.Skip()
 
     def parseTable(self):
         """
@@ -228,7 +253,6 @@ class AddPoints(clsAddPoints.AddPoints):
                 points.append(tuple(row))
             else:
                 isIncorrect = True
-                #print i, "Isn't formatted correctly"
 
         return points, isIncorrect
 

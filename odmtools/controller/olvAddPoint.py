@@ -168,13 +168,9 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
                        imageGetter=self.imgGetterOffSetType,
                        cellEditorCreator=self.offSetTypeEditor),
-
-
             ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=100,
                        imageGetter=self.imgGetterQualifier,
-                       cellEditorCreator=self.qualifierCodeEditor
-                       ),
-
+                       cellEditorCreator=self.qualifierCodeEditor),
             ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=130,
                        imageGetter=self.imgGetterlabSample,
                        cellEditorCreator=self.labSampleEditor

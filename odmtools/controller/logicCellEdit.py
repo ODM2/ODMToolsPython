@@ -35,7 +35,6 @@ class CellEdit():
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
 
             self.labSampleChoices = [NULL] + labChoices.keys()
-            print "LabSampleChoices: ", self.labSampleChoices
 
         else:
             self.censorCodeChoices = [NULL]

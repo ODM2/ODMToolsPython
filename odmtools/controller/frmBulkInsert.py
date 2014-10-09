@@ -111,7 +111,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         value = saveFileDialog.ShowModal()
         if value == wx.ID_CANCEL:
             return
-        filepath = saveFileDialog.GetPath()
+        filepath = saveFileDialog.GetPath() + ".csv"
         col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue',
                'OffSetType', 'QualifierCode', 'LabSampleCode']
         df = pd.DataFrame(columns=col)
