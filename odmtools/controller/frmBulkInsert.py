@@ -15,6 +15,9 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         clsBulkInsert.BulkInsert.__init__(self, parent)
         self.parent = parent
 
+        self.col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue',
+               'OffSetType', 'QualifierCode', 'LabSampleCode']
+
     def onUpload(self, event):
         """Reads csv into pandas object
 
@@ -35,30 +38,18 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         filepath = openFileDialog.GetPath()
 
         try:
-            data = pd.read_csv(filepath, converters={
-                "DataValue": self.checkDataValue,
-                "Date": self.checkDate,
-                "UTCOffset": self.checkUTCOffSet,
-                "CensorCode": self.checkCensorCode,
-                "ValueAccuracy": self.checkValueAcc,
-                "OffSetValue": self.checkOffsetValue,
-                "OffSetType": self.checkOffsetType,
-                "QualifierCode": self.checkQualifierCode,
-                "LabSampleCode": self.checkLabSample,
-                },
-                skiprows=1,
-                engine='c'
-            )
+            data = pd.read_csv(filepath, skiprows=[1], engine='c')
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
                                          "Please compare your csv with the template version as the file"
                                          " you provided "
-                                         "doesn't work", 'Issue with csv', wx.OK | wx.ICON_WARNING |
+                                         "doesn't work: %s" % e, 'Issue with csv', wx.OK | wx.ICON_WARNING |
                                    wx.OK_DEFAULT)
             value = msg.ShowModal()
             return
 
-        data.fillna('NULL', inplace=True)
+        ## Change 'nan' to 'NULL' for consistency
+        data.fillna("NULL", inplace=True)
 
         pointList = []
         for i in data.columns[3:]:
@@ -90,7 +81,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
         dlg.Destroy()
         self.parent.olv.AddObjects(pointList)
-        pointList = None
+        del pointList
         self.Hide()
         self.parent.Raise()
 
@@ -117,9 +108,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         if value == wx.ID_CANCEL:
             return
         filepath = saveFileDialog.GetPath() + ".csv"
-        col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue',
-               'OffSetType', 'QualifierCode', 'LabSampleCode']
-        df = pd.DataFrame(columns=col)
+        df = pd.DataFrame(columns=self.col)
         df.loc[0] = ['FLOAT|INT', 'YYYY-MM-DD', 'HH:MM:SS', 'INT', 'gt|nc|lt|nd|pnq', 'FLOAT', 'FLOAT',
                      'String', 'String', 'String']
         df.loc[1] = ['-9999', '2005-06-29', '14:20:15', '-7', 'nc', "1.2", "1", "NULL", "NULL", "NULL"]
@@ -131,65 +120,6 @@ class BulkInsert(clsBulkInsert.BulkInsert):
     def onClose(self, event):
         self.Hide()
         self.parent.Raise()
-
-    def checkDataValue(self, item):
-        try:
-            value = int(item)
-            if isinstance(value, int):
-                return value
-            value = float(item)
-            if isinstance(value, float):
-                return value
-        except:
-            return item
-
-    def checkDate(self, item):
-        return item
-
-    def checkUTCOffSet(self, item):
-        try:
-            return int(item)
-        except:
-            return item
-
-    def checkCensorCode(self, item):
-        try:
-            return str(item)
-        except:
-            return item
-
-    def checkLabSample(self, item):
-        try:
-            return str(item)
-        except:
-            return "NULL"
-    def checkQualifierCode(self, item):
-        try:
-            return str(item)
-        except:
-            return "NULL"
-    def checkOffsetType(self, item):
-        try:
-            return str(item)
-        except:
-            return "NULL"
-
-    def checkOffsetValue(self, item):
-        try:
-            value = int(item)
-            if isinstance(value, int):
-                return value
-            value = float(item)
-            if isinstance(value, float):
-                return value
-        except:
-            return item
-
-    def checkValueAcc(self, item):
-        try:
-            return str(item)
-        except:
-            return "NULL"
 
 if __name__ == '__main__':
     app = wx.App(useBestVisual=True)

@@ -1,50 +1,20 @@
 import os
 import wx
 import logging
-import datetime
 import frmQueryBuilder
 
-
 from wx.lib.pubsub import pub as Publisher
-from odmtools.lib.ObjectListView import ColumnDefn
-#from ObjectListView import ColumnDefn
-#from ObjectListView.Filter import TextSearch, Chain
 from odmtools.lib.ObjectListView.Filter import TextSearch, Chain
-
-#from clsSeriesTable import clsSeriesTable, TextSearch, Chain, EVT_OVL_CHECK_EVENT
-from odmtools.controller.olvSeriesSelector import EVT_OVL_CHECK_EVENT, FastObjectListView
+from odmtools.controller.olvSeriesSelector import EVT_OVL_CHECK_EVENT
 
 from odmtools.common.logger import LoggerTool
 from odmtools.controller import olvSeriesSelector
-from odmtools.odmdata import MemoryDatabase, series
+from odmtools.odmdata import MemoryDatabase
 from odmtools.odmservices import ServiceManager
-
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
-
-##########only use this section when testing series selector #############
-
-
-def create(parent):
-    return test_ss(parent)
-
-
-class test_ss(wx.Frame):
-    def __init__(self, parent):
-        wx.Frame.__init__(self, id=2, name=u'test_ss', parent=parent, size=wx.Size(900, 700),
-                          style=wx.DEFAULT_FRAME_STYLE, title=u'test_ss')
-        id = 1
-        size = wx.Size(900, 700)
-        pos = (0, 0)
-        style = "wx.TAB_TRAVERSAL"
-        name = u'pnlSelector'
-        service_manager = ServiceManager()
-        dbservice = service_manager.get_series_service()
-        pnl = pnlSeriesSelector(parent=self, id=id, size=size, style=style, name=name, dbservice=dbservice, pos=pos)
-
-##################################################################
 
 [wxID_PNLSERIESSELECTOR, wxID_PNLSERIESSELECTORCBSITES, wxID_PNLSERIESSELECTORCBVARIABLES,
  wxID_PNLSERIESSELECTORCHECKSITE, wxID_PNLSERIESSELECTORCHECKVARIABLE, wxID_PNLSERIESSELECTORLBLSITE,
@@ -672,12 +642,4 @@ class pnlSeriesSelector(wx.Panel):
             listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
         '''
 
-##########only use this section when testing series selector #############
-if __name__ == '__main__':
-    app = wx.App(False)
-    frame = create(None)
-    frame.Show()
-
-    app.MainLoop()
-##################################################################
 

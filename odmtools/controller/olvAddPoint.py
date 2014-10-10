@@ -17,7 +17,7 @@ class Points(object):
 
     """
 
-    def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet="-7",
+    def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
                  censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL", offSetType="NULL", qualifierCode="NULL",
                  labSampleCode="NULL"):
         try:
@@ -32,12 +32,13 @@ class Points(object):
         except:
             self.time = time
 
-        try:
-            self.date = datetime.strptime(str(date), '%Y-%m-%d').date()
-        except Exception as e:
-            self.date = datetime.now().date()
+        #try:
+        self.date = str(date)
+                #datetime.strptime(str(date), '%Y-%m-%d').date()
+        #except Exception as e:
+        #    self.date = datetime.now().date()
 
-        self.utcOffSet = utcOffSet
+        self.utcOffSet = str(utcOffSet)
         #self.dateTimeUTC = dateTimeUTC
         self.offSetValue = offSetValue
         self.offSetType = offSetType
@@ -78,7 +79,6 @@ class OLVAddPoint(FastObjectListView):
         :return:
         """
 
-
         try:
             self.serviceManager = kwargs.pop("serviceManager")
         except:
@@ -95,6 +95,8 @@ class OLVAddPoint(FastObjectListView):
 
         # # Custom Image Getters
         self.imgGetterDataValue = cellEdit.imgGetterDataValue
+        self.imgGetterDate = cellEdit.imgGetterDate
+        self.imgGetterTime = cellEdit.imgGetterTime
         self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
         self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
         self.imgGetterValueAcc = cellEdit.imgGetterValueAcc
@@ -117,6 +119,7 @@ class OLVAddPoint(FastObjectListView):
 
         ## Custom CellEditors
         ## Custom cell editors for each cell
+        self.dateEditor = cellEdit.dateEditor
         self.timeEditor = cellEdit.localTimeEditor
         self.censorEditor = cellEdit.censorCodeEditor
         self.offSetTypeEditor = cellEdit.offSetTypeEditor
@@ -144,16 +147,21 @@ class OLVAddPoint(FastObjectListView):
                        imageGetter=self.imgGetterDataValue,
                        stringConverter=self.str2DataValue,
                        headerImage="star"),
-            ColumnDefn("Date", "left", -1,  minimumWidth=85,
+            ColumnDefn("Date", "left", -1, minimumWidth=100,
                        valueGetter="date",
+                       imageGetter=self.imgGetterDate,
+                       cellEditorCreator=self.dateEditor,
                        headerImage="star"),
-            ColumnDefn("Time", "left", -1, valueGetter="time", minimumWidth=75,
+            ColumnDefn("Time", "left", -1, minimumWidth=100,
+                       valueGetter="time",
+                       imageGetter=self.imgGetterTime,
                        cellEditorCreator=self.timeEditor,
                        stringConverter=self.localtime2Str,
                        headerImage="star"),
             ColumnDefn("UTCOffset", "left", -1, minimumWidth=100,
                        valueGetter="utcOffSet",
-                       valueSetter=self.valueSetterUTCOffset,
+                       #valueSetter=self.valueSetterUTCOffset,
+                       #stringConverter=self.utcOffSet2Str,
                        imageGetter=self.imgGetterUTCOffset,
                        headerImage="star"),
             ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=110,

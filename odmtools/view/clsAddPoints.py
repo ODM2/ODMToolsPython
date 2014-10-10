@@ -17,10 +17,6 @@ from odmtools.controller.olvAddPoint import OLVAddPoint
 from odmtools.lib.ObjectListView import EVT_CELL_EDIT_STARTING, EVT_CELL_EDIT_FINISHING
 from odmtools.common.icons.icons4addpoint import *
 
-
-
-
-
 ###########################################################################
 ## Class AddPoints
 ###########################################################################
@@ -28,7 +24,7 @@ from odmtools.common.icons.icons4addpoint import *
 class AddPoints(wx.Frame):
     def __init__(self, parent, **kwargs):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
-                          size=(1055, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
+                          size=(1110, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         mainPanel = wx.Panel(self, -1)
         vSizer = wx.BoxSizer(wx.VERTICAL)
