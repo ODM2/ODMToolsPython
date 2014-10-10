@@ -1,5 +1,4 @@
 #!/usr/bin/env
-#Boa:Frame:ODMTools
 
 '''
 this_file = os.path.realpath(__file__)
@@ -44,11 +43,44 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
+        size = self._obtainScreenResolution()
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=parent,
-            size=wx.Size(850, 950), style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+            size=size, style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self._init_database()
         self._init_ctrls()
         self.Refresh()
+
+    def _obtainScreenResolution(self):
+        """ Calculates the size of ODMTools
+
+        :return wx.Size:
+        """
+
+        defaultSize = wx.Size(850, 900)
+        defaultHeight, defaultWidth = defaultSize
+        screenHeight, screenWidth = wx.GetDisplaySize()
+        minimumAllowedSize = wx.Size(640, 480)
+
+        if minimumAllowedSize >= wx.GetDisplaySize():
+            logger.fatal("ODMTools cannot be displayed in this resolution: %s \n\tPlease use a larger resolution"
+                         % wx.GetDisplaySize())
+            sys.exit(0)
+
+        newSize = defaultSize
+        ## Screen size is greater than ODMTools' default size
+        if screenHeight > defaultHeight and screenWidth > defaultWidth:
+            pass
+        ## Screen size is smaller than ODMTools' default size
+        elif screenHeight < defaultHeight and screenWidth < defaultWidth:
+            newSize = wx.Size(screenHeight/1.5, screenWidth/1.5)
+        elif screenHeight < defaultHeight:
+            newSize = wx.Size(screenHeight/1.5, defaultWidth)
+        elif screenWidth < defaultWidth:
+            newSize = wx.Size(defaultHeight, screenWidth/1.5)
+
+        logger.debug("ODMTools Window Size: %s" % newSize)
+        return newSize
+
 
     #############Entire Form Sizers##########
     def _init_sizers(self):
