@@ -43,7 +43,6 @@ class CellEdit():
             self.qualifierCodeChoices = [NULL]
             self.offSetTypeChoices = [NULL]
 
-
     """
         --------------------
         Custom Image Getters
@@ -83,11 +82,16 @@ class CellEdit():
         """
 
         date = point.date
+        point.validDate = False
         try:
             datetime.datetime.strptime(str(date), '%Y-%m-%d').date()
+            point.validDate = True
             return "check"
-        except:
-            return "error"
+        except Exception as e:
+            print e
+            pass
+
+        return "error"
 
     def imgGetterTime(self, point):
         """
@@ -97,9 +101,11 @@ class CellEdit():
         """
 
         time = point.time
+        point.validTime = False
         try:
-            if isinstance(time, basestring):
-                return "check"
+            datetime.datetime.strptime(str(time), '%H:%M:%S')
+            point.validtime = True
+            return "check"
         except:
             pass
 
@@ -244,17 +250,6 @@ class CellEdit():
         """
         point.dataValue = newValue
 
-        '''
-        for type in [int, float]:
-            try:
-                value = type(newValue)
-                if isinstance(value, type):
-                    point.dataValue = newValue
-                    return
-            except ValueError:
-                continue
-        '''
-
     def valueSetterUTCOffset(self, point, newValue):
 
         if newValue == NULL:
@@ -289,19 +284,11 @@ class CellEdit():
         :return:
         """
 
-        try:
-            return str(time)
-        except UnicodeEncodeError as e:
-            return str("00:00:00")
+        return unicode(time)
 
     def strConverterUTCOffset(self, value):
         """
         """
-        '''
-        if isinstance(value, basestring):
-            newValue = float(value)
-            return int(newValue)
-        '''
 
         return str(value)
 
@@ -430,7 +417,10 @@ class DatePicker(wx.DatePickerCtrl):
     def SetValue(self, value):
         if value:
             dt = wx.DateTime()
-            date = datetime.datetime.strptime(str(value), '%Y-%m-%d').date()
+            try:
+                date = datetime.datetime.strptime(str(value), '%Y-%m-%d').date()
+            except ValueError:
+                return
             dt.Set(date.day, date.month-1, date.year)
         else:
             dt = wx.DateTime.Today()
@@ -466,11 +456,8 @@ class TimePicker(masked.TimeCtrl):
         newValue = value or ""
         try:
             masked.TimeCtrl.SetValue(self, newValue)
-            #super(self.__class__, self).SetValue(newValue)
         except UnicodeEncodeError as e:
-            newValue = unicode('00:00:00')
-            masked.TimeCtrl.SetValue(self, newValue)
-            #super(self.__class__, self).SetValue(newValue)
+            pass
 
     def GetValue(self):
         value = masked.TimeCtrl.GetValue(self)

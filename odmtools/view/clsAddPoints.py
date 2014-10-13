@@ -121,16 +121,17 @@ class AddPoints(wx.Frame):
         pass
 
     def onEdit(self, event):
-        print "Editing Cell!", event.subItemIndex
+        #print "Editing Cell!", event.subItemIndex
         ## Ignore editing on first cell
 
         ## TODO this is needed for the windows version
         #if event.subItemIndex == 0:
         #    event.Veto()
+        pass
 
     def onEditFinish(self, event):
         self.olv.RefreshItem(event.subItemIndex)
-        print "Finished Editing Cell!", event.subItemIndex
+        #print "Finished Editing Cell!", event.subItemIndex
 
     def onColClick(self, event):
         ## Ignore col clicking

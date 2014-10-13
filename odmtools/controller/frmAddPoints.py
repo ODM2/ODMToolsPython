@@ -21,7 +21,6 @@ class AddPoints(clsAddPoints.AddPoints):
         #self.cvService = serviceManager.get_cv_service()
         #self.recordService = recordService
 
-        self.Show()
         self.CenterOnParent()
 
 
@@ -264,6 +263,7 @@ class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
         wx.Frame.__init__(self, parent, *args, **kwargs)
         m = AddPoints(parent)
+        m.Show()
 
 if __name__ == '__main__':
     app = wx.App()

@@ -107,7 +107,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         value = saveFileDialog.ShowModal()
         if value == wx.ID_CANCEL:
             return
-        filepath = saveFileDialog.GetPath() + ".csv"
+        filepath = saveFileDialog.GetPath()
         df = pd.DataFrame(columns=self.col)
         df.loc[0] = ['FLOAT|INT', 'YYYY-MM-DD', 'HH:MM:SS', 'INT', 'gt|nc|lt|nd|pnq', 'FLOAT', 'FLOAT',
                      'String', 'String', 'String']

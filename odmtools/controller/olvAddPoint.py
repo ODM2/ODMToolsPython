@@ -48,6 +48,8 @@ class Points(object):
 
         ## determines whether a row is in correct format or now
         self.validDataValue = False
+        self.validTime = False
+        self.validDate = False
         self.validUTCOffSet = False
         self.validCensorCode = False
         self.validValueAcc = False
@@ -58,8 +60,11 @@ class Points(object):
 
     def isCorrect(self):
         valid = [
-            self.validDataValue, self.validUTCOffSet, self.validCensorCode, self.validValueAcc,
-            self.validOffSetValue, self.validOffSetType, self.validQualifierCode, self.validLabSampleCode
+            self.validDataValue, self.validDate,
+            self.validTime, self.validUTCOffSet,
+            self.validCensorCode, self.validValueAcc,
+            self.validOffSetValue, self.validOffSetType,
+            self.validQualifierCode, self.validLabSampleCode
         ]
 
         if all(valid):
