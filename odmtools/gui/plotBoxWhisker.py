@@ -128,22 +128,22 @@ class PlotBox(wx.Panel):
         self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
 
         med = oneSeries.BoxWhisker.currinterval.medians
-        cl = oneSeries.BoxWhisker.currinterval.confint
+        ci = oneSeries.BoxWhisker.currinterval.confint
         mean = oneSeries.BoxWhisker.currinterval.means
-        ci = oneSeries.BoxWhisker.currinterval.conflimit
-        bp = self.plots[index - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True, bootstrap=5000,
-                                           conf_intervals=cl)
-        oneSeries.BoxWhisker.currinterval.data
+        cl = oneSeries.BoxWhisker.currinterval.conflimit
+        #bp = self.plots[index - 1].boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True, bootstrap=5000,
+        #                                   conf_intervals=ci)
+        bp=oneSeries.dataTable.boxplot(return_type = 'axes')
 
 
         # Plot Mean and its confidence interval
         for x in range(len(mean)):
-            self.plots[index - 1].vlines(x + 1, ci[x][0], ci[x][1], color='r', linestyle="solid")
-        self.plots[index - 1].scatter([range(1, len(mean) + 1)], mean, marker='o', c='r', s=10)
+            self.plots[index - 1].vlines(x + 1, cl[x][0], cl[x][1], color='r', linestyle="solid")
+        #self.plots[index - 1].scatter([range(1, len(mean) + 1)], mean, marker='o', c='r', s=10)
 
 
         # Plot Median
-        self.plots[index - 1].scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
+        #self.plots[index - 1].scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
 
         # Set Colors of the Box Whisker plot
         plt.setp(bp['whiskers'], color='k', linestyle='-')

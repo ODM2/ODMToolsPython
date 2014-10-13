@@ -278,13 +278,7 @@ class plotTimeSeries(wx.Panel):
                                                          label=oneSeries.plotTitle, zorder=10, alpha=1,
                                                          picker=5.0, pickradius=5.0, markersize=4.5)
 
-        #self.selectedlist = self.parent.record_service.get_filter_list()
 
-        '''self.editPoint = self.axislist[self.editSeries.axisTitle].\
-                                    scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                          s=35, c='k', edgecolors='none',
-                                          zorder=11, marker='s', alpha=1)# >, <, v, ^,s
-'''
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
 

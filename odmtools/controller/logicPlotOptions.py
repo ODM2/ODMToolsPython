@@ -241,31 +241,15 @@ class SeriesPlotInfo(object):
 
     def getSeriesInfo(self, seriesID):
         assert seriesID is not None
-        #lst = []  #of length len(seriesInfos)
-
-        #for key in self.getSeriesIDs():
-
-        #if the current series is not already in the list
-        #seriesInfo = self._seriesInfos[key
 
         #if seriesInfo is None:
-        # if key in self._seriesInfos.keys():
-        # if not self._seriesInfos[key] == None:
+
         oneSeriesInfo = OneSeriesPlotInfo(self)
         series = self.getSeriesById(seriesID)
-        #add dictionary entry
-        #self._seriesInfos[key] = seriesInfo
-        #print "series date: ", type(series.begin_date_time)
 
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
         #Tests to see if any values were returned for the given daterange
-        #if data is not None:
         self.build(seriesInfo)
-
-        # else:
-        #     seriesInfo = self._seriesInfos[key]
-        #     #print "seriesInfo.startDate ", seriesInfo.startDate
-        #     #print "seriesInfo.endDate ", seriesInfo.endDate
 
         i = len(self._seriesInfos)
         if self.editID == seriesInfo.seriesID:
@@ -279,13 +263,19 @@ class SeriesPlotInfo(object):
         #return lst
         return seriesInfo
 
+    import threading
+    class ThreadHandler(threading.Thread):
+        def __init__(self, type=""):
+            pass
+
+        def run(self):
+            pass
+
     def build(self, seriesInfo):
-        data = seriesInfo.dataTable
-        seriesInfo.Probability = Probability(data, seriesInfo.noDataValue)
-        seriesInfo.Statistics = Statistics(data,  seriesInfo.noDataValue)
-        seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
-
+        seriesInfo.Probability = Probability(seriesInfo.dataTable, seriesInfo.noDataValue)
+        seriesInfo.Statistics = Statistics(seriesInfo.dataTable,  seriesInfo.noDataValue)
+        seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.dataTable, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
 
     def updateDateRange(self, startDate=None, endDate=None):
@@ -318,8 +308,9 @@ class Statistics(object):
         #data = sorted(dataValues)
         d = data[data["DataValue"]!= noDataValue].describe(percentiles = [.10,.25,.5,.75,.90])
         count = self.NumberofObservations = d["DataValue"]["count"]
-        self.NumberofCensoredObservations = data[data["CensorCode"]!= "nc"].count()
+        self.NumberofCensoredObservations = data[data["CensorCode"]!= "nc"].count().DataValue
         self.ArithemticMean = round(d["DataValue"]["mean"], 5)
+
 
         sumval = 0
         sign = 1
@@ -336,7 +327,7 @@ class Statistics(object):
             self.Maximum = round(d["DataValue"]["max"], 5)
             self.Minimum = round(d["DataValue"]["min"], 5)
             self.StandardDeviation = round(d["DataValue"]["std"], 5)
-            self.CoefficientofVariation = round(data[data["DataValue"]!= noDataValue].var(), 5)
+            self.CoefficientofVariation = round(data[data["DataValue"]!= noDataValue].var().DataValue, 5)
 
             ##Percentiles
             self.Percentile10 = round(d["DataValue"]["10%"], 5)
@@ -365,8 +356,10 @@ class BoxWhisker(object):
 
         mean.append(data.mean())
         median.append(data.median())
-        confint.append(stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data)))))
-        conflimit.append(stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data)))))
+        ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))
+        confint.append((ci[0][0], ci[1][0]))
+        cl= stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data))))
+        conflimit.append((cl[0][0], cl[1][0]))
 
 
 
@@ -384,8 +377,11 @@ class BoxWhisker(object):
             names.append(name)
             mean.append(group.mean())
             median.append(group.median())
-            confint.append(stats.norm.interval(.95, group.mean(), scale = 10*(group.std()/math.sqrt(len(group)))))
-            conflimit.append(stats.norm.interval(.95, group.median(), scale = (group.std()/math.sqrt(len(group)))))
+            ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))
+            confint.append((ci[0][0], ci[1][0]))
+            cl= stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data))))
+            conflimit.append((cl[0][0], cl[1][0]))
+
         # return medians, conflimit, means, confint
         self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", values, names,[ median, conflimit, mean, confint])
 
@@ -403,9 +399,10 @@ class BoxWhisker(object):
             values.append(group)
             mean.append(m.mean())
             median.append(m.median())
-            confint.append(stats.norm.interval(.95,group.mean(), scale = 10*(group.std()/math.sqrt(len(group)))))
-            conflimit.append(stats.norm.interval(.95,group.median(), scale = (group.std()/math.sqrt(len(group)))))
-
+            ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))
+            confint.append((ci[0][0], ci[1][0]))
+            cl= stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data))))
+            conflimit.append((cl[0][0], cl[1][0]))
 
 
         self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", values,
