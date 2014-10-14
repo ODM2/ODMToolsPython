@@ -191,6 +191,12 @@ class frmODMToolsMain(wx.Frame):
                                    parent=self, size=wx.Size(605, 458),
                                    style=wx.TAB_TRAVERSAL)
 
+        ############# Graph ###############
+        logger.debug("Loading Plot ...")
+        self.pnlPlot = pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
+                                       parent=self.pnlDocking, size=wx.Size(605, 458),
+                                       style=wx.TAB_TRAVERSAL)
+
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
         self.pnlSelector = FrmSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
@@ -203,11 +209,6 @@ class frmODMToolsMain(wx.Frame):
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
                                                    style=0)
 
-        ############# Graph ###############
-        logger.debug("Loading Plot ...")
-        self.pnlPlot = pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
-                                       parent=self.pnlDocking, size=wx.Size(605, 458),
-                                       style=wx.TAB_TRAVERSAL)
 
 
         ############# Script & Console ###############

@@ -82,7 +82,7 @@ class clsDBConfiguration(wx.Panel):
 
         sbSizer.Add(connectionSizer, 1, wx.EXPAND, 5)
 
-        formSizer.Add(sbSizer, 1, wx.ALL | wx.EXPAND, 20)
+        formSizer.Add(sbSizer, 1, wx.EXPAND, 20)
 
         btnSizer = wx.FlexGridSizer(0, 3, 0, 25)
         btnSizer.AddGrowableCol(0)

@@ -144,6 +144,7 @@ class frmFlagValues(wx.Dialog):
             self.selectedValue = self.cbQualif.GetValue()
 
         self.SetReturnCode(wx.ID_OK)
+        self.EndModal(wx.ID_OK)
         event.Skip()
         self.Close()
 

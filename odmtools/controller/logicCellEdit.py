@@ -26,15 +26,16 @@ class CellEdit():
             self.cvService = serviceManager.get_cv_service()
             offsetChoices = OrderedDict((x.description, x.id) for x in
                                         self.cvService.get_offset_type_cvs())
-            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
-                                           for x in self.cvService.get_qualifiers() if x.code and x.description)
+            self.offSetTypeChoices = [NULL] + offsetChoices.keys()
+
             labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
 
             self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
-            self.offSetTypeChoices = [NULL] + offsetChoices.keys()
-            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
-
             self.labSampleChoices = [NULL] + labChoices.keys()
+
+            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+                                           for x in self.cvService.get_qualifiers() if x.code and x.description)
+            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
 
         else:
             self.censorCodeChoices = [NULL]
@@ -104,7 +105,7 @@ class CellEdit():
         point.validTime = False
         try:
             datetime.datetime.strptime(str(time), '%H:%M:%S')
-            point.validtime = True
+            point.validTime = True
             return "check"
         except:
             pass
@@ -364,14 +365,15 @@ class CellEdit():
             if event.GetEventObject().Value == NEW:
                 dlg = frmFlagValues(self.parent, self.cvService, self.qualifierChoices)
                 value = dlg.ShowModal()
-                if value == wx.OK and dlg.selectedValue:
+                if value == wx.ID_OK and dlg.selectedValue:
                     self.qualifierCodeChoices.insert(0, dlg.selectedValue)
                     event.GetEventObject().SetItems(self.qualifierCodeChoices)
                     event.GetEventObject().SetValue(dlg.selectedValue)
 
 
-
-
+        self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+                                           for x in self.cvService.get_qualifiers() if x.code and x.description)
+        self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
         odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)

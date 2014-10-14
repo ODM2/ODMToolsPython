@@ -32,11 +32,7 @@ class Points(object):
         except:
             self.time = time
 
-        #try:
         self.date = str(date)
-                #datetime.strptime(str(date), '%Y-%m-%d').date()
-        #except Exception as e:
-        #    self.date = datetime.now().date()
 
         self.utcOffSet = str(utcOffSet)
         #self.dateTimeUTC = dateTimeUTC
@@ -181,7 +177,7 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
                        imageGetter=self.imgGetterOffSetType,
                        cellEditorCreator=self.offSetTypeEditor),
-            ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=100,
+            ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=130,
                        imageGetter=self.imgGetterQualifier,
                        cellEditorCreator=self.qualifierCodeEditor),
             ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=130,
