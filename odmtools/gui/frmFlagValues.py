@@ -143,6 +143,7 @@ class frmFlagValues(wx.Dialog):
             self.qid = self.qualchoices[self.cbQualif.GetValue()]
             self.selectedValue = self.cbQualif.GetValue()
 
+        self.SetReturnCode(wx.ID_OK)
         event.Skip()
         self.Close()
 

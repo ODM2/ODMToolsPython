@@ -363,8 +363,12 @@ class CellEdit():
 
             if event.GetEventObject().Value == NEW:
                 dlg = frmFlagValues(self.parent, self.cvService, self.qualifierChoices)
-                dlg.ShowModal()
-                event.GetEventObject().SetValue(dlg.selectedValue)
+                value = dlg.ShowModal()
+                if value == wx.OK and dlg.selectedValue:
+                    self.qualifierCodeChoices.insert(0, dlg.selectedValue)
+                    event.GetEventObject().SetItems(self.qualifierCodeChoices)
+                    event.GetEventObject().SetValue(dlg.selectedValue)
+
 
 
 
@@ -382,7 +386,6 @@ class CellEdit():
         :param subItemIndex:
         :return:
         """
-        print "censorCodeEditor Entered!"
         odcb = CustomComboBox(olv, choices=self.censorCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
@@ -396,7 +399,6 @@ class CellEdit():
         :param subItemIndex:
         :return:
         """
-        print "LabSampleCodeEditor Entered!"
 
         odcb = CustomComboBox(olv, choices=self.labSampleChoices, style=wx.CB_READONLY)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)

@@ -11,8 +11,8 @@ import sys
 import os
 import logging
 import mnuRibbon
+from odmtools.controller.frmSeriesSelector import FrmSeriesSelector
 from odmtools.gui.frmConsole import ODMConsole
-import pnlSeriesSelector
 import pnlPlot
 import pnlDataTable
 import wx.lib.agw.aui as aui
@@ -61,10 +61,13 @@ class frmODMToolsMain(wx.Frame):
         screenHeight, screenWidth = wx.GetDisplaySize()
         minimumAllowedSize = wx.Size(640, 480)
 
+        '''
         if minimumAllowedSize >= wx.GetDisplaySize():
             logger.fatal("ODMTools cannot be displayed in this resolution: %s \n\tPlease use a larger resolution"
                          % wx.GetDisplaySize())
+            print "minimumAllowedsize: ", minimumAllowedSize, "display: ", wx.GetDisplaySize()
             sys.exit(0)
+        '''
 
         newSize = defaultSize
         ## Screen size is greater than ODMTools' default size
@@ -190,7 +193,7 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-        self.pnlSelector = pnlSeriesSelector.pnlSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
+        self.pnlSelector = FrmSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
                                                                parent=self.pnlDocking, size=wx.Size(770, 388),
                                                                style=wx.TAB_TRAVERSAL, dbservice=self.sc)
 
