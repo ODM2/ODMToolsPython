@@ -190,10 +190,13 @@ class MyCustomToolbar(NavigationToolbar):
         ind = p.contains_points(self.xys)
 
         seldatetimes = []
+        #seldatavalues = []
         for i in range(len(ind)):
             if ind[i]:
                 seldatetimes.append(self.editCurve.dataTable[i][1])
+                #seldatavalues.append(self.editCurve.dataTable[i][0])
                 # print seldatetimes
+
 
         self._parent.changeSelection(datetime_list=seldatetimes)
 

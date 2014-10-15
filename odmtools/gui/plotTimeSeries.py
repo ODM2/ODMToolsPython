@@ -138,9 +138,9 @@ class plotTimeSeries(wx.Panel):
             self.canvas.draw()
 
     '''
+    ## TODO 10/15/2014 Change function so that it will accept a list of datavalues. This will remove the need to loop through the values currently plotted and we would instead plot the list of datetimes and datavalues together.
 
-
-    def changePlotSelection(self,  datetime_list=[]):
+    def changePlotSelection(self,  datetime_list=[], datavalues=[]):
 
         #for entire list of points if selected add to new lists
         newx= []
@@ -161,6 +161,7 @@ class plotTimeSeries(wx.Panel):
                                               s=35, c='red', edgecolors='none',
                                               zorder=12, marker='s', alpha=1)
         self.canvas.draw()
+
 
     def changeSelection(self, datetime_list=[]):
         self.changePlotSelection( datetime_list)

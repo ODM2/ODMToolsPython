@@ -363,12 +363,15 @@ class CellEdit():
             """
 
             if event.GetEventObject().Value == NEW:
-                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierChoices)
+                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierChoices, isNew=True)
+
                 value = dlg.ShowModal()
                 if value == wx.ID_OK and dlg.selectedValue:
+                    print "YAH!"
                     self.qualifierCodeChoices.insert(0, dlg.selectedValue)
                     event.GetEventObject().SetItems(self.qualifierCodeChoices)
                     event.GetEventObject().SetValue(dlg.selectedValue)
+                dlg.Destroy()
 
 
         self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)

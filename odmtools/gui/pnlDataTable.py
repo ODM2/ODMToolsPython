@@ -42,7 +42,7 @@ class pnlDataTable(wx.Panel):
         sizer_2.Add(self.myOlv, 1, wx.ALL | wx.EXPAND, 4)
         self.SetSizer(sizer_2)
 
-        self.myOlv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected)
+        self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
         self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
 
