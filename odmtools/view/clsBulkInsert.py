@@ -25,7 +25,7 @@ from odmtools.common.icons.icons4addpoint import *
 class BulkInsert(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools Bulk Insert -",
-                              size=(400, 600), style=wx.STAY_ON_TOP | wx.FRAME_FLOAT_ON_PARENT)
+                              size=(400, 600))
         mainPanel = wx.Panel(self, -1)
         self.SetSizeHintsSz(wx.DefaultSize, wx.DefaultSize)
 

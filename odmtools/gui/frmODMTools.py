@@ -209,8 +209,6 @@ class frmODMToolsMain(wx.Frame):
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
                                                    style=0)
 
-
-
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
         self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200) )
@@ -265,6 +263,8 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.Update()
         self.Bind(wx.EVT_CLOSE, self.onClose)
 
+        self.dataTable.toggleBindings()
+
         Publisher.subscribe(self.onDocking, ("adjust.Docking"))
         Publisher.subscribe(self.onPlotSelection, ("select.Plot"))
         Publisher.subscribe(self.onExecuteScript, ("execute.script"))
@@ -297,6 +297,7 @@ class frmODMToolsMain(wx.Frame):
 
         if value == "Table":
             paneDetails = self._mgr.GetPane(self.dataTable)
+            self.dataTable.toggleBindings()
 
         elif value == "Selector":
             paneDetails = self._mgr.GetPane(self.pnlSelector)

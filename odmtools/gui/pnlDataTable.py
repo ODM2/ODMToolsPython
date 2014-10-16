@@ -1,14 +1,15 @@
 #Boa:FramePanel:pnlDataTable
 
-import logging
-
 import wx
 import wx.grid
+import logging
+import itertools as iter
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
 import datetime
 
 from odmtools.common.logger import LoggerTool
+
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -18,6 +19,9 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class pnlDataTable(wx.Panel):
+
+    toggle = iter.cycle([0, 1]).next
+
     def __init__(self, parent, id, size, style, name, pos=None):
         self._init_ctrls(parent)
 
@@ -51,6 +55,29 @@ class pnlDataTable(wx.Panel):
 
         self.Layout()
 
+    def toggleBindings(self):
+        """ Activates/Deactivates Datatable specific bindings
+
+        :param activate:
+        :return:
+        """
+
+        if self.toggle():
+            logger.info("binding activated...")
+            try:
+                self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+                self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
+                self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
+            except:
+                pass
+        else:
+            logger.info("binding deactivated...")
+            try:
+                self.myOlv.Unbind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+                self.myOlv.Unbind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
+                self.myOlv.Unbind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
+            except:
+                pass
 
     def init(self, memDB, record_service):
         self.memDB = memDB
