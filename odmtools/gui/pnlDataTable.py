@@ -46,9 +46,9 @@ class pnlDataTable(wx.Panel):
         sizer_2.Add(self.myOlv, 1, wx.ALL | wx.EXPAND, 4)
         self.SetSizer(sizer_2)
 
-        self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
-        self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
-        self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
+        #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
+        #self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
+        #self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
 
         Publisher.subscribe(self.onChangeSelection, ("changeTableSelection"))
         Publisher.subscribe(self.onRefresh, ("refreshTable"))
@@ -65,7 +65,7 @@ class pnlDataTable(wx.Panel):
         if self.toggle():
             logger.info("binding activated...")
             try:
-                self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+                self.myOlv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected, id=self.myOlv.GetId())
                 self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
                 self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
             except:
@@ -73,7 +73,7 @@ class pnlDataTable(wx.Panel):
         else:
             logger.info("binding deactivated...")
             try:
-                self.myOlv.Unbind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+                self.myOlv.Unbind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected, id=self.myOlv.GetId())
                 self.myOlv.Unbind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
                 self.myOlv.Unbind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
             except:
@@ -83,7 +83,7 @@ class pnlDataTable(wx.Panel):
         self.memDB = memDB
         self.record_service = record_service
         self.myOlv.SetColumns(
-            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=-1, width=-1,
+            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=100, width=-1,
                        stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
             for x, i in self.memDB.getEditColumns()
         )
@@ -111,12 +111,16 @@ class pnlDataTable(wx.Panel):
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
         #self.currentItem = event.GetEventObject().GetSelectedObjects()
-        self.currentItem = self.myOlv.GetSelectedObjects()
-        #logger.debug("selectedObjects %s" % self.currentItem)
+        logger.debug("Called!!")
+        try:
+            self.currentItem = self.myOlv.GetSelectedObjects()
+            #logger.debug("selectedObjects %s" % self.currentItem)
 
-        self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
-        #update plot
-        Publisher.sendMessage(("changePlotSelection"),  datetime_list=[x[3] for x in self.currentItem])
+            self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
+            #update plot
+            Publisher.sendMessage(("changePlotSelection"),  datetime_list=[x[3] for x in self.currentItem])
+        except:
+            pass
 
 
     def onChangeSelection(self,  datetime_list=[]):

@@ -343,6 +343,7 @@ class frmODMToolsMain(wx.Frame):
                                                                           connection=memDB.conn)
             self._ribbon.toggleEditButtons(True)
             self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+
             self.dataTable.init(memDB, self.record_service)
 
             # set record service for console

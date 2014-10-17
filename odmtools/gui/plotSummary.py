@@ -90,7 +90,7 @@ class plotSummary(wx.Panel):
     def Plot(self, seriesPlotInfo):
         self.clear()
         for oneSeries in seriesPlotInfo.getAllSeries():
-            if len(oneSeries.dataTable) >0:
+            if len(oneSeries.dataTable) > 0:
                 if not self.btnExport.IsEnabled():
                     self.btnExport.Enable(True)
                 self.addCol(oneSeries)

@@ -1,5 +1,6 @@
 import math
 import datetime
+import wx
 
 import numpy
 
@@ -254,8 +255,14 @@ class SeriesPlotInfo(object):
         #add dictionary entry
         #self._seriesInfos[key] = seriesInfo
         #print "series date: ", type(series.begin_date_time)
+        if not series:
+            message = "Please check your database connection. Unable to retrieve series %d from the database" % seriesID
+            wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
+            return
 
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
+
+
         #Tests to see if any values were returned for the given daterange
         #if data is not None:
         self.build(seriesInfo)

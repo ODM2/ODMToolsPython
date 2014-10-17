@@ -442,7 +442,9 @@ class plotTimeSeries(wx.Panel):
 
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
-            self.updatePlot()
+            ## TODO Duplicate UpdatePlot?
+            logger.debug("Called duplicate updateplot")
+            #self.updatePlot()
 
     def setUpYAxis(self):
         self.axislist = {}
