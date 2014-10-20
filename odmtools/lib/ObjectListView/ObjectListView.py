@@ -104,6 +104,7 @@ import locale
 import operator
 import string
 import time
+import sys
 
 import CellEditor
 import OLVEvent
@@ -2033,6 +2034,19 @@ class ObjectListView(wx.ListCtrl):
         self.selectionBeforeCellEdit = self.GetSelectedObjects()
         self.DeselectAll()
         self.cellEditor = evt.newEditor or evt.editor
+
+        if sys.platform == 'darwin':
+            print "entered darwin!", evt.newEditor, evt.editor
+            if evt.newEditor:
+                print "Chose neweditor: ", evt.newEditor
+                self.cellEditor = evt.newEditor
+            elif evt.editor:
+                print "Chose editor: ", evt.editor
+                self.cellEditor = evt.editor
+            if not self.cellEditor:
+                print "Crap happened with the cellEditor, aborting..."
+                return
+
         self.cellBeingEdited = (rowIndex, subItemIndex)
 
         # If we aren't using the default editor, destroy it

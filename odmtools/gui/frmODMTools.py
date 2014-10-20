@@ -56,7 +56,7 @@ class frmODMToolsMain(wx.Frame):
         :return wx.Size:
         """
 
-        defaultSize = wx.Size(850, 900)
+        defaultSize = wx.Size(850, 800)
         defaultHeight, defaultWidth = defaultSize
         screenHeight, screenWidth = wx.GetDisplaySize()
         minimumAllowedSize = wx.Size(640, 480)

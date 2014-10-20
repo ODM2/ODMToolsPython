@@ -38,11 +38,10 @@ class CellEdit():
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
 
         else:
-            self.censorCodeChoices = [NULL]
-            self.labSampleChoices = [NULL]
-            self.offSetTypeChoices = [NULL]
-            self.qualifierCodeChoices = [NULL]
-            self.offSetTypeChoices = [NULL]
+            self.censorCodeChoices = [NULL] + ['SampleCensorCode1'] + ['SampleCensorCode2'] + ['SampleCensorCode3']
+            self.labSampleChoices = [NULL] + ['SampleLabSample1'] + ['SampleLabSample2'] + ['SampleLabSample3']
+            self.offSetTypeChoices = [NULL] + ['SampleOffsetType1'] + ['SampleOffsetType2'] + ['SampleOffsetType3']
+            self.qualifierCodeChoices = [NULL] + ['SampleQualifierCode1'] + ['SampleQualifierCode2'] + ['SampleQualifierCode3']
 
     """
         --------------------
@@ -499,3 +498,15 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
         dc.SetBrush(wx.Brush(backColour))
         dc.SetPen(wx.Pen(backColour))
         dc.DrawRectangleRect(rect)
+
+    def SetValue(self, value):
+        print "In Set ValuE!", value
+        wx.combo.OwnerDrawnComboBox.SetValue(self, value or "")
+
+    def OnMeasureItem(self, item):
+        return self.popupRowHeight
+
+    def GetValue(self):
+        value = wx.combo.OwnerDrawnComboBox.GetValue()
+        print "Obtained Value: ", value
+        return value
