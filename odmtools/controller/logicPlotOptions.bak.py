@@ -1,6 +1,7 @@
 import math
 import datetime
-import wx
+from pandas import DataFrame
+import pandas
 
 import numpy
 
@@ -30,16 +31,14 @@ class OneSeriesPlotInfo(object):
         self.numBins = 25
         self.binWidth = 1.5
         self.boxWhiskerMethod = "Monthly"
-        self.useCensoredData = False
-        self.yrange=0
 
+        self.yrange=0
         self.color = ""
 
         #edit functions
         self.edit = False
         #the color the plot should be when not editing
         self.plotcolor = None
-        self.timeRadius= None
 
 
 
@@ -154,8 +153,8 @@ class SeriesPlotInfo(object):
                 self.resetDates()
         else:
             ## add dictionary entry with no data
-
             self._seriesInfos[key] = self.getSeriesInfo(key)
+
 
 
 
@@ -212,10 +211,13 @@ class SeriesPlotInfo(object):
         dataType = series.data_type
         noDataValue = series.variable.no_data_value
         if self.editID == seriesID:
-            data = self.memDB.getEditDataValuesforGraph()
+            #d= DataFrame(pandas.read_sql())
+            data = DataFrame(self.memDB.getEditDataValuesforGraph())
+
         else:
             # using current variable keeps the series subsetted
-            data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
+            data = DataFrame(self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd))
+        data.columns = self.memDB.columns
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
 
@@ -229,10 +231,9 @@ class SeriesPlotInfo(object):
         seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
-        seriesInfo.timeRadius = self.setTimeRadius(series)
-        yvals = [y[0] for y in data]
+
         if len(data)>0:
-            seriesInfo.yrange = max(yvals) - min(yvals)
+            seriesInfo.yrange = data['DataValue'].max() - data['DataValue'].min()
         else:
             seriesInfo.yrange=0
 
@@ -255,14 +256,8 @@ class SeriesPlotInfo(object):
         #add dictionary entry
         #self._seriesInfos[key] = seriesInfo
         #print "series date: ", type(series.begin_date_time)
-        if not series:
-            message = "Please check your database connection. Unable to retrieve series %d from the database" % seriesID
-            wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
-            return
 
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
-
-
         #Tests to see if any values were returned for the given daterange
         #if data is not None:
         self.build(seriesInfo)
@@ -287,21 +282,10 @@ class SeriesPlotInfo(object):
     def build(self, seriesInfo):
         data = seriesInfo.dataTable
         seriesInfo.Probability = Probability(data, seriesInfo.noDataValue)
-        seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
+        seriesInfo.Statistics = Statistics(data,  seriesInfo.noDataValue)
         seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
-    def setTimeRadius(self, series):
-        ts = series.time_support
-        if ts ==0:  ts = 1
 
-        if series.time_units_name == 'second':
-            return ts/2
-        elif series.time_units_name == 'minute':
-            return ts/2 *60 #convert minutes to seconds
-        elif series.time_units_name == 'hour':
-            return ts/2 *120 #120 converts hours to seconds
-        else:
-            return 43200 #12 hours in seconds
 
 
     def updateDateRange(self, startDate=None, endDate=None):
@@ -327,21 +311,19 @@ class SeriesPlotInfo(object):
 
 
 class Statistics(object):
-    def __init__(self, dataTable, useCensoredData, noDataValue):
-        useCensoredData=True
-        #TODO do we plot censored datavalues
-        if useCensoredData:
-            dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
-        else:
-            dataValues = [x[0] for x in dataTable if x[2] == 'nc' if x[0] <> noDataValue]
-        data = sorted(dataValues)
-        count = self.NumberofObservations = len(data)
-        self.NumberofCensoredObservations = count-len([x[0] for x in dataTable if x[2] == 'nc'])  #self.cursor.fetchone()[0]
-        self.ArithemticMean = round(numpy.mean(data), 5)
+    def __init__(self, data,  noDataValue):
+
+
+        #dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
+        #data = sorted(dataValues)
+        d = data[data["DataValue"]!= noDataValue].describe(percentiles = [.10,.25,.5,.75,.90])
+        count = self.NumberofObservations = d["DataValue"]["count"]
+        self.NumberofCensoredObservations = data[data["CensorCode"]!= "nc"].count()
+        self.ArithemticMean = round(d["DataValue"]["mean"], 5)
 
         sumval = 0
         sign = 1
-        for dv in data:
+        for dv in data["DataValue"]:
             if dv == 0:
                 sumval = sumval + numpy.log2(1)
             else:
@@ -351,23 +333,17 @@ class Statistics(object):
 
         if count > 0:
             self.GeometricMean = round(sign * (2 ** float(sumval / float(count))), 5)
-            self.Maximum = round(max(data), 5)
-            self.Minimum = round(min(data), 5)
-            self.StandardDeviation = round(numpy.std(data), 5)
-            self.CoefficientofVariation = round(numpy.var(data), 5)
-
+            self.Maximum = round(d["DataValue"]["max"], 5)
+            self.Minimum = round(d["DataValue"]["min"], 5)
+            self.StandardDeviation = round(d["DataValue"]["std"], 5)
+            self.CoefficientofVariation = round(data[data["DataValue"]!= noDataValue].var(), 5)
 
             ##Percentiles
-            self.Percentile10 = round(data[int(math.floor(count / 10))], 5)
-            self.Percentile25 = round(data[int(math.floor(count / 4))], 5)
-
-            if count % 2 == 0:
-                self.Percentile50 = round((data[int(math.floor((count / 2) - 1))] + data[int(count / 2)]) / 2, 5)
-            else:
-                self.Percentile50 = round(data[int(numpy.ceil(count / 2))], 5)
-
-            self.Percentile75 = round(data[int(math.floor(count / 4 * 3))], 5)
-            self.Percentile90 = round(data[int(math.floor(count / 10 * 9))], 5)
+            self.Percentile10 = round(d["DataValue"]["10%"], 5)
+            self.Percentile25 = round(d["DataValue"]["25%"], 5)
+            self.Percentile50 = round(d["DataValue"]["50%"], 5)
+            self.Percentile75 = round(d["DataValue"]["75%"], 5)
+            self.Percentile90 = round(d["DataValue"]["90%"], 5)
 
 
 class BoxWhisker(object):
@@ -448,11 +424,13 @@ class BoxWhisker(object):
             med = numpy.median(data)
             mean = numpy.mean(data)
             stdDev = math.sqrt(numpy.var(data))
-            ci95low = mean - 10 * (1.96 * (stdDev / math.sqrt(1)))
-            ci95up = mean + 10 * (1.96 * (stdDev / math.sqrt(1)))
+            #confidence interval
+            ci95low = mean - 10 * (1.96 * stdDev)
+            ci95up = mean + 10 * (1.96 * stdDev)
 
-            cl95low = med - (1.96 * (stdDev / math.sqrt(1)))
-            cl95up = med + (1.96 * (stdDev / math.sqrt(1)))
+            #confidence level
+            cl95low = med - (1.96 * stdDev)
+            cl95up = med + (1.96 * stdDev)
 
             return [med, mean, ci95low, ci95up, cl95low, cl95up]
         elif len(data) > 0:

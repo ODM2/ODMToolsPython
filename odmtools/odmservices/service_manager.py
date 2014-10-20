@@ -94,7 +94,7 @@ class ServiceManager():
         elif 'mysql' in connection_string:
             s.my_test_Session().execute('Select "VariableCode" From Variables Limit 1')
         elif 'postgresql' in connection_string:
-            #s.psql_test_Session().execute('Select "VariableCode" From "ODM2Core"."Variables" Limit 1')
+            #s.psql_test_Session().execute('Select "VariableCode" From "ODM2"."Variables" Limit 1')
             s.psql_test_Session().execute('Select "VariableCode" From "Variables" Limit 1')
         return True
 
