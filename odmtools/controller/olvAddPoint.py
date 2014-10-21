@@ -148,7 +148,7 @@ class OLVAddPoint(FastObjectListView):
                        imageGetter=self.imgGetterDataValue,
                        stringConverter=self.str2DataValue,
                        headerImage="star"),
-            ColumnDefn("Date", "left", -1, minimumWidth=100,
+            ColumnDefn("Date", "left", -1, minimumWidth=120,
                        valueGetter="date",
                        imageGetter=self.imgGetterDate,
                        cellEditorCreator=self.dateEditor,

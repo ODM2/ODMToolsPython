@@ -366,7 +366,6 @@ class CellEdit():
 
                 value = dlg.ShowModal()
                 if value == wx.ID_OK and dlg.selectedValue:
-                    print "YAH!"
                     self.qualifierCodeChoices.insert(0, dlg.selectedValue)
                     event.GetEventObject().SetItems(self.qualifierCodeChoices)
                     event.GetEventObject().SetValue(dlg.selectedValue)
@@ -507,6 +506,6 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
         return self.popupRowHeight
 
     def GetValue(self):
-        value = wx.combo.OwnerDrawnComboBox.GetValue()
+        value = wx.combo.OwnerDrawnComboBox.GetValue(self)
         print "Obtained Value: ", value
         return value

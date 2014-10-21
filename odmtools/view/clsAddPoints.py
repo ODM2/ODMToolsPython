@@ -24,7 +24,7 @@ from odmtools.common.icons.icons4addpoint import *
 class AddPoints(wx.Frame):
     def __init__(self, parent, **kwargs):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
-                          size=(1110, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
+                          size=(1120, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         mainPanel = wx.Panel(self, -1)
         vSizer = wx.BoxSizer(wx.VERTICAL)
@@ -89,8 +89,7 @@ class AddPoints(wx.Frame):
         self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
         self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelected)
         #self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onTooltip)
-        self.olv.Bind(wx.EVT_CHAR, self.onChar)
-
+        #self.olv.Bind(wx.EVT_CHAR, self.onChar)
 
     # Virtual event handlers, override them in your derived class
     def onAddBtn(self, event):
@@ -121,13 +120,19 @@ class AddPoints(wx.Frame):
         pass
 
     def onEdit(self, event):
-        #print "Editing Cell!", event.subItemIndex
-        ## Ignore editing on first cell
 
+        ## Is there another cell being edited? Make sure to clean up
+        ## OSX and Linux do not clean up date editor. This cleanup is needed
+        if self.olv.cellEditor:
+            #print "Cleaning up cell", self.olv.cellEditor
+            self.olv.FinishCellEdit()
+        #print "Editing Cell!", event.subItemIndex
+
+        ## Ignore editing on first cell
         ## TODO this is needed for the windows version
         #if event.subItemIndex == 0:
         #    event.Veto()
-        pass
+        #pass
 
     def onEditFinish(self, event):
         self.olv.RefreshItem(event.subItemIndex)

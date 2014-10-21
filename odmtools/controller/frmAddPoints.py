@@ -81,6 +81,11 @@ class AddPoints(clsAddPoints.AddPoints):
                 #self.sb.SetStatusText("Removing %s" % self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue))
 
         self.selectedObject = None
+
+        ## Deleting a cell being edited doesn't finish editing
+        if self.olv.cellEditor:
+            self.olv.FinishCellEdit()
+            
         event.Skip()
 
     def customRemove(self, object):
