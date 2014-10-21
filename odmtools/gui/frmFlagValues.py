@@ -105,10 +105,12 @@ class frmFlagValues(wx.Dialog):
         self._init_ctrls(parent)
 
     def GetValue(self):
-        return self.qid
+        if self.qid:
+            return self.qid
+        else:
+            return None
 
     def OnCbQualifCombobox(self, event):
-        print "IN COMBOBOX!"
         self.showNewFields()
         event.Skip()
 

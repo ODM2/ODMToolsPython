@@ -85,7 +85,6 @@ class AddPoints(clsAddPoints.AddPoints):
         ## Deleting a cell being edited doesn't finish editing
         if self.olv.cellEditor:
             self.olv.FinishCellEdit()
-            
         event.Skip()
 
     def customRemove(self, object):
@@ -262,7 +261,8 @@ class AddPoints(clsAddPoints.AddPoints):
 
     def combineDateTime(self, date, time):
         t = datetime.datetime.strptime(time, "%H:%M:%S").time()
-        return datetime.datetime.combine(date, t)
+        d = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+        return datetime.datetime.combine(d, t)
 
 class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
