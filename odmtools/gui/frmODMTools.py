@@ -211,7 +211,7 @@ class frmODMToolsMain(wx.Frame):
 
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
-        self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200) )
+        self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, parent=self.pnlDocking, size=wx.Size(200, 200) )
         wx.CallAfter(self._postStartup)
 
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
@@ -250,11 +250,21 @@ class frmODMToolsMain(wx.Frame):
                           .CloseButton(True).Float().FloatingPosition(pos=(self.Position))
                           .Hide().CloseButton(True).DestroyOnClose(False)
         )
+
+
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(300, 400)).MinimizeButton(
             True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float()
                           .FloatingPosition(pos=(self.Position)).Show(show=False).DestroyOnClose(False)
         )
+
+        '''
+        self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
+                          Name("Console").FloatingSize(size=(300, 400)).MinimizeButton(
+            True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float()
+                          .FloatingPosition(pos=(self.Position)).Show(show=False).DestroyOnClose(False)
+        )
+        '''
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.
         #self.loadDockingSettings()
