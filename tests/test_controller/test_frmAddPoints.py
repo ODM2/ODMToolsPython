@@ -1,6 +1,7 @@
 import wx
 
 from odmtools.controller.frmAddPoints import AddPoints
+from odmtools.controller.olvAddPoint import Points
 
 
 __author__ = 'Jacob'
@@ -27,6 +28,12 @@ class TestAddPoints:
 
         self.olv.SetObjects(None)
         assert not self.olv.GetObjects()
+
+        size = 99999
+        objects = self._buildObjects(size)
+        self.olv.SetObjects(objects)
+        assert len(self.olv.GetObjects()) == size
+
 
 
 
@@ -82,7 +89,35 @@ class TestAddPoints:
         self.olv.SetObjects(None)
         assert not self.olv.GetObjects()
 
+    def test_customRemove(self):
+        self.olv.AddObject(self.olv.sampleRow())
+        assert len(self.olv.GetObjects()) == 1
 
+        objects = self.olv.GetObjects()
+        self.frame.customRemove(objects)
+        assert not self.olv.GetObjects()
+
+        ## Test order remains the same after removing
+        size = 10000
+        objects = self._buildObjects(size)
+        for i in objects:
+            print i.dataValue
+        assert len(objects) == size
+        tests = [1, 5, 25, 100, 150, 300, 600, 55, 9000]
+
+        for test in objects:
+            if test.dataValue in tests:
+                if not self.frame.customRemove(test):
+                    assert False
+
+        currentObjects = self.olv.GetObjects()
+        for obj in currentObjects:
+            if obj.dataValue not in objects:
+                assert False
+
+
+    def _buildObjects(self, size):
+        return [Points(dataValue=x) for x in range(size)]
 
     def test_onUploadBtn(self):
         pass

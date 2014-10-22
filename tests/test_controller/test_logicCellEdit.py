@@ -29,7 +29,6 @@ class TestLogicCellEdit:
         tests = [u'00:00:00', u'0:0:0', u'23:00:00', u'12:00:12', "00:00:00"]
 
         for test in tests:
-            print test
             result = CellEdit(self.parent, self.serviceManager, self.recordService)\
                 .imgGetterTime(Points(time=test))
             if result == "error":
@@ -49,13 +48,12 @@ class TestLogicCellEdit:
                 assert False
 
     def test_imgGetterDate(self):
-        tests = [u'1973-12-15', u'2016-2-29', u'2016-02-29']
+        tests = [u'1973-12-15', u'2016-2-29', u'2016-02-29', u'2013-1-1']
 
         for test in tests:
             result = CellEdit(self.parent, self.serviceManager, self.recordService)\
                 .imgGetterDate(Points(date=test))
             if result == "error":
-                print test
                 assert False
             else:
                 assert True
