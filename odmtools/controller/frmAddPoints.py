@@ -23,6 +23,10 @@ class AddPoints(clsAddPoints.AddPoints):
 
         self.CenterOnParent()
 
+    def checkIfEditing(self):
+        ## Deleting a cell being edited doesn't finish editing
+        if self.olv.cellEditor:
+            self.olv._PossibleFinishCellEdit()
 
     # Handlers for AddPoints events.
     def onAddBtn(self, event):
@@ -31,6 +35,7 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
+        self.checkIfEditing()
         self.olv.AddObject(self.olv.sampleRow())
         self.sb.SetStatusText("Added a row")
         event.Skip()
@@ -41,6 +46,8 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
+        self.checkIfEditing()
+
         if len(self.olv.GetObjects()) < 1:
             wx.MessageBox("Nothing to remove here", " ", wx.OK)
             return
@@ -56,6 +63,8 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
+        self.checkIfEditing()
+
         try:
             if self.selectedObject:
                 if len(self.selectedObject) > 1:
@@ -82,9 +91,6 @@ class AddPoints(clsAddPoints.AddPoints):
 
         self.selectedObject = None
 
-        ## Deleting a cell being edited doesn't finish editing
-        if self.olv.cellEditor:
-            self.olv.FinishCellEdit()
         event.Skip()
 
     def customRemove(self, object):
@@ -108,6 +114,8 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
+        self.checkIfEditing()
+
         if not self.frame.IsShown():
             self.frame.CenterOnParent()
             self.frame.Show()
@@ -123,6 +131,8 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
+        self.checkIfEditing()
+
         message = "DataValue: FLOAT\n" \
                   "Date: YYYY-MM-DD\n" \
                   "Time: HH:MM:SS\n" \
@@ -145,8 +155,12 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
+        self.checkIfEditing()
 
-        points, isIncorrect = self.parseTable()
+        try:
+            points, isIncorrect = self.parseTable()
+        except:
+            return
 
         message = ""
 
@@ -191,6 +205,9 @@ class AddPoints(clsAddPoints.AddPoints):
         event.Skip()
 
     def onSelected(self, event):
+        #self.checkIfEditing()
+        #self.olv.CancelEdit()
+
         obj = event.GetEventObject()
         object = obj.innerList[obj.FocusedItem]
         object = self.olv.GetSelectedObjects()
@@ -217,6 +234,7 @@ class AddPoints(clsAddPoints.AddPoints):
 
         :return:
         """
+
         series = self.recordService.get_series()
         #NULL = self.olv.NULL
 

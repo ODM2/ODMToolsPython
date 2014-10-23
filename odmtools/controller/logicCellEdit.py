@@ -88,7 +88,6 @@ class CellEdit():
             point.validDate = True
             return "check"
         except Exception as e:
-            print e
             pass
 
         return "error"
@@ -371,10 +370,12 @@ class CellEdit():
                     event.GetEventObject().SetValue(dlg.selectedValue)
                 dlg.Destroy()
 
-
-        self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
-                                           for x in self.cvService.get_qualifiers() if x.code and x.description)
-        self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
+        try:
+            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+                                               for x in self.cvService.get_qualifiers() if x.code and x.description)
+            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
+        except:
+            pass
         odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
@@ -457,7 +458,6 @@ class TimePicker(masked.TimeCtrl):
 
     def SetValue(self, value):
         """Put a new value into the editor"""
-        #print "In SetValue ", value, type(value)
         newValue = value or ""
         try:
             masked.TimeCtrl.SetValue(self, newValue)
@@ -466,7 +466,6 @@ class TimePicker(masked.TimeCtrl):
 
     def GetValue(self):
         value = masked.TimeCtrl.GetValue(self)
-        #print value
         return value
 
 
@@ -499,7 +498,6 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
         dc.DrawRectangleRect(rect)
 
     def SetValue(self, value):
-        print "In Set ValuE!", value
         wx.combo.OwnerDrawnComboBox.SetValue(self, value or "")
 
     def OnMeasureItem(self, item):
@@ -507,5 +505,4 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
 
     def GetValue(self):
         value = wx.combo.OwnerDrawnComboBox.GetValue(self)
-        print "Obtained Value: ", value
         return value

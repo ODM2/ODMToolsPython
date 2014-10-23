@@ -258,13 +258,6 @@ class frmODMToolsMain(wx.Frame):
                           .FloatingPosition(pos=(self.Position)).Show(show=False).DestroyOnClose(False)
         )
 
-        '''
-        self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
-                          Name("Console").FloatingSize(size=(300, 400)).MinimizeButton(
-            True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float()
-                          .FloatingPosition(pos=(self.Position)).Show(show=False).DestroyOnClose(False)
-        )
-        '''
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.
         #self.loadDockingSettings()

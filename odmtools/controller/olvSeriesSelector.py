@@ -2,7 +2,7 @@ import logging
 
 import wx
 import wx.lib.newevent
-#from ObjectListView.ObjectListView import FastObjectListView, ColumnDefn
+# from ObjectListView.ObjectListView import FastObjectListView, ColumnDefn
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
 from odmtools.common.logger import LoggerTool
@@ -30,14 +30,25 @@ class clsSeriesTable(FastObjectListView):
         """Object being edited"""
         self.editingObject = None
 
-        seriesColumns = [ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,
-          # stringConverter = '%s')
-                                    stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
-                         for key, value in series.returnDict().iteritems()]
-        self.SetColumns(seriesColumns)
+        self._buildColumns()
         self.CreateCheckStateColumn()
 
+        def rowFormatter(listItem, point):
+            listItem.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
+
+        self.rowFormatter = rowFormatter
+
+    def _buildColumns(self):
+        seriesColumns = [
+            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,
+                       # stringConverter = '%s')
+                       stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
+            for key, value in series.returnDict().iteritems()]
+        self.SetColumns(seriesColumns)
+
+
     """User can select using the space bar """
+
     def SetCheckState(self, modelObject, state):
         """
         This is the same code as the original SetCheckState in ObjectListView but
@@ -74,6 +85,7 @@ class clsSeriesTable(FastObjectListView):
                     return r
 
     """User can select series using the mouse to click on check boxes """
+
     def _HandleLeftDownOnImage(self, rowIndex, subItemIndex):
         """
         This is the same code, just added the original _HandleLeftDownOnImage in ObjectListView but

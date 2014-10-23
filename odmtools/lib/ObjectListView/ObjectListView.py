@@ -2085,7 +2085,10 @@ class ObjectListView(wx.ListCtrl):
 
         editor.Bind(wx.EVT_CHAR, self._Editor_OnChar)
         editor.Bind(wx.EVT_COMMAND_ENTER, self._Editor_OnChar)
-        editor.Bind(wx.EVT_KILL_FOCUS, self._Editor_KillFocus)
+
+        ## TODO OSX doesn't recognize properly when a combo box
+        if sys.platform != "darwin":
+            editor.Bind(wx.EVT_KILL_FOCUS, self._Editor_KillFocus)
 
 
     def _MakeDefaultCellEditor(self, rowIndex, subItemIndex, value):

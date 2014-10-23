@@ -189,6 +189,18 @@ class OLVAddPoint(FastObjectListView):
         self.SetColumns(columns)
         self.SetObjects(None)
 
+        def rowFormatter(listItem, point):
+            """Formats each row to have a larger font than the default font.
+
+            :param listItem:
+            :param point:
+            :return:
+            """
+            listItem.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
+
+        self.rowFormatter = rowFormatter
+
+
     def sampleRow(self):
         return Points()
 

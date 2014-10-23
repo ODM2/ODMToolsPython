@@ -63,7 +63,7 @@ class pnlDataTable(wx.Panel):
         """
 
         if self.toggle():
-            logger.info("binding activated...")
+            #logger.info("binding activated...")
             try:
                 self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
                 self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
@@ -71,7 +71,7 @@ class pnlDataTable(wx.Panel):
             except:
                 pass
         else:
-            logger.info("binding deactivated...")
+            #logger.info("binding deactivated...")
             try:
                 self.myOlv.Unbind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
                 self.myOlv.Unbind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
