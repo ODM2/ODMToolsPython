@@ -157,10 +157,10 @@ class AddPoints(clsAddPoints.AddPoints):
         """
         self.checkIfEditing()
 
-        try:
-            points, isIncorrect = self.parseTable()
-        except:
-            return
+        #try:
+        points, isIncorrect = self.parseTable()
+        #except:
+        #    return
 
         message = ""
 
@@ -278,9 +278,22 @@ class AddPoints(clsAddPoints.AddPoints):
         return points, isIncorrect
 
     def combineDateTime(self, date, time):
-        t = datetime.datetime.strptime(time, "%H:%M:%S").time()
-        d = datetime.datetime.strptime(date, "%Y-%m-%d").date()
-        return datetime.datetime.combine(d, t)
+        """ Combines date and time into datetime.datetime
+
+        :param date:
+            :type datetime.date or str:
+        :param time:
+            :type str:
+        :return:
+            :type datetime.datetime:
+        """
+        newTime = datetime.datetime.strptime(time, "%H:%M:%S").time()
+
+        newDate = date
+        if not isinstance(date, datetime.date):
+            newDate = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+
+        return datetime.datetime.combine(newDate, newTime)
 
 class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
