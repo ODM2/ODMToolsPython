@@ -4,7 +4,7 @@ import wx
 import wx.grid
 import logging
 import itertools as iter
-from ObjectListView import ColumnDefn, FastObjectListView
+from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
 import datetime
 
