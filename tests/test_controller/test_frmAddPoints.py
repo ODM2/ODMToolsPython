@@ -16,7 +16,6 @@ class TestAddPoints:
         assert len(self.olv.GetObjects()) == 0
 
     def tearDown(self):
-        print "Closing down frame"
         self.frame.Destroy()
 
     def test_onAddBtn(self):
@@ -33,9 +32,6 @@ class TestAddPoints:
         objects = self._buildObjects(size)
         self.olv.SetObjects(objects)
         assert len(self.olv.GetObjects()) == size
-
-
-
 
         '''
         Note:
@@ -57,9 +53,6 @@ class TestAddPoints:
         #wx.PostEvent(self.frame.addRowBtn, evt)
         self.frame.GetEventHandler().ProcessEvent(evt)
         assert self.olv.GetObjects()
-
-
-
 
     def test_onDeleteBtn(self):
         size = 10000
@@ -83,10 +76,18 @@ class TestAddPoints:
             assert False
         self.olv.RemoveObjects(selectedObjs)
 
-
+        assert not self.olv.GetObjects()
+        self.olv.AddObjects(self._buildObjects(size))
+        assert len(self.olv.GetObjects()) == size
+        evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.frame.deleteRowBtn.GetId())
+        self.frame.GetEventHandler().ProcessEvent(evt)
 
     def test_onClearAllBtn(self):
-        self.olv.SetObjects(None)
+        assert not self.olv.GetObjects()
+        size = 100000
+        self.olv.SetObjects(self._buildObjects(size))
+        assert len(self.olv.GetObjects()) == size
+        self.frame._clearAll()
         assert not self.olv.GetObjects()
 
     def test_customRemove(self):

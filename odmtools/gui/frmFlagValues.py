@@ -99,6 +99,7 @@ class frmFlagValues(wx.Dialog):
         self.qualchoices = choices
         if isNew:
             self.selectedValue = NEW
+            wx.CallAfter(self.showNewFields)
         else:
             self.selectedValue = ''
 

@@ -46,16 +46,18 @@ class AddPoints(clsAddPoints.AddPoints):
         :param event:
         :return:
         """
-        self.checkIfEditing()
-
         if len(self.olv.GetObjects()) < 1:
             wx.MessageBox("Nothing to remove here", " ", wx.OK)
             return
         msg = GMD.GenericMessageDialog(None, 'Are you sure you want to delete your work?', 'Clear Everything?', wx.YES_NO | wx.ICON_WARNING |wx.NO_DEFAULT )
         value = msg.ShowModal()
         if value == wx.ID_YES:
-            self.olv.SetObjects(None)
+            self._clearAll()
         return
+
+    def _clearAll(self):
+        self.checkIfEditing()
+        self.olv.SetObjects(None)
 
     def onDeleteBtn(self, event):
         """
@@ -205,6 +207,11 @@ class AddPoints(clsAddPoints.AddPoints):
         event.Skip()
 
     def onSelected(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         #self.checkIfEditing()
         #self.olv.CancelEdit()
 
