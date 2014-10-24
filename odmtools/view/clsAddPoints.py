@@ -17,18 +17,14 @@ from odmtools.controller.olvAddPoint import OLVAddPoint
 from odmtools.lib.ObjectListView import EVT_CELL_EDIT_STARTING, EVT_CELL_EDIT_FINISHING
 from odmtools.common.icons.icons4addpoint import *
 
-
-
-
-
 ###########################################################################
 ## Class AddPoints
 ###########################################################################
 
-class AddPoints(wx.MiniFrame):
+class AddPoints(wx.Frame):
     def __init__(self, parent, **kwargs):
-        wx.MiniFrame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
-                          size=(1055, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
+                          size=(1140, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         mainPanel = wx.Panel(self, -1)
         vSizer = wx.BoxSizer(wx.VERTICAL)
@@ -90,11 +86,10 @@ class AddPoints(wx.MiniFrame):
         self.olv = OLVAddPoint(parent=mainPanel, id=wx.ID_ANY, style=wx.LC_REPORT, **kwargs)
         self.olv.Bind(EVT_CELL_EDIT_STARTING, self.onEdit)
         self.olv.Bind(EVT_CELL_EDIT_FINISHING, self.onEditFinish)
-        #self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
-        self.olv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onSelected)
+        self.olv.Bind(wx.EVT_LIST_COL_CLICK, self.onColClick)
+        self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelected)
         #self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onTooltip)
-        self.olv.Bind(wx.EVT_CHAR, self.onChar)
-
+        #self.olv.Bind(wx.EVT_CHAR, self.onChar)
 
     # Virtual event handlers, override them in your derived class
     def onAddBtn(self, event):
@@ -125,12 +120,23 @@ class AddPoints(wx.MiniFrame):
         pass
 
     def onEdit(self, event):
+
+        ## Is there another cell being edited? Make sure to clean up
+        ## OSX and Linux do not clean up date editor. This cleanup is needed
+        if self.olv.cellEditor:
+            #print "Cleaning up cell", self.olv.cellEditor
+            self.olv.FinishCellEdit()
+        #print "Editing Cell!", event.subItemIndex
+
         ## Ignore editing on first cell
-        if event.subItemIndex == 0:
-            event.Veto()
+        ## TODO this is needed for the windows version
+        #if event.subItemIndex == 0:
+        #    event.Veto()
+        #pass
 
     def onEditFinish(self, event):
-        pass
+        self.olv.RefreshItem(event.subItemIndex)
+        #print "Finished Editing Cell!", event.subItemIndex
 
     def onColClick(self, event):
         ## Ignore col clicking

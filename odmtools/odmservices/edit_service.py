@@ -202,7 +202,7 @@ class EditService():
     def reset_filter(self):
         self._filter_list = [False] * len(self._series_points)
 
-    def filter_from_previous(self, value ):
+    def filter_from_previous(self, value):
         self._filter_from_selection = value
 
     def get_toggle(self):

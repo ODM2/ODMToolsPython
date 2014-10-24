@@ -5,6 +5,17 @@ from sqlalchemy.orm import sessionmaker
 class SessionFactory():
     def __init__(self, connection_string, echo):
         self.engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600,
+                                    pool_size=20)
+        self.psql_test_engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600,
+                                              connect_args={'connect_timeout': 1})
+        self.ms_test_engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600,
+                                            connect_args={'timeout': 1})
+        self.my_test_engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600,
+                                            connect_args={'connect_timeout': 1})
+
+        '''
+        # Removing pool_timeout and max_overflow allowed the tests to pass
+        self.engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600,
                                     pool_timeout=5, pool_size=20, max_overflow=0)
         self.psql_test_engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600,
                                               pool_timeout=5, max_overflow=0, connect_args={'connect_timeout': 1})
@@ -12,7 +23,25 @@ class SessionFactory():
                                             pool_timeout=5, max_overflow=0, connect_args={'timeout': 1})
         self.my_test_engine = create_engine(connection_string, encoding='utf-8', echo=echo, pool_recycle=3600,
                                             pool_timeout=5, max_overflow=0, connect_args={'connect_timeout': 1})
+        '''
 
+        '''
+        # Old code
+        class SessionFactory():
+            def __init__(self, connection_string, echo):
+                self.engine = create_engine(connection_string, encoding='utf-8', echo=echo,
+                                            #pool_size=20,
+                                            pool_recycle=3600)
+
+                # Create session maker
+                self.Session = sessionmaker(bind=self.engine)
+
+            def get_session(self):
+                return self.Session()
+
+            def __repr__(self):
+                return "<SessionFactory('%s')>" % (self.engine)
+        '''
 
         # Create session maker
         self.Session = sessionmaker(bind=self.engine)
@@ -26,19 +55,3 @@ class SessionFactory():
     def __repr__(self):
         return "<SessionFactory('%s')>" % (self.engine)
 
-'''
-class SessionFactory():
-    def __init__(self, connection_string, echo):
-        self.engine = create_engine(connection_string, encoding='utf-8', echo=echo,
-                                    #pool_size=20,
-                                    pool_recycle=3600)
-
-        # Create session maker
-        self.Session = sessionmaker(bind=self.engine)
-
-    def get_session(self):
-        return self.Session()
-
-    def __repr__(self):
-        return "<SessionFactory('%s')>" % (self.engine)
-'''

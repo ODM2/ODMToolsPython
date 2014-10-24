@@ -438,8 +438,9 @@ class mnuRibbon(RB.RibbonBar):
     def onEditFlag(self, event):
         serviceManager = self.parent.getDBService()
         cv_service = serviceManager.get_cv_service()
-        qualifierChoices = OrderedDict((x.code, x.description) for x in cv_service.get_qualifiers())
-        choices = qualifierChoices.keys() + ["Create New....."]
+        qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in cv_service.get_qualifiers()
+                                       if x.code and x.description)
+        #choices = qualifierChoices.keys() + ["Create New....."]
 
         add_flag = frmFlagValues(self, cv_service, qualifierChoices)
         val = add_flag.ShowModal()
@@ -455,6 +456,7 @@ class mnuRibbon(RB.RibbonBar):
         serviceManager = self.parent.getDBService()
 
         addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
+        addPoint.Show()
 
         '''
         add_value = frmAddPoint(self, self.parent.getRecordService())

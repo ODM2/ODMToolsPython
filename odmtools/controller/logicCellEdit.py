@@ -2,11 +2,13 @@
     ADD Point Cell Editor Logic
 """
 from collections import OrderedDict
+import datetime
 
 import wx
 import wx.combo
 from wx.lib import masked
 from odmtools.gui.frmFlagValues import frmFlagValues
+from odmtools.lib.ObjectListView import CellEditor
 
 __author__ = 'Jacob'
 
@@ -24,21 +26,22 @@ class CellEdit():
             self.cvService = serviceManager.get_cv_service()
             offsetChoices = OrderedDict((x.description, x.id) for x in
                                         self.cvService.get_offset_type_cvs())
-            qualifierChoices = OrderedDict((x.code, x.description) for x in self.cvService.get_qualifiers())
+            self.offSetTypeChoices = [NULL] + offsetChoices.keys()
+
             labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
 
             self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
-            self.offSetTypeChoices = [NULL] + offsetChoices.keys()
-            self.qualifierCodeChoices = [NULL] + qualifierChoices.keys() + [NEW]
             self.labSampleChoices = [NULL] + labChoices.keys()
 
-        else:
-            self.censorCodeChoices = [NULL]
-            self.labSampleChoices = [NULL]
-            self.offSetTypeChoices = [NULL]
-            self.qualifierCodeChoices = [NULL]
-            self.offSetTypeChoices = [NULL]
+            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+                                           for x in self.cvService.get_qualifiers() if x.code and x.description)
+            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
 
+        else:
+            self.censorCodeChoices = [NULL] + ['SampleCensorCode1'] + ['SampleCensorCode2'] + ['SampleCensorCode3']
+            self.labSampleChoices = [NULL] + ['SampleLabSample1'] + ['SampleLabSample2'] + ['SampleLabSample3']
+            self.offSetTypeChoices = [NULL] + ['SampleOffsetType1'] + ['SampleOffsetType2'] + ['SampleOffsetType3']
+            self.qualifierCodeChoices = [NULL] + ['SampleQualifierCode1'] + ['SampleQualifierCode2'] + ['SampleQualifierCode3']
 
     """
         --------------------
@@ -51,7 +54,6 @@ class CellEdit():
         :param point:
         :return:
         """
-
         point.validDataValue = False
         if not point.dataValue:
             return "error"
@@ -71,6 +73,43 @@ class CellEdit():
             point.validDataValue = True
             return "check"
         return "error"
+
+    def imgGetterDate(self, point):
+        """ Required Element
+
+        :param point:
+        :return:
+        """
+
+        date = point.date
+        point.validDate = False
+        try:
+            datetime.datetime.strptime(str(date), '%Y-%m-%d').date()
+            point.validDate = True
+            return "check"
+        except Exception as e:
+            pass
+
+        return "error"
+
+    def imgGetterTime(self, point):
+        """
+
+        :param point:
+        :return:
+        """
+
+        time = point.time
+        point.validTime = False
+        try:
+            datetime.datetime.strptime(str(time), '%H:%M:%S')
+            point.validTime = True
+            return "check"
+        except:
+            pass
+
+        return "error"
+
 
     def imgGetterCensorCode(self, point):
         """Required Element
@@ -100,6 +139,12 @@ class CellEdit():
         point.validUTCOffSet = False
         if not value:
             return "error"
+
+        if isinstance(value, int):
+            if utcOffSetBounds[0] <= value <= utcOffSetBounds[1]:
+                point.validUTCOffSet = True
+                return "check"
+
         if isinstance(value, basestring):
             try:
                 newValue = int(value)
@@ -109,10 +154,7 @@ class CellEdit():
                         return "check"
             except ValueError as e:
                 pass
-        elif isinstance(value, int):
-            if utcOffSetBounds[0] <= value <= utcOffSetBounds[1]:
-                point.validUTCOffSet = True
-                return "check"
+
         return "error"
 
     def imgGetterValueAcc(self, point):
@@ -122,10 +164,21 @@ class CellEdit():
         point.validValueAcc = False
         if not value:
             return "error"
+
+        if value == NULL:
+            point.validValueAcc = True
+            return "check"
+
         if isinstance(value, basestring):
-            return "error"
-        point.validValueAcc = True
-        return "check"
+            for type in [int, float]:
+                try:
+                    value = type(value)
+                    if isinstance(value, type):
+                        point.validValueAcc = True
+                        return "check"
+                except ValueError:
+                    continue
+        return "error"
 
     def imgGetterOffSetType(self, point):
         """
@@ -142,10 +195,6 @@ class CellEdit():
 
         point.validOffSetValue = False
         if point.offSetValue == NULL:
-            point.validOffSetValue = True
-            return "check"
-
-        if isinstance(point.offSetValue, unicode):
             point.validOffSetValue = True
             return "check"
 
@@ -200,18 +249,16 @@ class CellEdit():
         """
         point.dataValue = newValue
 
-        '''
-        for type in [int, float]:
-            try:
-                value = type(newValue)
-                if isinstance(value, type):
-                    point.dataValue = newValue
-                    return
-            except ValueError:
-                continue
-        '''
-
     def valueSetterUTCOffset(self, point, newValue):
+
+        if newValue == NULL:
+            point.utcOffSet = newValue
+            return
+
+        if isinstance(newValue, basestring):
+            point.utcOffSet = int(float(newValue))
+            return
+
         point.utcOffSet = newValue
 
 
@@ -235,15 +282,13 @@ class CellEdit():
         :param time:
         :return:
         """
-        try:
-            return str(time)
-        except UnicodeEncodeError as e:
-            # print "Error! in the unicode encoding..."
-            return str("00:00:00")
+
+        return unicode(time)
 
     def strConverterUTCOffset(self, value):
         """
         """
+
         return str(value)
 
     def strConverterOffSetValue(self, value):
@@ -272,6 +317,18 @@ class CellEdit():
         # odcb = masked.TimeCtrl(olv, fmt24hr=True)
         odcb = TimePicker(olv)
 
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return odcb
+
+    def dateEditor(self, olv, rowIndex, subItemIndex):
+        """
+
+        :param olv:
+        :param rowIndex:
+        :param subItemIndex:
+        :return:
+        """
+        odcb = DatePicker(olv)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
@@ -304,10 +361,21 @@ class CellEdit():
             """
 
             if event.GetEventObject().Value == NEW:
-                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierCodeChoices)
-                dlg.ShowModal()
+                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierChoices, isNew=True)
 
+                value = dlg.ShowModal()
+                if value == wx.ID_OK and dlg.selectedValue:
+                    self.qualifierCodeChoices.insert(0, dlg.selectedValue)
+                    event.GetEventObject().SetItems(self.qualifierCodeChoices)
+                    event.GetEventObject().SetValue(dlg.selectedValue)
+                dlg.Destroy()
 
+        try:
+            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+                                               for x in self.cvService.get_qualifiers() if x.code and x.description)
+            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
+        except:
+            pass
         odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
@@ -322,7 +390,6 @@ class CellEdit():
         :param subItemIndex:
         :return:
         """
-
         odcb = CustomComboBox(olv, choices=self.censorCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
@@ -341,6 +408,37 @@ class CellEdit():
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
+class DatePicker(wx.DatePickerCtrl):
+    """
+    This control uses standard datetime.
+    wx.DatePickerCtrl works only with wx.DateTime, but they are strange beasts.
+    wx.DataTime use 0 indexed months, i.e. January==0 and December==11.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs['style'] = kwargs.get('style', 0) | wx.DP_DEFAULT
+        wx.DatePickerCtrl.__init__(self, *args, **kwargs)
+        self.SetValue(None)
+
+    def SetValue(self, value):
+        if value:
+            dt = wx.DateTime()
+            try:
+                date = datetime.datetime.strptime(str(value), '%Y-%m-%d').date()
+            except ValueError:
+                return
+            dt.Set(date.day, date.month-1, date.year)
+        else:
+            dt = wx.DateTime.Today()
+        wx.DatePickerCtrl.SetValue(self, dt)
+
+    def GetValue(self):
+        """Get the value from the editor"""
+        dt = wx.DatePickerCtrl.GetValue(self)
+        if dt.IsOk():
+            return datetime.date(dt.Year, dt.Month+1, dt.Day)
+        else:
+            return None
 
 class TimePicker(masked.TimeCtrl):
     """
@@ -360,13 +458,17 @@ class TimePicker(masked.TimeCtrl):
 
     def SetValue(self, value):
         """Put a new value into the editor"""
-        #print "In SetValue ", value, type(value)
         newValue = value or ""
         try:
-            super(self.__class__, self).SetValue(newValue)
+            masked.TimeCtrl.SetValue(self, newValue)
         except UnicodeEncodeError as e:
-            newValue = unicode('00:00:00')
-            super(self.__class__, self).SetValue(newValue)
+            pass
+
+    def GetValue(self):
+        value = masked.TimeCtrl.GetValue(self)
+        return value
+
+
 
 class CustomComboBox(wx.combo.OwnerDrawnComboBox):
     """
@@ -394,3 +496,13 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
         dc.SetBrush(wx.Brush(backColour))
         dc.SetPen(wx.Pen(backColour))
         dc.DrawRectangleRect(rect)
+
+    def SetValue(self, value):
+        wx.combo.OwnerDrawnComboBox.SetValue(self, value or "")
+
+    def OnMeasureItem(self, item):
+        return self.popupRowHeight
+
+    def GetValue(self):
+        value = wx.combo.OwnerDrawnComboBox.GetValue(self)
+        return value

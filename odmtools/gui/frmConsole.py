@@ -27,21 +27,16 @@ class ModifiedFrame(Frame):
             remove(253)'''
         remove(wx.ID_ABOUT)
 
-class ODMConsole(ModifiedFrame, ShellFrameMixin):
+class ODMConsole(wx.Panel, ShellFrameMixin):
     def __init__(self, *args, **kwargs):
-        ModifiedFrame.__init__(self, title='ODMTools', pos=wx.DefaultPosition,
-                               style=wx.NO_BORDER, shellName='PyCrust')
+        wx.Panel.__init__(self,  *args, **kwargs)
         ShellFrameMixin.__init__(self, config=None, dataDir=None)
-
-        self.SetSize((400, 300))
-
+        sizer = wx.BoxSizer(wx.VERTICAL)
         intro = ''
         if 'version' in kwargs:
             intro = 'ODMTools Python Console %s ' % kwargs['version']
         else:
             intro = 'ODMTools Python Console'
-        self.SetStatusText(intro.replace('\n', ', '))
-
 
         kwargs['rootObject'] = None
         kwargs['rootLabel'] = None
@@ -54,14 +49,18 @@ class ODMConsole(ModifiedFrame, ShellFrameMixin):
         self.shellName = self.crust.shell
         self.shell = self.crust.shell
 
+        sizer.Add(self.crust, 1, wx.ALL | wx.EXPAND, 4)
+        self.SetSizer(sizer)
+
         # Override the filling so that status messages go to the status bar.
-        self.crust.filling.tree.setStatusText = self.SetStatusText
+        #self.crust.filling.tree.setStatusText = self.SetStatusText
 
         # Override the shell so that status messages go to the status bar.
-        self.shell.setStatusText = self.SetStatusText
+        #self.shell.setStatusText = self.SetStatusText
 
         self.shell.SetFocus()
-        self.LoadSettings()
+        #self.LoadSettings()
+        self.Layout()
 
 
     def OnClose(self, event):
@@ -74,8 +73,8 @@ class ODMConsole(ModifiedFrame, ShellFrameMixin):
     def OnAbout(self, event):
         """Display an About window."""
         title = 'About PyCrust'
-        text = "Test!"
-        dialog = wx.MessageDialog(self, text, title, wx.OK | wx.ICON_INFORMATION)
+        #text = "Test!"
+        dialog = wx.MessageDialog(self, "", title, wx.OK | wx.ICON_INFORMATION)
         dialog.ShowModal()
         dialog.Destroy()
 
@@ -97,7 +96,7 @@ class ODMConsole(ModifiedFrame, ShellFrameMixin):
     def LoadSettings(self):
         if self.config is not None:
             ShellFrameMixin.LoadSettings(self)
-            Frame.LoadSettings(self, self.config)
+            #Frame.LoadSettings(self, self.config)
             self.crust.LoadSettings(self.config)
 
 
@@ -105,7 +104,7 @@ class ODMConsole(ModifiedFrame, ShellFrameMixin):
         if self.config is not None:
             ShellFrameMixin.SaveSettings(self, force)
             if self.autoSaveSettings or force:
-                Frame.SaveSettings(self, self.config)
+                #Frame.SaveSettings(self, self.config)
                 self.crust.SaveSettings(self.config)
 
 

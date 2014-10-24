@@ -1,3 +1,4 @@
+# run profiler, view with runsnakerun
 cprofile is included in the basic python package
 install from source: 
 ```pip install runsnakerun```
@@ -11,6 +12,7 @@ When you close odm tools python the code will also close and generate the .dat f
 Then, run the following command:
 
 ```python runsnake.py profile.dat```
+
 
 # To run memory profiler with meliae
 

@@ -1,14 +1,15 @@
 #Boa:FramePanel:pnlDataTable
 
-import logging
-
 import wx
 import wx.grid
+import logging
+import itertools as iter
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
 import datetime
 
 from odmtools.common.logger import LoggerTool
+
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -18,6 +19,9 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class pnlDataTable(wx.Panel):
+
+    toggle = iter.cycle([0, 1]).next
+
     def __init__(self, parent, id, size, style, name, pos=None):
         self._init_ctrls(parent)
 
@@ -42,21 +46,44 @@ class pnlDataTable(wx.Panel):
         sizer_2.Add(self.myOlv, 1, wx.ALL | wx.EXPAND, 4)
         self.SetSizer(sizer_2)
 
-        self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
-        self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
-        self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
+        #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
+        #self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
+        #self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
 
         Publisher.subscribe(self.onChangeSelection, ("changeTableSelection"))
         Publisher.subscribe(self.onRefresh, ("refreshTable"))
 
         self.Layout()
 
+    def toggleBindings(self):
+        """ Activates/Deactivates Datatable specific bindings
+
+        :param activate:
+        :return:
+        """
+
+        if self.toggle():
+            #logger.info("binding activated...")
+            try:
+                self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+                self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
+                self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
+            except:
+                pass
+        else:
+            #logger.info("binding deactivated...")
+            try:
+                self.myOlv.Unbind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+                self.myOlv.Unbind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
+                self.myOlv.Unbind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
+            except:
+                pass
 
     def init(self, memDB, record_service):
         self.memDB = memDB
         self.record_service = record_service
         self.myOlv.SetColumns(
-            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=-1, width=-1,
+            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=100, width=-1,
                        stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
             for x, i in self.memDB.getEditColumns()
         )
@@ -84,12 +111,16 @@ class pnlDataTable(wx.Panel):
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
         #self.currentItem = event.GetEventObject().GetSelectedObjects()
-        self.currentItem = self.myOlv.GetSelectedObjects()
-        #logger.debug("selectedObjects %s" % self.currentItem)
+        logger.debug("Called!!")
+        try:
+            self.currentItem = self.myOlv.GetSelectedObjects()
+            #logger.debug("selectedObjects %s" % self.currentItem)
 
-        self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
-        #update plot
-        Publisher.sendMessage(("changePlotSelection"),  datetime_list=[x[3] for x in self.currentItem])
+            self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
+            #update plot
+            Publisher.sendMessage(("changePlotSelection"),  datetime_list=[x[3] for x in self.currentItem])
+        except:
+            pass
 
 
     def onChangeSelection(self,  datetime_list=[]):

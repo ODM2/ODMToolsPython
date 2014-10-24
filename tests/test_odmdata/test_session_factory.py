@@ -12,4 +12,4 @@ class TestSessionFactory:
 
     def test_get_session(self):
         session = self.session_factory.get_session()
-        assert 'sqlalchemy.orm.session.SessionMaker' in repr(session)
+        assert 'sqlalchemy.orm.session.Session' in repr(session)

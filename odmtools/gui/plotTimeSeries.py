@@ -138,9 +138,9 @@ class plotTimeSeries(wx.Panel):
             self.canvas.draw()
 
     '''
+    ## TODO 10/15/2014 Change function so that it will accept a list of datavalues. This will remove the need to loop through the values currently plotted and we would instead plot the list of datetimes and datavalues together.
 
-
-    def changePlotSelection(self,  datetime_list=[]):
+    def changePlotSelection(self,  datetime_list=[], datavalues=[]):
 
         #for entire list of points if selected add to new lists
         newx= []
@@ -161,6 +161,7 @@ class plotTimeSeries(wx.Panel):
                                               s=35, c='red', edgecolors='none',
                                               zorder=12, marker='s', alpha=1)
         self.canvas.draw()
+
 
     def changeSelection(self, datetime_list=[]):
         self.changePlotSelection( datetime_list)
@@ -279,6 +280,13 @@ class plotTimeSeries(wx.Panel):
                                                          picker=5.0, pickradius=5.0, markersize=4.5)
 
 
+        #self.selectedlist = self.parent.record_service.get_filter_list()
+
+        '''self.editPoint = self.axislist[self.editSeries.axisTitle].\
+                                    scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
+                                          s=35, c='k', edgecolors='none',
+                                          zorder=11, marker='s', alpha=1)# >, <, v, ^,s
+        '''
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
 
@@ -435,7 +443,11 @@ class plotTimeSeries(wx.Panel):
 
         if self.seriesPlotInfo and self.seriesPlotInfo.isPlotted(self.editseriesID):
             self.editCurve = self.seriesPlotInfo.getSeries(self.editseriesID)
-            self.updatePlot()
+
+            ## TODO Duplicate UpdatePlot?
+            logger.debug("Called duplicate updateplot")
+            #self.updatePlot()
+
 
     def setUpYAxis(self):
         self.axislist = {}
@@ -532,7 +544,7 @@ class plotTimeSeries(wx.Panel):
 
         elif isinstance(event.artist, Text):
             text = event.artist
-            print "Picking Label: ", text.get_text()
+            #print "Picking Label: ", text.get_text()
 
     def _onFigureLeave(self, event):
         """Catches mouse leaving the figure

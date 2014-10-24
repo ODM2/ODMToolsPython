@@ -378,6 +378,12 @@ class EditTools():
 
 
 
+#TODO function to send in a list of datavalues  or tuple objects with the id and datavalues together
+#TODO function to send in a function to apply to the selected datavalues
+
+
+
+
 ###############
 # UI methods
 ###############

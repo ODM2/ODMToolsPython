@@ -1,5 +1,4 @@
 #!/usr/bin/env
-#Boa:Frame:ODMTools
 
 '''
 this_file = os.path.realpath(__file__)
@@ -12,8 +11,8 @@ import sys
 import os
 import logging
 import mnuRibbon
+from odmtools.controller.frmSeriesSelector import FrmSeriesSelector
 from odmtools.gui.frmConsole import ODMConsole
-import pnlSeriesSelector
 import pnlPlot
 import pnlDataTable
 import wx.lib.agw.aui as aui
@@ -44,9 +43,47 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class frmODMToolsMain(wx.Frame):
     def __init__(self, parent):
+        size = self._obtainScreenResolution()
+        wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=parent,
+            size=size, style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
         self._init_database()
-        self._init_ctrls(parent)
+        self._init_ctrls()
         self.Refresh()
+
+    def _obtainScreenResolution(self):
+        """ Calculates the size of ODMTools
+
+        :return wx.Size:
+        """
+
+        defaultSize = wx.Size(850, 800)
+        defaultHeight, defaultWidth = defaultSize
+        screenHeight, screenWidth = wx.GetDisplaySize()
+        minimumAllowedSize = wx.Size(640, 480)
+
+        '''
+        if minimumAllowedSize >= wx.GetDisplaySize():
+            logger.fatal("ODMTools cannot be displayed in this resolution: %s \n\tPlease use a larger resolution"
+                         % wx.GetDisplaySize())
+            print "minimumAllowedsize: ", minimumAllowedSize, "display: ", wx.GetDisplaySize()
+            sys.exit(0)
+        '''
+
+        newSize = defaultSize
+        ## Screen size is greater than ODMTools' default size
+        if screenHeight > defaultHeight and screenWidth > defaultWidth:
+            pass
+        ## Screen size is smaller than ODMTools' default size
+        elif screenHeight < defaultHeight and screenWidth < defaultWidth:
+            newSize = wx.Size(screenHeight/1.5, screenWidth/1.5)
+        elif screenHeight < defaultHeight:
+            newSize = wx.Size(screenHeight/1.5, defaultWidth)
+        elif screenWidth < defaultWidth:
+            newSize = wx.Size(defaultHeight, screenWidth/1.5)
+
+        logger.debug("ODMTools Window Size: %s" % newSize)
+        return newSize
+
 
     #############Entire Form Sizers##########
     def _init_sizers(self):
@@ -121,12 +158,10 @@ class frmODMToolsMain(wx.Frame):
             pass
 
     ###################### Frame ################
-    def _init_ctrls(self, prnt):
+    def _init_ctrls(self):
         # generated method, don't edit
         logger.debug("Loading frame...")
-        wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=prnt,
-                          size=wx.Size(1000, 900),
-                          style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+
 
         self.SetIcon(gtk_execute.getIcon())
 
@@ -156,9 +191,15 @@ class frmODMToolsMain(wx.Frame):
                                    parent=self, size=wx.Size(605, 458),
                                    style=wx.TAB_TRAVERSAL)
 
+        ############# Graph ###############
+        logger.debug("Loading Plot ...")
+        self.pnlPlot = pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
+                                       parent=self.pnlDocking, size=wx.Size(605, 458),
+                                       style=wx.TAB_TRAVERSAL)
+
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-        self.pnlSelector = pnlSeriesSelector.pnlSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
+        self.pnlSelector = FrmSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
                                                                parent=self.pnlDocking, size=wx.Size(770, 388),
                                                                style=wx.TAB_TRAVERSAL, dbservice=self.sc)
 
@@ -168,24 +209,15 @@ class frmODMToolsMain(wx.Frame):
                                                    parent=self.pnlDocking, size=wx.Size(376, 280),
                                                    style=0)
 
-        ############# Graph ###############
-        logger.debug("Loading Plot ...")
-        self.pnlPlot = pnlPlot.pnlPlot(id=wxID_ODMTOOLSPANEL1, name='pnlPlot',
-                                       parent=self.pnlDocking, size=wx.Size(605, 458),
-                                       style=wx.TAB_TRAVERSAL)
-
-
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
-        self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, size=wx.Size(200, 200), )
+        self.txtPythonConsole = ODMConsole(id=wxID_TXTPYTHONCONSOLE, parent=self.pnlDocking, size=wx.Size(200, 200) )
         wx.CallAfter(self._postStartup)
-
-        # FIXME closing the txtPythonConsole from menu crashes the python console. We will need to extend pyCrust to remove this so that we don't have issues in the future.
 
         self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
         self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
-        self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
+        #self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
 
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(id=wxID_TXTPYTHONSCRIPT, name=u'txtPython', parent=self,
@@ -218,11 +250,14 @@ class frmODMToolsMain(wx.Frame):
                           .CloseButton(True).Float().FloatingPosition(pos=(self.Position))
                           .Hide().CloseButton(True).DestroyOnClose(False)
         )
+
+
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(300, 400)).MinimizeButton(
             True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float()
-                          .FloatingPosition(pos=(self.Position)).Hide().DestroyOnClose(False)
+                          .FloatingPosition(pos=(self.Position)).Show(show=False).DestroyOnClose(False)
         )
+
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.
         #self.loadDockingSettings()
@@ -230,6 +265,8 @@ class frmODMToolsMain(wx.Frame):
         self.refreshConnectionInfo()
         self._mgr.Update()
         self.Bind(wx.EVT_CLOSE, self.onClose)
+
+        self.dataTable.toggleBindings()
 
         Publisher.subscribe(self.onDocking, ("adjust.Docking"))
         Publisher.subscribe(self.onPlotSelection, ("select.Plot"))
@@ -263,6 +300,7 @@ class frmODMToolsMain(wx.Frame):
 
         if value == "Table":
             paneDetails = self._mgr.GetPane(self.dataTable)
+            self.dataTable.toggleBindings()
 
         elif value == "Selector":
             paneDetails = self._mgr.GetPane(self.pnlSelector)
@@ -308,6 +346,7 @@ class frmODMToolsMain(wx.Frame):
                                                                           connection=memDB.conn)
             self._ribbon.toggleEditButtons(True)
             self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+
             self.dataTable.init(memDB, self.record_service)
 
             # set record service for console
