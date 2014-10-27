@@ -1,11 +1,9 @@
 import math
 import datetime
-<<<<<<< HEAD
+
 from pandas import DataFrame
 import pandas
-=======
 import wx
->>>>>>> bugfix
 
 import numpy
 
@@ -377,7 +375,7 @@ class BoxWhisker(object):
 
 
 
-        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data["DataValue"], [''], [median, conflimit, mean, confint])
+        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data["DataValue"].tolist(), [''], [median, conflimit, mean, confint])
 
         mean = []
         median=[]
@@ -387,7 +385,7 @@ class BoxWhisker(object):
         y=data.groupby("DateYear")
 
         for name, group in y:
-            values.append(group)
+            values.append(group["DataValue"].tolist())
             names.append(name)
             mean.append(group.mean())
             median.append(group.median())
@@ -403,6 +401,7 @@ class BoxWhisker(object):
 
 
         mean = []
+        names=[]
         median=[]
         confint=[]
         conflimit=[]
@@ -410,21 +409,23 @@ class BoxWhisker(object):
         m=data.groupby("DateMonth")
 
         for name, group in m:
-            values.append(group)
-            mean.append(m.mean())
-            median.append(m.median())
-            ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))
+            values.append(group["DataValue"].tolist())
+            names.append(name)
+            mean.append(group.mean())
+            median.append(group.median())
+            ci = stats.norm.interval(.95, group.mean(), scale = 10*(group.std()/math.sqrt(len(group))))
             confint.append((ci[0][0], ci[1][0]))
-            cl= stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data))))
+            cl= stats.norm.interval(.95, group.median(), scale = (group.std()/math.sqrt(len(group))))
             conflimit.append((cl[0][0], cl[1][0]))
 
 
-        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", values,
-                                                       ['Jan', 'Feb', 'Mar', 'Apr', 'May','June', 'July',
-                                                        'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", values, names,
                                                        [median, conflimit, mean, confint])
 
+
         '''
+
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         data = [[x[0] for x in dataTable if x[1].month in (1, 2, 3) if x[0] <> noDataValue],
                 [x[0] for x in dataTable if x[1].month in (4, 5, 6) if x[0] <> noDataValue],
                 [x[0] for x in dataTable if x[1].month in (7, 8, 9) if x[0] <> noDataValue],
