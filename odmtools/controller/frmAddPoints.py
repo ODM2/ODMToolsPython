@@ -251,7 +251,7 @@ class AddPoints(clsAddPoints.AddPoints):
         points = []
 
         for i in objects:
-            if i.isCorrect():
+            if self.olv.isCorrect(i):
                 row = [None] * 10
                 if i.valueAccuracy != "NULL":
                     row[1] = i.valueAccuracy

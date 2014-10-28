@@ -116,9 +116,47 @@ class TestAddPoints:
             if obj.dataValue not in objects:
                 assert False
 
+    def test_isCorrect(self):
+        import pandas as pd
+        self.col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue',
+            'OffSetType', 'QualifierCode', 'LabSampleCode']
+        df = pd.DataFrame(columns=self.col)
+        df.loc[0] = ['FLOAT|INT', 'YYYY-MM-DD', 'HH:MM:SS', 'INT', 'gt|nc|lt|nd|pnq', 'FLOAT', 'FLOAT',
+                     'String', 'String', 'String']
+        size = 500
+        pointList = []
+
+        for i in range(1, size):
+            df.loc[i] = ['-9999', '2005-06-29', '14:20:15', '-7', 'nc', "1.2", "1", "NULL", "NULL", "NULL"]
+            pointList.append(Points(*df.loc[i]))
+
+        assert len(df) == size
+        assert len(pointList) == size - 1
+
+        isCorrect = True
+        for p in pointList:
+            returnValue = self.olv.isCorrect(p)
+            if returnValue == "error":
+                isCorrect = False
+        assert isCorrect
+
+        """Bad case"""
+        df.loc[len(df)+1] = ['-9999', '2005-06-29', '--:20:15', '-7', 'BadExample', "1.2", "1", "NULL", "NULL", "NULL"]
+        pointList.append(Points(*df.append(df.loc[len(df)])))
+        assert len(df) == size + 1
+        assert len(pointList) == size
+
+        isCorrect = True
+        for p in pointList:
+            if not self.olv.isCorrect(p):
+                isCorrect = False
+        assert not isCorrect
+
+
 
     def _buildObjects(self, size):
         return [Points(dataValue=x) for x in range(size)]
+
 
     def test_onUploadBtn(self):
         pass

@@ -54,20 +54,6 @@ class Points(object):
         self.validQualifierCode = False
         self.validLabSampleCode = False
 
-    def isCorrect(self):
-        valid = [
-            self.validDataValue, self.validDate,
-            self.validTime, self.validUTCOffSet,
-            self.validCensorCode, self.validValueAcc,
-            self.validOffSetValue, self.validOffSetType,
-            self.validQualifierCode, self.validLabSampleCode
-        ]
-
-        if all(valid):
-            return True
-        return False
-
-
 class OLVAddPoint(FastObjectListView):
     """
 
@@ -199,6 +185,24 @@ class OLVAddPoint(FastObjectListView):
             listItem.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
 
         self.rowFormatter = rowFormatter
+
+    def isCorrect(self, point):
+        validators = [
+            self.imgGetterDataValue, self.imgGetterDate, self.imgGetterTime, self.imgGetterCensorCode,
+            self.imgGetterUTCOffset, self.imgGetterValueAcc, self.imgGetterlabSample,
+            self.imgGetterQualifier, self.imgGetterOffSetType, self.imgGetterOffSetValue
+        ]
+
+        isCorrect = True
+        for v in validators:
+            returnValue = v(point)
+            if returnValue == "error":
+                isCorrect = False
+
+        return isCorrect
+
+
+
 
 
     def sampleRow(self):
