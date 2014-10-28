@@ -3,6 +3,7 @@
 *.so
 *.log
 __pycache__
+htmlcov
 
 # Packages
 *.egg

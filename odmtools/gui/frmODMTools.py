@@ -101,6 +101,7 @@ class frmODMToolsMain(wx.Frame):
         logger.debug("Loading Database...")
 
         self.service_manager = ServiceManager()
+        self.service_manager.extractConnectionInfo()
         self.record_service = None
 
         while True:
@@ -122,6 +123,13 @@ class frmODMToolsMain(wx.Frame):
                 ## Database connection is valid, therefore proceed through the rest of the program
                 self.createService()
                 break
+
+        conn_dict = self.service_manager.get_current_conn_dict()
+        msg = '%s://%s@%s/%s' % (
+            conn_dict['engine'], conn_dict['user'], conn_dict['address'], conn_dict['db']
+        )
+        logger.debug("...Connected to '%s'" % msg)
+
 
     def servicesValid(self, service, displayMsg=True):
         """
@@ -199,9 +207,9 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-        self.pnlSelector = FrmSeriesSelector(id=wxID_PNLSELECTOR, name=u'pnlSelector',
-                                                               parent=self.pnlDocking, size=wx.Size(770, 388),
-                                                               style=wx.TAB_TRAVERSAL, dbservice=self.sc)
+        self.pnlSelector = FrmSeriesSelector(name=u'pnlSelector', parent=self.pnlDocking,
+                                             size=wx.Size(770, 388), style=wx.TAB_TRAVERSAL, dbservice=self.sc,
+                                             serviceManager=self.service_manager)
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
@@ -422,7 +430,7 @@ class frmODMToolsMain(wx.Frame):
         self.sc = self.service_manager.get_series_service(conn_dict=conn_dict)
         return self.sc
 
-    def getDBService(self):
+    def getServiceManager(self):
         return self.service_manager
 
     def toggleConsoleTools(self):

@@ -13,9 +13,9 @@ from odmtools.odmservices import ServiceManager
     wx.NewId() for _init_ctrls in range(18)]
 
 class ClsSeriesSelector(wx.Panel):
-    def __init__(self, parent, id, size, style, name, dbservice, pos=None ):
+    def __init__(self, parent, size, style, name, dbservice, serviceManager, pos=None):
         self.parent = parent
-        wx.Panel.__init__(self, id=wxID_PNLSERIESSELECTOR, name=u'pnlSeriesSelector', parent=parent,
+        wx.Panel.__init__(self, name=u'pnlSeriesSelector', parent=parent,
                           size=wx.Size(935, 270), style=wx.TAB_TRAVERSAL)
         self._init_ctrls()
         self.dbservice = dbservice
@@ -23,8 +23,8 @@ class ClsSeriesSelector(wx.Panel):
         self.initSVBoxes()
         # Subscribe functions
         self.initPubSub()
-        sm = ServiceManager()
-        self.export_service = sm.get_export_service()
+        self.service_manager = serviceManager
+        self.export_service = self.service_manager.get_export_service()
         self.selectedIndex = 0
         self.isEditing = False
     ## Radio Sizer

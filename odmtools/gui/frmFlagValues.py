@@ -151,10 +151,10 @@ class frmFlagValues(wx.Dialog):
             self.EndModal(wx.ID_CANCEL)
 
         event.Skip()
-        #self.Close()
+        self.Close()
 
     def OnBtnCancelButton(self, event):
         event.Skip()
-        #self.Close()
+        self.Close()
 
 

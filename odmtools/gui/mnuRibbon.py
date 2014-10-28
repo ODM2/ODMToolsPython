@@ -406,7 +406,7 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection info to wizard
         # get site, Variable and Source from current dataset
 
-        wiz=wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
+        wiz=wizSave.wizSave(self, self.parent.getServiceManager(), self.parent.getRecordService())
         wiz.Destroy()
         event.Skip()
 
@@ -436,7 +436,7 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditFlag(self, event):
-        serviceManager = self.parent.getDBService()
+        serviceManager = self.parent.getServiceManager()
         cv_service = serviceManager.get_cv_service()
         qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in cv_service.get_qualifiers()
                                        if x.code and x.description)
@@ -453,7 +453,7 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditAddPoint(self, event):
         recordService = self.parent.getRecordService()
-        serviceManager = self.parent.getDBService()
+        serviceManager = self.parent.getServiceManager()
 
         addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
         addPoint.Show()

@@ -20,10 +20,12 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class ServiceManager():
     def __init__(self, debug=False):
         self.debug = debug
-        f = self._get_file('r')
         self._conn_dicts = []
         self.version = 0
         self._connection_format = "%s+%s://%s:%s@%s/%s"
+
+    def extractConnectionInfo(self):
+        f = self._get_file('r')
 
         # Read all lines (connections) in the connection.cfg file
         while True:
