@@ -302,6 +302,11 @@ class AddPoints(clsAddPoints.AddPoints):
 
         return datetime.datetime.combine(newDate, newTime)
 
+    def onCheck(self, event):
+        object = event.object
+        #print "Object: ", object, event.value, event.checkedObjects
+
+
 class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
         wx.Frame.__init__(self, parent, *args, **kwargs)

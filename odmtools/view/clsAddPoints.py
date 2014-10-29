@@ -13,7 +13,7 @@ import wx.combo
 import wx.lib.masked
 import wx.lib.agw.buttonpanel as BP
 
-from odmtools.controller.olvAddPoint import OLVAddPoint
+from odmtools.controller.olvAddPoint import OLVAddPoint, EVT_OVL_CHECK_EVENT
 from odmtools.lib.ObjectListView import EVT_CELL_EDIT_STARTING, EVT_CELL_EDIT_FINISHING
 from odmtools.common.icons.icons4addpoint import *
 
@@ -90,6 +90,7 @@ class AddPoints(wx.Frame):
         self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelected)
         #self.olv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onTooltip)
         #self.olv.Bind(wx.EVT_CHAR, self.onChar)
+        self.olv.Bind(EVT_OVL_CHECK_EVENT, self.onCheck)
 
     # Virtual event handlers, override them in your derived class
     def onAddBtn(self, event):
@@ -118,6 +119,9 @@ class AddPoints(wx.Frame):
 
     def onChar(self, event):
         pass
+
+    def onCheck(self, event):
+        event.Skip()
 
     def onEdit(self, event):
 

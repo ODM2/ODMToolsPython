@@ -2,10 +2,14 @@
     Object List View Control used in Add Point Form
 """
 import wx
-
+import wx.lib.newevent
 from datetime import datetime
 from odmtools.common import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
 from odmtools.controller.logicCellEdit import CellEdit, NULL
+
+
+OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
+
 
 __author__ = 'Jacob'
 
@@ -53,6 +57,15 @@ class Points(object):
         self.validOffSetType = False
         self.validQualifierCode = False
         self.validLabSampleCode = False
+    def __repr__(self):
+        """
+
+        :return:
+        """
+
+        return "<Point('%s', '%s, '%s', '%s', '%s')>" \
+               % (self.dataValue, self.date, self.time, self.utcOffSet, self.censorCode)
+
 
 class OLVAddPoint(FastObjectListView):
     """
@@ -79,6 +92,8 @@ class OLVAddPoint(FastObjectListView):
         FastObjectListView.__init__(self, *args, **kwargs)
 
         cellEdit = CellEdit(self, self.serviceManager, self.recordService)
+
+        self.checkedObjects = []
 
         # # Custom Image Getters
         self.imgGetterDataValue = cellEdit.imgGetterDataValue
@@ -173,6 +188,8 @@ class OLVAddPoint(FastObjectListView):
         ]
 
         self.SetColumns(columns)
+
+        # self.CreateCheckStateColumn()
         self.SetObjects(None)
 
         def rowFormatter(listItem, point):
@@ -201,12 +218,91 @@ class OLVAddPoint(FastObjectListView):
 
         return isCorrect
 
-
-
-
-
     def sampleRow(self):
         return Points()
 
     def emptyCol(self):
         return " "
+
+'''
+    def _HandleLeftDownOnImage(self, rowIndex, subItemIndex):
+        """
+        This is the same code, just added the original _HandleLeftDownOnImage in ObjectListView
+
+        User can use mouse clicks to check/uncheck rows
+        """
+
+        column = self.columns[subItemIndex]
+        if not column.HasCheckState():
+            return
+
+        self._PossibleFinishCellEdit()
+        modelObject = self.GetObjectAt(rowIndex)
+        if modelObject is not None:
+            if column.GetCheckState(modelObject) is False:
+                """Visually 'check' row"""
+                column.SetCheckState(modelObject, not column.GetCheckState(modelObject))
+
+                ## Keep a record of which objects are checked
+                self.checkedObjects.append(modelObject)
+
+                # Just added the event here ===================================
+                e = OvlCheckEvent(object=modelObject, value=column.GetCheckState(modelObject),
+                                  checkedObjects=self.checkedObjects, row=rowIndex, column=column)
+                wx.PostEvent(self, e)
+                # =============================================================
+
+                self.RefreshIndex(rowIndex, modelObject)
+            else:
+                """Visually 'uncheck' row"""
+                column.SetCheckState(modelObject, not column.GetCheckState(modelObject))
+
+                self.checkedObjects.remove(modelObject)
+
+                # Just added the event here ===================================
+                e = OvlCheckEvent(object=modelObject, value=column.GetCheckState(modelObject),
+                                  checkedObjects=self.checkedObjects, row=rowIndex, column=column)
+                wx.PostEvent(self, e)
+                # =============================================================
+
+    def SetCheckState(self, modelObject, state):
+        """
+        This is the same code as the original SetCheckState in ObjectListView
+
+        User can select using the space bar to check/uncheck rows
+
+        """
+
+        if self.checkStateColumn is None:
+            return None
+
+        if self.GetCheckState(modelObject) is False:
+            """Visually 'check' row"""
+            r = self.checkStateColumn.SetCheckState(modelObject, state)
+
+
+            ## Keep a record of which objects are checked
+            self.checkedObjects.append(modelObject)
+
+            # Just added the event here ===================================
+            e = OvlCheckEvent(object=modelObject, value=state,
+                              checkedObjects=self.checkedObjects)
+            wx.PostEvent(self, e)
+            # =============================================================
+
+            return r
+        else:
+            r = self.checkStateColumn.SetCheckState(modelObject, state)
+
+            self.checkedObjects.remove(modelObject)
+
+            # Just added the event here ===================================
+            e = OvlCheckEvent(object=modelObject, value=state,
+                              checkedObjects=self.checkedObjects)
+            wx.PostEvent(self, e)
+            # =============================================================
+
+            return r
+
+'''
+
