@@ -299,6 +299,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :param event:
         :return:
         """
+
         if self.checkSite.GetValue():
             self.site_code = self.siteList[event.GetSelection()].code
             self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
@@ -320,6 +321,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :param event:
         :return:
         """
+
         if self.checkVariable.GetValue():
             self.variable_code = self.varList[event.GetSelection()].code
             if (not self.checkSite.GetValue() and self.checkVariable.GetValue()):
@@ -385,6 +387,11 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         # self.tableSeries.DeleteAllItems()
+        if self.rbAll.GetValue():
+            logger.debug("Called!")
+            self.rbAll.SetValue(False)
+            self.rbSimple.SetValue(True)
+            
         if not self.checkSite.GetValue() and not self.checkVariable.GetValue():
             self.setFilter()
             self.cbSites.Enabled = False
