@@ -365,7 +365,7 @@ class BoxWhisker(object):
         # for x in dataTable:
         #     print x, x[3]
         data =dataTable[dataTable["DataValue"]!=noDataValue]
-
+        self.data = data
         mean.append(data.mean())
         median.append(data.median())
         ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))

@@ -35,10 +35,18 @@ class PlotBox(wx.Panel):
         Publisher.subscribe(self.overall, ("box.Overall"))
 
         self.figure = matplotlib.figure.Figure()
+        #self.figure = plt.figure()
 
         self.plot = self.figure.add_subplot(111)
-        self.plot.axis([0, 1, 0, 1])  #
+        #self.plot.axis([0, 1, 0, 1])  #
         self.plot.set_title("No Data To Plot")
+
+        import pandas as pd
+        import numpy as np
+        self.data = pd.DataFrame(np.random.randn(10,2), columns=['first', 'sec'])
+        ax = self.data.plot(kind='box', ax=self.plot, title='sample' )
+
+
 
         self.canvas = FigCanvas(self, -1, self.figure)
         # Create the navigation toolbar, tied to the canvas
@@ -111,9 +119,22 @@ class PlotBox(wx.Panel):
 
     def _createPlot(self, oneSeries, rows, cols, index):
 
+
         count = self.seriesPlotInfo.count()
         ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
+        #ax = oneSeries.BoxWhisker.data.boxplot(ax=self.axes, return_type='axes')
+
         self.plots.append(ax)
+
+        '''
+        import pandas as pd
+        import numpy as np
+
+        self.data = pd.DataFrame(np.random.randn(10, 2), columns=['first', 'sec'])
+        ax = self.data.plot(kind='box', title='sample' )
+        '''
+        #self.canvas.draw()
+
         '''
         fig, axes = plt.subplots(nrows=2, ncols=2)
 
@@ -140,8 +161,10 @@ class PlotBox(wx.Panel):
         #ci = oneSeries.BoxWhisker.currinterval.confint
         #mean = oneSeries.BoxWhisker.currinterval.means
         #cl = oneSeries.BoxWhisker.currinterval.conflimit
-        bp = ax.boxplot(oneSeries.BoxWhisker.currinterval.data, sym="-s", notch=True, bootstrap=5000)#,
+        #bp = ax.boxplot(oneSeries.BoxWhisker.currinterval.data[0])#, sym="-s", notch=True, bootstrap=5000)#,
                                            #conf_intervals=ci)
+
+
         #bp=oneSeries.BoxWhisker.currinterval.data.boxplot(ax=self.plots[index-1], return_type='axes', conf_intervals=ci,
         #                                  sym="-s", notch=True, bootstrap=5000)
 
