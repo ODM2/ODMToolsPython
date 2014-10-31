@@ -375,7 +375,7 @@ class BoxWhisker(object):
 
 
 
-        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data["DataValue"].tolist(), [''], [median, conflimit, mean, confint])
+        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", None, [''], [median, conflimit, mean, confint])
 
         mean = []
         median=[]
@@ -385,7 +385,6 @@ class BoxWhisker(object):
         y=data.groupby("DateYear")
 
         for name, group in y:
-            values.append(group["DataValue"].tolist())
             names.append(name)
             mean.append(group.mean())
             median.append(group.median())
@@ -395,7 +394,7 @@ class BoxWhisker(object):
             conflimit.append((cl[0][0], cl[1][0]))
 
         # return medians, conflimit, means, confint
-        self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", values, names,[ median, conflimit, mean, confint])
+        self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", "DateYear", names,[ median, conflimit, mean, confint])
 
 
 
@@ -409,7 +408,6 @@ class BoxWhisker(object):
         m=data.groupby("DateMonth")
 
         for name, group in m:
-            values.append(group["DataValue"].tolist())
             names.append(name)
             mean.append(group.mean())
             median.append(group.median())
@@ -419,7 +417,7 @@ class BoxWhisker(object):
             conflimit.append((cl[0][0], cl[1][0]))
 
 
-        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", values, names,
+        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", "DateMonth" , names,
                                                        [median, conflimit, mean, confint])
 
 
@@ -446,10 +444,11 @@ class BoxWhisker(object):
 
 
 class BoxWhiskerPlotInfo(object):
-    def __init__(self, title, data,  xLabels, dets):
+    def __init__(self, title, groupby ,  xLabels, dets):
         self.title = title
-        self.data = data
+
         self.xlabels = xLabels
+        self.groupby = groupby
 
         self.medians = dets[0]
         self.confint = dets[1]

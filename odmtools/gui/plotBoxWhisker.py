@@ -44,7 +44,8 @@ class PlotBox(wx.Panel):
         import pandas as pd
         import numpy as np
         self.data = pd.DataFrame(np.random.randn(10,2), columns=['first', 'sec'])
-        ax = self.data.plot(kind='box', ax=self.plot, title='sample' )
+        #plt = self.data.plot(kind='box', ax=self.plot, title='sample' )
+        pl = self.data.boxplot( ax=self.plot )
 
 
 
@@ -93,17 +94,14 @@ class PlotBox(wx.Panel):
         self.clear()
 
         rows, cols = self.gridSize(self.seriesPlotInfo.count())
-        self.figure, self.axes = plt.subplots(nrows=rows, ncols=cols)
+       # self.figure, self.axes = plt.subplots(nrows=rows, ncols=cols)
         i = 1
-        self.plots = []
+
 
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             if len(oneSeries.dataTable) > 0:
                 self._createPlot(oneSeries, rows, cols, i)
                 i += 1
-
-        plt.setp([x.get_xticklabels() for x in self.plots[0:]], rotation=35)
-        # print "xlabels: ", [dir(x.get_xticklabels()) for x in self.plots[0:]]
 
         left = 0.125  # the left side of the subplots of the figure
         right = 0.9  # the right side of the subplots of the figure
@@ -112,8 +110,8 @@ class PlotBox(wx.Panel):
         wspace = .8  # the amount of width reserved for blank space between subplots
         hspace = .8  # the amount of height reserved for white space between subplots
         self.figure.subplots_adjust(left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace)
-        if len(self.plots) > 0:
-            self.figure.tight_layout()
+
+        self.figure.tight_layout()
 
         self.canvas.draw()
 
@@ -122,61 +120,35 @@ class PlotBox(wx.Panel):
 
         count = self.seriesPlotInfo.count()
         ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
-        #ax = oneSeries.BoxWhisker.data.boxplot(ax=self.axes, return_type='axes')
 
-        self.plots.append(ax)
-
-        '''
-        import pandas as pd
-        import numpy as np
-
-        self.data = pd.DataFrame(np.random.randn(10, 2), columns=['first', 'sec'])
-        ax = self.data.plot(kind='box', title='sample' )
-        '''
-        #self.canvas.draw()
-
-        '''
-        fig, axes = plt.subplots(nrows=2, ncols=2)
-
-        self.plots.append(df1.plot(ax=axes[0,0])
-        df2.plot(ax=axes[0,1])
-        ...
-        '''
-
-        # print "self.plots: ", [dir(x) for x in self.plots]
+        med = oneSeries.BoxWhisker.currinterval.medians
+        ci = oneSeries.BoxWhisker.currinterval.confint
+        mean = oneSeries.BoxWhisker.currinterval.means
+        cl = oneSeries.BoxWhisker.currinterval.conflimit
 
         wrap, text = self.textSize(count)
+        self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+
         ax.set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
-        #print dir(self.plots[i - 1])
+
 
         ax.set_ylabel(
             "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
-        #self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
         ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
 
-        self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
-
-
-        #med = oneSeries.BoxWhisker.currinterval.medians
-        #ci = oneSeries.BoxWhisker.currinterval.confint
-        #mean = oneSeries.BoxWhisker.currinterval.means
-        #cl = oneSeries.BoxWhisker.currinterval.conflimit
-        #bp = ax.boxplot(oneSeries.BoxWhisker.currinterval.data[0])#, sym="-s", notch=True, bootstrap=5000)#,
-                                           #conf_intervals=ci)
-
-
-        #bp=oneSeries.BoxWhisker.currinterval.data.boxplot(ax=self.plots[index-1], return_type='axes', conf_intervals=ci,
-        #                                  sym="-s", notch=True, bootstrap=5000)
-
-
-        # Plot Mean and its confidence interval
-       # for x in range(len(mean)):
-       #     self.plots[index - 1].vlines(x + 1, cl[x][0], cl[x][1], color='r', linestyle="solid")
-        #self.plots[index - 1].scatter([range(1, len(mean) + 1)], mean, marker='o', c='r', s=10)
+        # Plot Means confidence level
+        for x in range(len(mean)):
+            ax.vlines(x + 1, cl[x][0], cl[x][1], color='r', linestyle="solid")
+        #Plot Mean
+        ax.scatter([range(1, len(mean) + 1)], mean, marker='o', c='r', s=10)
 
 
         # Plot Median
-        #self.plots[index - 1].scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
+        ax.scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
+
+
+        bp = oneSeries.BoxWhisker.data.boxplot(column = "DataValue", ax = ax, by = oneSeries.BoxWhisker.currinterval.groupby,
+                                                rot = 35, return_type = 'dict', notch=True, sym="-s", conf_intervals=ci)
 
         # Set Colors of the Box Whisker plot
         '''
@@ -187,9 +159,7 @@ class PlotBox(wx.Panel):
         plt.setp(bp['fliers'], markersize=3.5, color=oneSeries.color)
         '''
 
-        # self.plot.set_ybound(min(data),max(data))
-        #self.plots[index - 1].set_autoscale_on(True)
-        #self.plots[index - 1].set_xticklabels(oneSeries.BoxWhisker.currinterval.xlabels)
+
 
 
     def setColor(self, color):
