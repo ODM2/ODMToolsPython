@@ -3,8 +3,8 @@ import textwrap
 import wx
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
+from pandas.tools.plotting import grouped_hist
 
 
 class plotHist(wx.Panel):
@@ -27,13 +27,16 @@ class plotHist(wx.Panel):
         wx.Panel.__init__(self, prnt, -1)
 
         self.figure = Figure()
-        self.plot = self.figure.add_subplot(111)
 
-        self.plot.set_title("No Data To Plot")
-
+        plot = self.figure.add_subplot(111)
+        plot.set_title("No Data To Plot")
+        import pandas as pd
+        import numpy as np
+        data = pd.DataFrame(np.random.randn(10,2), columns=['first', 'sec'])
+        #plt = self.data.plot(kind='box', ax=self.plot, title='sample' )
+        pl = data.hist( ax=plot )
 
         self.canvas = FigCanvas(self, -1, self.figure)
-
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, True)
         self.toolbar.Realize()
@@ -44,7 +47,7 @@ class plotHist(wx.Panel):
                                     False, u'Tahoma'))
         self.canvas.draw()
         self._init_sizers()
-        self.hist = []
+
         self.bins = 50
 
 
@@ -55,8 +58,7 @@ class plotHist(wx.Panel):
 
     def clear(self):
         self.figure.clear()
-        self.hist = []
-
+        #plt.clear()
 
 
     def gridSize(self, cells):
@@ -81,48 +83,41 @@ class plotHist(wx.Panel):
 
     def updatePlot(self):
         self.clear()
-        count = self.seriesPlotInfo.count()
-        rows, cols = self.gridSize(count)
-        self.plots = []
+        rows, cols = self.gridSize(self.seriesPlotInfo.count())
+
         i = 1
         for oneSeries in self.seriesPlotInfo.getAllSeries():
-            self.plots.append(self.figure.add_subplot(repr(rows) + repr(cols) + repr(i)))
+            if len(oneSeries.dataTable) > 0:
+                self._createPlot(oneSeries, rows, cols, i)
+                i= i+1
 
-            wrap, text = self.textSize(count)
-            self.plots[i - 1].set_xlabel("\n".join(textwrap.wrap(oneSeries.variableName, wrap)))
-            self.plots[i - 1].set_ylabel("Number of Observations")
-
-            self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL,
-                                        False, u'Tahoma'))
-
-            #self.plots[i - 1].set_title(
-            # "\n".join(textwrap.wrap(oneSeries.siteName + " " + oneSeries.variableName, wrap)))
-            self.plots[i - 1].set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
-
-
-            #print "oneSeries.dataTable:", oneSeries.dataTable
-            if len(oneSeries.dataTable) >0:
-                self.hist.append(self.plots[i - 1].hist(
-                        [x[0] for x in oneSeries.dataTable if x[0] <> oneSeries.noDataValue], bins=self.bins, normed=False, facecolor=oneSeries.color,
-                        label=oneSeries.siteName + " " + oneSeries.variableName
-                    )
-                )
-            i += 1
-
-        left = 0.125  # the left side of the subplots of the figure
-        right = 0.9  # the right side of the subplots of the figure
-        bottom = 0.51  # the bottom of the subplots of the figure
-        top = 1.2  # the top of the subplots of the figure
-        wspace = .8  # the amount of width reserved for blank space between subplots
-        hspace = .8  # the amount of height reserved for white space between subplots
-        self.figure.subplots_adjust(
-            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
-        )
-
-        if len(self.hist)>0:
-            self.figure.tight_layout()
-
+        self.figure.tight_layout()
         self.canvas.draw()
+
+
+    def _createPlot(self, oneSeries, rows, cols, index):
+        ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
+
+        #oneSeries.filteredData.hist(ax= ax, color='k', alpha=0.5, bins=50)
+        his = oneSeries.filteredData.hist( column = "DataValue", ax = ax, by = "DateMonth")#, bins=self.bins,
+                                          facecolor=oneSeries.color, label=oneSeries.siteName + " " + oneSeries.variableName )
+        '''self.hist.append(self.plots[i - 1].hist(
+                    [x[0] for x in oneSeries.dataTable if x[0] <> oneSeries.noDataValue], bins=self.bins, normed=False, facecolor=oneSeries.color,
+                    label=oneSeries.siteName + " " + oneSeries.variableName
+                )
+
+            )
+        '''
+        wrap, text = self.textSize(self.seriesPlotInfo.count())
+        ax.set_xlabel("\n".join(textwrap.wrap(oneSeries.variableName, wrap)))
+        ax.set_ylabel("Number of Observations")
+
+        self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL,
+                                    False, u'Tahoma'))
+        ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
+
+
+
 
 
     def setColor(self, color):

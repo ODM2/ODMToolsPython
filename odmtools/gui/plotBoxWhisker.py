@@ -1,13 +1,11 @@
 import textwrap
 
 import wx
-import matplotlib
-import matplotlib.pyplot as plt
-from wx.lib.pubsub import pub as Publisher
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
+
+from wx.lib.pubsub import pub as Publisher
 
 
 class PlotBox(wx.Panel):
@@ -34,18 +32,19 @@ class PlotBox(wx.Panel):
         Publisher.subscribe(self.seasonaly, ("box.Seasonal"))
         Publisher.subscribe(self.overall, ("box.Overall"))
 
-        self.figure = matplotlib.figure.Figure()
+        self.figure = Figure()
         #self.figure = plt.figure()
 
-        self.plot = self.figure.add_subplot(111)
+
+        plot = self.figure.add_subplot(111)
         #self.plot.axis([0, 1, 0, 1])  #
-        self.plot.set_title("No Data To Plot")
+        plot.set_title("No Data To Plot")
 
         import pandas as pd
         import numpy as np
-        self.data = pd.DataFrame(np.random.randn(10,2), columns=['first', 'sec'])
+        data = pd.DataFrame(np.random.randn(10,2), columns=['first', 'sec'])
         #plt = self.data.plot(kind='box', ax=self.plot, title='sample' )
-        pl = self.data.boxplot( ax=self.plot )
+        pl = data.boxplot( ax=plot )
 
 
 
@@ -55,11 +54,9 @@ class PlotBox(wx.Panel):
         self.toolbar.Realize()
         self.figure.tight_layout()
 
-
-        #self.canvas.SetCursor(wx.StockCursor(wx.CURSOR_CROSS))
-        #self.canvas.SetScrollbar(wx.HORIZONTAL, 0,5, 1000)
         self.setColor("WHITE")
         self.canvas.SetFont(wx.Font(15, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+
         self.canvas.draw()
         self._init_sizers()
 
@@ -67,8 +64,8 @@ class PlotBox(wx.Panel):
         self.figure.clear()
 
     def close(self):
-        plt.clf()
-        plt.close('all')
+        self.figure.clf()
+        #plt.close('all')
 
     def gridSize(self, cells):
         rows = 1
@@ -95,41 +92,19 @@ class PlotBox(wx.Panel):
 
         rows, cols = self.gridSize(self.seriesPlotInfo.count())
        # self.figure, self.axes = plt.subplots(nrows=rows, ncols=cols)
+
         i = 1
-
-
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             if len(oneSeries.dataTable) > 0:
                 self._createPlot(oneSeries, rows, cols, i)
                 i += 1
 
-        left = 0.125  # the left side of the subplots of the figure
-        right = 0.9  # the right side of the subplots of the figure
-        bottom = 0.51  # the bottom of the subplots of the figure
-        top = 1.2  # the top of the subplots of the figure
-        wspace = .8  # the amount of width reserved for blank space between subplots
-        hspace = .8  # the amount of height reserved for white space between subplots
-        self.figure.subplots_adjust(left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace)
-
         self.figure.tight_layout()
-
         self.canvas.draw()
 
     def _createPlot(self, oneSeries, rows, cols, index):
 
         ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
-
-        #Labels
-        count = self.seriesPlotInfo.count()
-        wrap, text = self.textSize(count)
-        self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
-        ax.set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
-
-
-        ax.set_ylabel(
-            "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
-        ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
-
 
         med = oneSeries.BoxWhisker.currinterval.medians
         ci = oneSeries.BoxWhisker.currinterval.confint
@@ -147,8 +122,8 @@ class PlotBox(wx.Panel):
         ax.scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
 
 
-        bp = oneSeries.BoxWhisker.data.boxplot(column = "DataValue", ax = ax, by = oneSeries.BoxWhisker.currinterval.groupby,
-                                                rot = 35, return_type = 'dict', notch=True, sym="-s", conf_intervals=ci, grid = False)
+        bp = oneSeries.filteredData.boxplot(column = "DataValue", ax = ax, by = oneSeries.BoxWhisker.currinterval.groupby,
+                                                rot = 35, return_type = 'both', notch=True, sym="-s", conf_intervals=ci, grid = False)
 
         # Set Colors of the Box Whisker plot
         '''
@@ -158,6 +133,15 @@ class PlotBox(wx.Panel):
         plt.setp(bp['caps'], color='k')
         plt.setp(bp['fliers'], markersize=3.5, color=oneSeries.color)
         '''
+        #Labels
+
+        wrap, text = self.textSize(self.seriesPlotInfo.count())
+        self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+        ax.set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
+
+        ax.set_ylabel(
+            "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
+        ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
 
 
 

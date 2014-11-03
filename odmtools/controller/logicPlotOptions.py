@@ -26,6 +26,7 @@ class OneSeriesPlotInfo(object):
         self.variableName = ""
         self.dataType = ""
         self.variableUnits = ""
+        self.filteredData=None
         self.BoxWhisker = None
         self.Probability = None
         self.Statistics = None
@@ -233,6 +234,9 @@ class SeriesPlotInfo(object):
         seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
+        #remove all of the nodatavalues from the pandas table
+        seriesInfo.filteredData= data[data["DataValue"]!=noDataValue]
+
 
         if len(data)>0:
             seriesInfo.yrange = data['DataValue'].max() - data['DataValue'].min()
@@ -285,9 +289,9 @@ class SeriesPlotInfo(object):
 
     def build(self, seriesInfo):
 
-        seriesInfo.Probability = Probability(seriesInfo.dataTable, seriesInfo.noDataValue)
-        seriesInfo.Statistics = Statistics(seriesInfo.dataTable,  seriesInfo.noDataValue)
-        seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.dataTable, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
+        seriesInfo.Probability = Probability(seriesInfo.filteredData)
+        seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
+        seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
 
 
     def updateDateRange(self, startDate=None, endDate=None):
@@ -313,12 +317,12 @@ class SeriesPlotInfo(object):
 
 
 class Statistics(object):
-    def __init__(self, data,  noDataValue):
+    def __init__(self, data):
 
 
         #dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         #data = sorted(dataValues)
-        d = data[data["DataValue"]!= noDataValue].describe(percentiles = [.10,.25,.5,.75,.90])
+        d= data.describe(percentiles = [.10,.25,.5,.75,.90])
         count = self.NumberofObservations = d["DataValue"]["count"]
         self.NumberofCensoredObservations = data[data["CensorCode"]!= "nc"].count().DataValue
         self.ArithemticMean = round(d["DataValue"]["mean"], 5)
@@ -339,7 +343,7 @@ class Statistics(object):
             self.Maximum = round(d["DataValue"]["max"], 5)
             self.Minimum = round(d["DataValue"]["min"], 5)
             self.StandardDeviation = round(d["DataValue"]["std"], 5)
-            self.CoefficientofVariation = round(data[data["DataValue"]!= noDataValue].var().DataValue, 5)
+            self.CoefficientofVariation = round(data.var().DataValue, 5)
 
             ##Percentiles
             self.Percentile10 = round(d["DataValue"]["10%"], 5)
@@ -350,7 +354,7 @@ class Statistics(object):
 
 
 class BoxWhisker(object):
-    def __init__(self, dataTable, method, noDataValue):
+    def __init__(self, data, method):
 
         self.intervals = {}
         self.method = method
@@ -364,8 +368,7 @@ class BoxWhisker(object):
 
         # for x in dataTable:
         #     print x, x[3]
-        data =dataTable[dataTable["DataValue"]!=noDataValue]
-        self.data = data
+
         mean.append(data.mean())
         median.append(data.median())
         ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))
@@ -457,12 +460,12 @@ class BoxWhiskerPlotInfo(object):
 
 
 class Probability(object):
-    def __init__(self, dataTable, noDataValue):
-        dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
+    def __init__(self, data):
+
         self.curFreq = None
         self.Xaxis = []
-        self.Yaxis = sorted(dataValues)
-        length = len(dataValues)
+        #self.Yaxis = sorted(data)
+        length = len(data)
 
         for it in range(length):
             #curValue = datavalues[it]
