@@ -117,24 +117,24 @@ class PlotBox(wx.Panel):
 
     def _createPlot(self, oneSeries, rows, cols, index):
 
-
-        count = self.seriesPlotInfo.count()
         ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
 
-        med = oneSeries.BoxWhisker.currinterval.medians
-        ci = oneSeries.BoxWhisker.currinterval.confint
-        mean = oneSeries.BoxWhisker.currinterval.means
-        cl = oneSeries.BoxWhisker.currinterval.conflimit
-
+        #Labels
+        count = self.seriesPlotInfo.count()
         wrap, text = self.textSize(count)
         self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
-
         ax.set_xlabel("\n".join(textwrap.wrap(oneSeries.BoxWhisker.currinterval.title, wrap)))
 
 
         ax.set_ylabel(
             "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
         ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
+
+
+        med = oneSeries.BoxWhisker.currinterval.medians
+        ci = oneSeries.BoxWhisker.currinterval.confint
+        mean = oneSeries.BoxWhisker.currinterval.means
+        cl = oneSeries.BoxWhisker.currinterval.conflimit
 
         # Plot Means confidence level
         for x in range(len(mean)):
@@ -148,7 +148,7 @@ class PlotBox(wx.Panel):
 
 
         bp = oneSeries.BoxWhisker.data.boxplot(column = "DataValue", ax = ax, by = oneSeries.BoxWhisker.currinterval.groupby,
-                                                rot = 35, return_type = 'dict', notch=True, sym="-s", conf_intervals=ci)
+                                                rot = 35, return_type = 'dict', notch=True, sym="-s", conf_intervals=ci, grid = False)
 
         # Set Colors of the Box Whisker plot
         '''
