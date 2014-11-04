@@ -4,7 +4,6 @@ import wx
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
-from pandas.tools.plotting import grouped_hist
 
 
 class plotHist(wx.Panel):
@@ -23,7 +22,7 @@ class plotHist(wx.Panel):
 
 
     def _init_ctrls(self, prnt):
-        #matplotlib.figure.Figure.__init__(self)
+        # matplotlib.figure.Figure.__init__(self)
         wx.Panel.__init__(self, prnt, -1)
 
         self.figure = Figure()
@@ -32,9 +31,10 @@ class plotHist(wx.Panel):
         plot.set_title("No Data To Plot")
         import pandas as pd
         import numpy as np
-        data = pd.DataFrame(np.random.randn(10,2), columns=['first', 'sec'])
+
+        data = pd.DataFrame(np.random.randn(10, 2), columns=['first', 'sec'])
         #plt = self.data.plot(kind='box', ax=self.plot, title='sample' )
-        pl = data.hist( ax=plot )
+        pl = data.hist(ax=plot)
 
         self.canvas = FigCanvas(self, -1, self.figure)
         # Create the navigation toolbar, tied to the canvas
@@ -58,7 +58,7 @@ class plotHist(wx.Panel):
 
     def clear(self):
         self.figure.clear()
-        #plt.clear()
+        # plt.clear()
 
 
     def gridSize(self, cells):
@@ -89,7 +89,7 @@ class plotHist(wx.Panel):
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             if len(oneSeries.dataTable) > 0:
                 self._createPlot(oneSeries, rows, cols, i)
-                i= i+1
+                i += 1
 
         self.figure.tight_layout()
         self.canvas.draw()
@@ -98,16 +98,12 @@ class plotHist(wx.Panel):
     def _createPlot(self, oneSeries, rows, cols, index):
         ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
 
-        #oneSeries.filteredData.hist(ax= ax, color='k', alpha=0.5, bins=50)
-        his = oneSeries.filteredData.hist( column = "DataValue", ax = ax, by = "DateMonth")#, bins=self.bins,
-                                          facecolor=oneSeries.color, label=oneSeries.siteName + " " + oneSeries.variableName )
-        '''self.hist.append(self.plots[i - 1].hist(
-                    [x[0] for x in oneSeries.dataTable if x[0] <> oneSeries.noDataValue], bins=self.bins, normed=False, facecolor=oneSeries.color,
-                    label=oneSeries.siteName + " " + oneSeries.variableName
-                )
+        # oneSeries.filteredData.hist(ax= ax, color='k', alpha=0.5, bins=50)
+        his = oneSeries.filteredData.hist(column="DataValue", ax=ax, bins=self.bins,
+                                          facecolor=oneSeries.color,
+                                          label=oneSeries.siteName + " " + oneSeries.variableName,
+                                          grid=False)
 
-            )
-        '''
         wrap, text = self.textSize(self.seriesPlotInfo.count())
         ax.set_xlabel("\n".join(textwrap.wrap(oneSeries.variableName, wrap)))
         ax.set_ylabel("Number of Observations")
@@ -115,9 +111,6 @@ class plotHist(wx.Panel):
         self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL,
                                     False, u'Tahoma'))
         ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
-
-
-
 
 
     def setColor(self, color):
