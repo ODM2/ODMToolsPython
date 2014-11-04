@@ -33,20 +33,21 @@ class PlotBox(wx.Panel):
         Publisher.subscribe(self.overall, ("box.Overall"))
 
         self.figure = Figure()
-        #self.figure = plt.figure()
+        # self.figure = plt.figure()
 
 
         plot = self.figure.add_subplot(111)
         #self.plot.axis([0, 1, 0, 1])  #
         plot.set_title("No Data To Plot")
 
+
+        ## REMOVE ME WHEN MERGING WITH BUGFIX ##
         import pandas as pd
         import numpy as np
-        data = pd.DataFrame(np.random.randn(10,2), columns=['first', 'sec'])
+
+        data = pd.DataFrame(np.random.randn(10, 2), columns=['first', 'sec'])
         #plt = self.data.plot(kind='box', ax=self.plot, title='sample' )
-        pl = data.boxplot( ax=plot )
-
-
+        pl = data.boxplot(ax=plot)
 
         self.canvas = FigCanvas(self, -1, self.figure)
         # Create the navigation toolbar, tied to the canvas
@@ -65,7 +66,7 @@ class PlotBox(wx.Panel):
 
     def close(self):
         self.figure.clf()
-        #plt.close('all')
+        # plt.close('all')
 
     def gridSize(self, cells):
         rows = 1
@@ -91,7 +92,7 @@ class PlotBox(wx.Panel):
         self.clear()
 
         rows, cols = self.gridSize(self.seriesPlotInfo.count())
-       # self.figure, self.axes = plt.subplots(nrows=rows, ncols=cols)
+        # self.figure, self.axes = plt.subplots(nrows=rows, ncols=cols)
 
         i = 1
         for oneSeries in self.seriesPlotInfo.getAllSeries():
@@ -114,16 +115,16 @@ class PlotBox(wx.Panel):
         # Plot Means confidence level
         for x in range(len(mean)):
             ax.vlines(x + 1, cl[x][0], cl[x][1], color='r', linestyle="solid")
-        #Plot Mean
+        # Plot Mean
         ax.scatter([range(1, len(mean) + 1)], mean, marker='o', c='r', s=10)
 
 
         # Plot Median
         ax.scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
 
-
-        bp = oneSeries.filteredData.boxplot(column = "DataValue", ax = ax, by = oneSeries.BoxWhisker.currinterval.groupby,
-                                                rot = 35, return_type = 'both', notch=True, sym="-s", conf_intervals=ci, grid = False)
+        bp = oneSeries.filteredData.boxplot(column="DataValue", ax=ax, by=oneSeries.BoxWhisker.currinterval.groupby,
+                                            rot=35, return_type='both', notch=True, sym="-s", conf_intervals=ci,
+                                            grid=False)
 
         # Set Colors of the Box Whisker plot
         '''
@@ -142,8 +143,6 @@ class PlotBox(wx.Panel):
         ax.set_ylabel(
             "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
         ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
-
-
 
 
     def setColor(self, color):

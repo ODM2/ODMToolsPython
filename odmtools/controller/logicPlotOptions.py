@@ -6,6 +6,7 @@ import pandas
 import wx
 
 import numpy
+from functools import partial
 
 
 
@@ -467,12 +468,20 @@ class Probability(object):
         #self.Yaxis = sorted(data)
         length = len(data)
 
+        probX = lambda freq: round(4.91 * ((freq ** .14) - (1.00 - freq) ** .14), 3)
+        probFreq = lambda rank: round((rank - .0375) / (length + 1 - (2 * 0.375)), 3)
+
+        self.yAxis = data['DataValue'].apply(probFreq)
+        self.xAxis = self.yAxis.apply(probX)
+
+        '''
         for it in range(length):
             #curValue = datavalues[it]
             curFreq = self.calcualteProbabilityFreq(it + 1, length)
             curX = self.calculateProbabilityXPosition(curFreq)
             #self.Yaxis.append(curValue)
             self.Xaxis.append(curX)
+        '''
 
     def calculateProbabilityXPosition(self, freq):
         try:

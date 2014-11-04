@@ -25,7 +25,7 @@ class plotProb(wx.Panel):
 
 
     def clear(self):
-        self.plots.clear()
+        self.figure.clear()
 
     def close(self):
         #self.plot.clf()
@@ -36,10 +36,10 @@ class plotProb(wx.Panel):
         wx.Panel.__init__(self, prnt, -1)
 
         self.figure = Figure()
-        self.plots = self.figure.add_subplot(111)
-        self.plots.axis([0, 1, 0, 1])  #
-        self.plots.plot([], [])
-        self.plots.set_title("No Data To Plot")
+        ax = self.figure.add_subplot(111)
+        ax.axis([0, 1, 0, 1])  #
+        ax.plot([], [])
+        ax.set_title("No Data To Plot")
         self.islegendvisible = False
 
 
@@ -114,7 +114,7 @@ class plotProb(wx.Panel):
     def updatePlot(self):
         self.clear()
         count = self.seriesPlotInfo.count()
-        self.prob = []
+        #self.prob = []
         self.plots = self.figure.add_subplot(111)
         for oneSeries in self.seriesPlotInfo.getAllSeries():
 
@@ -128,9 +128,10 @@ class plotProb(wx.Panel):
                 self.plots.set_title("\n".join(textwrap.wrap(oneSeries.siteName, 55)))
 
             if len(oneSeries.dataTable) >0:
-                self.prob.append(
-                    self.plots.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
-                                   label=oneSeries.plotTitle))
+                #self.prob.append(
+                prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
+                #self.plots.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
+                #                   label=oneSeries.plotTitle)
 
         self.setXaxis()
 
