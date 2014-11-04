@@ -129,9 +129,9 @@ class plotProb(wx.Panel):
 
             if len(oneSeries.dataTable) >0:
                 #self.prob.append(
-                prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
-                #self.plots.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
-                #                   label=oneSeries.plotTitle)
+                #prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
+                self.plots.plot(oneSeries.Probability.xAxis, oneSeries.Probability.yAxis, 'bs', color=oneSeries.color,
+                                   label=oneSeries.plotTitle)
 
         self.setXaxis()
 
@@ -142,18 +142,10 @@ class plotProb(wx.Panel):
             plt.subplots_adjust(bottom=.1)
             self.plot.legend_ = None'''
 
-        left = 0.125  # the left side of the subplots of the figure
-        right = 0.9  # the right side of the subplots of the figure
-        bottom = 0.51  # the bottom of the subplots of the figure
-        top = 1.2  # the top of the subplots of the figure
-        wspace = .8  # the amount of width reserved for blank space between subplots
-        hspace = .8  # the amount of height reserved for white space between subplots
-        self.figure.subplots_adjust(
-            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
-        )
 
-        if len(self.prob)>0:
-            self.figure.tight_layout()
+
+        #if len(self.plots)>0:
+        self.figure.tight_layout()
 
         self.canvas.draw()
 

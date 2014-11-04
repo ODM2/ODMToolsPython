@@ -2,6 +2,7 @@ import textwrap
 
 import wx
 from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
@@ -123,17 +124,17 @@ class PlotBox(wx.Panel):
         ax.scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
 
         bp = oneSeries.filteredData.boxplot(column="DataValue", ax=ax, by=oneSeries.BoxWhisker.currinterval.groupby,
-                                            rot=35, return_type='both', notch=True, sym="-s", conf_intervals=ci,
+                                            rot=35,  notch=True, sym="-s", conf_intervals=ci, return_type = 'dict',
                                             grid=False)
 
         # Set Colors of the Box Whisker plot
-        '''
-        plt.setp(bp['whiskers'], color='k', linestyle='-')
-        plt.setp(bp['medians'], color='k', linestyle='-')
-        plt.setp(bp['boxes'], color='GREY', linestyle='-')
-        plt.setp(bp['caps'], color='k')
-        plt.setp(bp['fliers'], markersize=3.5, color=oneSeries.color)
-        '''
+
+        plt.setp(bp['DataValue']['whiskers'], color='k', linestyle='-')
+        plt.setp(bp['DataValue']['medians'], color='k', linestyle='-')
+        plt.setp(bp['DataValue']['boxes'], color='GREY', linestyle='-')
+        plt.setp(bp['DataValue']['caps'], color='k')
+        plt.setp(bp['DataValue']['fliers'], markersize=3.5, color=oneSeries.color)
+
         #Labels
 
         wrap, text = self.textSize(self.seriesPlotInfo.count())
