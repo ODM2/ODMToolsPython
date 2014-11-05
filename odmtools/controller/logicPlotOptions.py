@@ -8,7 +8,18 @@ import wx
 import numpy
 from functools import partial
 
+def calcSeason(x):
+    x= int(x)
+    if x in (1,2,3):
+        return 1
+    elif x in (4,5,6):
+        return 2
+    elif x in (7,8,9):
+        return 3
+    elif x in (10, 11, 12):
+        return 4
 
+    #return x*2, x*3
 
 class OneSeriesPlotInfo(object):
     def __init__(self, prnt):
@@ -34,7 +45,7 @@ class OneSeriesPlotInfo(object):
         self.plotTitle = None
         self.numBins = 25
         self.binWidth = 1.5
-        self.boxWhiskerMethod = "Monthly"
+        self.boxWhiskerMethod = "Month"
 
         self.yrange=0
         self.color = ""
@@ -237,6 +248,8 @@ class SeriesPlotInfo(object):
         seriesInfo.dataTable = data
         #remove all of the nodatavalues from the pandas table
         seriesInfo.filteredData= data[data["DataValue"]!=noDataValue]
+        val = seriesInfo.filteredData["Month"].map(calcSeason)
+        seriesInfo.filteredData["Season"]= val#calcSeason(seriesInfo.filteredData["Month"])
 
 
         if len(data)>0:
@@ -363,7 +376,6 @@ class BoxWhisker(object):
         median=[]
         confint=[]
         conflimit=[]
-        values=[]
         names =[]
         from scipy import stats
 
@@ -385,8 +397,7 @@ class BoxWhisker(object):
         median=[]
         confint=[]
         conflimit=[]
-        values=[]
-        y=data.groupby("DateYear")
+        y=data.groupby("Year")
 
         for name, group in y:
             names.append(name)
@@ -398,7 +409,7 @@ class BoxWhisker(object):
             conflimit.append((cl[0][0], cl[1][0]))
 
         # return medians, conflimit, means, confint
-        self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", "DateYear", names,[ median, conflimit, mean, confint])
+        self.intervals["Year"] = BoxWhiskerPlotInfo( "Year","Year", names,[ median, conflimit, mean, confint])
 
 
 
@@ -409,7 +420,7 @@ class BoxWhisker(object):
         confint=[]
         conflimit=[]
         values=[]
-        m=data.groupby("DateMonth")
+        m=data.groupby("Month")
 
         for name, group in m:
             names.append(name)
@@ -421,20 +432,32 @@ class BoxWhisker(object):
             conflimit.append((cl[0][0], cl[1][0]))
 
 
-        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", "DateMonth" , names,
+        self.intervals["Month"] = BoxWhiskerPlotInfo( "Month","Month" , names,
                                                        [median, conflimit, mean, confint])
 
 
-        '''
 
-        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        data = [[x[0] for x in dataTable if x[1].month in (1, 2, 3) if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month in (4, 5, 6) if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month in (7, 8, 9) if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month in (10, 11, 12) if x[0] <> noDataValue]]
-        self.intervals["Seasonally"] = BoxWhiskerPlotInfo("Seasonally", data, ['Winter', 'Spring', 'Summer', 'Fall'],
-                                                          self.calcConfInterval(data))
-        '''
+        mean = []
+        names=[]
+        median=[]
+        confint=[]
+        conflimit=[]
+        m=data.groupby("Season")
+
+        for name, group in m:
+            names.append(name)
+            mean.append(group.mean())
+            median.append(group.median())
+            ci = stats.norm.interval(.95, group.mean(), scale = 10*(group.std()/math.sqrt(len(group))))
+            confint.append((ci[0][0], ci[1][0]))
+            cl= stats.norm.interval(.95, group.median(), scale = (group.std()/math.sqrt(len(group))))
+            conflimit.append((cl[0][0], cl[1][0]))
+
+
+        self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season" , names,
+                                                       [median, conflimit, mean, confint])
+
+
         self.currinterval = self.intervals[self.method]
 
 

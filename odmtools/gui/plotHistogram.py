@@ -93,7 +93,7 @@ class plotHist(wx.Panel):
                 self._createPlot(oneSeries, rows, cols, i)
                 i += 1
 
-        self.figure.tight_layout()
+        #self.figure.tight_layout()
         self.canvas.draw()
 
 

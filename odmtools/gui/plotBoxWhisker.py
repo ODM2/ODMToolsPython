@@ -42,14 +42,6 @@ class PlotBox(wx.Panel):
         plot.set_title("No Data To Plot")
 
 
-        ## REMOVE ME WHEN MERGING WITH BUGFIX ##
-        import pandas as pd
-        import numpy as np
-
-        data = pd.DataFrame(np.random.randn(10, 2), columns=['first', 'sec'])
-        #plt = self.data.plot(kind='box', ax=self.plot, title='sample' )
-        pl = data.boxplot(ax=plot)
-
         self.canvas = FigCanvas(self, -1, self.figure)
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, True)
@@ -101,7 +93,7 @@ class PlotBox(wx.Panel):
                 self._createPlot(oneSeries, rows, cols, i)
                 i += 1
 
-        self.figure.tight_layout()
+#        self.figure.tight_layout()
         self.canvas.draw()
 
     def _createPlot(self, oneSeries, rows, cols, index):
@@ -143,7 +135,11 @@ class PlotBox(wx.Panel):
 
         ax.set_ylabel(
             "\n".join(textwrap.wrap(oneSeries.variableName + "\n (" + oneSeries.variableUnits + ")", wrap)))
+
+        self.figure.suptitle("")
         ax.set_title("\n".join(textwrap.wrap(oneSeries.siteName, wrap)))
+
+
 
 
     def setColor(self, color):
@@ -155,17 +151,17 @@ class PlotBox(wx.Panel):
 
     def monthly(self, str):
         # print "monthly"
-        self.seriesPlotInfo.setBoxInterval("Monthly")
+        self.seriesPlotInfo.setBoxInterval("Month")
         self.updatePlot()
 
     def seasonaly(self, str):
         # print"seasonal"
-        self.seriesPlotInfo.setBoxInterval("Seasonally")
+        self.seriesPlotInfo.setBoxInterval("Season")
         self.updatePlot()
 
     def yearly(self, str):
         # print "yearly"
-        self.seriesPlotInfo.setBoxInterval("Yearly")
+        self.seriesPlotInfo.setBoxInterval("Year")
         self.updatePlot()
 
     def overall(self, str):

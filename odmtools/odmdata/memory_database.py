@@ -10,7 +10,7 @@ class MemoryDatabase(object):
         self.conn = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
         self.editLoaded= False
-        self.columns = ['DataValue', 'LocalDateTime', 'CensorCode', 'DateMonth', 'DateYear']
+        self.columns = ['DataValue', 'LocalDateTime', 'CensorCode', 'Month', 'Year', 'Season']
 
         self.initDB()
         self.initSC()
@@ -37,7 +37,8 @@ class MemoryDatabase(object):
         return [list(x) for x in  self.cursor.fetchall()]
 
     def getEditDataValuesforGraph(self):
-        query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, strftime('%Y', LocalDateTime) as DateYear FROM DataValues ORDER BY LocalDateTime"
+        query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, " \
+               "strftime('%Y', LocalDateTime) as DateYear, Null AS DateSeason  FROM DataValues ORDER BY LocalDateTime"
         self.cursor.execute(query)
         return [list(x) for x in  self.cursor.fetchall()]# return a list of lists orig returns a list of cursors
     
@@ -56,7 +57,8 @@ class MemoryDatabase(object):
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
         series = self.series_service.get_series_by_id(seriesID)
         DataValues = [
-            (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'), dv.local_date_time.strftime('%Y') )
+            (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
+                dv.local_date_time.strftime('%Y') , None)
             for dv in series.data_values
             if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
         ]
