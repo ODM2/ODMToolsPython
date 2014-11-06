@@ -42,10 +42,21 @@ tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class frmODMToolsMain(wx.Frame):
+    """
+
+    """
     def __init__(self, parent):
         size = self._obtainScreenResolution()
         wx.Frame.__init__(self, id=wxID_ODMTOOLS, name=u'ODMTools', parent=parent,
             size=size, style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+
+        ## Obtain any existing database connections
+        self.service_manager = ServiceManager()
+        self.service_manager.extractConnectionInfo()
+        self.record_service = None
+
+
+        ## Initalize database
         self._init_database()
         self._init_ctrls()
         self.Refresh()
@@ -97,27 +108,17 @@ class frmODMToolsMain(wx.Frame):
         parent.AddWindow(self._ribbon, 0, wx.EXPAND)
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
-    def _init_database(self):
+    def _init_database(self, quit_if_cancel=True):
         logger.debug("Loading Database...")
 
-        self.service_manager = ServiceManager()
-        self.service_manager.extractConnectionInfo()
-        self.record_service = None
-
-        self.newConnection = None
-
         while True:
-
             ## Database connection is valid, threfore proceed through the rest of the program
             if self.service_manager.is_valid_connection():
                 service = None
                 conn_dict = None
-                if self.newConnection:
-                    service = self.createService(self.newConnection)
-                    conn_dict = self.newConnection
-                else:
-                    service = self.createService()
-                    conn_dict = self.service_manager.get_current_conn_dict()
+
+                service = self.createService()
+                conn_dict = self.service_manager.get_current_conn_dict()
 
                 if self.servicesValid(service):
                     self.service_manager.add_connection(conn_dict)
@@ -125,22 +126,13 @@ class frmODMToolsMain(wx.Frame):
 
             db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
             value = db_config.ShowModal()
-            if value == wx.ID_CANCEL:
+            if value == wx.ID_CANCEL and quit_if_cancel:
                 logger.fatal("ODMTools is now closing because there is no database connection.")
                 sys.exit(0)
 
-            self.newConnection = db_config.panel.getFieldValues()
-            #service = self.createService(conn_dict)
-            #if self.servicesValid(service):
-            #    self.service_manager.add_connection(conn_dict)
+            newConnection = db_config.panel.getFieldValues()
+            self.service_manager.set_current_conn_dict(newConnection)
             db_config.Destroy()
-            #    break
-        '''
-        else:
-            service = self.createService()
-            if self.servicesValid(service):
-                break
-        '''
 
         conn_dict = self.service_manager.get_current_conn_dict()
         msg = '%s://%s@%s/%s' % (
@@ -412,6 +404,10 @@ class frmODMToolsMain(wx.Frame):
 
     def onChangeDBConn(self, event):
 
+        self._init_database(quit_if_cancel=False)
+
+
+        '''
         value = None
         while True:
             db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
@@ -426,15 +422,15 @@ class frmODMToolsMain(wx.Frame):
                 self.service_manager.add_connection(conn_dict)
                 db_config.Destroy()
                 break
-
-        if value == wx.ID_OK:
-            #self.createService()
-            self.pnlSelector.resetDB(self.sc)
-            self.refreshConnectionInfo()
-            self.pnlPlot.clear()
-            #self.pnlSelector.tableSeries.clearFilter()
-            self.dataTable.clear()
-            #self.pnlSelector.tableSeries.checkCount = 0
+        '''
+        #if value == wx.ID_OK:
+        #self.createService()
+        self.pnlSelector.resetDB(self.sc)
+        self.refreshConnectionInfo()
+        self.pnlPlot.clear()
+        #self.pnlSelector.tableSeries.clearFilter()
+        self.dataTable.clear()
+        #self.pnlSelector.tableSeries.checkCount = 0
 
     def createService(self, conn_dict=""):
         """
