@@ -120,14 +120,31 @@ class PlotBox(wx.Panel):
                                             grid=False)
 
         # Set Colors of the Box Whisker plot
-
-        plt.setp(bp['DataValue']['whiskers'], color='k', linestyle='-')
-        plt.setp(bp['DataValue']['medians'], color='k', linestyle='-')
-        plt.setp(bp['DataValue']['boxes'], color='GREY', linestyle='-')
-        plt.setp(bp['DataValue']['caps'], color='k')
-        plt.setp(bp['DataValue']['fliers'], markersize=3.5, color=oneSeries.color)
+        try:
+            plt.setp(bp['DataValue']['whiskers'], color='k', linestyle='-')
+            plt.setp(bp['DataValue']['medians'], color='k', linestyle='-')
+            plt.setp(bp['DataValue']['boxes'], color='GREY', linestyle='-')
+            plt.setp(bp['DataValue']['caps'], color='k')
+            plt.setp(bp['DataValue']['fliers'], markersize=3.5, color=oneSeries.color)
+        except:
+            plt.setp(bp['whiskers'], color='k', linestyle='-')
+            plt.setp(bp['medians'], color='k', linestyle='-')
+            plt.setp(bp['boxes'], color='GREY', linestyle='-')
+            plt.setp(bp['caps'], color='k')
+            plt.setp(bp['fliers'], markersize=3.5, color=oneSeries.color)
 
         #Labels
+
+
+        ax.set_xticklabels([x for x in oneSeries.BoxWhisker.currinterval.xlabels]);
+        # set the text of the first few minor ticks created by pandas.plot
+
+        # remove the minor xtick labels set by pandas.plot
+        ax.set_xticklabels([], minor=True)
+        # turn the minor ticks created by pandas.plot off
+        # plt.minorticks_off()
+
+
 
         wrap, text = self.textSize(self.seriesPlotInfo.count())
         self.canvas.SetFont(wx.Font(text, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))

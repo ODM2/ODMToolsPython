@@ -30,14 +30,6 @@ class plotHist(wx.Panel):
         plot = self.figure.add_subplot(111)
         plot.set_title("No Data To Plot")
 
-        ## REMOVE ME WHEN MERGING WITH BUGFIX ##
-        import pandas as pd
-        import numpy as np
-
-        data = pd.DataFrame(np.random.randn(10, 2), columns=['first', 'sec'])
-        #plt = self.data.plot(kind='box', ax=self.plot, title='sample' )
-        pl = data.hist(ax=plot)
-
         self.canvas = FigCanvas(self, -1, self.figure)
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, True)

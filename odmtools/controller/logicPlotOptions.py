@@ -11,13 +11,13 @@ from functools import partial
 def calcSeason(x):
     x= int(x)
     if x in (1,2,3):
-        return 1
+        return "1"
     elif x in (4,5,6):
-        return 2
+        return "2"
     elif x in (7,8,9):
-        return 3
+        return "3"
     elif x in (10, 11, 12):
-        return 4
+        return "4"
 
     #return x*2, x*3
 
@@ -376,7 +376,7 @@ class BoxWhisker(object):
         median=[]
         confint=[]
         conflimit=[]
-        names =[]
+
         from scipy import stats
 
         # for x in dataTable:
@@ -391,12 +391,13 @@ class BoxWhisker(object):
 
 
 
-        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", None, [''], [median, conflimit, mean, confint])
+        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", None, [], [median, conflimit, mean, confint])
 
         mean = []
         median=[]
         confint=[]
         conflimit=[]
+        names = []
         y=data.groupby("Year")
 
         for name, group in y:
@@ -415,11 +416,10 @@ class BoxWhisker(object):
 
 
         mean = []
-        names=[]
         median=[]
         confint=[]
         conflimit=[]
-        values=[]
+        names = []
         m=data.groupby("Month")
 
         for name, group in m:
@@ -432,16 +432,16 @@ class BoxWhisker(object):
             conflimit.append((cl[0][0], cl[1][0]))
 
 
-        self.intervals["Month"] = BoxWhiskerPlotInfo( "Month","Month" , names,
+        self.intervals["Month"] = BoxWhiskerPlotInfo( "Month","Month" ,[numToMonth(x) for x in names],
                                                        [median, conflimit, mean, confint])
 
 
 
         mean = []
-        names=[]
         median=[]
         confint=[]
         conflimit=[]
+        names = []
         m=data.groupby("Season")
 
         for name, group in m:
@@ -454,7 +454,7 @@ class BoxWhisker(object):
             conflimit.append((cl[0][0], cl[1][0]))
 
 
-        self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season" , names,
+        self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season" , [numToSeason(x) for x in names],
                                                        [median, conflimit, mean, confint])
 
 
@@ -521,11 +521,32 @@ class Probability(object):
             pass
 
 
+def numToMonth(date):
+    date = int(date)
+    return {
+        1: 'Jan',
+        2: 'Feb',
+        3: 'Mar',
+        4: 'Apr',
+        5: 'May',
+        6: 'Jun',
+        7: 'Jul',
+        8: 'Aug',
+        9: 'Sep',
+        10: 'Oct',
+        11: 'Nov',
+        12: 'Dec'
+    }[date]
 
+def numToSeason(date):
+    date = int(date)
+    return {
+        1: 'Winter',
+        2: 'Spring',
+        3: 'Summer',
+        4: 'Fall'
 
-
-
-
+    }[date]
 
 
 
