@@ -104,25 +104,43 @@ class frmODMToolsMain(wx.Frame):
         self.service_manager.extractConnectionInfo()
         self.record_service = None
 
-        while True:
-            ## If the database connection isn't valid, prompt user
-            if not self.service_manager.is_valid_connection():
-                db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
-                value = db_config.ShowModal()
-                if value == wx.ID_CANCEL:
-                    logger.fatal("ODMTools is now closing because there is no database connection.")
-                    sys.exit(0)
+        self.newConnection = None
 
-                conn_dict = db_config.panel.getFieldValues()
-                service = self.createService(conn_dict)
+        while True:
+
+            ## Database connection is valid, threfore proceed through the rest of the program
+            if self.service_manager.is_valid_connection():
+                service = None
+                conn_dict = None
+                if self.newConnection:
+                    service = self.createService(self.newConnection)
+                    conn_dict = self.newConnection
+                else:
+                    service = self.createService()
+                    conn_dict = self.service_manager.get_current_conn_dict()
+
                 if self.servicesValid(service):
                     self.service_manager.add_connection(conn_dict)
-                    db_config.Destroy()
                     break
-            else:
-                ## Database connection is valid, therefore proceed through the rest of the program
-                self.createService()
+
+            db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
+            value = db_config.ShowModal()
+            if value == wx.ID_CANCEL:
+                logger.fatal("ODMTools is now closing because there is no database connection.")
+                sys.exit(0)
+
+            self.newConnection = db_config.panel.getFieldValues()
+            #service = self.createService(conn_dict)
+            #if self.servicesValid(service):
+            #    self.service_manager.add_connection(conn_dict)
+            db_config.Destroy()
+            #    break
+        '''
+        else:
+            service = self.createService()
+            if self.servicesValid(service):
                 break
+        '''
 
         conn_dict = self.service_manager.get_current_conn_dict()
         msg = '%s://%s@%s/%s' % (

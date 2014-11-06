@@ -41,6 +41,9 @@ class SeriesService():
         except:
             site_ids = None
 
+        if not site_ids:
+            return None
+
         Sites = []
         for site_id in site_ids:
             Sites.append(self._edit_session.query(Site).filter_by(id=site_id).first())
