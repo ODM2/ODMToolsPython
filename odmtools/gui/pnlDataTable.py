@@ -4,9 +4,9 @@ import wx
 import wx.grid
 import logging
 import itertools as iter
-from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView
+from odmtools.lib.oldOlv import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
-import datetime
+#import datetime
 
 from odmtools.common.logger import LoggerTool
 
@@ -111,7 +111,7 @@ class pnlDataTable(wx.Panel):
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
         #self.currentItem = event.GetEventObject().GetSelectedObjects()
-        logger.debug("Called!!")
+        #logger.debug("Called!!")
         try:
             self.currentItem = self.myOlv.GetSelectedObjects()
             #logger.debug("selectedObjects %s" % self.currentItem)

@@ -1665,9 +1665,9 @@ class ObjectListView(wx.ListCtrl):
         if wx.VERSION > (2, 9, 1, 0):
             if evt.altDown or evt.controlDown or evt.shiftDown:
                  return
-        else: 
+        else:
             if evt.m_altDown or evt.m_controlDown or evt.m_shiftDown:
-                return        
+                return
         if self.cellEditMode == self.CELLEDIT_NONE:
             return
         if evt.LeftUp() and self.cellEditMode == self.CELLEDIT_DOUBLECLICK:
