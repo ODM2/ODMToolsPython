@@ -1,11 +1,11 @@
-•	pip (Windows: http://docs.python-guide.org/en/latest/starting/install/win.html)(not needed for distribution just for testing)
+â€¢	Matplotlib-1.3.1(https://github.com/matplotlib/matplotlib/releases/tag/v1.3.1)
+â€¢	Pandas-0.15.0(https://github.com/pydata/pandas/releases)
+â€¢	Pip (Windows: http://docs.python-guide.org/en/latest/starting/install/win.html)(not needed for distribution just for testing)
+â€¢	PyMySQL (https://github.com/petehunt/PyMySQL/)
+â€¢	Pyodbc-3.0.7 (https://code.google.com/p/pyodbc/downloads/detail?name=pyodbc-3.0.7.win-amd64-py2.7.exe)
+â€¢	Python-2.7 32 bit(http://www.python.org/download/releases/2.7.3/)
+â€¢	Psycopg2-2.4.6(http://initd.org/psycopg/docs/install.html)
+â€¢	Sqlalchemy-0.9.7 (http://pypi.python.org/pypi/SQLAlchemy/0.9.7)
+â€¢	Wxpython-3.0.0(http://www.wxpython.org/download.php)
 
-•	Python-2.7 32 bit(http://www.python.org/download/releases/2.7.3/)
-•	Wxpython-2.9.4(http://www.wxpython.org/download.php)
-•	Sqlalchemy-7.9(http://pypi.python.org/pypi/SQLAlchemy/0.7.9)
-	•	Pyodbc-3.0.6(http://code.google.com/p/pyodbc/downloads/list) 
-•	Matplotlib-1.1.1(https://github.com/matplotlib/matplotlib/downloads)
-	•	Numpy-1.6.2(http://sourceforge.net/projects/numpy/files/)/(http://www.scipy.org/Download)
-	New version of matplotlib released  01/08/13 1.2.0 – allows user to customize boxplots
-•	Object List Viewer-1.2(http://sourceforge.net/projects/objectlistview/files/objectlistview-python/)
-•	PyMySQL (https://github.com/petehunt/PyMySQL/)
+	
