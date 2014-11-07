@@ -21,21 +21,34 @@ Developmental Release:
 ####Mac
 +   *Coming Soon*
 
+####Linux
++   *Please run from source*
+
 Running From Source
 -------------------
+
++	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/releases/tag/v1.3.1)
++	[Pandas-0.15.0](https://github.com/pydata/pandas/releases)
++	[Pip](http://docs.python-guide.org/en/latest/starting/install/win.html)
++	[PyMySQL] (https://github.com/petehunt/PyMySQL/)
++	[Pyodbc-3.0.7](https://code.google.com/p/pyodbc/downloads/detail?name=pyodbc-3.0.7.win-amd64-py2.7.exe)
++	[Python-2.7.8 x64/x32](http://www.python.org/download/releases/2.7.3/) (Python 3 version isn't available)
++	[Psycopg2-2.4.6](http://initd.org/psycopg/docs/install.html)
++	[Sqlalchemy-0.9.7] (http://pypi.python.org/pypi/SQLAlchemy/0.9.7)
++	[wxpython-3.0.0](http://www.wxpython.org/download.php)
+
 Install the following software/libraries. 
+It is recommended to create an environment using 'Conda'. 
+'Conda' comes prepackaged in the Python Scientific Package Suite [Anaconda](http://continuum.io/downloads) (Available for Windows, OSX, Linux)
 
-+	[Python-2.7.6 32 bit](https://www.python.org/download/releases/2.7.6)
-+	[wxPython-3.0.0.0](http://www.wxpython.org/download.php)
-+	[Sqlalchemy-0.9.4](https://pypi.python.org/pypi/SQLAlchemy/0.9.4)
-+   [Pyodbc-3.0.7](http://code.google.com/p/pyodbc/downloads/list)
-+	[PyMySQL-0.6.2](https://github.com/petehunt/PyMySQL/)
-+	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/downloads)
-+	[Numpy-1.8.0](http://www.scipy.org/Download)
-+	[Object List Viewer-1.2](http://sourceforge.net/projects/objectlistview/files/objectlistview-python/v1.2/ObjectListView-1.2-without-graphics.zip/download)
-+	[Pandas 0.14.1](http://pandas.pydata.org/pandas-docs/stable/install.html)
+Example environment creation:
+
++   conda create -n odmtools python=2.7.8 wxpython matplotlib pandas pyodbc sqlalchemy pip psycopg2
+
++   pip install pymysql
 
 
+if psycopg2 isn't found, download it manually and follow these [directions](https://stackoverflow.com/questions/5420789/how-to-install-psycopg2-with-pip-on-python)
 
 Once you have downloaded the source code and all the dependencies installed, run the main application:
     
