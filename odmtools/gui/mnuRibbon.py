@@ -351,7 +351,7 @@ class mnuRibbon(RB.RibbonBar):
     def onRecord(self, event):
 
         record_service = self.parent.getRecordService()
-        record_service.toggle_record()
+        record_service.toggle_record(True)
         #logger.debug("Recording? %s" % record_service._record)
 
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)

@@ -307,11 +307,14 @@ class EditTools():
         return var
 
 
-    def toggle_record(self):
+    def toggle_record(self, value):
+        self._record = value
+        '''
         if self._record:
             self._record = False
         else:
             self._record = True
+        '''
 
     ###################
     # Creates

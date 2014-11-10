@@ -374,14 +374,14 @@ class frmODMToolsMain(wx.Frame):
             # set record service for console
             Publisher.sendMessage("setEdit", isEdit=True)
             logger.debug("Enabling Edit")
-            self.record_service.toggle_record()
+            self.record_service.toggle_record(True)
             #self._mgr.GetPane(self.txtPythonScript).Show(show=True)
 
 
         else:
             logger.debug("disabling Edit")
             Publisher.sendMessage("setEdit", isEdit=False)
-            self.record_service.toggle_record()
+            self.record_service.toggle_record(True)
             #self._mgr.GetPane(self.txtPythonScript).Show(show=False)
 
         #self._mgr.Update()
