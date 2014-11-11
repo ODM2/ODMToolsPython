@@ -368,6 +368,7 @@ class CellEdit():
                     self.qualifierCodeChoices.insert(0, dlg.selectedValue)
                     event.GetEventObject().SetItems(self.qualifierCodeChoices)
                     print event.GetEventObject().GetValue()
+                    print type(event.GetEventObject())
                     event.GetEventObject().SetValue(dlg.selectedValue)
                     print event.GetEventObject().GetValue()
                 #dlg.Destroy()
