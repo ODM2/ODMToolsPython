@@ -445,7 +445,7 @@ class plotTimeSeries(wx.Panel):
 
             ## TODO Duplicate UpdatePlot?
             logger.debug("Called duplicate updateplot")
-            #self.updatePlot()
+            self.updatePlot()
 
 
     def setUpYAxis(self):

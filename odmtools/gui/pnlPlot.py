@@ -126,7 +126,7 @@ class pnlPlot(fnb.FlatNotebook):
 
     def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
-        if not self._seriesPlotInfo:
+        if not self._seriesPlotInfo  or self._seriesPlotInfo.memDB != memDB:
             self._seriesPlotInfo = SeriesPlotInfo(memDB)
 
         self.editID = seriesID
@@ -135,7 +135,7 @@ class pnlPlot(fnb.FlatNotebook):
         self.redrawPlots()
 
     def addPlot(self, memDB, seriesID):
-        if not self._seriesPlotInfo:
+        if not self._seriesPlotInfo or self._seriesPlotInfo.memDB != memDB:
             self._seriesPlotInfo = SeriesPlotInfo(memDB)
         self._seriesPlotInfo.update(seriesID, True)
 

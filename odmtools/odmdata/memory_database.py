@@ -60,7 +60,8 @@ class MemoryDatabase(object):
                 if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
             ]
             return DataValues
-        except:
+        except Exception as e:
+            print "FATAL: ", e
             return False
 
     def getSeriesCatalog(self):

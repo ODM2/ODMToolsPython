@@ -37,6 +37,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         #####INIT DB Connection
         self.dbservice = dbservice
+        #self.refreshSeries()
         self.cbVariables.Clear()
         self.cbSites.Clear()
 
@@ -53,6 +54,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         try:
+            #self.dbservice = self.parent.Parent.createService()
             self.memDB = MemoryDatabase(self.dbservice)
             object = self.dbservice.get_all_series()
 
@@ -90,8 +92,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
         self.dbservice = None
         self.dbservice = self.parent.Parent.createService()
-        self.refreshTableSeries(self.dbservice)
-        #self.resetDB(self.dbservice)
+        #self.refreshTableSeries(self.dbservice)
+        self.resetDB(self.dbservice)
         logger.debug("Refresh Occurred")
 
     def initSVBoxes(self):
@@ -388,7 +390,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
         # self.tableSeries.DeleteAllItems()
         if self.rbAll.GetValue():
-            logger.debug("Called!")
+            #logger.debug("Called!")
             self.rbAll.SetValue(False)
             self.rbSimple.SetValue(True)
             

@@ -420,6 +420,7 @@ class frmODMToolsMain(wx.Frame):
             #if value == wx.ID_OK:
             #self.createService()
             self.pnlSelector.resetDB(self.sc)
+
             self.refreshConnectionInfo()
             self.pnlPlot.clear()
             #self.pnlSelector.tableSeries.clearFilter()
