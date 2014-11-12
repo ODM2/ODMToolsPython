@@ -407,7 +407,7 @@ class mnuRibbon(RB.RibbonBar):
         # get site, Variable and Source from current dataset
 
         wiz=wizSave.wizSave(self, self.parent.getServiceManager(), self.parent.getRecordService())
-        wiz.Destroy()
+        wiz.Close()
         event.Skip()
 
     def onEditFilter(self, event):
@@ -487,6 +487,12 @@ class mnuRibbon(RB.RibbonBar):
 
     def setEdit(self, isEdit):
         self.isEdit = isEdit
+
+    def getEditStatus(self):
+        try:
+            return self.isEdit
+        except:
+            return None
 
     def onEditSeries(self, event=None):
         #logger.debug(dir(event))

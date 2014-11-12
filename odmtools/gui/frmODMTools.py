@@ -417,15 +417,13 @@ class frmODMToolsMain(wx.Frame):
         db_config.Destroy()
 
         if self._init_database(quit_if_cancel=False):
-            #if value == wx.ID_OK:
-            #self.createService()
-            self.pnlSelector.resetDB(self.sc)
+            if self._ribbon.getEditStatus():
+                self.stopEdit(event=None)
 
+            self.pnlSelector.resetDB(self.sc)
             self.refreshConnectionInfo()
             self.pnlPlot.clear()
-            #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
-            #self.pnlSelector.tableSeries.checkCount = 0
 
     def createService(self, conn_dict=""):
         """
