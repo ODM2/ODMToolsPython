@@ -53,3 +53,8 @@ setup/Output/setup.exe
 .idea
 *.png
 *.uml
+
+# ipython
+.ipynb_checkpoints
+*.ipynb
+
