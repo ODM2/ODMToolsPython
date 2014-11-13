@@ -261,7 +261,7 @@ class wizSave(wx.wizard.Wizard):
         self.pgVariable.SetPrev(self.pgQCL)
         self.pgVariable.SetNext(self.pgSummary)
 
-                #Save existing  page
+        #Save existing  page
         self.pgExisting.SetPrev(self.pgIntro)
         self.pgExisting.SetNext(self.pgSummary)
 

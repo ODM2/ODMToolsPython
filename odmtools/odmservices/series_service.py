@@ -1,7 +1,7 @@
 import logging
 
+import wx
 from sqlalchemy import distinct
-
 from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import Site
 from odmtools.odmdata import Variable
@@ -268,10 +268,18 @@ class SeriesService():
 
     # Edit/delete methods
     def delete_dvs(self, dv_list):
-        for dv in dv_list:
+        dlg = wx.ProgressDialog("Delete Progress", "Deleting %s values" % len(dv_list), maximum=len(dv_list),
+                                parent=None,
+                                style=0 | wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME |
+                                      wx.PD_ESTIMATED_TIME | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE)
+        length = len(dv_list)
+        for i, dv in enumerate(dv_list):
+            dlg.Update(i, "%s/%s Objects Deleted" % (i, length))
             merged_dv = self._edit_session.merge(dv)
             self._edit_session.delete(merged_dv)
+        dlg.Update(length, "Commiting to database")
         self._edit_session.commit()
+        dlg.Destroy()
 
     def update_dvs(self, dv_list):
         merged_dv_list = map(self._edit_session.merge, dv_list)

@@ -492,6 +492,7 @@ class EditService():
             # delete old dvs
             old_dvs = series.data_values
             self._series_service.delete_dvs(old_dvs)
+            old_dvs = None
 
         series.data_values = dvs
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
