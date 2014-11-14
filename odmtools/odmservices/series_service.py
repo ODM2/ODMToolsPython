@@ -281,6 +281,16 @@ class SeriesService():
         self._edit_session.commit()
         dlg.Destroy()
 
+    def delete_values_by_series(self, series):
+        try:
+            return self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
+                                                                 variable_id = series.variable_id,
+                                                                 method_id = series.method_id,
+                                                                 source_id = series.source_id,
+                                                                 quality_control_level_id = series.quality_control_level_id).delete()
+        except:
+            return None
+
     def update_dvs(self, dv_list):
         merged_dv_list = map(self._edit_session.merge, dv_list)
         self._edit_session.add_all(merged_dv_list)
