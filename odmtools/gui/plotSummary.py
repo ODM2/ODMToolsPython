@@ -1,4 +1,4 @@
-#Boa:FramePanel:plotSummary
+# Boa:FramePanel:plotSummary
 
 import wx
 import wx.grid
@@ -15,11 +15,15 @@ from odmtools.common.logger import LoggerTool
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
+
 class plotSummary(wx.Panel):
+    def __init__(self, parent, id, pos, size, style, name):
+        self._init_ctrls(parent)
+
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
-        parent.Add(self.btnExport, 0 , border = 5 )
-        parent.AddWindow(self.grdSummary, 1, border=5, flag=wx.EXPAND|wx.GROW)
+        parent.Add(self.btnExport, 0, border=5)
+        parent.AddWindow(self.grdSummary, 1, border=5, flag=wx.EXPAND | wx.GROW)
 
 
     def _init_sizers(self):
@@ -43,9 +47,9 @@ class plotSummary(wx.Panel):
         self.grdSummary.SetLabel(u'')
         self.grdSummary.EnableEditing(False)
 
-        self.btnExport = wx.Button( self, wx.ID_ANY, u"Export Statistics", wx.DefaultPosition, wx.DefaultSize, 0 )
+        self.btnExport = wx.Button(self, wx.ID_ANY, u"Export Statistics", wx.DefaultPosition, wx.DefaultSize, 0)
         self.btnExport.Enable(False)
-        self.btnExport.Bind( wx.EVT_BUTTON, self.onBtnExport )
+        self.btnExport.Bind(wx.EVT_BUTTON, self.onBtnExport)
         self.grdSummary.Bind(wx.grid.EVT_GRID_COL_SIZE, self.onListColEndDrag)
 
         self.initPlot()
@@ -58,32 +62,30 @@ class plotSummary(wx.Panel):
             full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
             print full_path
 
-
             import csv
+
             ex_file = open(full_path, 'w')
             ex_writer = csv.writer(ex_file)
 
             #self.grdSummary
-            titles = [u'Name']+ [self.grdSummary.GetRowLabelValue(x) for x in xrange(self.grdSummary.GetNumberRows())]
+            titles = [u'Name'] + [self.grdSummary.GetRowLabelValue(x) for x in xrange(self.grdSummary.GetNumberRows())]
             data = []
             for c in xrange(self.grdSummary.GetNumberCols()):
                 row = []
                 row.append(self.grdSummary.GetColLabelValue(c).replace('\n', ' '))
                 for r in xrange(self.grdSummary.GetNumberRows()):
-                    row.append(self.grdSummary.GetCellValue(r,c).replace('\n', ' '))
+                    row.append(self.grdSummary.GetCellValue(r, c).replace('\n', ' '))
 
                 data.append(row)
 
-
-            vals  = [titles] + data
-
+            vals = [titles] + data
 
             ex_writer.writerows(vals)
             ex_file.close()
 
     def onListColEndDrag(self, event):
-        col= event.GetRowOrCol()
-        label=' '.join(self.grdSummary.GetColLabelValue(col).split())
+        col = event.GetRowOrCol()
+        label = ' '.join(self.grdSummary.GetColLabelValue(col).split())
         self.setColLabel(col, label)
         event.Skip()
 
@@ -96,14 +98,14 @@ class plotSummary(wx.Panel):
                 self.addCol(oneSeries)
 
     def resizeLabel(self):
-        numlines= -99
+        numlines = -99
         #get the maximum number of lines
         for col in range(self.grdSummary.GetNumberCols()):
-            val= self.grdSummary.GetColLabelValue(col).count('\n')+1
-            if val> numlines:
+            val = self.grdSummary.GetColLabelValue(col).count('\n') + 1
+            if val > numlines:
                 numlines = val
 
-        self.grdSummary.ColLabelSize=numlines*16#(16 is the number of pixels per line)
+        self.grdSummary.ColLabelSize = numlines * 16  #(16 is the number of pixels per line)
 
     def clear(self):
         self.btnExport.Enable(False)
@@ -114,7 +116,8 @@ class plotSummary(wx.Panel):
 
     def setColLabel(self, col, label):
         self.grdSummary.SetColLabelValue(col, wordwrap(label,
-                          self.grdSummary.GetColSize(col), wx.ClientDC(self), breakLongWords=False))
+                                                       self.grdSummary.GetColSize(col), wx.ClientDC(self),
+                                                       breakLongWords=False))
         self.resizeLabel()
 
     def initPlot(self):
@@ -171,8 +174,4 @@ class plotSummary(wx.Panel):
             self.grdSummary.SetCellValue(13, col, repr(stats.Percentile75))
             self.grdSummary.SetCellValue(14, col, repr(stats.Percentile90))
         for i in range(self.grdSummary.GetNumberRows()):
-            self.grdSummary.SetCellAlignment(i,col,wx.ALIGN_RIGHT, wx.ALIGN_CENTER)
-
-
-    def __init__(self, parent, id, pos, size, style, name):
-        self._init_ctrls(parent)
+            self.grdSummary.SetCellAlignment(i, col, wx.ALIGN_RIGHT, wx.ALIGN_CENTER)

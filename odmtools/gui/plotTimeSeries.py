@@ -5,16 +5,18 @@ from matplotlib.ticker import FormatStrFormatter
 import wx
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
+import pandas as pd
 
 import mpl_toolkits.axisartist as AA
 
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
 
+
 from matplotlib.lines import Line2D
 from matplotlib.text import Text
-from  matplotlib.colors import ColorConverter
 
 from matplotlib.font_manager import FontProperties
 from wx.lib.pubsub import pub as Publisher
@@ -44,9 +46,25 @@ class plotTimeSeries(wx.Panel):
         self.parent = parent
 
         #init Plot
-        figure = plt.figure()
-        self.timeSeries = host_subplot( 111, axes_class=AA.Axes)
-        self.init_plot(figure)
+        self.figure = plt.figure()
+        self.timeSeries = self.figure.add_subplot(111)
+        #self.timeSeries.plot([], [], picker=5)
+        self.setTimeSeriesTitle("No Data to Plot")
+
+        self.canvas = FigCanvas(self, -1, self.figure)
+        self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
+        self.isShowLegendEnabled = False
+
+        '''
+        import pandas as pd
+        import numpy as np
+
+        self.data = pd.DataFrame(np.random.randn(14, 2),
+                    index=np.arange('2005-02', '2005-02-15', dtype='datetime64[D]'),
+                    columns=['first', 'sec'])
+
+        #ax = self.data.plot(ax=self.timeSeries, title='sample')
+        '''
 
         #self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
         #self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
@@ -67,13 +85,13 @@ class plotTimeSeries(wx.Panel):
         self._setColor("WHITE")
 
         left = 0.125  # the left side of the subplots of the figure
-        right = 0.9  # the right side of the subplots of the figure
-        bottom = 0.51  # the bottom of the subplots of the figure
-        top = 1.2  # the top of the subplots of the figure
-        wspace = .8  # the amount of width reserved for blank space between subplots
-        hspace = .8  # the amount of height reserved for white space between subplots
+        #right = 0.9  # the right side of the subplots of the figure
+        #bottom = 0.51  # the bottom of the subplots of the figure
+        #top = 1.2  # the top of the subplots of the figure
+        #wspace = .8  # the amount of width reserved for blank space between subplots
+        #hspace = .8  # the amount of height reserved for white space between subplots
         plt.subplots_adjust(
-            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
+            left=left#, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
         )
         plt.tight_layout()
 
@@ -107,14 +125,6 @@ class plotTimeSeries(wx.Panel):
         self.boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
         self._init_coll_boxSizer1_Items(self.boxSizer1)
         self.SetSizer(self.boxSizer1)
-
-    def init_plot(self, figure):
-        self.timeSeries.plot([], [], picker=5)
-        self.setTimeSeriesTitle("No Data to Plot")
-
-        self.canvas = FigCanvas(self, -1, figure)
-        self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
-        self.isShowLegendEnabled = False
 
     '''
     def changePlotSelection(self, datetime_list=[]):
@@ -203,7 +213,7 @@ class plotTimeSeries(wx.Panel):
             if not (i == self.curveindex):
                 plt.setp(line, linestyle=ls, marker=m)
 
-        if self.isShowLegendEnabled :
+        if self.isShowLegendEnabled:
             self.onShowLegend(self.isShowLegendEnabled)
 
         plt.gcf().autofmt_xdate()
@@ -219,7 +229,7 @@ class plotTimeSeries(wx.Panel):
         #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
         #plt.cla()
         #plt.clf()
-        self.timeSeries.plot([], [], picker=5)
+        #self.timeSeries.plot([], [], picker=5)
 
 
 
@@ -336,17 +346,15 @@ class plotTimeSeries(wx.Panel):
                 if oneSeries.dataTable is not None:
                     curraxis = self.axislist[oneSeries.axisTitle]
                     curraxis.set_zorder(1)
-                    self.lines.append(
-                        curraxis.plot_date(
-                            [x[1] for x in oneSeries.dataTable],
-                            [x[0] for x in oneSeries.dataTable],
-                            self.format, color=oneSeries.color,
-                            xdate=True, tz=None, antialiased=True,
-                            label=oneSeries.plotTitle, alpha=self.alpha,
-                            picker=5.0, pickradius=5.0,
-                            markersize=4
-                        )
-                    )
+
+                    data = oneSeries.dataTable
+                    dates = data['LocalDateTime'].astype(datetime.datetime)
+                    plt.plot_date(dates, data['DataValue'],
+                            color=oneSeries.color, axes=self.timeSeries, fmt=self.format, xdate=True, tz=None, antialiased=True,
+                            label=oneSeries.plotTitle, alpha=self.alpha, picker=5.0, pickradius=5.0,
+                            markersize=4)
+                    plt.xlabel('Date')
+
 
         if count > 1:
             self.setTimeSeriesTitle("")
@@ -364,22 +372,27 @@ class plotTimeSeries(wx.Panel):
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
 
+        '''
         self.timeSeries.set_xlabel("Date", picker=True)
         #self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
         #self.timeSeries.axis[:].set_major_formatter(FormatStrFormatter('%.2f'))
+
         self.timeSeries.axis[:].major_ticks.set_tick_out(True)
         self.timeSeries.axis["bottom"].label.set_pad(20)
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
         self.timeSeries.axis[:].major_ticklabels.set_picker(True)
+        '''
 
         plt.gcf().autofmt_xdate()
+
         plt.tight_layout()
         if not self.toolbar._views.empty():
             for v in self.toolbar._views:
                 del(v)
             self.toolbar.push_current()
+
         self.canvas.draw()
 
     def updateCursor(self, selectedObject):
@@ -580,6 +593,10 @@ class Cursor(object):
         if event.inaxes is None:
             return
         ax = self.ax
+
+
+        #print " before event.x:%s, event.y:%s" % (event.x, event.y),
+
         if ax != event.inaxes:
             inv = ax.transData.inverted()
             x, y = inv.transform(np.array((event.x, event.y)).reshape(1, 2)).ravel()
@@ -588,9 +605,12 @@ class Cursor(object):
         else:
             return
 
+        #print " after x:%s, y:%s" % (x, y),
+
         #if self.selected:
         xValue = matplotlib.dates.num2date(x).replace(tzinfo=None)
 
-        self.toolbar.msg.SetLabelText("X= %s,  Y= %.4f (%s)" % (xValue.strftime("%b %d, %Y %H:%M"), y, self.name))
+        #self.toolbar.msg.SetLabelText("X= %s,  Y= %.4f (%s)" % (xValue.strftime("%b %d, %Y %H:%M"), y, self.name))
+        self.toolbar.msg.SetLabelText("X= %s,  Y= %.4f (%s)" % (xValue, y, self.name))
         self.toolbar.msg.SetForegroundColour((66, 66, 66))
         #logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))

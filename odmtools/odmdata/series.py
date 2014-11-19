@@ -42,7 +42,7 @@ def copy_series(from_series):
     new.value_count = from_series.value_count
     return new
 class Series(Base):
-    __tablename__ = 'SeriesCatalog'
+    __tablename__ = 'seriescatalog'
 
     id =                            Column('SeriesID', Integer, primary_key=True)
     site_id =                       Column('SiteID', Integer, ForeignKey('Sites.SiteID'), nullable=False)
