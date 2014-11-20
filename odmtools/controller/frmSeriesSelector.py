@@ -189,7 +189,11 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
 
-        logger.debug("onRbAllRadioButton called! ")
+        if self.checkSite.GetValue() or self.checkVariable.GetValue():
+            self.checkSite.SetValue(False)
+            self.checkVariable.SetValue(False)
+
+        #logger.debug("onRbAllRadioButton called! ")
         self.cpnlSimple.Collapse(True)
         self.Layout()
         self.setFilter()
@@ -205,6 +209,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.cpnlSimple.Expand()
         self.Layout()
 
+
+        ##
         if not self.checkSite.GetValue() and not self.checkVariable.GetValue():
             self.setFilter()
             return
