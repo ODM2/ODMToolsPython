@@ -299,8 +299,6 @@ class plotTimeSeries(wx.Panel):
         '''
         self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
-
-
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
     def _setColor(self, color):
@@ -334,26 +332,41 @@ class plotTimeSeries(wx.Panel):
         self.setUpYAxis()
         self.lines = []
 
+        ## Spine initialization ##
+
+
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             #is this the series to be edited
             if oneSeries.seriesID == self.seriesPlotInfo.getEditSeriesID():
                 self.curveindex = len(self.lines)
                 self.lines.append("")
                 self.editCurve = oneSeries
-                self.drawEditPlot(oneSeries)
+                #self.drawEditPlot(oneSeries)
+
+                data = oneSeries.dataTable
+                #if not isinstance(data['LocalDateTime'], datetime.datetime)
+                dates = data['LocalDateTime'].astype(datetime.datetime)
+
+                self.timeSeries.plot_date(dates, data['DataValue'], "-s",
+                         color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
+                         picker=5.0, pickradius=5.0, markersize=4.5)
+
+                self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+                self.timeSeries.set_xlabel('Date')
+
 
             else:
                 if oneSeries.dataTable is not None:
-                    curraxis = self.axislist[oneSeries.axisTitle]
-                    curraxis.set_zorder(1)
+                    #curraxis = self.axislist[oneSeries.axisTitle]
+                    #curraxis.set_zorder(1)
 
                     data = oneSeries.dataTable
                     dates = data['LocalDateTime'].astype(datetime.datetime)
-                    plt.plot_date(dates, data['DataValue'],
+                    self.timeSeries.plot_date(dates, data['DataValue'],
                             color=oneSeries.color, axes=self.timeSeries, fmt=self.format, xdate=True, tz=None, antialiased=True,
                             label=oneSeries.plotTitle, alpha=self.alpha, picker=5.0, pickradius=5.0,
                             markersize=4)
-                    plt.xlabel('Date')
+                    self.timeSeries.set_xlabel('Date')
 
 
         if count > 1:

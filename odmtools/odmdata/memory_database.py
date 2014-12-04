@@ -40,7 +40,8 @@ class MemoryDatabase(object):
         query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, " \
                "strftime('%Y', LocalDateTime) as DateYear, Null AS DateSeason  FROM DataValues ORDER BY LocalDateTime"
         self.cursor.execute(query)
-        return [list(x) for x in  self.cursor.fetchall()]# return a list of lists orig returns a list of cursors
+        #return [list(x) for x in  self.cursor.fetchall()]# return a list of lists orig returns a list of cursors
+        return self.cursor.fetchall()
     
     def getEditRowCount(self):
         query ="SELECT COUNT(ValueID) FROM DataValues "
