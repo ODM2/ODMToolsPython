@@ -357,16 +357,16 @@ class plotTimeSeries(wx.Panel):
 
             else:
                 if oneSeries.dataTable is not None:
-                    #curraxis = self.axislist[oneSeries.axisTitle]
-                    #curraxis.set_zorder(1)
+                    curraxis = self.axislist[oneSeries.axisTitle]
+                    curraxis.set_zorder(1)
 
                     data = oneSeries.dataTable
                     dates = data['LocalDateTime'].astype(datetime.datetime)
-                    self.timeSeries.plot_date(dates, data['DataValue'],
+                    curraxis.plot_date(dates, data['DataValue'],
                             color=oneSeries.color, axes=self.timeSeries, fmt=self.format, xdate=True, tz=None, antialiased=True,
                             label=oneSeries.plotTitle, alpha=self.alpha, picker=5.0, pickradius=5.0,
                             markersize=4)
-                    self.timeSeries.set_xlabel('Date')
+                    #curraxis.set_xlabel('Date')
 
 
         if count > 1:
@@ -398,7 +398,7 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.axis[:].major_ticklabels.set_picker(True)
         '''
 
-        plt.gcf().autofmt_xdate()
+        #plt.gcf().autofmt_xdate()
 
         plt.tight_layout()
         if not self.toolbar._views.empty():
@@ -476,11 +476,18 @@ class plotTimeSeries(wx.Panel):
 
 
     def setUpYAxis(self):
+        """ Setting multiple axes using spines
+
+        :return:
+        """
+
         self.axislist = {}
         left = 0
         right = 0
         adj = .05
         editaxis = None
+
+        ## Identify Axes and save them to axislist
         #loop through the list of curves and add an axis for each
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             #test to see if the axis already exists
@@ -490,12 +497,12 @@ class plotTimeSeries(wx.Panel):
                 self.axislist[oneSeries.axisTitle] = None
         keys = self.axislist.keys()
 
+        ## Put editing axis at the beginning of the list
         if editaxis:
             for i in range(len(keys)):
                 if keys[i] == editaxis:
                     keys.pop(i)
                     break
-
             keys.insert(0, editaxis)
 
         leftadjust = -30
@@ -508,24 +515,47 @@ class plotTimeSeries(wx.Panel):
                     newAxis = self.timeSeries
                 else:
                     newAxis = self.timeSeries.twinx()
+                    newAxis.spines["left"].set_position(("axes", leftadjust * left))
+                    newAxis.spines["left"].set_visible(True)
+                    newAxis.yaxis.set_label_position("left")
+                    newAxis.yaxis.set_ticks_position("left")
+
+                    '''
                     new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
                     newAxis.axis['left'] = new_fixed_axis(loc='left', axes=newAxis, offset=(leftadjust * left, 0))
                     newAxis.axis["left"].toggle(all=True)
                     newAxis.axis["right"].toggle(all=False)
+                    '''
+
                     leftadjust -= 15
 
             else:
                 right = right + 1
                 #add to the right(y2axis)
                 newAxis = self.timeSeries.twinx()
+                newAxis.spines["right"].set_position(("axes", 60*(right - 1)))
+                newAxis.spines["right"].set_visible(True)
+                newAxis.yaxis.set_label_position("right")
+                newAxis.yaxis.set_ticks_position("right")
+
+                '''
                 new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
                 newAxis.axis['right'] = new_fixed_axis(loc='right', axes=newAxis, offset=(60 * (right - 1), 0))
                 newAxis.axis['right'].toggle(all=True)
+                '''
+
+            self.make_patch_spines_invisible(newAxis)
 
             a = newAxis.set_ylabel(axis, picker=True)
             a.set_picker(True)
+
             #logger.debug("axis label: %s" % (axis))
             self.axislist[axis] = newAxis
+    def make_patch_spines_invisible(self, ax):
+        ax.set_frame_on(True)
+        ax.patch.set_visible(False)
+        for sp in ax.spines.itervalues():
+            sp.set_visible(False)
 
     def _onMotion(self, event):
         """
