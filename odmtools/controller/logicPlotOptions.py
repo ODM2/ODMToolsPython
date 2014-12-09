@@ -227,12 +227,13 @@ class SeriesPlotInfo(object):
         noDataValue = series.variable.no_data_value
         if self.editID == seriesID:
             #d= DataFrame(pandas.read_sql())
-            data = DataFrame(self.memDB.getEditDataValuesforGraph())
+            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
 
         else:
             # using current variable keeps the series subsetted
-            data = DataFrame(self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd))
-        data.columns = self.memDB.columns
+            data = DataFrame(self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
+                             columns=self.memDB.columns)
+
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
 

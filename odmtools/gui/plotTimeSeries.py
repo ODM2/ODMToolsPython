@@ -46,12 +46,17 @@ class plotTimeSeries(wx.Panel):
         self.parent = parent
 
         #init Plot
+        # matplotlib.figure.Figure
         self.figure = plt.figure()
+
+        # matplotlib.axes.AxesSubplot
         self.timeSeries = self.figure.add_subplot(111)
         #self.timeSeries.plot([], [], picker=5)
         self.setTimeSeriesTitle("No Data to Plot")
 
+        # matplotlib.backends.backend_wxagg.FigureCanvasWxAgg
         self.canvas = FigCanvas(self, -1, self.figure)
+
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
@@ -219,20 +224,6 @@ class plotTimeSeries(wx.Panel):
         plt.gcf().autofmt_xdate()
         self.canvas.draw()
 
-    #clear plot
-    def clear(self):
-        lines = []
-        for key, ax in self.axislist.items():
-            ax.clear()
-        self.axislist = {}
-            # self.stopEdit()
-        #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
-        #plt.cla()
-        #plt.clf()
-        #self.timeSeries.plot([], [], picker=5)
-
-
-
     def stopEdit(self):
         self.clear()
         self.selectedlist = None
@@ -321,10 +312,105 @@ class plotTimeSeries(wx.Panel):
         self.toolbar.update()
         self.toolbar.push_current()
 
-
         #self._views.home()
         #self._positions.home()
         #self.set_history_buttons()
+
+    #clear plot
+    def clear(self):
+
+        # clear the figure
+
+        lines = []
+        for key, ax in self.axislist.items():
+            ax.clear()
+        self.axislist = {}
+        #self.canvas.draw()
+            # self.stopEdit()
+        #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
+        #plt.cla()
+        #plt.clf()
+        #self.timeSeries.plot([], [], picker=5)
+
+
+    def setUpYAxis(self):
+        """ Setting multiple axes using spines
+
+        :return:
+        """
+
+        self.axislist = {}
+        left = 0
+        right = 0
+        adj = .05
+        editaxis = None
+
+        ## Identify Axes and save them to axislist
+        #loop through the list of curves and add an axis for each
+        for oneSeries in self.seriesPlotInfo.getAllSeries():
+            #test to see if the axis already exists
+            if oneSeries.edit:
+                editaxis = oneSeries.axisTitle
+            if not oneSeries.axisTitle in self.axislist:
+                self.axislist[oneSeries.axisTitle] = None
+        keys = self.axislist.keys()
+
+        ## Put editing axis at the beginning of the list
+        if editaxis:
+            for i in range(len(keys)):
+                if keys[i] == editaxis:
+                    keys.pop(i)
+                    break
+            keys.insert(0, editaxis)
+
+        leftadjust = -30
+        for i, axis in zip(range(len(self.axislist)), keys):
+            if i % 2 == 0:
+                left = left + 1
+                #add to the left(yaxis)
+                if i == 0:
+                    #if first plot use the orig axis
+                    newAxis = self.timeSeries
+                else:
+                    newAxis = self.timeSeries.twinx()
+                    #newAxis.spines["left"].set_position(("axes", leftadjust * left))
+                    newAxis.spines["left"].set_position(("axes", -.1))
+                    newAxis.spines["left"].set_visible(True)
+                    newAxis.yaxis.set_label_position("left")
+                    newAxis.yaxis.set_ticks_position("left")
+
+                    '''
+                    new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
+                    newAxis.axis['left'] = new_fixed_axis(loc='left', axes=newAxis, offset=(leftadjust * left, 0))
+                    newAxis.axis["left"].toggle(all=True)
+                    newAxis.axis["right"].toggle(all=False)
+                    '''
+
+                    leftadjust -= 15
+
+            else:
+                right = right + 1
+                #add to the right(y2axis)
+                newAxis = self.timeSeries.twinx()
+                #newAxis.spines["right"].set_position(("axes", -1*60*(right - 1)))
+                newAxis.spines["right"].set_position(("axes", 1.0))
+                newAxis.spines["right"].set_visible(True)
+                newAxis.yaxis.set_label_position("right")
+                newAxis.yaxis.set_ticks_position("right")
+
+                '''
+                new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
+                newAxis.axis['right'] = new_fixed_axis(loc='right', axes=newAxis, offset=(60 * (right - 1), 0))
+                newAxis.axis['right'].toggle(all=True)
+                '''
+
+            #self.make_patch_spines_invisible(newAxis)
+
+            a = newAxis.set_ylabel(axis, picker=True)
+            a.set_picker(True)
+
+            #logger.debug("axis label: %s" % (axis))
+            self.axislist[axis] = newAxis
 
     def updatePlot(self):
         self.clear()
@@ -333,8 +419,6 @@ class plotTimeSeries(wx.Panel):
         self.lines = []
 
         ## Spine initialization ##
-
-
         for oneSeries in self.seriesPlotInfo.getAllSeries():
             #is this the series to be edited
             if oneSeries.seriesID == self.seriesPlotInfo.getEditSeriesID():
@@ -342,7 +426,7 @@ class plotTimeSeries(wx.Panel):
                 self.lines.append("")
                 self.editCurve = oneSeries
                 #self.drawEditPlot(oneSeries)
-
+                '''
                 data = oneSeries.dataTable
                 #if not isinstance(data['LocalDateTime'], datetime.datetime)
                 dates = data['LocalDateTime'].astype(datetime.datetime)
@@ -350,6 +434,7 @@ class plotTimeSeries(wx.Panel):
                 self.timeSeries.plot_date(dates, data['DataValue'], "-s",
                          color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
                          picker=5.0, pickradius=5.0, markersize=4.5)
+                '''
 
                 self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
                 self.timeSeries.set_xlabel('Date')
@@ -360,15 +445,30 @@ class plotTimeSeries(wx.Panel):
                     curraxis = self.axislist[oneSeries.axisTitle]
                     curraxis.set_zorder(1)
 
+                    '''
                     data = oneSeries.dataTable
                     dates = data['LocalDateTime'].astype(datetime.datetime)
+                    #data.plot(ax=curraxis)
                     curraxis.plot_date(dates, data['DataValue'],
-                            color=oneSeries.color, axes=self.timeSeries, fmt=self.format, xdate=True, tz=None, antialiased=True,
+                            color=oneSeries.color, fmt=self.format, xdate=True, tz=None, antialiased=True,
                             label=oneSeries.plotTitle, alpha=self.alpha, picker=5.0, pickradius=5.0,
                             markersize=4)
-                    #curraxis.set_xlabel('Date')
+
+                    curraxis.set_xlabel('Date')
+                    '''
+
+                    data = oneSeries.dataTable
+                    #dates = data['LocalDateTime'].astype(datetime.datetime)
+
+                    data['LocalDateTime'] = pd.to_datetime(data['LocalDateTime'])
+
+                    data.plot(ax=curraxis)
+                    oneSeries.dataTable.plot(ax=curraxis)
+                    curraxis.set_xlabel('Date')
 
 
+
+        '''
         if count > 1:
             self.setTimeSeriesTitle("")
             plt.subplots_adjust(bottom=.1 + .1)
@@ -384,6 +484,7 @@ class plotTimeSeries(wx.Panel):
             self.setTimeSeriesTitle(oneSeries.siteName)
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
+        '''
 
         '''
         self.timeSeries.set_xlabel("Date", picker=True)
@@ -400,7 +501,7 @@ class plotTimeSeries(wx.Panel):
 
         #plt.gcf().autofmt_xdate()
 
-        plt.tight_layout()
+        self.figure.tight_layout()
         if not self.toolbar._views.empty():
             for v in self.toolbar._views:
                 del(v)
@@ -475,82 +576,7 @@ class plotTimeSeries(wx.Panel):
             #self.updatePlot()
 
 
-    def setUpYAxis(self):
-        """ Setting multiple axes using spines
 
-        :return:
-        """
-
-        self.axislist = {}
-        left = 0
-        right = 0
-        adj = .05
-        editaxis = None
-
-        ## Identify Axes and save them to axislist
-        #loop through the list of curves and add an axis for each
-        for oneSeries in self.seriesPlotInfo.getAllSeries():
-            #test to see if the axis already exists
-            if oneSeries.edit:
-                editaxis = oneSeries.axisTitle
-            if not oneSeries.axisTitle in self.axislist:
-                self.axislist[oneSeries.axisTitle] = None
-        keys = self.axislist.keys()
-
-        ## Put editing axis at the beginning of the list
-        if editaxis:
-            for i in range(len(keys)):
-                if keys[i] == editaxis:
-                    keys.pop(i)
-                    break
-            keys.insert(0, editaxis)
-
-        leftadjust = -30
-        for i, axis in zip(range(len(self.axislist)), keys):
-            if i % 2 == 0:
-                left = left + 1
-                #add to the left(yaxis)
-                if i == 0:
-                    #if first plot use the orig axis
-                    newAxis = self.timeSeries
-                else:
-                    newAxis = self.timeSeries.twinx()
-                    newAxis.spines["left"].set_position(("axes", leftadjust * left))
-                    newAxis.spines["left"].set_visible(True)
-                    newAxis.yaxis.set_label_position("left")
-                    newAxis.yaxis.set_ticks_position("left")
-
-                    '''
-                    new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
-                    newAxis.axis['left'] = new_fixed_axis(loc='left', axes=newAxis, offset=(leftadjust * left, 0))
-                    newAxis.axis["left"].toggle(all=True)
-                    newAxis.axis["right"].toggle(all=False)
-                    '''
-
-                    leftadjust -= 15
-
-            else:
-                right = right + 1
-                #add to the right(y2axis)
-                newAxis = self.timeSeries.twinx()
-                newAxis.spines["right"].set_position(("axes", 60*(right - 1)))
-                newAxis.spines["right"].set_visible(True)
-                newAxis.yaxis.set_label_position("right")
-                newAxis.yaxis.set_ticks_position("right")
-
-                '''
-                new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
-                newAxis.axis['right'] = new_fixed_axis(loc='right', axes=newAxis, offset=(60 * (right - 1), 0))
-                newAxis.axis['right'].toggle(all=True)
-                '''
-
-            self.make_patch_spines_invisible(newAxis)
-
-            a = newAxis.set_ylabel(axis, picker=True)
-            a.set_picker(True)
-
-            #logger.debug("axis label: %s" % (axis))
-            self.axislist[axis] = newAxis
     def make_patch_spines_invisible(self, ax):
         ax.set_frame_on(True)
         ax.patch.set_visible(False)
