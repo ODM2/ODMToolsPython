@@ -2,7 +2,6 @@ import math
 import datetime
 
 from pandas import DataFrame
-import pandas
 import wx
 
 import numpy
@@ -127,7 +126,9 @@ class SeriesPlotInfo(object):
             self.update(self.editID, True)
            # self.getSeriesInfo(self.editID)
         else:
-            self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            ## Pandas DataFrame
+            #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
 
         self._seriesInfos[self.editID].edit = True
         self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
@@ -136,15 +137,21 @@ class SeriesPlotInfo(object):
 
     def updateEditSeries(self):
         if self.editID in self._seriesInfos:
-            self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
 
     def stopEditSeries(self):
 
         if self.editID in self._seriesInfos:
+            '''
             self._seriesInfos[self.editID].dataTable = \
                 self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
                                                  self._seriesInfos[self.editID].startDate,
                                                  self._seriesInfos[self.editID].endDate)
+            '''
+            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
+                                                 self._seriesInfos[self.editID].startDate,
+                                                 self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
         self.editID = None

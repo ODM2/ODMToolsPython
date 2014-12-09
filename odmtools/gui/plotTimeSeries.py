@@ -273,6 +273,10 @@ class plotTimeSeries(wx.Panel):
     def drawEditPlot(self, oneSeries):
         self.editSeries = oneSeries
         self.axislist[self.editSeries.axisTitle].set_zorder(10)
+        self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle]
+        oneSeries.dataTable.plot(ax=self.lines[self.curveindex])
+
+        '''
         self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle].\
                                                     plot_date([x[1] for x in oneSeries.dataTable],
                                                          [x[0] for x in oneSeries.dataTable], "-s",
@@ -280,6 +284,7 @@ class plotTimeSeries(wx.Panel):
                                                          label=oneSeries.plotTitle, zorder=10, alpha=1,
                                                          picker=5.0, pickradius=5.0, markersize=4.5)
 
+        '''
 
         #self.selectedlist = self.parent.record_service.get_filter_list()
 
@@ -288,8 +293,8 @@ class plotTimeSeries(wx.Panel):
                                           s=35, c='k', edgecolors='none',
                                           zorder=11, marker='s', alpha=1)# >, <, v, ^,s
         '''
-        self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
-        self.toolbar.editSeries(self.xys, self.editCurve)
+        #self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
+        #self.toolbar.editSeries(self.xys, self.editCurve)
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
     def _setColor(self, color):
@@ -425,7 +430,7 @@ class plotTimeSeries(wx.Panel):
                 self.curveindex = len(self.lines)
                 self.lines.append("")
                 self.editCurve = oneSeries
-                #self.drawEditPlot(oneSeries)
+                self.drawEditPlot(oneSeries)
                 '''
                 data = oneSeries.dataTable
                 #if not isinstance(data['LocalDateTime'], datetime.datetime)
@@ -461,6 +466,7 @@ class plotTimeSeries(wx.Panel):
                     #dates = data['LocalDateTime'].astype(datetime.datetime)
 
                     data['LocalDateTime'] = pd.to_datetime(data['LocalDateTime'])
+                    data['LocalDateTime'].astype(datetime.datetime)
 
                     data.plot(ax=curraxis)
                     oneSeries.dataTable.plot(ax=curraxis)
