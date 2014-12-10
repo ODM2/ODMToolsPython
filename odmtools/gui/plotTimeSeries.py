@@ -293,8 +293,10 @@ class plotTimeSeries(wx.Panel):
                                           s=35, c='k', edgecolors='none',
                                           zorder=11, marker='s', alpha=1)# >, <, v, ^,s
         '''
+        convertedDates = matplotlib.dates.date2num(oneSeries.dataTable['LocalDateTime'].astype(datetime.datetime))
+        self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
         #self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
-        #self.toolbar.editSeries(self.xys, self.editCurve)
+        self.toolbar.editSeries(self.xys, self.editCurve)
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
     def _setColor(self, color):
