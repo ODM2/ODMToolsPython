@@ -50,7 +50,8 @@ class plotTimeSeries(wx.Panel):
         self.figure = plt.figure()
 
         # matplotlib.axes.AxesSubplot
-        self.timeSeries = self.figure.add_subplot(111)
+        self.timeSeries = host_subplot( 111, axes_class=AA.Axes)
+        #self.timeSeries = self.figure.add_subplot(111)
         #self.timeSeries.plot([], [], picker=5)
         self.setTimeSeriesTitle("No Data to Plot")
 
@@ -274,7 +275,9 @@ class plotTimeSeries(wx.Panel):
         self.editSeries = oneSeries
         self.axislist[self.editSeries.axisTitle].set_zorder(10)
         self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle]
-        oneSeries.dataTable.plot(ax=self.lines[self.curveindex])
+        ax = oneSeries.dataTable.plot(ax=self.lines[self.curveindex])
+        plt.setp(color='black')
+
 
         '''
         self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle].\
@@ -325,8 +328,10 @@ class plotTimeSeries(wx.Panel):
 
     #clear plot
     def clear(self):
+        """
 
-        # clear the figure
+        :return:
+        """
 
         lines = []
         for key, ax in self.axislist.items():
@@ -341,7 +346,7 @@ class plotTimeSeries(wx.Panel):
 
 
     def setUpYAxis(self):
-        """ Setting multiple axes using spines
+        """ Setting up multiple axes
 
         :return:
         """
@@ -380,18 +385,19 @@ class plotTimeSeries(wx.Panel):
                     newAxis = self.timeSeries
                 else:
                     newAxis = self.timeSeries.twinx()
+                    '''
+                    Spines idea
                     #newAxis.spines["left"].set_position(("axes", leftadjust * left))
                     newAxis.spines["left"].set_position(("axes", -.1))
                     newAxis.spines["left"].set_visible(True)
                     newAxis.yaxis.set_label_position("left")
                     newAxis.yaxis.set_ticks_position("left")
-
                     '''
+
                     new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
                     newAxis.axis['left'] = new_fixed_axis(loc='left', axes=newAxis, offset=(leftadjust * left, 0))
                     newAxis.axis["left"].toggle(all=True)
                     newAxis.axis["right"].toggle(all=False)
-                    '''
 
                     leftadjust -= 15
 
@@ -399,19 +405,20 @@ class plotTimeSeries(wx.Panel):
                 right = right + 1
                 #add to the right(y2axis)
                 newAxis = self.timeSeries.twinx()
+
+                '''
+                Spines idea
                 #newAxis.spines["right"].set_position(("axes", -1*60*(right - 1)))
                 newAxis.spines["right"].set_position(("axes", 1.0))
                 newAxis.spines["right"].set_visible(True)
                 newAxis.yaxis.set_label_position("right")
                 newAxis.yaxis.set_ticks_position("right")
-
                 '''
+
                 new_fixed_axis = newAxis.get_grid_helper().new_fixed_axis
                 newAxis.axis['right'] = new_fixed_axis(loc='right', axes=newAxis, offset=(60 * (right - 1), 0))
                 newAxis.axis['right'].toggle(all=True)
-                '''
 
-            #self.make_patch_spines_invisible(newAxis)
 
             a = newAxis.set_ylabel(axis, picker=True)
             a.set_picker(True)
@@ -427,56 +434,76 @@ class plotTimeSeries(wx.Panel):
 
         ## Spine initialization ##
         for oneSeries in self.seriesPlotInfo.getAllSeries():
-            #is this the series to be edited
             if oneSeries.seriesID == self.seriesPlotInfo.getEditSeriesID():
+                """
+
+                Edited Series
+
+                """
                 self.curveindex = len(self.lines)
                 self.lines.append("")
                 self.editCurve = oneSeries
-                self.drawEditPlot(oneSeries)
-                '''
+                self.editSeries = oneSeries
+                self.axislist[self.editSeries.axisTitle].set_zorder(10)
+                self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle]
+                #self.drawEditPlot(oneSeries)
                 data = oneSeries.dataTable
-                #if not isinstance(data['LocalDateTime'], datetime.datetime)
                 dates = data['LocalDateTime'].astype(datetime.datetime)
+                curraxis = self.axislist[oneSeries.axisTitle]
 
+                '''
                 self.timeSeries.plot_date(dates, data['DataValue'], "-s",
                          color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
                          picker=5.0, pickradius=5.0, markersize=4.5)
                 '''
 
+                curraxis.plot_date(dates, data['DataValue'], "-s",
+                         color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
+                         picker=5.0, pickradius=5.0, markersize=4.5)
+
+                convertedDates = matplotlib.dates.date2num(dates)
+                self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
+                #self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
+                self.toolbar.editSeries(self.xys, self.editCurve)
                 self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+
                 self.timeSeries.set_xlabel('Date')
 
-
             else:
-                if oneSeries.dataTable is not None:
-                    curraxis = self.axislist[oneSeries.axisTitle]
-                    curraxis.set_zorder(1)
+                """
 
-                    '''
-                    data = oneSeries.dataTable
-                    dates = data['LocalDateTime'].astype(datetime.datetime)
-                    #data.plot(ax=curraxis)
-                    curraxis.plot_date(dates, data['DataValue'],
-                            color=oneSeries.color, fmt=self.format, xdate=True, tz=None, antialiased=True,
-                            label=oneSeries.plotTitle, alpha=self.alpha, picker=5.0, pickradius=5.0,
-                            markersize=4)
+                Plotted Series
 
-                    curraxis.set_xlabel('Date')
-                    '''
+                """
+                curraxis = self.axislist[oneSeries.axisTitle]
+                curraxis.set_zorder(1)
 
-                    data = oneSeries.dataTable
-                    #dates = data['LocalDateTime'].astype(datetime.datetime)
+                data = oneSeries.dataTable
+                dates = data['LocalDateTime'].astype(datetime.datetime)
+                #data.plot(ax=curraxis)
+                curraxis.plot_date(dates, data['DataValue'],
+                        color=oneSeries.color, fmt=self.format, xdate=True, tz=None, antialiased=True,
+                        label=oneSeries.plotTitle, alpha=self.alpha, picker=5.0, pickradius=5.0,
+                        markersize=4)
 
-                    data['LocalDateTime'] = pd.to_datetime(data['LocalDateTime'])
-                    data['LocalDateTime'].astype(datetime.datetime)
-
-                    data.plot(ax=curraxis)
-                    oneSeries.dataTable.plot(ax=curraxis)
-                    curraxis.set_xlabel('Date')
+                curraxis.set_xlabel('Date')
 
 
+                '''
+                data = oneSeries.dataTable
+                #dates = data['LocalDateTime'].astype(datetime.datetime)
 
-        '''
+                data['LocalDateTime'] = pd.to_datetime(data['LocalDateTime'])
+                data['LocalDateTime'].astype(datetime.datetime)
+
+                data.plot(ax=curraxis)
+                oneSeries.dataTable.plot(ax=curraxis)
+                curraxis.set_xlabel('Date')
+                '''
+
+
+
+
         if count > 1:
             self.setTimeSeriesTitle("")
             plt.subplots_adjust(bottom=.1 + .1)
@@ -492,9 +519,7 @@ class plotTimeSeries(wx.Panel):
             self.setTimeSeriesTitle(oneSeries.siteName)
             plt.subplots_adjust(bottom=.1)
             self.timeSeries.legend_ = None
-        '''
 
-        '''
         self.timeSeries.set_xlabel("Date", picker=True)
         #self.timeSeries.set_xlim(matplotlib.dates.date2num([self.seriesPlotInfo.currentStart, self.seriesPlotInfo.currentEnd]))
 
@@ -505,9 +530,9 @@ class plotTimeSeries(wx.Panel):
         self.timeSeries.axis["bottom"].major_ticklabels.set_pad(15)
         self.timeSeries.axis["bottom"].major_ticklabels.set_rotation(15)
         self.timeSeries.axis[:].major_ticklabels.set_picker(True)
-        '''
 
-        #plt.gcf().autofmt_xdate()
+
+        plt.gcf().autofmt_xdate()
 
         self.figure.tight_layout()
         if not self.toolbar._views.empty():
