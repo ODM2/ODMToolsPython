@@ -7,18 +7,20 @@ import wx
 import numpy
 from functools import partial
 
+
 def calcSeason(x):
-    x= int(x)
-    if x in (1,2,3):
+    x = int(x)
+    if x in (1, 2, 3):
         return "1"
-    elif x in (4,5,6):
+    elif x in (4, 5, 6):
         return "2"
-    elif x in (7,8,9):
+    elif x in (7, 8, 9):
         return "3"
     elif x in (10, 11, 12):
         return "4"
 
-    #return x*2, x*3
+        # return x*2, x*3
+
 
 class OneSeriesPlotInfo(object):
     def __init__(self, prnt):
@@ -26,7 +28,7 @@ class OneSeriesPlotInfo(object):
 
         self.seriesID = None
         self.series = None
-        self.noDataValue= -9999
+        self.noDataValue = -9999
 
         self.startDate = None
         self.endDate = None
@@ -37,7 +39,7 @@ class OneSeriesPlotInfo(object):
         self.variableName = ""
         self.dataType = ""
         self.variableUnits = ""
-        self.filteredData=None
+        self.filteredData = None
         self.BoxWhisker = None
         self.Probability = None
         self.Statistics = None
@@ -46,14 +48,13 @@ class OneSeriesPlotInfo(object):
         self.binWidth = 1.5
         self.boxWhiskerMethod = "Month"
 
-        self.yrange=0
+        self.yrange = 0
         self.color = ""
 
-        #edit functions
+        # edit functions
         self.edit = False
         #the color the plot should be when not editing
         self.plotcolor = None
-
 
 
 class SeriesPlotInfo(object):
@@ -61,17 +62,16 @@ class SeriesPlotInfo(object):
 
     def __init__(self, memDB):
 
-        #memDB is a connection to the memory_database
+        # memDB is a connection to the memory_database
         self.memDB = memDB
         self._seriesInfos = {}
         self.editID = None
-        self.colorList = ['blue', 'green',  'cyan', 'orange', 'purple',  'saddlebrown', 'magenta', 'teal','red']
+        self.colorList = ['blue', 'green', 'cyan', 'orange', 'purple', 'saddlebrown', 'magenta', 'teal', 'red']
         self.startDate = datetime.datetime(2100, 12, 31)
-        self.endDate= datetime.datetime(1800, 01, 01)
-        self.currentStart=self.startDate
-        self.currentEnd=self.endDate
+        self.endDate = datetime.datetime(1800, 01, 01)
+        self.currentStart = self.startDate
+        self.currentEnd = self.endDate
         self.isSubsetted = False
-
 
 
     def getDates(self):
@@ -81,13 +81,13 @@ class SeriesPlotInfo(object):
         self.currentStart = start
 
     def setCurrentEnd(self, end):
-        self.currentEnd= end
+        self.currentEnd = end
 
     def resetDates(self):
         self.startDate = datetime.datetime(2100, 12, 31)
         self.endDate = datetime.datetime(1800, 01, 01)
 
-        #self.isSubsetted = False
+        # self.isSubsetted = False
         for key in self.getSeriesIDs():
             start = self._seriesInfos[key].startDate
             end = self._seriesInfos[key].endDate
@@ -101,8 +101,6 @@ class SeriesPlotInfo(object):
         if not self.isSubsetted:
             self.currentStart = self.startDate
             self.currentEnd = self.endDate
-
-
 
 
     def isPlotted(self, sid):
@@ -120,15 +118,16 @@ class SeriesPlotInfo(object):
     def setEditSeries(self, seriesID):
 
         self.editID = int(seriesID)
-        #self.memDB.initEditValues(self.editID)
+        # self.memDB.initEditValues(self.editID)
 
         if self.editID not in self._seriesInfos:
             self.update(self.editID, True)
-           # self.getSeriesInfo(self.editID)
+            # self.getSeriesInfo(self.editID)
         else:
             ## Pandas DataFrame
             #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(),
+                                                                 columns=self.memDB.columns)
 
         self._seriesInfos[self.editID].edit = True
         self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
@@ -137,8 +136,9 @@ class SeriesPlotInfo(object):
 
     def updateEditSeries(self):
         if self.editID in self._seriesInfos:
-            #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(),
+                                                                 columns=self.memDB.columns)
 
     def stopEditSeries(self):
 
@@ -149,7 +149,8 @@ class SeriesPlotInfo(object):
                                                  self._seriesInfos[self.editID].startDate,
                                                  self._seriesInfos[self.editID].endDate)
             '''
-            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
+            self._seriesInfos[self.editID].dataTable = DataFrame(
+                self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
                                                  self._seriesInfos[self.editID].startDate,
                                                  self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
             self._seriesInfos[self.editID].edit = False
@@ -174,14 +175,13 @@ class SeriesPlotInfo(object):
             except KeyError:
                 self.resetDates()
         else:
-            ## add dictionary entry with no data
+            # # add dictionary entry with no data
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
 
 
-
     # def Update(self):
-    #     for key, value in enumerate(self._seriesInfos):
+    # for key, value in enumerate(self._seriesInfos):
     #         self._seriesInfos[key]=None
 
     def setBoxInterval(self, title):
@@ -238,8 +238,9 @@ class SeriesPlotInfo(object):
 
         else:
             # using current variable keeps the series subsetted
-            data = DataFrame(self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
-                             columns=self.memDB.columns)
+            data = DataFrame(
+                self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
+                columns=self.memDB.columns)
 
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
@@ -255,15 +256,16 @@ class SeriesPlotInfo(object):
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
         #remove all of the nodatavalues from the pandas table
-        seriesInfo.filteredData= data[data["DataValue"]!=noDataValue]
+        seriesInfo.filteredData = data[data["DataValue"] != noDataValue]
         val = seriesInfo.filteredData["Month"].map(calcSeason)
-        seriesInfo.filteredData["Season"]= val#calcSeason(seriesInfo.filteredData["Month"])
+        seriesInfo.filteredData["Season"] = val
+        #calcSeason(seriesInfo.filteredData["Month"])
 
 
-        if len(data)>0:
+        if len(data) > 0:
             seriesInfo.yrange = data['DataValue'].max() - data['DataValue'].min()
         else:
-            seriesInfo.yrange=0
+            seriesInfo.yrange = 0
 
         return seriesInfo
 
@@ -302,6 +304,7 @@ class SeriesPlotInfo(object):
         return seriesInfo
 
     import threading
+
     class ThreadHandler(threading.Thread):
         def __init__(self, type=""):
             pass
@@ -318,17 +321,18 @@ class SeriesPlotInfo(object):
 
     def updateDateRange(self, startDate=None, endDate=None):
         self.currentStart = startDate
-        self.currentEnd=endDate
+        self.currentEnd = endDate
         for key in self.getSeriesIDs():
             seriesInfo = self._seriesInfos[key]
             if startDate:
                 data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, startDate, endDate)
-                self.isSubsetted=True
+                self.isSubsetted = True
                 self.currentStart = startDate
-                self.currentEnd=endDate
+                self.currentEnd = endDate
             else:
                 #this returns the series to its full daterange
-                data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate, seriesInfo.endDate)
+                data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate,
+                                                        seriesInfo.endDate)
                 self.isSubsetted = False
                 self.currentStart = self.startDate
                 self.currentEnd = self.endDate
@@ -342,13 +346,12 @@ class Statistics(object):
     def __init__(self, data):
 
 
-        #dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
+        # dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         #data = sorted(dataValues)
-        d= data.describe(percentiles = [.10,.25,.5,.75,.90])
+        d = data.describe(percentiles=[.10, .25, .5, .75, .90])
         count = self.NumberofObservations = d["DataValue"]["count"]
-        self.NumberofCensoredObservations = data[data["CensorCode"]!= "nc"].count().DataValue
+        self.NumberofCensoredObservations = data[data["CensorCode"] != "nc"].count().DataValue
         self.ArithemticMean = round(d["DataValue"]["mean"], 5)
-
 
         sumval = 0
         sign = 1
@@ -381,90 +384,80 @@ class BoxWhisker(object):
         self.intervals = {}
         self.method = method
         mean = []
-        median=[]
-        confint=[]
-        conflimit=[]
+        median = []
+        confint = []
+        conflimit = []
 
         from scipy import stats
 
         # for x in dataTable:
-        #     print x, x[3]
+        # print x, x[3]
 
         mean.append(data.mean())
         median.append(data.median())
-        ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))
+        ci = stats.norm.interval(.95, data.mean(), scale=10 * (data.std() / math.sqrt(len(data))))
         confint.append((ci[0][0], ci[1][0]))
-        cl= stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data))))
+        cl = stats.norm.interval(.95, data.median(), scale=(data.std() / math.sqrt(len(data))))
         conflimit.append((cl[0][0], cl[1][0]))
-
-
 
         self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", None, [], [median, conflimit, mean, confint])
 
         mean = []
-        median=[]
-        confint=[]
-        conflimit=[]
+        median = []
+        confint = []
+        conflimit = []
         names = []
-        y=data.groupby("Year")
+        y = data.groupby("Year")
 
         for name, group in y:
             names.append(name)
             mean.append(group.mean())
             median.append(group.median())
-            ci = stats.norm.interval(.95, data.mean(), scale = 10*(data.std()/math.sqrt(len(data))))
+            ci = stats.norm.interval(.95, data.mean(), scale=10 * (data.std() / math.sqrt(len(data))))
             confint.append((ci[0][0], ci[1][0]))
-            cl= stats.norm.interval(.95, data.median(), scale = (data.std()/math.sqrt(len(data))))
+            cl = stats.norm.interval(.95, data.median(), scale=(data.std() / math.sqrt(len(data))))
             conflimit.append((cl[0][0], cl[1][0]))
 
         # return medians, conflimit, means, confint
-        self.intervals["Year"] = BoxWhiskerPlotInfo( "Year","Year", names,[ median, conflimit, mean, confint])
-
-
-
+        self.intervals["Year"] = BoxWhiskerPlotInfo("Year", "Year", names, [median, conflimit, mean, confint])
 
         mean = []
-        median=[]
-        confint=[]
-        conflimit=[]
+        median = []
+        confint = []
+        conflimit = []
         names = []
-        m=data.groupby("Month")
+        m = data.groupby("Month")
 
         for name, group in m:
             names.append(name)
             mean.append(group.mean())
             median.append(group.median())
-            ci = stats.norm.interval(.95, group.mean(), scale = 10*(group.std()/math.sqrt(len(group))))
+            ci = stats.norm.interval(.95, group.mean(), scale=10 * (group.std() / math.sqrt(len(group))))
             confint.append((ci[0][0], ci[1][0]))
-            cl= stats.norm.interval(.95, group.median(), scale = (group.std()/math.sqrt(len(group))))
+            cl = stats.norm.interval(.95, group.median(), scale=(group.std() / math.sqrt(len(group))))
             conflimit.append((cl[0][0], cl[1][0]))
 
-
-        self.intervals["Month"] = BoxWhiskerPlotInfo( "Month","Month" ,[numToMonth(x) for x in names],
-                                                       [median, conflimit, mean, confint])
-
-
+        self.intervals["Month"] = BoxWhiskerPlotInfo("Month", "Month", [numToMonth(x) for x in names],
+                                                     [median, conflimit, mean, confint])
 
         mean = []
-        median=[]
-        confint=[]
-        conflimit=[]
+        median = []
+        confint = []
+        conflimit = []
         names = []
-        m=data.groupby("Season")
+        m = data.groupby("Season")
 
         for name, group in m:
             names.append(name)
             mean.append(group.mean())
             median.append(group.median())
-            ci = stats.norm.interval(.95, group.mean(), scale = 10*(group.std()/math.sqrt(len(group))))
+            ci = stats.norm.interval(.95, group.mean(), scale=10 * (group.std() / math.sqrt(len(group))))
             confint.append((ci[0][0], ci[1][0]))
-            cl= stats.norm.interval(.95, group.median(), scale = (group.std()/math.sqrt(len(group))))
+            cl = stats.norm.interval(.95, group.median(), scale=(group.std() / math.sqrt(len(group))))
             conflimit.append((cl[0][0], cl[1][0]))
 
-
-        self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season" , [numToSeason(x) for x in names],
-                                                       [median, conflimit, mean, confint])
-
+        self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season", [numToSeason(x) for x in names],
+                                                      [median, conflimit, mean, confint])
 
         self.currinterval = self.intervals[self.method]
 
@@ -474,12 +467,8 @@ class BoxWhisker(object):
         self.currinterval = self.intervals[self.method]
 
 
-
-
-
-
 class BoxWhiskerPlotInfo(object):
-    def __init__(self, title, groupby ,  xLabels, dets):
+    def __init__(self, title, groupby, xLabels, dets):
         self.title = title
 
         self.xlabels = xLabels
@@ -496,7 +485,7 @@ class Probability(object):
 
         self.curFreq = None
         self.Xaxis = []
-        #self.Yaxis = sorted(data)
+        # self.Yaxis = sorted(data)
         length = len(data)
 
         probX = lambda freq: round(4.91 * ((freq ** .14) - (1.00 - freq) ** .14), 3)
@@ -545,6 +534,7 @@ def numToMonth(date):
         11: 'Nov',
         12: 'Dec'
     }[date]
+
 
 def numToSeason(date):
     date = int(date)

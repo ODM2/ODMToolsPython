@@ -292,6 +292,7 @@ class plotTimeSeries(wx.Panel):
         curraxis.plot_date(dates, data['DataValue'], "-s",
                  color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
                  picker=5.0, pickradius=5.0, markersize=4.5)
+        curraxis.set_xlabel('Date')
 
         convertedDates = matplotlib.dates.date2num(dates)
         self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
@@ -444,7 +445,6 @@ class plotTimeSeries(wx.Panel):
                 self.drawEditPlot(oneSeries)
 
 
-                self.timeSeries.set_xlabel('Date')
 
             else:
                 """

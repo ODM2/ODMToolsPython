@@ -1,5 +1,6 @@
 
 import sqlite3
+import pandas as pd
 
 class MemoryDatabase(object):
 ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
@@ -36,12 +37,7 @@ class MemoryDatabase(object):
         self.cursor.execute(query)
         return [list(x) for x in  self.cursor.fetchall()]
 
-    def getEditDataValuesforGraph(self):
-        query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, " \
-               "strftime('%Y', LocalDateTime) as DateYear, Null AS DateSeason  FROM DataValues ORDER BY LocalDateTime"
-        self.cursor.execute(query)
-        #return [list(x) for x in  self.cursor.fetchall()]# return a list of lists orig returns a list of cursors
-        return self.cursor.fetchall()
+
     
     def getEditRowCount(self):
         query ="SELECT COUNT(ValueID) FROM DataValues "
@@ -63,9 +59,15 @@ class MemoryDatabase(object):
             for dv in series.data_values
             if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
         ]
-        return DataValues
+        return pd.DataFrame(DataValues, columns=self.columns)
+        #return DataValues
 
-
+    def getEditDataValuesforGraph(self):
+        query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, " \
+               "strftime('%Y', LocalDateTime) as DateYear, Null AS DateSeason  FROM DataValues ORDER BY LocalDateTime"
+        self.cursor.execute(query)
+        return pd.DataFrame(self.cursor.fetchall(), columns=self.columns)
+        #return self.cursor.fetchall()
 
     def getSeriesCatalog(self):
         sql = "SELECT * FROM SeriesCatalog"
