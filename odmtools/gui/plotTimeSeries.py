@@ -159,23 +159,34 @@ class plotTimeSeries(wx.Panel):
     def changePlotSelection(self,  datetime_list=[], datavalues=[]):
 
         #for entire list of points if selected add to new lists
-        newx= []
-        newy=[]
+        #newx = []
+        #newy = []
         if self.selplot:
             self.selplot.remove()
             del(self.selplot)
             self.selplot = None
 
 
-        if len( datetime_list) >0:
+        if len(datetime_list) > 0:
+            df = self.editCurve.dataTable
+            result = df[df['LocalDateTime'].isin(datetime_list)].astype(datetime.datetime)
+            values = result['DataValue'].values
+            dates = result.LocalDateTime.values
+            self.selplot = self.axislist[self.editSeries.axisTitle].scatter(dates, values, s=35, c='red',
+                                                                            edgecolors='none', zorder=12, marker='s', alpha=1)
+
+            '''
+            #DELETE
             for x, y, a, b, c in self.editCurve.dataTable:
                 if y in datetime_list:
                     newx.append(x)
                     newy.append(y)
 
-            self.selplot =  self.axislist[self.editSeries.axisTitle].scatter( newy, newx,
+            self.selplot = self.axislist[self.editSeries.axisTitle].scatter(newy, newx,
                                               s=35, c='red', edgecolors='none',
                                               zorder=12, marker='s', alpha=1)
+            '''
+
         self.canvas.draw()
 
 
@@ -272,35 +283,22 @@ class plotTimeSeries(wx.Panel):
         self.canvas.draw()
 
     def drawEditPlot(self, oneSeries):
-        self.editSeries = oneSeries
-        self.axislist[self.editSeries.axisTitle].set_zorder(10)
-        self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle]
-        ax = oneSeries.dataTable.plot(ax=self.lines[self.curveindex])
-        plt.setp(color='black')
+        self.axislist[oneSeries.axisTitle].set_zorder(10)
+        self.lines[self.curveindex] = self.axislist[oneSeries.axisTitle]
+        data = oneSeries.dataTable
+        dates = data['LocalDateTime'].astype(datetime.datetime)
+        curraxis = self.axislist[oneSeries.axisTitle]
 
+        curraxis.plot_date(dates, data['DataValue'], "-s",
+                 color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
+                 picker=5.0, pickradius=5.0, markersize=4.5)
 
-        '''
-        self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle].\
-                                                    plot_date([x[1] for x in oneSeries.dataTable],
-                                                         [x[0] for x in oneSeries.dataTable], "-s",
-                                                         color=oneSeries.color, xdate=True, tz=None,
-                                                         label=oneSeries.plotTitle, zorder=10, alpha=1,
-                                                         picker=5.0, pickradius=5.0, markersize=4.5)
-
-        '''
-
-        #self.selectedlist = self.parent.record_service.get_filter_list()
-
-        '''self.editPoint = self.axislist[self.editSeries.axisTitle].\
-                                    scatter([x[1] for x in oneSeries.dataTable], [x[0] for x in oneSeries.dataTable],
-                                          s=35, c='k', edgecolors='none',
-                                          zorder=11, marker='s', alpha=1)# >, <, v, ^,s
-        '''
-        convertedDates = matplotlib.dates.date2num(oneSeries.dataTable['LocalDateTime'].astype(datetime.datetime))
+        convertedDates = matplotlib.dates.date2num(dates)
         self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
-        #self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+        self.editSeries = oneSeries
+
 
     def _setColor(self, color):
         """Set figure and canvas colours to be the same.
@@ -443,29 +441,8 @@ class plotTimeSeries(wx.Panel):
                 self.curveindex = len(self.lines)
                 self.lines.append("")
                 self.editCurve = oneSeries
-                self.editSeries = oneSeries
-                self.axislist[self.editSeries.axisTitle].set_zorder(10)
-                self.lines[self.curveindex] = self.axislist[self.editSeries.axisTitle]
-                #self.drawEditPlot(oneSeries)
-                data = oneSeries.dataTable
-                dates = data['LocalDateTime'].astype(datetime.datetime)
-                curraxis = self.axislist[oneSeries.axisTitle]
+                self.drawEditPlot(oneSeries)
 
-                '''
-                self.timeSeries.plot_date(dates, data['DataValue'], "-s",
-                         color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
-                         picker=5.0, pickradius=5.0, markersize=4.5)
-                '''
-
-                curraxis.plot_date(dates, data['DataValue'], "-s",
-                         color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
-                         picker=5.0, pickradius=5.0, markersize=4.5)
-
-                convertedDates = matplotlib.dates.date2num(dates)
-                self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
-                #self.xys = [(matplotlib.dates.date2num(x[1]), x[0]) for x in oneSeries.dataTable]
-                self.toolbar.editSeries(self.xys, self.editCurve)
-                self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
                 self.timeSeries.set_xlabel('Date')
 
