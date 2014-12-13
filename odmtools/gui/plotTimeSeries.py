@@ -170,8 +170,8 @@ class plotTimeSeries(wx.Panel):
         if len(datetime_list) > 0:
             df = self.editCurve.dataTable
             result = df[df['LocalDateTime'].isin(datetime_list)].astype(datetime.datetime)
-            values = result['DataValue'].values
-            dates = result.LocalDateTime.values
+            values = result['DataValue'].values.tolist()
+            dates = result.LocalDateTime.values.tolist()
             self.selplot = self.axislist[self.editSeries.axisTitle].scatter(dates, values, s=35, c='red',
                                                                             edgecolors='none', zorder=12, marker='s', alpha=1)
 
