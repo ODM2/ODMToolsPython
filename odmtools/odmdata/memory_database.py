@@ -8,7 +8,7 @@ class MemoryDatabase(object):
     # series_service is a SeriesService
     def __init__(self, series_service):
         self.series_service = series_service        
-        self.conn = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
+        self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
         self.editLoaded= False
         self.columns = ['DataValue', 'LocalDateTime', 'CensorCode', 'Month', 'Year', 'Season']
@@ -18,7 +18,7 @@ class MemoryDatabase(object):
 
      ############
      #DB Queries
-     ###########   
+     ###########  
     def delete_points(self, filter):
         raise NotImplementedError
 
@@ -35,7 +35,7 @@ class MemoryDatabase(object):
         # query = "SELECT ValueID, SeriesID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, QualifierCode, OffsetValue, OffsetTypeID, CensorCode, SampleID FROM DataValues AS d LEFT JOIN Qualifiers AS q ON (d.QualifierID = q.QualifierID) "
         query = "SELECT * from DataValues ORDER BY LocalDateTime"
         self.cursor.execute(query)
-        return [list(x) for x in  self.cursor.fetchall()]
+        return [list(x) for x in self.cursor.fetchall()]
 
 
     
@@ -89,7 +89,7 @@ class MemoryDatabase(object):
     def resetDB(self, series_service):
         self.series_service = series_service
 
-        self.conn = sqlite3.connect(":memory:", detect_types= sqlite3.PARSE_DECLTYPES)
+        self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
         self.initDB()
 
