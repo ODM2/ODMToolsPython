@@ -1,11 +1,16 @@
-import math
+
 import datetime
-
-from pandas import DataFrame
+import math
 import wx
-
+import multiprocessing as mp
 import numpy
-from functools import partial
+from pandas import DataFrame
+
+import logging
+from odmtools.common.logger import LoggerTool
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 def calcSeason(x):
@@ -303,20 +308,55 @@ class SeriesPlotInfo(object):
         #return lst
         return seriesInfo
 
-    import threading
-
-    class ThreadHandler(threading.Thread):
-        def __init__(self, type=""):
-            pass
-
-        def run(self):
-            pass
-
     def build(self, seriesInfo):
 
+        logger.debug("Starting tasks")
+
+        result = mp.Queue()
+
+        def _runProbability(seriesInfo, result):
+            logger.debug("Starting Probability %s" % seriesInfo.seriesID)
+            prob = Probability(seriesInfo.filteredData)
+            result.put(prob)
+            logger.debug("Finishing Probability %s" % seriesInfo.seriesID)
+
+        def _runStatistics(seriesInfo, result):
+            logger.debug("Starting Statistics %s" % seriesInfo.seriesID)
+            stats = Statistics(seriesInfo.filteredData)
+            result.put(stats)
+            logger.debug("Finishing Statistics %s" % seriesInfo.seriesID)
+
+        def _runBoxWhisker(seriesInfo, result):
+            logger.debug("Starting BoxWhisker %s" % seriesInfo.seriesID)
+            boxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
+            result.put(boxWhisker)
+            logger.debug("Finishing BoxWhisker %s" % seriesInfo.seriesID)
+
+        probability = None
+        statistics = None
+        boxWhisker = None
+
+        tasklist = [mp.Process(target=_runProbability, args=(seriesInfo, result, )),
+                    mp.Process(target=_runStatistics, args=(seriesInfo, result, )),
+                    mp.Process(target=_runBoxWhisker, args=(seriesInfo, result, ))]
+
+        for task in tasklist:
+            task.start()
+
+        for task in tasklist:
+            task.join()
+
+        seriesInfo.Probability = probability
+        seriesInfo.Statistics = statistics
+        seriesInfo.BoxWhisker = boxWhisker
+        logger.debug("Finished Tasks")
+
+
+        '''
         seriesInfo.Probability = Probability(seriesInfo.filteredData)
         seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
         seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
+        '''
 
 
     def updateDateRange(self, startDate=None, endDate=None):

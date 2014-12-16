@@ -22,16 +22,15 @@ class pnlDataTable(wx.Panel):
 
     toggle = iter.cycle([0, 1]).next
 
-    def __init__(self, parent, id, size, style, name, pos=None):
-        self._init_ctrls(parent)
+    def __init__(self, parent):
+        self.parent = parent
+        self._init_ctrls()
 
-    # selectedpoints = []
-    def _init_ctrls(self, prnt):
+    def _init_ctrls(self):
         # generated method, don't edit
         wx.Panel.__init__(self, id=wxID_PNLDATATABLE, name=u'pnlDataTable',
-                          parent=prnt, size=wx.Size(677, 449),
+                          parent=self.parent, size=wx.Size(677, 449),
                           style=wx.TAB_TRAVERSAL)
-        self.parent = prnt
         self.record_service = self.parent.Parent.getRecordService()
         self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)  #Virtual
 

@@ -30,7 +30,7 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class pnlPlot(fnb.FlatNotebook):
-    def __init__(self, parent, id, size, style, name, pos=None):
+    def __init__(self, parent):
         self._init_ctrls(parent)
         self.initPubSub()
         self.parent = parent
@@ -151,11 +151,11 @@ class pnlPlot(fnb.FlatNotebook):
 
     def redrawPlots(self):
 
-        #self.pltSum.Plot(self._seriesPlotInfo)
-        #self.pltProb.Plot(self._seriesPlotInfo)
+        self.pltSum.Plot(self._seriesPlotInfo)
+        self.pltProb.Plot(self._seriesPlotInfo)
 
-        #self.pltHist.Plot(self._seriesPlotInfo)
-        #self.pltBox.Plot(self._seriesPlotInfo)
+        self.pltHist.Plot(self._seriesPlotInfo)
+        self.pltBox.Plot(self._seriesPlotInfo)
 
         self.pltTS.Plot(self._seriesPlotInfo)
 

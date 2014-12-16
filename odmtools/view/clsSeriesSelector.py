@@ -13,9 +13,9 @@ from odmtools.odmservices import ServiceManager
     wx.NewId() for _init_ctrls in range(18)]
 
 class ClsSeriesSelector(wx.Panel):
-    def __init__(self, parent, id, size, style, name, dbservice, pos=None ):
+    def __init__(self, parent, dbservice):
         self.parent = parent
-        wx.Panel.__init__(self, id=wxID_PNLSERIESSELECTOR, name=u'pnlSeriesSelector', parent=parent,
+        wx.Panel.__init__(self, name=u'pnlSeriesSelector', parent=parent,
                           size=wx.Size(935, 270), style=wx.TAB_TRAVERSAL)
         self._init_ctrls()
         self.dbservice = dbservice
