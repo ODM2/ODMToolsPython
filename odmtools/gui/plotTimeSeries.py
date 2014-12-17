@@ -191,10 +191,10 @@ class plotTimeSeries(wx.Panel):
 
 
     def changeSelection(self, datetime_list=[]):
-        self.changePlotSelection( datetime_list)
+        self.changePlotSelection(datetime_list)
 
         self.parent.record_service.select_points(datetime_list=datetime_list)
-        Publisher.sendMessage(("changeTableSelection"),  datetime_list= datetime_list)
+        Publisher.sendMessage("changeTableSelection",  datetime_list=datetime_list)
 
 
     def onShowLegend(self, isVisible):

@@ -445,7 +445,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         else:
             #logger.debug("%d" % (len(self.tblSeries.GetCheckedObjects())))
             self.parent.Parent.addPlot(self.memDB, object.id)
-            Publisher.sendMessage("updateCursor", selectedObject=object)
+            #Publisher.sendMessage("updateCursor", selectedObject=object)
 
         self.Refresh()
 

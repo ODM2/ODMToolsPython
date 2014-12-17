@@ -312,6 +312,7 @@ class SeriesPlotInfo(object):
 
         logger.debug("Starting tasks")
 
+        """
         result = mp.Queue()
 
         def _runProbability(seriesInfo, result):
@@ -350,13 +351,11 @@ class SeriesPlotInfo(object):
         seriesInfo.Statistics = statistics
         seriesInfo.BoxWhisker = boxWhisker
         logger.debug("Finished Tasks")
+        """
 
-
-        '''
         seriesInfo.Probability = Probability(seriesInfo.filteredData)
         seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
         seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
-        '''
 
 
     def updateDateRange(self, startDate=None, endDate=None):
@@ -384,7 +383,7 @@ class SeriesPlotInfo(object):
 
 class Statistics(object):
     def __init__(self, data):
-
+        print "Statistics!!"
 
         # dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         #data = sorted(dataValues)
