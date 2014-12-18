@@ -166,34 +166,32 @@ class plotTimeSeries(wx.Panel):
             del(self.selplot)
             self.selplot = None
 
+        if not len(datetime_list) > 0:
+            return
 
-        if len(datetime_list) > 0:
+        #if len(datetime_list) > 0:
+        result = None
+        if isinstance(datetime_list, list):
             df = self.editCurve.dataTable
             result = df[df['LocalDateTime'].isin(datetime_list)].astype(datetime.datetime)
-            values = result['DataValue'].values.tolist()
-            dates = result.LocalDateTime.values.tolist()
-            self.selplot = self.axislist[self.editSeries.axisTitle].scatter(dates, values, s=35, c='red',
-                                                                            edgecolors='none', zorder=12, marker='s', alpha=1)
 
-            '''
-            #DELETE
-            for x, y, a, b, c in self.editCurve.dataTable:
-                if y in datetime_list:
-                    newx.append(x)
-                    newy.append(y)
+        elif isinstance(datetime_list, pd.DataFrame):
+            filtered_datetime_dataframe = datetime_list
+            result = filtered_datetime_dataframe.astype(datetime.datetime)
 
-            self.selplot = self.axislist[self.editSeries.axisTitle].scatter(newy, newx,
-                                              s=35, c='red', edgecolors='none',
-                                              zorder=12, marker='s', alpha=1)
-            '''
+        if result.empty:
+            return
 
+        values = result['DataValue'].values.tolist()
+        dates = result.LocalDateTime.values.tolist()
+        self.selplot = self.axislist[self.editSeries.axisTitle].scatter(dates, values, s=35, c='red',
+                                                                        edgecolors='none', zorder=12, marker='s', alpha=1)
         self.canvas.draw()
 
 
-    def changeSelection(self, datetime_list=[]):
+    def lassoChangeSelection(self, datetime_list=[]):
         self.changePlotSelection(datetime_list)
-
-        self.parent.record_service.select_points(datetime_list=datetime_list)
+        #self.parent.record_service.select_points(datetime_list=datetime_list)
         Publisher.sendMessage("changeTableSelection",  datetime_list=datetime_list)
 
 

@@ -249,7 +249,7 @@ class SeriesPlotInfo(object):
 
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
-
+        seriesInfo.columns = self.memDB.columns
         seriesInfo.startDate = startDate
         seriesInfo.endDate = endDate
         seriesInfo.dataType = dataType

@@ -4,6 +4,7 @@ import wx
 import wx.grid
 import logging
 import itertools as iter
+import pandas as pd
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
 import datetime
@@ -94,6 +95,7 @@ class pnlDataTable(wx.Panel):
         #self.myOlv.AutoSizeColumns()
 
         # self.values = [list(x) for x in self.cursor.fetchall()]
+        #self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns])
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def onRefresh(self, e):
@@ -125,11 +127,13 @@ class pnlDataTable(wx.Panel):
     def onChangeSelection(self,  datetime_list=[]):
         objlist = []
 
-        objlist = [x for x in self.myOlv.modelObjects if x[3] in datetime_list]
+        if isinstance(datetime_list, pd.DataFrame):
+            results = datetime_list['LocalDateTime'].astype(datetime.datetime)
+            values = [x for x in self.myOlv.modelObjects if x[3] in results.tolist()]
+            if len(values) > 0:
+                self.myOlv.SelectObject(values[0], deselectOthers=True, ensureVisible=True)
+            self.myOlv.SelectObjects(values, deselectOthers=True)
 
-        if len(objlist) > 0:
-            self.myOlv.SelectObject(objlist[0], deselectOthers=True, ensureVisible=True)
-        self.myOlv.SelectObjects(objlist, deselectOthers=True)
 
     def onKeyPress(self, evt):
         """Ignores Keypresses"""

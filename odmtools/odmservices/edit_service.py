@@ -186,7 +186,7 @@ class EditService():
 
         # This should be either one or the other. If it's both, id is used first.
         # If neither are set this function does nothing.
-        if len(id_list)>0:
+        if len(id_list) > 0:
             for i in range(len(self._series_points)):
                 if self._series_points[i][0] in id_list:
                     self._filter_list[i] = True
