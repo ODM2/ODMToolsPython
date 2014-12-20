@@ -46,11 +46,18 @@ class MyCustomToolbar(NavigationToolbar):
         ('Save', 'Save the figure', filesave, 'save_figure'),
         ('Select', 'Select datavalues from the graph', select, 'on_toggle_lasso_tool'),
       )
+
+
+
+
     # rather than copy and edit the whole (rather large) init function, we run
     # the super-classes init function as usual, then go back and delete the
     # buttons we don't want
     def _init_toolbar(self):
+
         self._parent = self.canvas.GetParent()
+
+
         self.wx_ids = {}
         for text, tooltip_text, image_file, callback in self.toolitems:
             if text is None:
@@ -66,6 +73,9 @@ class MyCustomToolbar(NavigationToolbar):
             bind(self, wx.EVT_TOOL, getattr(self, callback), id=self.wx_ids[text])
 
         self.Realize()
+
+
+
 
     def __init__(self, plotCanvas, multPlots=False, allowselect=False):
         NavigationToolbar.__init__(self, plotCanvas)
@@ -178,11 +188,16 @@ class MyCustomToolbar(NavigationToolbar):
     def callback(self, verts):
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
+
         df = self.editCurve.dataTable
+        selected_datetime_list = df[ind].LocalDateTime.tolist()
         filtered_datetime_dataframe = df[ind]
-        self._parent.lassoChangeSelection(datetime_list=filtered_datetime_dataframe)
+        #self._parent.lassoChangeSelection(datetime_list=filtered_datetime_dataframe)
+        self._parent.lassoChangeSelection(datetime_list=selected_datetime_list)
         self.canvas.draw_idle()
         del self.lasso
+
+
 
     def untoggle_mpl_tools(self):
         """

@@ -156,11 +156,7 @@ class plotTimeSeries(wx.Panel):
     '''
     ## TODO 10/15/2014 Change function so that it will accept a list of datavalues. This will remove the need to loop through the values currently plotted and we would instead plot the list of datetimes and datavalues together.
 
-    def changePlotSelection(self,  datetime_list=[], datavalues=[]):
-
-        #for entire list of points if selected add to new lists
-        #newx = []
-        #newy = []
+    def changePlotSelection(self,  datetime_list=[]):
         if self.selplot:
             self.selplot.remove()
             del(self.selplot)
@@ -169,7 +165,6 @@ class plotTimeSeries(wx.Panel):
         if not len(datetime_list) > 0:
             return
 
-        #if len(datetime_list) > 0:
         result = None
         if isinstance(datetime_list, list):
             df = self.editCurve.dataTable
@@ -191,7 +186,7 @@ class plotTimeSeries(wx.Panel):
 
     def lassoChangeSelection(self, datetime_list=[]):
         self.changePlotSelection(datetime_list)
-        #self.parent.record_service.select_points(datetime_list=datetime_list)
+        self.parent.record_service.select_points(datetime_list=datetime_list)
         Publisher.sendMessage("changeTableSelection",  datetime_list=datetime_list)
 
 

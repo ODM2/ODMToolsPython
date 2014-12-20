@@ -36,16 +36,17 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         logger.debug("event id : %s" % repr(event.Id))
 
         # DateRange
-        if event.Id in (self.dpAfter.Id, self.dpBefore.Id, self.tpBefore.Id, self.tpAfter.Id, self.sbAfter.Id, self.sbBefore.Id):
+        if event.Id in (
+        self.dpAfter.Id, self.dpBefore.Id, self.tpBefore.Id, self.tpAfter.Id, self.sbAfter.Id, self.sbBefore.Id):
             self.rbDate.SetValue(True)
-        #Data Gaps
+        # Data Gaps
         elif event.Id in ( self.txtGapsVal.Id, self.cbGapTime.Id):
             self.rbDataGaps.SetValue(True)
         #Value Threshold
         elif event.Id in (self.txtThreshValLT.Id, self.txtThreshValGT.Id ):
             self.rbThreshold.SetValue(True)
         #value change threshold
-        elif event.Id in(self.txtVChangeLT.Id, self.txtVChangeGT.Id) :
+        elif event.Id in (self.txtVChangeLT.Id, self.txtVChangeGT.Id):
             self.rbVChangeThresh.SetValue(True)
 
         event.Skip()
@@ -57,7 +58,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.txtThreshValLT.Clear()
         self.txtGapsVal.Clear()
         self.cbGapTime.SetStringSelection("second")
-        #self.txtVChangeThresh.Clear()
+        # self.txtVChangeThresh.Clear()
         self.txtVChangeLT.Clear()
         self.txtVChangeGT.Clear()
         self.recordService.reset_filter()
@@ -87,10 +88,22 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
     def onBtnApplyButton(self, event):
         self.is_applied = True
         if self.rbThreshold.GetValue():
+            gt = self.txtThreshValGT.GetValue()
+            lt = self.txtThreshValLT.GetValue()
+
+            if gt and lt:
+                self.recordService.filter_value({'gt': float(gt), 'lt': float(lt)}, ['>', '<'])
+            elif gt:
+                self.recordService.filter_value({'gt': float(gt)}, ['>'])
+            elif lt:
+                self.recordService.filter_value({'lt': float(lt)}, ['<'])
+
+            '''
             if self.txtThreshValGT.GetValue():
                 self.recordService.filter_value(float(self.txtThreshValGT.GetValue()), '>')
             if self.txtThreshValLT.GetValue():
                 self.recordService.filter_value(float(self.txtThreshValLT.GetValue()), '<')
+            '''
 
         elif self.rbDataGaps.GetValue():
             if self.txtGapsVal.GetValue():
@@ -103,17 +116,16 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
             timeBefore = self.tpBefore.GetValue(as_wxDateTime=True)
 
 
-            #convert to datetime.datetime from wxdatetime time
-            dtDateAfter=_wxdate2pydate(dateAfter, timeAfter)
-            dtDateBefore= _wxdate2pydate(dateBefore, timeBefore)
+            # convert to datetime.datetime from wxdatetime time
+            dtDateAfter = _wxdate2pydate(dateAfter, timeAfter)
+            dtDateBefore = _wxdate2pydate(dateBefore, timeBefore)
             self.recordService.filter_date(dtDateBefore, dtDateAfter)
 
         elif self.rbVChangeThresh.GetValue():
-           if self.txtVChangeGT.GetValue():
+            if self.txtVChangeGT.GetValue():
                 self.recordService.value_change_threshold(float(self.txtVChangeGT.GetValue()), '>')
-           elif self.txtVChangeLT.GetValue():
+            elif self.txtVChangeLT.GetValue():
                 self.recordService.value_change_threshold(float(self.txtVChangeLT.GetValue()), '<')
-
 
         event.Skip()
 
@@ -122,9 +134,8 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         dateAfter = self.recordService.get_series_points()[0][2]
         dateBefore = self.recordService.get_series_points()[-1][2]
 
-
         formattedDateAfter = _pydate2wxdate(dateAfter)
-        formattedDateBefore =_pydate2wxdate(dateBefore)
+        formattedDateBefore = _pydate2wxdate(dateBefore)
 
         self.dpAfter.SetRange(formattedDateAfter, formattedDateBefore)
         self.dpBefore.SetRange(formattedDateAfter, formattedDateBefore)
@@ -133,23 +144,24 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.dpBefore.SetValue(formattedDateBefore)
 
 
-
 def _pydate2wxdate(date):
-     import datetime
-     assert isinstance(date, (datetime.datetime, datetime.date))
-     tt = date.timetuple()
-     dmy = (tt[2], tt[1]-1, tt[0])
-     return wx.DateTimeFromDMY(*dmy)
+    import datetime
+
+    assert isinstance(date, (datetime.datetime, datetime.date))
+    tt = date.timetuple()
+    dmy = (tt[2], tt[1] - 1, tt[0])
+    return wx.DateTimeFromDMY(*dmy)
 
 
 def _wxdate2pydate(date, time):
-     import datetime
-     assert isinstance(date, wx.DateTime)
-     assert isinstance(time, wx.DateTime)
-     if date.IsValid() and time.IsValid():
-         ymd = map(int, date.FormatISODate().split('-'))
-         hms = map(int, time.FormatISOTime().split(':'))
-         return datetime.datetime(*(ymd+hms))
-     else:
-         return None
+    import datetime
+
+    assert isinstance(date, wx.DateTime)
+    assert isinstance(time, wx.DateTime)
+    if date.IsValid() and time.IsValid():
+        ymd = map(int, date.FormatISODate().split('-'))
+        hms = map(int, time.FormatISOTime().split(':'))
+        return datetime.datetime(*(ymd + hms))
+    else:
+        return None
 

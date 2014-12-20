@@ -4,11 +4,14 @@ from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import DataValue
 from series_service import SeriesService
 from odmtools.odmdata import series as series_module
+import pandas as pd
 
 import logging
 from odmtools.common.logger import LoggerTool
+
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
 
 class EditService():
     # Mutual exclusion: cursor, or connection_string
@@ -22,7 +25,7 @@ class EditService():
             self._session_factory = SessionFactory(connection_string, debug)
             self._series_service = SeriesService(connection_string, debug)
         elif (factory is not None):
-            #TODO code has changed to no longer use a session factory, refactor so it is correct SR
+            # TODO code has changed to no longer use a session factory, refactor so it is correct SR
             self._session_factory = factory
             service_manager = ServiceManager()
             self._series_service = service_manager.get_series_service()
@@ -59,21 +62,63 @@ class EditService():
         # [(ID, value, datetime), ...]
         self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
-
         self._series_points = results
+        self._series_points_df = pd.DataFrame(results, columns=['ValueID', 'DataValue', 'LocalDateTime'])
+        self.filtered_dataframe = self._series_points_df
 
 
     def _test_filter_previous(self):
+        '''
         if not self._filter_from_selection:
             self.reset_filter()
+        '''
+
+        df = None
+        '''
+        if not self._filter_from_selection:
+            df = self._series_points_df
+        else:
+            df = self.filtered_dataframe
+        '''
+        df = self._series_points_df
+        return df
+
 
     ###################
     # Filters
     ###################
     # operator is a character, either '<' or '>'
-    def filter_value(self, value, operator):
-        self._test_filter_previous()
+    def filter_value(self, value, ops):
+        def _extractValues(value):
+            gt = None
+            lt = None
 
+            try:
+                lt = value['lt']
+            except:
+                pass
+
+            try:
+                gt = value['gt']
+            except:
+                pass
+
+            return gt, lt
+
+        gt, lt = _extractValues(value)
+        df = self._test_filter_previous()
+
+        if '>' in ops and '<' in ops:
+            self.filtered_dataframe = df[(df['DataValue'] > gt) | (df['DataValue'] < lt)]
+
+        elif '<' in ops:
+            self.filtered_dataframe = df[df['DataValue'] < lt]
+
+        elif '>' in ops:
+            self.filtered_dataframe = df[df['DataValue'] > gt]
+
+        '''
+        self._test_filter_previous()
         if operator == '<':  # less than
             for i in range(len(self._series_points)):
                 # If it's not already in the selection, skip it
@@ -91,8 +136,11 @@ class EditService():
                     self._filter_list[i] = True
                 else:
                     self._filter_list[i] = False
+        '''
 
     def filter_date(self, before, after):
+
+        '''
         self._test_filter_previous()
 
         previous_date_filter = False
@@ -115,6 +163,7 @@ class EditService():
                     self._filter_list[i] = True
                 else:
                     self._filter_list[i] = False
+        '''
 
     # Data Gaps
     def data_gaps(self, value, time_period):
@@ -170,7 +219,7 @@ class EditService():
                         tmp[i] = True
                         tmp[i + 1] = True
                 if operator == '<':
-                     if abs(point1[1] - point2[1]) <= value:
+                    if abs(point1[1] - point2[1]) <= value:
                         tmp[i] = True
                         tmp[i + 1] = True
 
@@ -181,16 +230,20 @@ class EditService():
     def select_points_tf(self, tf_list):
         self._filter_list = tf_list
 
-    def select_points(self, id_list=[], datetime_list=[]):
+    def select_points(self, datetime_list=[]):
         self.reset_filter()
 
         # This should be either one or the other. If it's both, id is used first.
         # If neither are set this function does nothing.
+        '''
         if len(id_list) > 0:
             for i in range(len(self._series_points)):
                 if self._series_points[i][0] in id_list:
                     self._filter_list[i] = True
-        elif datetime_list != None:
+        '''
+        # if isinstance(datetime_list, pd.DataFrame):
+
+        if datetime_list != None:
             for i in range(len(self._series_points)):
 
                 if self._series_points[i][2] in datetime_list:
@@ -209,7 +262,6 @@ class EditService():
         return self._filter_from_selection
 
 
-
     ###################
     # Gets
     ###################
@@ -217,11 +269,11 @@ class EditService():
         return self._series_service.get_series_by_id(self._series_id)
 
     def get_series_points(self):
-        #all point in the series
+        # all point in the series
         return self._series_points
 
     def get_filtered_points(self):
-        #list of selected points
+        # list of selected points
         tmp = []
         for i in range(len(self._series_points)):
             if self._filter_list[i]:
@@ -231,15 +283,15 @@ class EditService():
 
     def get_filtered_dates(self):
 
-        return [x[2] for x in self.get_filtered_points()]
+        # return [x[2] for x in self.get_filtered_points()]
+        return self.filtered_dataframe
 
     def get_filter_list(self):
-        #true or false list the length of the entire series. true indicate the point is selected
+        # true or false list the length of the entire series. true indicate the point is selected
         return self._filter_list
 
     def get_qcl(self, qcl_id):
         return self._series_service.get_qcl_by_id(qcl_id)
-
 
 
     def get_method(self, method_id):
@@ -280,7 +332,7 @@ class EditService():
         self._filter_list = tmp_filter_list
 
     def add_points(self, points):
-        #todo: add the ability to send in multiple datetimes to a single 'point'
+        # todo: add the ability to send in multiple datetimes to a single 'point'
 
         query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
         query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
@@ -412,7 +464,6 @@ class EditService():
         """
         dvs = []
 
-
         if var is not None:
             logger.debug(var.id)
             self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
@@ -424,7 +475,7 @@ class EditService():
         # if qcl is not None and qcl.code != 0:
         if qcl is not None:
             self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
-        #else:
+        # else:
         #    raise ValueError("Quality Control Level cannot be zero")
 
         self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
@@ -440,20 +491,22 @@ class EditService():
             dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
-        logging.debug("original editing series id: %s"%str(series.id))
-#        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
-#                                                             , method if method else series.method_id, series.source_id
-#                                                             , qcl if qcl else series.qcl_id)
-#        print "test query series id:",testseries.id
+        logging.debug("original editing series id: %s" % str(series.id))
+        #        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
+        #                                                             , method if method else series.method_id, series.source_id
+        #                                                             , qcl if qcl else series.qcl_id)
+        #        print "test query series id:",testseries.id
         #print a if b else 0
-        if  (var or method or qcl ):
+        if (var or method or qcl ):
             tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
                                                                   var_id=var.id if var else int(series.variable_id),
-                                                                  method_id=method.id if method else int(series.method_id),
-                                                                  source_id= series.source_id,
-                                                                  qcl_id=qcl.id if qcl else int(series.quality_control_level_id))
+                                                                  method_id=method.id if method else int(
+                                                                      series.method_id),
+                                                                  source_id=series.source_id,
+                                                                  qcl_id=qcl.id if qcl else int(
+                                                                      series.quality_control_level_id))
             if tseries:
-                logging.debug( "Save existing series ID: %s"% str(series.id))
+                logging.debug("Save existing series ID: %s" % str(series.id))
                 series = tseries
             else:
                 print "Series doesn't exist (if you are not, you should be running SaveAs)"
@@ -529,6 +582,7 @@ class EditService():
         else:
             logger.debug("Crap happened")
             return False
+
     def save_existing(self, var=None, method=None, qcl=None):
         """
 
