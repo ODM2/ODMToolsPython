@@ -5,6 +5,7 @@ from odmtools.odmdata import DataValue
 from series_service import SeriesService
 from odmtools.odmdata import series as series_module
 import pandas as pd
+import datetime
 
 import logging
 from odmtools.common.logger import LoggerTool
@@ -64,31 +65,32 @@ class EditService():
         results = self._cursor.fetchall()
         self._series_points = results
         self._series_points_df = pd.DataFrame(results, columns=['ValueID', 'DataValue', 'LocalDateTime'])
-        self.filtered_dataframe = self._series_points_df
+        #self.filtered_dataframe = self._series_points_df
 
 
     def _test_filter_previous(self):
-        '''
+
         if not self._filter_from_selection:
             self.reset_filter()
-        '''
 
-        df = None
         '''
+        df = None
         if not self._filter_from_selection:
             df = self._series_points_df
         else:
             df = self.filtered_dataframe
-        '''
+
         df = self._series_points_df
         return df
+        '''
 
 
     ###################
     # Filters
     ###################
     # operator is a character, either '<' or '>'
-    def filter_value(self, value, ops):
+    def filter_value(self, value, operator):
+        '''
         def _extractValues(value):
             gt = None
             lt = None
@@ -118,6 +120,7 @@ class EditService():
             self.filtered_dataframe = df[df['DataValue'] > gt]
 
         '''
+
         self._test_filter_previous()
         if operator == '<':  # less than
             for i in range(len(self._series_points)):
@@ -136,11 +139,11 @@ class EditService():
                     self._filter_list[i] = True
                 else:
                     self._filter_list[i] = False
-        '''
+
 
     def filter_date(self, before, after):
 
-        '''
+
         self._test_filter_previous()
 
         previous_date_filter = False
@@ -163,7 +166,7 @@ class EditService():
                     self._filter_list[i] = True
                 else:
                     self._filter_list[i] = False
-        '''
+
 
     # Data Gaps
     def data_gaps(self, value, time_period):
@@ -230,22 +233,26 @@ class EditService():
     def select_points_tf(self, tf_list):
         self._filter_list = tf_list
 
-    def select_points(self, datetime_list=[]):
+    def select_points(self, id_list=[], datetime_list=[]):
         self.reset_filter()
 
         # This should be either one or the other. If it's both, id is used first.
         # If neither are set this function does nothing.
-        '''
+
         if len(id_list) > 0:
             for i in range(len(self._series_points)):
                 if self._series_points[i][0] in id_list:
                     self._filter_list[i] = True
-        '''
-        # if isinstance(datetime_list, pd.DataFrame):
 
-        if datetime_list != None:
+        if isinstance(datetime_list, pd.DataFrame):
+            result = datetime_list.astype(datetime.datetime)
+            datetimes = result['LocalDateTime'].tolist()
             for i in range(len(self._series_points)):
+                if self._series_points[i][2] in datetimes:
+                    self._filter_list[i] = True
 
+        elif datetime_list != None:
+            for i, _ in enumerate(self._series_points):
                 if self._series_points[i][2] in datetime_list:
                     self._filter_list[i] = True
         else:
@@ -283,8 +290,8 @@ class EditService():
 
     def get_filtered_dates(self):
 
-        # return [x[2] for x in self.get_filtered_points()]
-        return self.filtered_dataframe
+        return [x[2] for x in self.get_filtered_points()]
+        #return self.filtered_dataframe
 
     def get_filter_list(self):
         # true or false list the length of the entire series. true indicate the point is selected

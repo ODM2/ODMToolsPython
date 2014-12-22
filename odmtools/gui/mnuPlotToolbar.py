@@ -190,10 +190,10 @@ class MyCustomToolbar(NavigationToolbar):
         ind = p.contains_points(self.xys)
 
         df = self.editCurve.dataTable
-        selected_datetime_list = df[ind].LocalDateTime.tolist()
+        #selected_datetime_list = df[ind].LocalDateTime.tolist()
         filtered_datetime_dataframe = df[ind]
-        #self._parent.lassoChangeSelection(datetime_list=filtered_datetime_dataframe)
-        self._parent.lassoChangeSelection(datetime_list=selected_datetime_list)
+        self._parent.lassoChangeSelection(datetime_list=filtered_datetime_dataframe)
+        #self._parent.lassoChangeSelection(datetime_list=selected_datetime_list)
         self.canvas.draw_idle()
         del self.lasso
 

@@ -91,6 +91,8 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
             gt = self.txtThreshValGT.GetValue()
             lt = self.txtThreshValLT.GetValue()
 
+            '''
+
             if gt and lt:
                 self.recordService.filter_value({'gt': float(gt), 'lt': float(lt)}, ['>', '<'])
             elif gt:
@@ -100,10 +102,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
             '''
             if self.txtThreshValGT.GetValue():
-                self.recordService.filter_value(float(self.txtThreshValGT.GetValue()), '>')
+                self.recordService.filter_value(float(gt), '>')
             if self.txtThreshValLT.GetValue():
-                self.recordService.filter_value(float(self.txtThreshValLT.GetValue()), '<')
-            '''
+                self.recordService.filter_value(float(lt), '<')
 
         elif self.rbDataGaps.GetValue():
             if self.txtGapsVal.GetValue():
