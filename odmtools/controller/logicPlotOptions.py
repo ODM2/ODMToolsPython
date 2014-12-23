@@ -247,6 +247,8 @@ class SeriesPlotInfo(object):
                 self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
                 columns=self.memDB.columns)
 
+        data.set_index(["LocalDateTime"], inplace=True)
+
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
         seriesInfo.columns = self.memDB.columns

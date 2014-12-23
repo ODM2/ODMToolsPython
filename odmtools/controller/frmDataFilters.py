@@ -36,11 +36,10 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         logger.debug("event id : %s" % repr(event.Id))
 
         # DateRange
-        if event.Id in (
-        self.dpAfter.Id, self.dpBefore.Id, self.tpBefore.Id, self.tpAfter.Id, self.sbAfter.Id, self.sbBefore.Id):
+        if event.Id in (self.dpAfter.Id, self.dpBefore.Id, self.tpBefore.Id, self.tpAfter.Id, self.sbAfter.Id, self.sbBefore.Id):
             self.rbDate.SetValue(True)
         # Data Gaps
-        elif event.Id in ( self.txtGapsVal.Id, self.cbGapTime.Id):
+        elif event.Id in (self.txtGapsVal.Id, self.cbGapTime.Id):
             self.rbDataGaps.SetValue(True)
         #Value Threshold
         elif event.Id in (self.txtThreshValLT.Id, self.txtThreshValGT.Id ):
@@ -101,6 +100,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
                 self.recordService.filter_value({'lt': float(lt)}, ['<'])
 
             '''
+
             if self.txtThreshValGT.GetValue():
                 self.recordService.filter_value(float(gt), '>')
             if self.txtThreshValLT.GetValue():

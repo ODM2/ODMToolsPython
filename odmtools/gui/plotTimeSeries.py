@@ -156,38 +156,36 @@ class plotTimeSeries(wx.Panel):
     '''
     ## TODO 10/15/2014 Change function so that it will accept a list of datavalues. This will remove the need to loop through the values currently plotted and we would instead plot the list of datetimes and datavalues together.
 
-    def changePlotSelection(self,  datetime_list=[]):
+    def changePlotSelection(self, filtered_datetime):
         if self.selplot:
             self.selplot.remove()
             del(self.selplot)
             self.selplot = None
 
-        if not len(datetime_list) > 0:
-            return
-
         result = None
-        if isinstance(datetime_list, list):
+        if isinstance(filtered_datetime, pd.DataFrame):
+            if filtered_datetime.empty:
+                return
+
+            result = filtered_datetime
+            if result.empty:
+                return
+
+        if isinstance(filtered_datetime, list):
             df = self.editCurve.dataTable
-            result = df[df['LocalDateTime'].isin(datetime_list)].astype(datetime.datetime)
-
-        elif isinstance(datetime_list, pd.DataFrame):
-            filtered_datetime_dataframe = datetime_list
-            result = filtered_datetime_dataframe.astype(datetime.datetime)
-
-        if result.empty:
-            return
+            result = df[df['LocalDateTime'].isin(filtered_datetime)].astype(datetime.datetime)
 
         values = result['DataValue'].values.tolist()
-        dates = result.LocalDateTime.values.tolist()
+        dates = result.index.astype(datetime.datetime)
         self.selplot = self.axislist[self.editSeries.axisTitle].scatter(dates, values, s=35, c='red',
                                                                         edgecolors='none', zorder=12, marker='s', alpha=1)
         self.canvas.draw()
 
 
-    def lassoChangeSelection(self, datetime_list=[]):
-        self.changePlotSelection(datetime_list)
-        self.parent.record_service.select_points(datetime_list=datetime_list)
-        Publisher.sendMessage("changeTableSelection",  datetime_list=datetime_list)
+    def lassoChangeSelection(self, filtered_datetime):
+        self.changePlotSelection(filtered_datetime)
+        self.parent.record_service.select_points(datetime_list=filtered_datetime)
+        Publisher.sendMessage("changeTableSelection",  datetime_list=filtered_datetime)
 
 
     def onShowLegend(self, isVisible):
@@ -279,7 +277,7 @@ class plotTimeSeries(wx.Panel):
         self.axislist[oneSeries.axisTitle].set_zorder(10)
         self.lines[self.curveindex] = self.axislist[oneSeries.axisTitle]
         data = oneSeries.dataTable
-        dates = data['LocalDateTime'].astype(datetime.datetime)
+        dates = data.index.astype(datetime.datetime)
         curraxis = self.axislist[oneSeries.axisTitle]
 
         curraxis.plot_date(dates, data['DataValue'], "-s",

@@ -2,6 +2,7 @@ import logging
 
 from wx.lib.pubsub import pub as Publisher
 #from odmtools.odmservices import ServiceManager
+import pandas as pd
 from odmtools.odmdata import Qualifier
 from odmtools.common.logger import LoggerTool
 
@@ -100,7 +101,30 @@ class EditTools():
             self._script("edit_service.select_points(points)\n")
             Publisher.sendMessage("scroll")
 
+    def _list2dataframestub(self, datetime_list):
+        result = None
+        if isinstance(datetime_list, list):
+            result = pd.DataFrame(datetime_list)
+        #elif isinstance(datetime_list, pd.DataFrame):
+        #    result = datetime_list.
+
+
+
+        ## return dataframe
+
     def select_points(self, id_list=[], datetime_list=[]):
+        """
+
+        :param id_list:
+        :param datetime_list:
+        :return:
+        """
+
+        """ Handle list to dataframe conversion """
+        if isinstance(datetime_list, list):
+            df = self._list2dataframestub(datetime_list)
+
+
         self._edit_service.select_points(id_list, datetime_list)
         self.refresh_plot()
         if self._record:
