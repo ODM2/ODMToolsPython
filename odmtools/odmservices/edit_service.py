@@ -3,6 +3,7 @@ import sqlite3
 from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import DataValue
 from series_service import SeriesService
+from cv_service import CVService
 from odmtools.odmdata import series as series_module
 import pandas as pd
 import datetime
@@ -25,6 +26,8 @@ class EditService():
         if (connection_string is not ""):
             self._session_factory = SessionFactory(connection_string, debug)
             self._series_service = SeriesService(connection_string, debug)
+            self._cv_service = CVService(connection_string, debug)
+
         elif (factory is not None):
             # TODO code has changed to no longer use a session factory, refactor so it is correct SR
             self._session_factory = factory
@@ -74,7 +77,6 @@ class EditService():
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
         self.filtered_dataframe = self._series_points_df
 
-
     def _test_filter_previous(self):
 
         '''
@@ -90,7 +92,6 @@ class EditService():
 
         df = self._series_points_df
         return df
-
 
     ###################
     # Filters
@@ -146,7 +147,6 @@ class EditService():
                     self._filter_list[i] = False
         """
 
-
     def filter_date(self, before, after):
         self._test_filter_previous()
 
@@ -170,7 +170,6 @@ class EditService():
                     self._filter_list[i] = True
                 else:
                     self._filter_list[i] = False
-
 
     # Data Gaps
     def data_gaps(self, value, time_period):
@@ -263,7 +262,6 @@ class EditService():
         else:
             pass
 
-
     def reset_filter(self):
         self._filter_list = [False] * len(self._series_points)
 
@@ -293,8 +291,10 @@ class EditService():
 
         return tmp
 
+    '''
+    return a list of the dates from the selected list
+    '''
     def get_filtered_dates(self):
-
         #return [x[2] for x in self.get_filtered_points()]
         return self.filtered_dataframe
 
@@ -304,7 +304,6 @@ class EditService():
 
     def get_qcl(self, qcl_id):
         return self._series_service.get_qcl_by_id(qcl_id)
-
 
     def get_method(self, method_id):
         return self._series_service.get_method_by_id(method_id)
@@ -616,6 +615,10 @@ class EditService():
 
     def create_method(self, description, link):
         return self._series_service.create_method(description, link)
+
+    def create_qualifier(self, code, definition):
+        return self.cv_service.create_qualifier(code, definition)
+
 
     def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
                         value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):

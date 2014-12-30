@@ -349,14 +349,19 @@ class EditTools():
         return qcl
 
     def create_qualifer(self, code, description):
-
-
+        qual = self._edit_service.create_qualifier(code, description)
+        if self._record:
+            self._script('new_qual = series_service.get_qualifier_by_id(%s)\n' % (qual.id))
+            Publisher.sendMessage("scroll")
+        return qual
+        '''
         cv_service = self.serv_man.get_cv_service()
         q = Qualifier()
         q.code = code
         q.description = description
         cv_service.create_qualifer(q)
         return q.id
+        '''
 
     def create_method(self, m):
         method = self._edit_service.create_method(m.description, m.link)

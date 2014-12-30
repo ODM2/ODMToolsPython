@@ -24,7 +24,6 @@ class ExportService():
         for dv in series.data_values:
             self.write_data_row(writer, series, dv, utc, site, var, offset, qual, src, qcl)
 
-
     def write_data_row(self, writer, series, dv, utc, site, var, offset, qual, src, qcl):
         data = []
         data.append(series.id)
