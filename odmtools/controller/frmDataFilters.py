@@ -132,8 +132,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
 
     def setDates(self):
-        dateAfter = self.recordService.get_series_points()[0][2]
-        dateBefore = self.recordService.get_series_points()[-1][2]
+
+        dateAfter = self.recordService.get_series_points()[0][3]
+        dateBefore = self.recordService.get_series_points()[-1][3]
 
         formattedDateAfter = _pydate2wxdate(dateAfter)
         formattedDateBefore = _pydate2wxdate(dateBefore)

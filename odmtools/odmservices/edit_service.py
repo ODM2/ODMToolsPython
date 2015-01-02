@@ -117,13 +117,15 @@ class EditService():
         gt, lt = _extractValues(value)
         df = self._test_filter_previous()
 
+        '''
         if '>' in ops and '<' in ops:
-            self.filtered_dataframe = df[(df['DataValue'] > gt) | (df['DataValue'] < lt)]
+            self.filtered_dataframe = df[(df['DataValue'] > gt) & (df['DataValue'] < lt)]
+        '''
 
-        elif '<' in ops:
+        if ops == '<':
             self.filtered_dataframe = df[df['DataValue'] < lt]
 
-        elif '>' in ops:
+        if ops == '>':
             self.filtered_dataframe = df[df['DataValue'] > gt]
 
         """
