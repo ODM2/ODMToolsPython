@@ -131,8 +131,9 @@ class SeriesPlotInfo(object):
         else:
             ## Pandas DataFrame
             #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(),
-                                                                 columns=self.memDB.columns)
+            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data.set_index(data['LocalDateTime'], inplace=True)
+            self._seriesInfos[self.editID].dataTable = data
 
         self._seriesInfos[self.editID].edit = True
         self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
@@ -142,8 +143,10 @@ class SeriesPlotInfo(object):
     def updateEditSeries(self):
         if self.editID in self._seriesInfos:
             # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            self._seriesInfos[self.editID].dataTable = DataFrame(self.memDB.getEditDataValuesforGraph(),
-                                                                 columns=self.memDB.columns)
+            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data.set_index(data['LocalDateTime'], inplace=True)
+            self._seriesInfos[self.editID].dataTable = data
+
 
     def stopEditSeries(self):
 
@@ -154,12 +157,16 @@ class SeriesPlotInfo(object):
                                                  self._seriesInfos[self.editID].startDate,
                                                  self._seriesInfos[self.editID].endDate)
             '''
-            self._seriesInfos[self.editID].dataTable = DataFrame(
+
+            data = DataFrame(
                 self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
                                                  self._seriesInfos[self.editID].startDate,
                                                  self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
+            data.set_index(data['LocalDateTime'], inplace=True)
+            self._seriesInfos[self.editID].dataTable = data
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
+
         self.editID = None
         self.memDB.stopEdit()
 

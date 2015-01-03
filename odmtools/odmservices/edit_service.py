@@ -283,6 +283,11 @@ class EditService():
     def get_series_points(self):
         # all point in the series
         return self._series_points
+    def get_series_points_df(self):
+        """
+        :return Pandas DataFrame:
+        """
+        return self._series_points_df
 
     def get_filtered_points(self):
         # list of selected points
