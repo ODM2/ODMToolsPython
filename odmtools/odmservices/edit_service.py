@@ -58,6 +58,10 @@ class EditService():
 
         self._populate_series()
         self.reset_filter()
+        self.columns = [
+            "ValueID", "DataValue", "ValueAccuracy" ,"LocalDateTime" ,"UTCOffset", "DateTimeUTC",
+            "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
+            "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
 
     def get_series_service(self):
         return self._series_service
@@ -69,11 +73,7 @@ class EditService():
         results = self._cursor.fetchall()
         self._series_points = results
         #self._series_points_df = pd.DataFrame(results, columns=['ValueID', 'DataValue', 'LocalDateTime'])
-        self._series_points_df = pd.DataFrame(results,  columns = [
-            "ValueID", "DataValue", "ValueAccuracy" ,"LocalDateTime" ,"UTCOffset", "DateTimeUTC",
-            "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
-            "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
-        )
+        self._series_points_df = pd.DataFrame(results,  columns=self.columns)
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
         self.filtered_dataframe = self._series_points_df
 
@@ -92,6 +92,19 @@ class EditService():
 
         df = self._series_points_df
         return df
+
+    def datetime2dataframe(self, datetime_list):
+        """ Converts datetime_list to a pandas Dataframe
+
+
+        :param datetime_list:
+        :return Pandas.DataFrame:
+        """
+
+        result = None
+        if isinstance(datetime_list, list):
+            result = pd.DataFrame(datetime_list)
+        return result
 
     ###################
     # Filters
@@ -250,12 +263,15 @@ class EditService():
                     self._filter_list[i] = True
 
         if isinstance(datetime_list, pd.DataFrame):
-            result = datetime_list.astype(datetime.datetime)
-            datetimes = result['LocalDateTime'].tolist()
+            result = datetime_list.index.astype(datetime.datetime)
+            datetimes = result.tolist()
+            self.filtered_dataframe = self.filtered_dataframe[self._series_points_df.index.isin(datetime_list.index)]
 
+            '''
             for i in range(len(self._series_points)):
                 if self._series_points[i][2] in datetimes:
                     self._filter_list[i] = True
+            '''
 
         elif datetime_list != None:
             for i, _ in enumerate(self._series_points):
@@ -291,12 +307,20 @@ class EditService():
 
     def get_filtered_points(self):
         # list of selected points
+        """
         tmp = []
+
         for i in range(len(self._series_points)):
             if self._filter_list[i]:
                 tmp.append(self._series_points[i])
 
         return tmp
+        """
+        if len(self.filtered_dataframe) > 0:
+            return self.filtered_dataframe
+        return None
+
+
 
     '''
     return a list of the dates from the selected list

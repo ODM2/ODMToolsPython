@@ -128,7 +128,8 @@ class pnlDataTable(wx.Panel):
         objlist = []
 
         if isinstance(datetime_list, pd.DataFrame):
-            results = datetime_list['LocalDateTime'].astype(datetime.datetime)
+            #results = datetime_list['LocalDateTime'].astype(datetime.datetime)
+            results = datetime_list.index.astype(datetime.datetime)
             values = [x for x in self.myOlv.modelObjects if x[3] in results.tolist()]
             if len(values) > 0:
                 self.myOlv.SelectObject(values[0], deselectOthers=True, ensureVisible=True)

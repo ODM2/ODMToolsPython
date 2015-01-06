@@ -105,9 +105,15 @@ class EditTools():
         result = None
         if isinstance(datetime_list, list):
             result = pd.DataFrame(datetime_list)
+
+        return result
         #elif isinstance(datetime_list, pd.DataFrame):
         #    result = datetime_list.
 
+    def _dataframe2liststub(self, dataframe):
+        result = None
+        if isinstance(dataframe, pd.DataFrame):
+            result = pd.DataFrame()
 
 
         ## return dataframe
@@ -122,14 +128,17 @@ class EditTools():
 
         """ Handle list to dataframe conversion """
         if isinstance(datetime_list, list):
-            df = self._list2dataframestub(datetime_list)
-
-
+            df = self._edit_service.datetime2dataframe(datetime_list)
+            #df = self._edit_list2dataframestub(datetime_list)
         self._edit_service.select_points(id_list, datetime_list)
         self.refresh_plot()
+
+
+        convertedList = self
         if self._record:
             self._script(
-                "points = [\n\t{list}][0]\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
+                "points = [\n\t{list}][0]\n".format(list=
+                                                    self._edit_service.get_filtered_points()['DataValue'].tolist()))
             self._script("edit_service.select_points({id}, points)\n".format(id=id_list))
             Publisher.sendMessage("scroll")
             #print self._edit_service.get_filtered_points()
