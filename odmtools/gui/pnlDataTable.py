@@ -1,5 +1,3 @@
-#Boa:FramePanel:pnlDataTable
-
 import wx
 import wx.grid
 import logging
@@ -95,7 +93,7 @@ class pnlDataTable(wx.Panel):
         #self.myOlv.AutoSizeColumns()
 
         # self.values = [list(x) for x in self.cursor.fetchall()]
-        #self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns])
+        self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns])
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def onRefresh(self, e):
@@ -128,9 +126,12 @@ class pnlDataTable(wx.Panel):
         objlist = []
 
         if isinstance(datetime_list, pd.DataFrame):
-            #results = datetime_list['LocalDateTime'].astype(datetime.datetime)
-            results = datetime_list.index.astype(datetime.datetime)
-            values = [x for x in self.myOlv.modelObjects if x[3] in results.tolist()]
+
+            olv = self.myOlvDataFrame.set_index("LocalDateTime")
+            filtered_dataframe = self.myOlvDataFrame[olv.index.isin(datetime_list.index)]
+            values = filtered_dataframe.values.tolist()
+            #results = datetime_list.index.to_pydatetime()
+            #values = [x for x in self.myOlv.modelObjects if x[3] in results.tolist()]
             if len(values) > 0:
                 self.myOlv.SelectObject(values[0], deselectOthers=True, ensureVisible=True)
             self.myOlv.SelectObjects(values, deselectOthers=True)

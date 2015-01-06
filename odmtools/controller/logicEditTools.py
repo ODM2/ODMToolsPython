@@ -118,27 +118,24 @@ class EditTools():
 
         ## return dataframe
 
-    def select_points(self, id_list=[], datetime_list=[]):
+    def select_points(self, id_list=[], dataframe=[]):
         """
 
         :param id_list:
-        :param datetime_list:
+        :param dataframe:
         :return:
         """
 
         """ Handle list to dataframe conversion """
-        if isinstance(datetime_list, list):
-            df = self._edit_service.datetime2dataframe(datetime_list)
+        if isinstance(dataframe, list):
+            dataframe = self._edit_service.datetime2dataframe(dataframe)
             #df = self._edit_list2dataframestub(datetime_list)
-        self._edit_service.select_points(id_list, datetime_list)
+        self._edit_service.select_points(dataframe=dataframe)
         self.refresh_plot()
 
-
-        convertedList = self
         if self._record:
-            self._script(
-                "points = [\n\t{list}][0]\n".format(list=
-                                                    self._edit_service.get_filtered_points()['DataValue'].tolist()))
+            selectedpoints = self._edit_service.selectPointsStub()
+            self._script("points = [\n\t{list}][0]\n".format(list=selectedpoints))
             self._script("edit_service.select_points({id}, points)\n".format(id=id_list))
             Publisher.sendMessage("scroll")
             #print self._edit_service.get_filtered_points()

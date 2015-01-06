@@ -58,10 +58,6 @@ class EditService():
 
         self._populate_series()
         self.reset_filter()
-        self.columns = [
-            "ValueID", "DataValue", "ValueAccuracy" ,"LocalDateTime" ,"UTCOffset", "DateTimeUTC",
-            "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
-            "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
 
     def get_series_service(self):
         return self._series_service
@@ -73,6 +69,10 @@ class EditService():
         results = self._cursor.fetchall()
         self._series_points = results
         #self._series_points_df = pd.DataFrame(results, columns=['ValueID', 'DataValue', 'LocalDateTime'])
+        self.columns = [
+            "ValueID", "DataValue", "ValueAccuracy" ,"LocalDateTime" ,"UTCOffset", "DateTimeUTC",
+            "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
+            "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
         self._series_points_df = pd.DataFrame(results,  columns=self.columns)
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
         self.filtered_dataframe = self._series_points_df
@@ -105,6 +105,23 @@ class EditService():
         if isinstance(datetime_list, list):
             result = pd.DataFrame(datetime_list)
         return result
+
+    ###################
+    # Stubs
+    ###################
+    def selectPointsStub(self):
+        """
+
+        :param filtered_dataframe:
+        :return:
+        """
+
+        ## Convert dataframe into list of datetimes
+        filtered_dataframe = self.get_filtered_points()
+
+        datetime_list = filtered_dataframe.index.to_pydatetime()
+
+        return datetime_list.tolist()
 
     ###################
     # Filters
@@ -251,8 +268,9 @@ class EditService():
     def select_points_tf(self, tf_list):
         self._filter_list = tf_list
 
-    def select_points(self, id_list=[], datetime_list=[]):
-        self.reset_filter()
+    #def select_points(self, id_list=[], datetime_list=[]):
+    def select_points(self, id_list=[], dataframe=[]):
+        #self.reset_filter()
 
         # This should be either one or the other. If it's both, id is used first.
         # If neither are set this function does nothing.
@@ -262,23 +280,24 @@ class EditService():
                 if self._series_points[i][0] in id_list:
                     self._filter_list[i] = True
 
-        if isinstance(datetime_list, pd.DataFrame):
-            result = datetime_list.index.astype(datetime.datetime)
+        if isinstance(dataframe, pd.DataFrame):
+            result = dataframe.index.astype(datetime.datetime)
             datetimes = result.tolist()
-            self.filtered_dataframe = self.filtered_dataframe[self._series_points_df.index.isin(datetime_list.index)]
+            self.filtered_dataframe = self._series_points_df[self._series_points_df.index.isin(dataframe.index)]
 
             '''
             for i in range(len(self._series_points)):
                 if self._series_points[i][2] in datetimes:
                     self._filter_list[i] = True
             '''
-
-        elif datetime_list != None:
+        '''
+        elif dataframe != None:
             for i, _ in enumerate(self._series_points):
-                if self._series_points[i][2] in datetime_list:
+                if self._series_points[i][2] in dataframe:
                     self._filter_list[i] = True
         else:
             pass
+        '''
 
     def reset_filter(self):
         self._filter_list = [False] * len(self._series_points)
