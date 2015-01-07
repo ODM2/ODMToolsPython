@@ -78,7 +78,6 @@ class ExportService():
 
         writer.writerow(data)
 
-
     def write_data_header(self, writer, utc, site, var, offset, qual, src, qcl):
         # Build header list
         header = []

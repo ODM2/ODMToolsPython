@@ -43,8 +43,6 @@ class EditTools():
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
-
-
     def filter_date(self, endDate, startDate):
         self._edit_service.filter_date(endDate, startDate)
         self.refresh_plot()
@@ -54,9 +52,7 @@ class EditTools():
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
-
     def data_gaps(self, value, time_period):
-
         self._edit_service.data_gaps(value, time_period)
         self.refresh_plot()
         if self._record:
@@ -70,7 +66,6 @@ class EditTools():
         if self._record:
             self._script("edit_service.value_change_threshold(%s,'%s')\n" % (value, operator), 'black')
             Publisher.sendMessage("scroll")
-
 
     def filter_from_previous(self, value):
         '''
@@ -91,7 +86,6 @@ class EditTools():
         '''
         return self._edit_service.get_toggle()
 
-
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         self.refresh_plot()
@@ -109,6 +103,7 @@ class EditTools():
         return result
         #elif isinstance(datetime_list, pd.DataFrame):
         #    result = datetime_list.
+
 
     def _dataframe2liststub(self, dataframe):
         result = None
@@ -357,17 +352,9 @@ class EditTools():
     def create_qualifer(self, code, description):
         qual = self._edit_service.create_qualifier(code, description)
         if self._record:
-            self._script('new_qual = series_service.get_qualifier_by_id(%s)\n' % (qual.id))
+            self._script('new_qual = series_service.get_qualifier_by_code(%s)\n' % (qual.code))
             Publisher.sendMessage("scroll")
         return qual
-        '''
-        cv_service = self.serv_man.get_cv_service()
-        q = Qualifier()
-        q.code = code
-        q.description = description
-        cv_service.create_qualifer(q)
-        return q.id
-        '''
 
     def create_method(self, m):
         method = self._edit_service.create_method(m.description, m.link)
