@@ -93,7 +93,8 @@ class pnlDataTable(wx.Panel):
         #self.myOlv.AutoSizeColumns()
 
         # self.values = [list(x) for x in self.cursor.fetchall()]
-        self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns])
+        self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns], )
+
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def onRefresh(self, e):
@@ -123,15 +124,18 @@ class pnlDataTable(wx.Panel):
 
 
     def onChangeSelection(self,  datetime_list=[]):
-        objlist = []
-
         if isinstance(datetime_list, pd.DataFrame):
-
             olv = self.myOlvDataFrame.set_index("LocalDateTime")
             filtered_dataframe = self.myOlvDataFrame[olv.index.isin(datetime_list.index)]
             values = filtered_dataframe.values.tolist()
-            #results = datetime_list.index.to_pydatetime()
-            #values = [x for x in self.myOlv.modelObjects if x[3] in results.tolist()]
+
+            ## Convert np timestamp to useable datetime.datetime format
+            ## Improvements can be made. But this is faster than before.
+            ##  Need to figure out how to convert pandas columns to datetime.
+            for i in values:
+                i[3] = i[3].to_pydatetime()
+                i[5] = i[5].to_pydatetime()
+
             if len(values) > 0:
                 self.myOlv.SelectObject(values[0], deselectOthers=True, ensureVisible=True)
             self.myOlv.SelectObjects(values, deselectOthers=True)
