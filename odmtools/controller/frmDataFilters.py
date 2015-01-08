@@ -87,24 +87,13 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
     def onBtnApplyButton(self, event):
         self.is_applied = True
         if self.rbThreshold.GetValue():
-            gt = self.txtThreshValGT.GetValue()
-            lt = self.txtThreshValLT.GetValue()
+            greaterThan = self.txtThreshValGT.GetValue()
+            lessThan = self.txtThreshValLT.GetValue()
 
-            '''
-
-            if gt and lt:
-                self.recordService.filter_value({'gt': float(gt), 'lt': float(lt)}, ['>', '<'])
-            elif gt:
-                self.recordService.filter_value({'gt': float(gt)}, ['>'])
-            elif lt:
-                self.recordService.filter_value({'lt': float(lt)}, ['<'])
-
-            '''
-
-            if self.txtThreshValGT.GetValue():
-                self.recordService.filter_value(float(gt), '>')
-            if self.txtThreshValLT.GetValue():
-                self.recordService.filter_value(float(lt), '<')
+            if greaterThan:
+                self.recordService.filter_value(float(greaterThan), '>')
+            if lessThan:
+                self.recordService.filter_value(float(lessThan), '<')
 
         elif self.rbDataGaps.GetValue():
             if self.txtGapsVal.GetValue():

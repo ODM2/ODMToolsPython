@@ -128,56 +128,15 @@ class EditService():
     ###################
     # operator is a character, either '<' or '>'
     def filter_value(self, value, ops):
-        def _extractValues(value):
-            gt = None
-            lt = None
 
-            try:
-                lt = value['lt']
-            except:
-                pass
-
-            try:
-                gt = value['gt']
-            except:
-                pass
-
-            return gt, lt
-
-        gt, lt = _extractValues(value)
         df = self._test_filter_previous()
 
-        '''
-        if '>' in ops and '<' in ops:
-            self.filtered_dataframe = df[(df['DataValue'] > gt) & (df['DataValue'] < lt)]
-        '''
+        if ops == '>':
+            self.filtered_dataframe = df[df['DataValue'] > value]
 
         if ops == '<':
-            self.filtered_dataframe = df[df['DataValue'] < lt]
+            self.filtered_dataframe = df[df['DataValue'] < value]
 
-        if ops == '>':
-            self.filtered_dataframe = df[df['DataValue'] > gt]
-
-        """
-        self._test_filter_previous()
-        if operator == '<':  # less than
-            for i in range(len(self._series_points)):
-                # If it's not already in the selection, skip it
-                if (self._filter_from_selection and not self._filter_list[i]):
-                    continue
-                if self._series_points[i][1] < value:
-                    self._filter_list[i] = True
-                else:
-                    self._filter_list[i] = False
-        if operator == '>':  # greater than
-            for i in range(len(self._series_points)):
-                if (self._filter_from_selection and not self._filter_list[i]):
-                    continue
-                if self._series_points[i][1] > value:
-                    self._filter_list[i] = True
-                else:
-                    self._filter_list[i] = False
-        """
 
     def filter_date(self, before, after):
         self._test_filter_previous()
