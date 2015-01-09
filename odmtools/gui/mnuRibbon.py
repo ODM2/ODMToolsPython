@@ -489,6 +489,7 @@ class mnuRibbon(RB.RibbonBar):
         self.isEdit = isEdit
 
     def onEditSeries(self, event=None):
+
         #logger.debug(dir(event))
 
 

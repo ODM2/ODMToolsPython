@@ -324,22 +324,26 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.Update()
 
     def addEdit(self, event):
+
+        logger.debug("Beginning editing")
         isSelected, seriesID, memDB = self.pnlSelector.onReadyToEdit()
 
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
                                                                           connection=memDB.conn)
             self._ribbon.toggleEditButtons(True)
-            self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
 
+            logger.debug("Initializing Plot")
+            self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+            logger.debug("Initializing DataTable")
             self.dataTable.init(memDB, self.record_service)
+
 
             # set record service for console
             Publisher.sendMessage("setEdit", isEdit=True)
             logger.debug("Enabling Edit")
             self.record_service.toggle_record()
             # self._mgr.GetPane(self.txtPythonScript).Show(show=True)
-
 
         else:
             logger.debug("disabling Edit")
@@ -356,6 +360,10 @@ class frmODMToolsMain(wx.Frame):
         self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
         self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False,
                                         verbose=False)
+
+        #from meliae import scanner
+        #scanner.dump_all_objects("edit_plotting.dat")
+
 
     def stopEdit(self, event):
 

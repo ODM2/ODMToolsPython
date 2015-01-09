@@ -47,7 +47,6 @@ class pnlDataTable(wx.Panel):
         #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
         #self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
         #self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
-
         Publisher.subscribe(self.onChangeSelection, ("changeTableSelection"))
         Publisher.subscribe(self.onRefresh, ("refreshTable"))
 
@@ -94,7 +93,6 @@ class pnlDataTable(wx.Panel):
 
         # self.values = [list(x) for x in self.cursor.fetchall()]
         self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns], )
-
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
     def onRefresh(self, e):

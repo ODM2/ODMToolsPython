@@ -449,6 +449,9 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         self.Refresh()
 
+        #from meliae import scanner
+        #scanner.dump_all_objects("plot_plotting.dat")
+
     def getSelectedObject(self, event):
         """Capture the currently selected Object to be used for editing
 
@@ -484,10 +487,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             object = ovl.modelObjects[0]
 
         if len(ovl.GetCheckedObjects()) <= ovl.allowedLimit:
+
             if object not in ovl.GetCheckedObjects():
                 ovl.ToggleCheck(object)
 
+            logger.debug("Initializing Memory Database")
             self.memDB.initEditValues(object.id)
+            logger.debug("Finished Initializing Memory Database")
             self.isEditing = True
             ovl.editingObject = object
             ovl.RefreshObject(ovl.editingObject)

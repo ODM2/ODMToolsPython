@@ -435,8 +435,6 @@ class plotTimeSeries(wx.Panel):
                 self.editCurve = oneSeries
                 self.drawEditPlot(oneSeries)
 
-
-
             else:
                 """
 
@@ -447,7 +445,7 @@ class plotTimeSeries(wx.Panel):
                 curraxis.set_zorder(1)
 
                 data = oneSeries.dataTable
-                dates = data['LocalDateTime'].astype(datetime.datetime)
+                dates = data.index.astype(datetime.datetime)
                 #data.plot(ax=curraxis)
                 curraxis.plot_date(dates, data['DataValue'],
                         color=oneSeries.color, fmt=self.format, xdate=True, tz=None, antialiased=True,
