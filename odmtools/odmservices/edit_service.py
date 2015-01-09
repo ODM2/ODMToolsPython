@@ -117,11 +117,13 @@ class EditService():
         """
 
         ## Convert dataframe into list of datetimes
+
         filtered_dataframe = self.get_filtered_points()
-
-        datetime_list = filtered_dataframe.index.to_pydatetime()
-
-        return datetime_list.tolist()
+        if isinstance(filtered_dataframe, pd.DataFrame):
+            if not filtered_dataframe.empty:
+                datetime_list = filtered_dataframe.index.to_pydatetime()
+                return datetime_list.tolist()
+        return []
 
     ###################
     # Filters
