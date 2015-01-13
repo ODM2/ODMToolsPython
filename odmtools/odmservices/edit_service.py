@@ -90,7 +90,6 @@ class EditService():
         else:
             df = self.filtered_dataframe
 
-        df = self._series_points_df
         return df
 
     def datetime2dataframe(self, datetime_list):
@@ -103,7 +102,8 @@ class EditService():
 
         result = None
         if isinstance(datetime_list, list):
-            result = pd.DataFrame(datetime_list)
+            result = pd.DataFrame(datetime_list, columns=["LocalDateTime"])
+            result.set_index("LocalDateTime", inplace=True)
         return result
 
     ###################
@@ -141,28 +141,13 @@ class EditService():
 
 
     def filter_date(self, before, after):
-        self._test_filter_previous()
 
-        previous_date_filter = False
-        if before != None:
-            tmp = []
-            for i in range(len(self._series_points)):
-                if (self._filter_from_selection and not self._filter_list[i]):
-                    continue
-                if self._series_points[i][2] < before:
-                    self._filter_list[i] = True
-                else:
-                    self._filter_list[i] = False
-            previous_date_filter = True  # We've done a previous date filter
-        if after != None:
-            for i in range(len(self._series_points)):
-                if ((previous_date_filter or self._filter_from_selection)
-                    and not self._filter_list[i]):
-                    continue
-                if self._series_points[i][2] > after:
-                    self._filter_list[i] = True
-                else:
-                    self._filter_list[i] = False
+        df = self._test_filter_previous()
+
+        if before and after:
+
+            self.filtered_dataframe = df[(df.index < before) & (df.index > after)]
+
 
     # Data Gaps
     def data_gaps(self, value, time_period):
@@ -243,22 +228,8 @@ class EditService():
 
         if isinstance(dataframe, pd.DataFrame):
             result = dataframe.index.astype(datetime.datetime)
-            datetimes = result.tolist()
             self.filtered_dataframe = self._series_points_df[self._series_points_df.index.isin(dataframe.index)]
 
-            '''
-            for i in range(len(self._series_points)):
-                if self._series_points[i][2] in datetimes:
-                    self._filter_list[i] = True
-            '''
-        '''
-        elif dataframe != None:
-            for i, _ in enumerate(self._series_points):
-                if self._series_points[i][2] in dataframe:
-                    self._filter_list[i] = True
-        else:
-            pass
-        '''
 
     def reset_filter(self):
         self._filter_list = [False] * len(self._series_points)

@@ -129,7 +129,7 @@ class pnlDataTable(wx.Panel):
 
             ## Convert np timestamp to useable datetime.datetime format
             ## Improvements can be made. But this is faster than before.
-            ##  Need to figure out how to convert pandas columns to datetime.
+            ##  Need to figure out how to convert pandas columns to datetime without loops.
             for i in values:
                 i[3] = i[3].to_pydatetime()
                 i[5] = i[5].to_pydatetime()

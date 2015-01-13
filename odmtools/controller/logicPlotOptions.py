@@ -392,7 +392,6 @@ class SeriesPlotInfo(object):
 
 class Statistics(object):
     def __init__(self, data):
-        print "Statistics!!"
 
         # dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         #data = sorted(dataValues)
