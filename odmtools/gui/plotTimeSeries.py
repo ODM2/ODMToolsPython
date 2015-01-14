@@ -166,10 +166,7 @@ class plotTimeSeries(wx.Panel):
         if isinstance(filtered_datetime, pd.DataFrame):
             if filtered_datetime.empty:
                 return
-
             result = filtered_datetime
-            if result.empty:
-                return
 
         if isinstance(filtered_datetime, list):
             df = self.editCurve.dataTable

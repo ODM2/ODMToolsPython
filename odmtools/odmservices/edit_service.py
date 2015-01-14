@@ -66,15 +66,20 @@ class EditService():
         # [(ID, value, datetime), ...]
         #self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
         self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
+
         results = self._cursor.fetchall()
+
         self._series_points = results
-        #self._series_points_df = pd.DataFrame(results, columns=['ValueID', 'DataValue', 'LocalDateTime'])
+
         self.columns = [
             "ValueID", "DataValue", "ValueAccuracy" ,"LocalDateTime" ,"UTCOffset", "DateTimeUTC",
             "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
             "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
+
         self._series_points_df = pd.DataFrame(results,  columns=self.columns)
+
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
+
         self.filtered_dataframe = self._series_points_df
 
     def _test_filter_previous(self):
@@ -85,9 +90,13 @@ class EditService():
         '''
 
         df = None
+
         if not self._filter_from_selection:
+
             df = self._series_points_df
+
         else:
+
             df = self.filtered_dataframe
 
         return df
@@ -101,9 +110,13 @@ class EditService():
         """
 
         result = None
+
         if isinstance(datetime_list, list):
+
             result = pd.DataFrame(datetime_list, columns=["LocalDateTime"])
+
             result.set_index("LocalDateTime", inplace=True)
+
         return result
 
     ###################
@@ -245,11 +258,13 @@ class EditService():
     # Gets
     ###################
     def get_series(self):
+
         return self._series_service.get_series_by_id(self._series_id)
 
     def get_series_points(self):
         # all point in the series
         return self._series_points
+
     def get_series_points_df(self):
         """
         :return Pandas DataFrame:
@@ -257,27 +272,14 @@ class EditService():
         return self._series_points_df
 
     def get_filtered_points(self):
-        # list of selected points
         """
-        tmp = []
-
-        for i in range(len(self._series_points)):
-            if self._filter_list[i]:
-                tmp.append(self._series_points[i])
-
-        return tmp
+        :return Pandas DataFrame:
         """
         if len(self.filtered_dataframe) > 0:
             return self.filtered_dataframe
         return None
 
-
-
-    '''
-    return a list of the dates from the selected list
-    '''
     def get_filtered_dates(self):
-        #return [x[2] for x in self.get_filtered_points()]
         return self.filtered_dataframe
 
     def get_filter_list(self):
@@ -301,28 +303,21 @@ class EditService():
 
     def change_value(self, value, operator):
         filtered_points = self.get_filtered_points()
-        tmp_filter_list = self._filter_list
         query = "UPDATE DataValues SET DataValue = "
         if operator == '+':
             query += " DataValue + %s " % (value)
-
         if operator == '-':
             query += " DataValue - %s " % (value)
-
         if operator == '*':
             query += " DataValue * %s " % (value)
-
         if operator == '=':
             query += "%s " % (value)
-
-        query += "WHERE ValueID IN ("
-        for i in range(len(filtered_points) - 1):
-            query += "%s," % (filtered_points[i][0])
-        query += "%s)" % (filtered_points[-1][0])
+        values = filtered_points['ValueID'].tolist()
+        result = ','.join(map(str, values))
+        query += "WHERE ValueID IN (%s)" % result
         self._cursor.execute(query)
-
         self._populate_series()
-        self._filter_list = tmp_filter_list
+        self.filtered_dataframe = filtered_points
 
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
@@ -347,7 +342,8 @@ class EditService():
             self._cursor.execute(query)
 
             self._populate_series()
-            self.reset_filter()
+
+            #self.reset_filter()
 
     def interpolate(self):
         tmp_filter_list = self._filter_list
