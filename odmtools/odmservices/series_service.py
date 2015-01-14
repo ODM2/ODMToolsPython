@@ -358,6 +358,7 @@ class SeriesService():
             result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
             return True
         except:
+
             return False
 
     def method_exists(self, m):

@@ -72,7 +72,7 @@ class EditService():
         self._series_points = results
 
         self.columns = [
-            "ValueID", "DataValue", "ValueAccuracy" ,"LocalDateTime" ,"UTCOffset", "DateTimeUTC",
+            "ValueID", "DataValue", "ValueAccuracy", "LocalDateTime", "UTCOffset", "DateTimeUTC",
             "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
             "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
 
@@ -245,7 +245,9 @@ class EditService():
 
 
     def reset_filter(self):
-        self._filter_list = [False] * len(self._series_points)
+        #self._filter_list = [False] * len(self._series_points)
+        self.filtered_dataframe = self._series_points_df
+        #self._filter
 
     def filter_from_previous(self, value):
         self._filter_from_selection = value

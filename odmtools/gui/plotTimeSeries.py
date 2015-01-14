@@ -497,7 +497,7 @@ class plotTimeSeries(wx.Panel):
 
         plt.gcf().autofmt_xdate()
 
-        self.figure.tight_layout()
+        #self.figure.tight_layout()
         if not self.toolbar._views.empty():
             for v in self.toolbar._views:
                 del(v)
