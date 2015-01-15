@@ -80,7 +80,7 @@ class EditService():
 
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
 
-        self.filtered_dataframe = self._series_points_df
+        self.filtered_dataframe = None
 
     def _test_filter_previous(self):
 
@@ -277,6 +277,12 @@ class EditService():
         """
         :return Pandas DataFrame:
         """
+        if isinstance(self.filtered_dataframe, pd.DataFrame):
+            if self.filtered_dataframe.empty:
+                return None
+        else:
+            if not self.filtered_dataframe:
+                return None
         if len(self.filtered_dataframe) > 0:
             return self.filtered_dataframe
         return None
@@ -319,7 +325,7 @@ class EditService():
         query += "WHERE ValueID IN (%s)" % result
         self._cursor.execute(query)
         self._populate_series()
-        self.filtered_dataframe = filtered_points
+        self.filtered_dataframe = None
 
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
@@ -332,20 +338,14 @@ class EditService():
         self.reset_filter()
 
     def delete_points(self):
-        query = "DELETE FROM DataValues WHERE ValueID IN ("
         filtered_points = self.get_filtered_points()
-        num_filtered_points = len(filtered_points)
-        if num_filtered_points > 0:
-            for i in range(num_filtered_points - 1):  # loop through the second-to-last active point
-                query += "%s," % (filtered_points[i][0])  # append its ID
-            query += "%s)" % (filtered_points[-1][0])  # append the final point's ID and close the set
-
-            # Delete the points from the cursor
+        if not filtered_points.empty:
+            values = filtered_points['ValueID'].tolist()
+            result = ','.join(map(str, values))
+            query = "DELETE FROM DataValues WHERE ValueID IN (%s)" % result
             self._cursor.execute(query)
-
             self._populate_series()
-
-            #self.reset_filter()
+            self.filtered_dataframe = None
 
     def interpolate(self):
         tmp_filter_list = self._filter_list

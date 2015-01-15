@@ -61,17 +61,6 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
-        '''
-        import pandas as pd
-        import numpy as np
-
-        self.data = pd.DataFrame(np.random.randn(14, 2),
-                    index=np.arange('2005-02', '2005-02-15', dtype='datetime64[D]'),
-                    columns=['first', 'sec'])
-
-        #ax = self.data.plot(ax=self.timeSeries, title='sample')
-        '''
-
         #self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
         #self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
@@ -165,12 +154,22 @@ class plotTimeSeries(wx.Panel):
         result = None
         if isinstance(filtered_datetime, pd.DataFrame):
             if filtered_datetime.empty:
+                self.canvas.draw()
                 return
             result = filtered_datetime
 
         if isinstance(filtered_datetime, list):
             df = self.editCurve.dataTable
             result = df[df['LocalDateTime'].isin(filtered_datetime)].astype(datetime.datetime)
+
+        if isinstance(result, pd.DataFrame):
+            if result.empty:
+                self.canvas.draw()
+                return
+        else:
+            if not result:
+                self.canvas.draw()
+                return
 
         values = result['DataValue'].values.tolist()
         dates = result.index.astype(datetime.datetime)
@@ -180,9 +179,9 @@ class plotTimeSeries(wx.Panel):
 
 
     def lassoChangeSelection(self, filtered_datetime):
-        self.changePlotSelection(filtered_datetime)
         self.parent.record_service.select_points(dataframe=filtered_datetime)
-        Publisher.sendMessage("changeTableSelection",  datetime_list=filtered_datetime)
+        #self.changePlotSelection(filtered_datetime)
+        #Publisher.sendMessage("changeTableSelection",  datetime_list=filtered_datetime)
 
 
     def onShowLegend(self, isVisible):

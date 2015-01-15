@@ -16,6 +16,7 @@ from frmLinearDrift import frmLinearDrift
 from odmtools.controller.frmAbout import frmAbout
 import wizSave
 from odmtools.common import *
+import pandas as pd
 
 
 # # Enable logging
@@ -468,8 +469,16 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditDelPoint(self, event):
-        numPoints = len(self.parent.getRecordService().get_filtered_points())
-        val = wx.MessageBox("You have chosen to delete the %s selected points.\nDo you want to continue?" % numPoints,
+        dataframe = self.parent.getRecordService().get_filtered_points()
+        if isinstance(dataframe, pd.DataFrame):
+            if dataframe.empty:
+                return
+        else:
+            if not dataframe:
+                return
+
+        #numPoints = len(self.parent.getRecordService().get_filtered_points())
+        val = wx.MessageBox("You have chosen to delete the %s selected points.\nDo you want to continue?" % len(dataframe),
                             'Deleting Points', wx.YES_NO | wx.ICON_QUESTION)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().delete_points()
