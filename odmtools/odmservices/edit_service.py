@@ -245,9 +245,9 @@ class EditService():
 
 
     def reset_filter(self):
-        #self._filter_list = [False] * len(self._series_points)
-        self.filtered_dataframe = self._series_points_df
-        #self._filter
+
+        self.filtered_dataframe = self._series_points_df[0:0]#pd.DataFrame([])#, columns=["DataValue", "LocalDateTime", "CensorCode", "Month", "Year", "Season"], index = None)
+        print self.filtered_dataframe.empty
 
     def filter_from_previous(self, value):
         self._filter_from_selection = value
