@@ -529,41 +529,40 @@ class BoxWhiskerPlotInfo(object):
 
 class Probability(object):
     def __init__(self, data):
+        """
 
-        self.curFreq = None
-        self.Xaxis = []
-        # self.Yaxis = sorted(data)
-        length = len(data)
+        Probability (Frequency of Exceedence) Algorithm
+        * sorted = Sort values
+        * ranks = Rank sorted values
+        * Reverse the ranking
+        * Calculate Probability of Exceedence using algorithm: ranks/(len(sorted)+1) * 100
 
-        probX = lambda freq: round(4.91 * ((freq ** .14) - (1.00 - freq) ** .14), 3)
-        probFreq = lambda rank: round((rank - .0375) / (length + 1 - (2 * 0.375)), 3)
+        #First, I sort the values.
+        ##sorted <- sort(TSSpred)
 
-        self.yAxis = data['DataValue'].apply(probFreq)
-        self.xAxis = self.yAxis.apply(probX)
+        #Then, I rank the sorted values.
+        ##ranks <- rank(sorted, ties.method="max")
 
-        '''
-        for it in range(length):
-            #curValue = datavalues[it]
-            curFreq = self.calcualteProbabilityFreq(it + 1, length)
-            curX = self.calculateProbabilityXPosition(curFreq)
-            #self.Yaxis.append(curValue)
-            self.Xaxis.append(curX)
-        '''
+        #Then, I reverse the ranking.
+        ##ranks <- max(ranks)-ranks
 
-    def calculateProbabilityXPosition(self, freq):
-        try:
-            return round(4.91 * ((freq ** .14) - (1.00 - freq) ** .14), 3)
-        except:
-            print "An error occurred while calculating the X-Position for a point in the prob plot"
-            pass
+        #This is the actual formula- rank/(length+1) as a %
+        #PrbExc = ranks/(length(sorted)+1)*100
 
-    def calcualteProbabilityFreq(self, rank, numRows):
-        try:
-            return round((rank - .0375) / (numRows + 1 - (2 * 0.375)), 3)
-        except:
-            print "An error occured while calculating the frequency for a point in the prob plot"
-            pass
+        #Here I plot the probability of exceedance (PrbExc) against the sorted initial values (sorted).
+        #plot(PrbExc, sorted, type='n', col='white', font.lab=1.5, xlab="Frequency of Exceedance, percent", ylab="TSS, mg/L",log="y")
 
+
+        :param data:
+        :return:
+        """
+
+        # Determine rank, sorting values doesn't change outcome while using pandas.
+        ranks = data['DataValue'].rank()
+        PrbExc = ranks / (len(ranks) + 1) * 100
+
+        self.xAxis = PrbExc
+        self.yAxis = data['DataValue']
 
 def numToMonth(date):
     date = int(date)

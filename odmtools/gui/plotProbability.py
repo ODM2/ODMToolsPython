@@ -130,7 +130,8 @@ class plotProb(wx.Panel):
             if len(oneSeries.dataTable) >0:
                 #self.prob.append(
                 #prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
-                self.plots.plot(oneSeries.Probability.xAxis, oneSeries.Probability.yAxis, 'bs', color=oneSeries.color,
+
+                self.plots.plot(oneSeries.Probability.xAxis.values, oneSeries.Probability.yAxis.values, 'bs', color=oneSeries.color,
                                    label=oneSeries.plotTitle)
 
         self.setXaxis()
@@ -181,14 +182,15 @@ class plotProb(wx.Panel):
         self.canvas.draw()
 
     def setXaxis(self):
-
+        '''
         self.plots.set_xticklabels(
             ["0.01", "0.02", "0.02", "1", "2", "5", "10", "20", "30", "40", "50", "60", "70", "80", "90", "95", "98",
              "99", "99.9", "99.98", "99.99"])
         self.plots.set_xticks(
             [-3.892, -3.5, -3.095, -2.323, -2.055, -1.645, -1.282, -0.842, -0.542, -0.254, 0, 0.254, 0.542, 0.842,
              1.282, 1.645, 2.055, 2.323, 3.095, 3.5, 3.892])
-        self.plots.set_xbound(-4, 4)
+        '''
+        self.plots.set_xbound(1, 100)
 
 
     def setColor(self, color):
