@@ -106,9 +106,12 @@ class frmFlagValues(wx.Dialog):
         self._init_ctrls(parent)
 
     def GetValue(self):
-        if self.qid:
-            return self.qid
-        else:
+        try:
+            if self.qid:
+                return self.qid
+            else:
+                return None
+        except AttributeError:
             return None
 
     def OnCbQualifCombobox(self, event):
@@ -146,15 +149,17 @@ class frmFlagValues(wx.Dialog):
             self.EndModal(wx.ID_OK)
 
         else:
-            self.qid = self.qualchoices[self.cbQualif.GetValue()]
-            self.selectedValue = self.cbQualif.GetValue()
-            self.EndModal(wx.ID_CANCEL)
+            value = self.cbQualif.GetValue()
+            if value:
+                self.qid = self.qualchoices[value]
+                self.selectedValue = self.cbQualif.GetValue()
+                self.EndModal(wx.ID_CANCEL)
 
         event.Skip()
         #self.Close()
 
     def OnBtnCancelButton(self, event):
         event.Skip()
-        #self.Close()
+        self.Close()
 
 

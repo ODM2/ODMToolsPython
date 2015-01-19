@@ -445,6 +445,11 @@ class mnuRibbon(RB.RibbonBar):
 
         add_flag = frmFlagValues(self, cv_service, qualifierChoices)
         val = add_flag.ShowModal()
+
+        # If user closes dialog box
+        if val == wx.ID_CANCEL:
+            return
+
         logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
         if val == 5101:  #wx.ID_OK:
             self.parent.getRecordService().flag(add_flag.GetValue())
