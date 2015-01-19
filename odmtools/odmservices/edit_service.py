@@ -80,7 +80,6 @@ class EditService():
 
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
 
-        self.filtered_dataframe = None
 
     def _test_filter_previous(self):
 
@@ -325,7 +324,10 @@ class EditService():
         query += "WHERE ValueID IN (%s)" % result
         self._cursor.execute(query)
         self._populate_series()
-        self.filtered_dataframe = None
+
+        ## update filtered_dataframe
+        self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(values)]
+
 
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
