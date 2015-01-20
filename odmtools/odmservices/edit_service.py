@@ -77,7 +77,6 @@ class EditService():
             "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
 
         self._series_points_df = pd.DataFrame(results,  columns=self.columns)
-
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
 
 
@@ -244,9 +243,7 @@ class EditService():
 
 
     def reset_filter(self):
-
-        self.filtered_dataframe = self._series_points_df[0:0]#pd.DataFrame([])#, columns=["DataValue", "LocalDateTime", "CensorCode", "Month", "Year", "Season"], index = None)
-        print self.filtered_dataframe.empty
+        self.filtered_dataframe = None#self._series_points_df[0:0]
 
     def filter_from_previous(self, value):
         self._filter_from_selection = value
@@ -325,8 +322,10 @@ class EditService():
         self._cursor.execute(query)
         self._populate_series()
 
+
         ## update filtered_dataframe
         self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(values)]
+
 
 
     def add_points(self, points):
@@ -350,7 +349,28 @@ class EditService():
             self.filtered_dataframe = None
 
     def interpolate(self):
-        tmp_filter_list = self._filter_list
+
+        '''
+        In [75]: ser = Series(np.sort(np.random.uniform(size=100)))
+        # interpolate at new_index
+        In [76]: new_index = ser.index | Index([49.25, 49.5, 49.75, 50.25, 50.5, 50.75])
+        In [77]: interp_s = ser.reindex(new_index).interpolate(method='pchip')
+        '''
+
+
+        filtered_points = self.get_filtered_points()
+        query = "UPDATE DataValues SET DataValue = "
+
+
+        values = filtered_points['ValueID'].tolist()
+        result = ','.join(map(str, values))
+        query += "WHERE ValueID IN (%s)" % result
+        self._cursor.execute(query)
+        self._populate_series()
+        #self.filtered_dataframe = None
+
+
+        '''tmp_filter_list = self._filter_list
         groups = self.get_selection_groups()
 
         for group in groups:
@@ -380,6 +400,7 @@ class EditService():
 
         self._populate_series()
         self._filter_list = tmp_filter_list
+        '''
 
     def drift_correction(self, gap_width):
         tmp_filter_list = self._filter_list

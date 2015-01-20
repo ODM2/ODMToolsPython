@@ -88,7 +88,7 @@ class plotProb(wx.Panel):
         # print plt.setp(self.lines)
         # print(len(self.lines))
         self.format = ls + m
-        for line in self.prob:
+        for line in self.plots:
             plt.setp(line, linestyle=ls, marker=m)
         if self.islegendvisible:
             self.onShowLegend(self.islegendvisible)
@@ -182,14 +182,7 @@ class plotProb(wx.Panel):
         self.canvas.draw()
 
     def setXaxis(self):
-        '''
-        self.plots.set_xticklabels(
-            ["0.01", "0.02", "0.02", "1", "2", "5", "10", "20", "30", "40", "50", "60", "70", "80", "90", "95", "98",
-             "99", "99.9", "99.98", "99.99"])
-        self.plots.set_xticks(
-            [-3.892, -3.5, -3.095, -2.323, -2.055, -1.645, -1.282, -0.842, -0.542, -0.254, 0, 0.254, 0.542, 0.842,
-             1.282, 1.645, 2.055, 2.323, 3.095, 3.5, 3.892])
-        '''
+
         self.plots.set_xbound(1, 100)
 
 
@@ -199,19 +192,7 @@ class plotProb(wx.Panel):
         self.figure.set_edgecolor(color)
         self.canvas.SetBackgroundColour(color)
 
-    def calculateProbabilityXPosition(self, freq):
-        try:
-            return round(4.91 * ((freq ** .14) - (1.00 - freq) ** .14), 3)
-        except:
-            print "An error occurred while calculating the X-Position for a point in the prob plot"
-            pass
 
-    def calcualteProbabilityFreq(self, rank, numRows):
-        try:
-            return round((rank - .0375) / (numRows + 1 - (2 * 0.375)), 3)
-        except:
-            print "An error occured while calculating the frequency for a point in the prob plot"
-            pass
 
 
     def __init__(self, parent, id, pos, size, style, name):
