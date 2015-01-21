@@ -7,6 +7,7 @@ from cv_service import CVService
 from odmtools.odmdata import series as series_module
 import pandas as pd
 import datetime
+import numpy as np
 
 import logging
 from odmtools.common.logger import LoggerTool
@@ -97,6 +98,15 @@ class EditService():
 
             df = self.filtered_dataframe
 
+        # Ensure that we're not working with an empty dataframe
+
+        if isinstance(df, pd.DataFrame):
+            if df.empty:
+                return self._series_points_df
+        else:
+            if not df:
+                return self._series_points_df
+
         return df
 
     def datetime2dataframe(self, datetime_list):
@@ -162,40 +172,75 @@ class EditService():
 
     # Data Gaps
     def data_gaps(self, value, time_period):
-        self._test_filter_previous()
-        length = len(self._series_points)
 
-        value_sec = 0
+        df = self._test_filter_previous()
 
-        if time_period == 'second':
-            value_sec = value
-        if time_period == 'minute':
-            value_sec = value * 60
-        if time_period == 'hour':
-            value_sec = value * 60 * 60
-        if time_period == 'day':
-            value_sec = value * 60 * 60 * 24
+        time_units = {
+            'second': 's',
+            'minute': 'm',
+            'hour': 'h',
+            'day': 'D',
+            'week': 'W',
+            'month': 'M',
+            'year': 'Y'
+        }
 
-        tmp = {}
+        # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
+        copy_df = df
+        copy_df['datetime_value'] = df.index
 
-        for i in xrange(length):
-            if (self._filter_from_selection and
-                    not self._filter_list[i]):
-                continue
+        # ensure that 'value' is an integer
+        if not isinstance(value, int):
+            value = int(value)
 
-            if i + 1 < length:  # make sure we stay in bounds
-                point1 = self._series_points[i]
-                point2 = self._series_points[i + 1]
-                interval = point2[2] - point1[2]
-                interval_total_sec = interval.total_seconds()
+        # create a bool column indicating which rows meet condition
+        result = copy_df['datetime_value'].diff() >= np.timedelta64(value, time_units[time_period])
 
-                if interval_total_sec >= value_sec:
-                    tmp[i] = True
-                    tmp[i + 1] = True
+        # filter on rows that passed previous condition
+        self.filtered_dataframe = copy_df[result]
 
-        self.reset_filter()
-        for key in tmp.keys():
-            self._filter_list[key] = True
+        # clean up
+        del copy_df
+
+
+
+
+
+
+
+        # length = len(self._series_points)
+        #
+        # value_sec = 0
+        #
+        # if time_period == 'second':
+        #     value_sec = value
+        # if time_period == 'minute':
+        #     value_sec = value * 60
+        # if time_period == 'hour':
+        #     value_sec = value * 60 * 60
+        # if time_period == 'day':
+        #     value_sec = value * 60 * 60 * 24
+
+        # tmp = {}
+        #
+        # for i in xrange(length):
+        #     if (self._filter_from_selection and
+        #             not self._filter_list[i]):
+        #         continue
+        #
+        #     if i + 1 < length:  # make sure we stay in bounds
+        #         point1 = self._series_points[i]
+        #         point2 = self._series_points[i + 1]
+        #         interval = point2[2] - point1[2]
+        #         interval_total_sec = interval.total_seconds()
+        #
+        #         if interval_total_sec >= value_sec:
+        #             tmp[i] = True
+        #             tmp[i + 1] = True
+        #
+        # self.reset_filter()
+        # for key in tmp.keys():
+        #     self._filter_list[key] = True
 
     def value_change_threshold(self, value, operator):
         self._test_filter_previous()
