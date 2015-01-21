@@ -203,29 +203,28 @@ class EditService():
         del newdf
 
     def value_change_threshold(self, value, operator):
-        self._test_filter_previous()
-        length = len(self._series_points)
-        tmp = {}
-        for i in xrange(length):
-            if (self._filter_from_selection and
-                    not self._filter_list[i]):
-                continue
 
-            if i + 1 < length:  # make sure we stay in bounds
-                point1 = self._series_points[i]
-                point2 = self._series_points[i + 1]
-                if operator == '>':
-                    if abs(point1[1] - point2[1]) >= value:
-                        tmp[i] = True
-                        tmp[i + 1] = True
-                if operator == '<':
-                    if abs(point1[1] - point2[1]) <= value:
-                        tmp[i] = True
-                        tmp[i + 1] = True
+        df = self._test_filter_previous()
 
-        self.reset_filter()
-        for key in tmp.keys():
-            self._filter_list[key] = True
+        # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
+        copy_df = df
+        copy_df['values'] = df['DataValue']
+        copy_df['valueprev'] = copy_df['values'].shift()
+
+        if not isinstance(value, float):
+            logger.error("Need to have a float")
+            return
+
+        if operator == ">":
+            copy_df['diff'] = copy_df['values'].diff() >= value
+
+        if operator == "<":
+            copy_df['diff'] = copy_df['values'].diff() <= value
+
+        filtered_df = copy_df[copy_df['diff']]
+        newdf = pd.concat([filtered_df['values'], filtered_df['valueprev']], join='inner')
+        self.filtered_dataframe = df[df['DataValue'].isin(newdf.drop_duplicates().dropna())]
+
 
     def select_points_tf(self, tf_list):
         self._filter_list = tf_list
