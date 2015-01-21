@@ -63,7 +63,7 @@ class mnuRibbon(RB.RibbonBar):
                                     RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         self.plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTTIMESERIES, "Time Series", tsa_icon.GetBitmap(), "")
-        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTPROB, "Probablity", probability.GetBitmap(), "")
+        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTPROB, "Exceedance Frequency", probability.GetBitmap(), "")
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTHIST, "Histogram", histogram.GetBitmap(), "")
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTBOX, "Box/Whisker", box_whisker.GetBitmap(), "")
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTSUMMARY, "Summary", summary.GetBitmap(), "")

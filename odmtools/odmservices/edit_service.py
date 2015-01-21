@@ -189,10 +189,12 @@ class EditService():
 
         # create a bool column indicating which rows meet condition
         filtered_results = copy_df['datetime'].diff() >= np.timedelta64(value, time_units[time_period])
-        copy_df = copy_df[filtered_results]
-        newdf = pd.concat([copy_df['datetime'], copy_df['dateprev']], join='inner')
 
         # filter on rows that passed previous condition
+        copy_df = copy_df[filtered_results]
+
+        # merge values and remove duplicates. this hack allows for both values to be marked when selecting data gaps
+        newdf = pd.concat([copy_df['datetime'], copy_df['dateprev']], join='inner')
         self.filtered_dataframe = df[df.index.isin(newdf.drop_duplicates().dropna())]
 
         # clean up
