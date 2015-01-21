@@ -180,55 +180,25 @@ class EditService():
 
         # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
         copy_df = df
-        copy_df['datetime_value'] = df.index
+        copy_df['datetime'] = df.index
+        copy_df['dateprev'] = copy_df['datetime'].shift()
 
         # ensure that 'value' is an integer
         if not isinstance(value, int):
             value = int(value)
 
         # create a bool column indicating which rows meet condition
-        result = copy_df['datetime_value'].diff() >= np.timedelta64(value, time_units[time_period])
+        filtered_results = copy_df['datetime'].diff() >= np.timedelta64(value, time_units[time_period])
+        copy_df = copy_df[filtered_results]
+        newdf = pd.concat([copy_df['datetime'], copy_df['dateprev']], join='inner')
 
         # filter on rows that passed previous condition
-        self.filtered_dataframe = copy_df[result]
+        self.filtered_dataframe = df[df.index.isin(newdf.drop_duplicates().dropna())]
 
         # clean up
         del copy_df
-
-
-        # length = len(self._series_points)
-        #
-        # value_sec = 0
-        #
-        # if time_period == 'second':
-        #     value_sec = value
-        # if time_period == 'minute':
-        #     value_sec = value * 60
-        # if time_period == 'hour':
-        #     value_sec = value * 60 * 60
-        # if time_period == 'day':
-        #     value_sec = value * 60 * 60 * 24
-
-        # tmp = {}
-        #
-        # for i in xrange(length):
-        #     if (self._filter_from_selection and
-        #             not self._filter_list[i]):
-        #         continue
-        #
-        #     if i + 1 < length:  # make sure we stay in bounds
-        #         point1 = self._series_points[i]
-        #         point2 = self._series_points[i + 1]
-        #         interval = point2[2] - point1[2]
-        #         interval_total_sec = interval.total_seconds()
-        #
-        #         if interval_total_sec >= value_sec:
-        #             tmp[i] = True
-        #             tmp[i + 1] = True
-        #
-        # self.reset_filter()
-        # for key in tmp.keys():
-        #     self._filter_list[key] = True
+        del filtered_results
+        del newdf
 
     def value_change_threshold(self, value, operator):
         self._test_filter_previous()

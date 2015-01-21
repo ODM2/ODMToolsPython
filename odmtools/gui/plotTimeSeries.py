@@ -153,9 +153,6 @@ class plotTimeSeries(wx.Panel):
 
         result = None
         if isinstance(filtered_datetime, pd.DataFrame):
-            if filtered_datetime.empty:
-                self.canvas.draw()
-                return
             result = filtered_datetime
 
         if isinstance(filtered_datetime, list):
