@@ -132,7 +132,6 @@ class EditService():
     ###################
     def selectPointsStub(self):
         """
-
         :param filtered_dataframe:
         :return:
         """
@@ -151,7 +150,6 @@ class EditService():
     ###################
     # operator is a character, either '<' or '>'
     def filter_value(self, value, ops):
-
         df = self._test_filter_previous()
 
         if ops == '>':
@@ -162,17 +160,12 @@ class EditService():
 
 
     def filter_date(self, before, after):
-
         df = self._test_filter_previous()
-
         if before and after:
-
             self.filtered_dataframe = df[(df.index < before) & (df.index > after)]
-
 
     # Data Gaps
     def data_gaps(self, value, time_period):
-
         df = self._test_filter_previous()
 
         time_units = {
@@ -201,11 +194,6 @@ class EditService():
 
         # clean up
         del copy_df
-
-
-
-
-
 
 
         # length = len(self._series_points)
@@ -367,10 +355,8 @@ class EditService():
         self._cursor.execute(query)
         self._populate_series()
 
-
         ## update filtered_dataframe
         self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(values)]
-
 
 
     def add_points(self, points):
@@ -394,14 +380,12 @@ class EditService():
             self.filtered_dataframe = None
 
     def interpolate(self):
-
         '''
         In [75]: ser = Series(np.sort(np.random.uniform(size=100)))
         # interpolate at new_index
         In [76]: new_index = ser.index | Index([49.25, 49.5, 49.75, 50.25, 50.5, 50.75])
         In [77]: interp_s = ser.reindex(new_index).interpolate(method='pchip')
         '''
-
 
         filtered_points = self.get_filtered_points()
         query = "UPDATE DataValues SET DataValue = "
@@ -413,7 +397,6 @@ class EditService():
         self._cursor.execute(query)
         self._populate_series()
         #self.filtered_dataframe = None
-
 
         '''tmp_filter_list = self._filter_list
         groups = self.get_selection_groups()
@@ -495,13 +478,13 @@ class EditService():
                 cur_group = []
             else:
                 continue
-
         return groups
 
     def flag(self, qualifier_id):
         filtered_points = self.get_filtered_points()
         query = "UPDATE DataValues SET QualifierID = %s WHERE ValueID = ?" % (qualifier_id)
-        self._cursor.executemany(query, [(str(x[0]),) for x in filtered_points])
+        #self._cursor.executemany(query, [(str(x[0]),) for x in filtered_points])
+        self._cursor.executemany(query, [(str(x),) for x in filtered_points["ValueID"].tolist()])
 
     ###################
     # Save/Restore
@@ -628,7 +611,6 @@ class EditService():
 
     def save_as(self, var=None, method=None, qcl=None):
         """
-
         :param var:
         :param method:
         :param qcl:
@@ -644,7 +626,6 @@ class EditService():
 
     def save_existing(self, var=None, method=None, qcl=None):
         """
-
         :param var:
         :param method:
         :param qcl:
@@ -666,7 +647,6 @@ class EditService():
 
     def create_qualifier(self, code, definition):
         return self.cv_service.create_qualifier(code, definition)
-
 
     def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
                         value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):

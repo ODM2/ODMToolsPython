@@ -180,7 +180,6 @@ class EditTools():
         if self._record:
             self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
             Publisher.sendMessage("scroll")
-
         return ret
 
     def reset_filter(self):

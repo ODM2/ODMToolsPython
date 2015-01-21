@@ -101,7 +101,8 @@ class frmFlagValues(wx.Dialog):
             self.selectedValue = NEW
             wx.CallAfter(self.showNewFields)
         else:
-            self.selectedValue = ''
+            self.selectedValue=choices.keys()[0]
+
 
         self._init_ctrls(parent)
 
@@ -146,20 +147,22 @@ class frmFlagValues(wx.Dialog):
             self.cv_service.create_qualifier(q)
             self.qid = q.id
             self.selectedValue = q.code + '-' + q.description
+
             self.EndModal(wx.ID_OK)
+
 
         else:
             value = self.cbQualif.GetValue()
             if value:
                 self.qid = self.qualchoices[value]
                 self.selectedValue = self.cbQualif.GetValue()
-                self.EndModal(wx.ID_CANCEL)
+                self.EndModal(wx.ID_OK)
 
         event.Skip()
-        #self.Close()
+
 
     def OnBtnCancelButton(self, event):
         event.Skip()
-        self.Close()
+        self.EndModal(wx.ID_CANCEL)
 
 

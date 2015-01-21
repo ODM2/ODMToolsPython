@@ -447,11 +447,12 @@ class mnuRibbon(RB.RibbonBar):
         val = add_flag.ShowModal()
 
         # If user closes dialog box
-        if val == wx.ID_CANCEL:
-            return
+        # if val == wx.ID_CANCEL:
+        #     return
 
-        logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
-        if val == 5101:  #wx.ID_OK:
+
+        if val == wx.ID_OK:
+            logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
             self.parent.getRecordService().flag(add_flag.GetValue())
             # Publisher.sendMessage(("updateValues"), event=event)
         add_flag.Destroy()
