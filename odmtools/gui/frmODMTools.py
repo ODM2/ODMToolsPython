@@ -25,8 +25,9 @@ from odmtools.common import gtk_execute
 from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmservices import ServiceManager
 
-def create(parent):
-    return frmODMToolsMain(parent)
+#def create(parent):
+#    return frmODMToolsMain(parent)
+
 import logging
 from odmtools.common.logger import LoggerTool
 
@@ -35,10 +36,21 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 ###################### Frame ################
 class frmODMToolsMain(wx.Frame):
-    def __init__(self, parent):
+    """
+
+    """
+    def __init__(self, **kwargs):
+        """
+
+        :param kwargs:
+        :return:
+        """
+        self.taskserver = kwargs.pop('taskServer')
+
         size = self._obtainScreenResolution()
-        wx.Frame.__init__(self, name=u'ODMTools', parent=parent,
-                          size=size, style=wx.DEFAULT_FRAME_STYLE, title=u'ODM Tools')
+        kwargs['size'] = size
+
+        wx.Frame.__init__(self, **kwargs)
         self._init_database()
         self._init_ctrls()
         self._init_aui_manager()
@@ -49,7 +61,8 @@ class frmODMToolsMain(wx.Frame):
 
 
     def _obtainScreenResolution(self):
-        """ Calculates the size of ODMTools
+        """ Calculates the size of ODMTools. Prevents ODMTools being larger than the available screen size
+            typically a problem on laptops
 
         :return wx.Size:
         """
