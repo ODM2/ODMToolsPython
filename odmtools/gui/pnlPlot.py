@@ -30,7 +30,8 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class pnlPlot(fnb.FlatNotebook):
-    def __init__(self, parent):
+    def __init__(self, parent, taskserver):
+        self.taskserver = taskserver
         self._init_ctrls(parent)
         self.initPubSub()
         self.parent = parent
@@ -122,7 +123,7 @@ class pnlPlot(fnb.FlatNotebook):
     def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
         if not self._seriesPlotInfo:
-            self._seriesPlotInfo = SeriesPlotInfo(memDB)
+            self._seriesPlotInfo = SeriesPlotInfo(memDB, self.taskserver)
 
         self.editID = seriesID
         self._seriesPlotInfo.setEditSeries(self.editID)
@@ -131,7 +132,7 @@ class pnlPlot(fnb.FlatNotebook):
 
     def addPlot(self, memDB, seriesID):
         if not self._seriesPlotInfo:
-            self._seriesPlotInfo = SeriesPlotInfo(memDB)
+            self._seriesPlotInfo = SeriesPlotInfo(memDB, self.taskserver)
         self._seriesPlotInfo.update(seriesID, True)
 
         self.redrawPlots()

@@ -2,7 +2,6 @@
 import datetime
 import math
 import wx
-import multiprocessing as mp
 import numpy
 from pandas import DataFrame
 
@@ -65,10 +64,11 @@ class OneSeriesPlotInfo(object):
 class SeriesPlotInfo(object):
     # self._siteDisplayColumn = ""
 
-    def __init__(self, memDB):
+    def __init__(self, memDB, taskserver):
 
         # memDB is a connection to the memory_database
         self.memDB = memDB
+        self.taskserver = taskserver
         self._seriesInfos = {}
         self.editID = None
         self.colorList = ['blue', 'green', 'cyan', 'orange', 'purple', 'saddlebrown', 'magenta', 'teal', 'red']
@@ -191,6 +191,15 @@ class SeriesPlotInfo(object):
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
 
+            results = None
+            while True:
+                if not self.taskserver.anyAlive():
+                    results = self.taskserver.getCompletedTasks()
+                    break
+
+            self._seriesInfos[key].Probability = results['Probability']
+            self._seriesInfos[key].Statistics = results['Summary']
+            self._seriesInfos[key].BoxWhisker = results['BoxWhisker']
 
     # def Update(self):
     # for key, value in enumerate(self._seriesInfos):
@@ -304,7 +313,12 @@ class SeriesPlotInfo(object):
 
         #Tests to see if any values were returned for the given daterange
 
-        # plots
+        # construct tasks for the task server
+        tasks = [("Probability", seriesInfo), ("BoxWhisker", seriesInfo), ("Summary", seriesInfo)]
+
+        self.taskserver.setTasks(tasks)
+        self.taskserver.processTasks()
+
         self.build(seriesInfo)
 
         i = len(self._seriesInfos)

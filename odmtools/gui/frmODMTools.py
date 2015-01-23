@@ -125,7 +125,7 @@ class frmODMToolsMain(wx.Frame):
 
         ############# Graph ###############
         logger.debug("Loading Plot ...")
-        self.pnlPlot = pnlPlot.pnlPlot(self.pnlDocking)
+        self.pnlPlot = pnlPlot.pnlPlot(self.pnlDocking, self.taskserver)
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
