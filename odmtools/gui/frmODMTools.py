@@ -15,6 +15,7 @@ import pnlDataTable
 import wx.lib.agw.aui as aui
 import wx.py.crust
 import wx.stc
+import logging
 from wx.lib.pubsub import pub as Publisher
 from pnlScript import pnlScript
 from odmtools.controller import frmDBConfig
@@ -24,17 +25,11 @@ from odmtools.gui.frmConsole import ODMToolsConsole
 from odmtools.common import gtk_execute
 from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmservices import ServiceManager
-
-#def create(parent):
-#    return frmODMToolsMain(parent)
-
-import logging
 from odmtools.common.logger import LoggerTool
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
-###################### Frame ################
 class frmODMToolsMain(wx.Frame):
     """
 
@@ -42,15 +37,16 @@ class frmODMToolsMain(wx.Frame):
     def __init__(self, **kwargs):
         """
 
-        :param kwargs:
-        :return:
         """
+
         self.taskserver = kwargs.pop('taskServer')
 
+        # Determine the optimal size of the screen resolution
         size = self._obtainScreenResolution()
         kwargs['size'] = size
 
         wx.Frame.__init__(self, **kwargs)
+
         self._init_database()
         self._init_ctrls()
         self._init_aui_manager()

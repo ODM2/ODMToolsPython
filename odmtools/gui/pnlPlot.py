@@ -95,11 +95,6 @@ class pnlPlot(fnb.FlatNotebook):
     def onDateChanged(self, startDate, endDate):
         self._seriesPlotInfo.updateDateRange(startDate, endDate)
         self.redrawPlots()
-        # self.pltTS.onDateChanged(startDate, endDate)
-
-
-        #   def onDateChanged(self, startDate, endDate):
-        #       self.pltTS.onDateChanged(startDate, endDate)
 
     def onDateFull(self):
         self._seriesPlotInfo.updateDateRange()
@@ -142,12 +137,8 @@ class pnlPlot(fnb.FlatNotebook):
         self.redrawPlots()
 
     def onRemovePlot(self, seriesID):
-
-        # self.selectedSerieslist.remove(seriesID)
-        #tempseries= self._seriesPlotInfo.getSeries(seriesID)
         self._seriesPlotInfo.update(seriesID, False)
         self.redrawPlots()
-        #self.clear()
 
     def redrawPlots(self):
 
@@ -165,9 +156,7 @@ class pnlPlot(fnb.FlatNotebook):
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart=currStart, currEnd=currEnd)
 
 
-    #     self.PlotGraph()
     def selectPlot(self, value):
-        #select the corresponding page of the notebook
         self.SetSelection(value)
 
     def getActivePlotID(self):

@@ -303,6 +303,8 @@ class SeriesPlotInfo(object):
 
 
         #Tests to see if any values were returned for the given daterange
+
+        # plots
         self.build(seriesInfo)
 
         i = len(self._seriesInfos)

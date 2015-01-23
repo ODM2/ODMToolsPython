@@ -61,16 +61,27 @@ class TaskServerMP:
 
         self.numprocesses = numproc
 
-        self.Processes = []
         self.keepgoing = True
 
         # Initialize Dispatcher
         self.dispatcher = Dispatcher()
 
+        # List of running processes
+        self.Processes = []
+
+        # List of tasks to be run
+        self.Tasks = []
+
         for n in range(self.numprocesses):
             process = Process(target=TaskServerMP.worker, args=(self.dispatcher,))
             process.start()
             self.Processes.append(process)
+
+    def setTasks(self, taskList):
+        """
+        Sets the tasks for the TaskServerMP to handle.
+        """
+        self.Tasks = taskList
 
     def processTasks(self, resfunc=None):
         """
