@@ -10,6 +10,9 @@ from wx.lib.pubsub import pub as Publisher
 from odmtools.controller.frmAddPoints import AddPoints
 
 from odmtools.controller.frmDataFilters import frmDataFilter
+from odmtools.controller.frmAggFunction import frmAggregate
+from odmtools.controller.frmEquation import frmEquation
+
 from frmChangeValue import frmChangeValue
 from frmFlagValues import frmFlagValues
 from frmLinearDrift import frmLinearDrift
@@ -35,9 +38,8 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
  wxID_RIBBONEDITSCRIPTSAVE, wxID_RIBBONVIEWPLOT, wxID_RIBBONVIEWTABLE, wxID_RIBBONVIEWSERIES, wxID_RIBBONVIEWCONSOLE,
  wxID_RIBBONVIEWSCRIPT, wxID_RIBBONPLOTBLANKBTN, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE, wxID_FRAME1SPINCTRL1,
  wxID_RIBBONEDITFILTER, wxID_RIBBONEDITRECORD, wxID_RIBBONEDITLINFILTER, wxID_RIBBONPLOTDATEAPPLY,
- wxID_RIBBONEDITRESETFILTER, wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDSAVE] = [wx.NewId() for
-                                                                                                      _init_ctrls in
-                                                                                                      range(46)]
+ wxID_RIBBONEDITRESETFILTER, wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDSAVE,
+ wxID_RIBBONEDITAGG, wxID_RIBBONEDITEQ] = [wx.NewId() for _init_ctrls in range(48)]
 
 ## #################################
 ## Build Menu and Toolbar 
@@ -165,6 +167,14 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.EnableButton(wxID_RIBBONEDITDELPOINT, False)
         #self.edit_bar.EnableButton(wxID_RIBBONEDITRECORD, False)
 
+
+        transform_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Transform Functions", wx.NullBitmap, wx.DefaultPosition,
+		                                    wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
+        self.transform_bar = RB.RibbonButtonBar(transform_panel)
+        self.transform_bar.AddSimpleButton(wxID_RIBBONEDITAGG, "Aggregate", interpolate.GetBitmap(), "")
+        self.transform_bar.AddSimpleButton(wxID_RIBBONEDITEQ, "Equation", interpolate.GetBitmap(), "")
+        
+        
         self.record_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Recording Options", wx.NullBitmap, wx.DefaultPosition,
                                            wx.DefaultSize, RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
 
@@ -250,6 +260,9 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditFlag, id=wxID_RIBBONEDITFLAG)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditAddPoint, id=wxID_RIBBONEDITADDPOINT)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditDelPoint, id=wxID_RIBBONEDITDELPOINT)
+
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onAggregate, id=wxID_RIBBONEDITAGG)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEquation, id=wxID_RIBBONEDITEQ)
 
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecord, id=wxID_RIBBONEDITRECORD)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordNew, id=wxID_RIBBONRECORDNEW)
@@ -346,6 +359,18 @@ class mnuRibbon(RB.RibbonBar):
         lin_drift = frmLinearDrift(self, self.parent.getRecordService())
         lin_drift.ShowModal()
         lin_drift.Destroy()
+        event.Skip()
+
+    def onEquation(self, event):
+        equation_function = frmEquation(self, None)
+        equation_function.ShowModal()
+        equation_function.Destroy()
+        event.Skip()
+
+    def onAggregate(self, event):
+        agg_function = frmAggregate(self, None)
+        agg_function.ShowModal()
+        agg_function.Destroy()
         event.Skip()
 
     def onRecord(self, event):
