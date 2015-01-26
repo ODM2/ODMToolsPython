@@ -424,15 +424,26 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditInterpolate(self, event):
-        logger.debug("Interpolate!")
 
-        numPoints = len(self.parent.getRecordService().get_filtered_points())
-        val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % numPoints,
-                            'Interpolation', wx.YES_NO | wx.ICON_QUESTION)
-        if val == 2:  #wx.ID_YES:
-            self.parent.getRecordService().interpolate()
 
-        self.redrawPlotTable()
+        dataframe = self.parent.getRecordService().get_filtered_points()
+        if isinstance(dataframe, pd.DataFrame):
+            if not dataframe.empty:
+                val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % len(dataframe),
+                                'Interpolation', wx.YES_NO | wx.ICON_QUESTION)
+                if val == 2:  #wx.ID_YES:
+                    self.parent.getRecordService().interpolate()
+
+                self.redrawPlotTable()
+            else:
+                val = wx.MessageBox("You have no points selected, Please select points before interpolating." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+        else:
+            if not dataframe:
+                val = wx.MessageBox("You have no points selected, Please select points before interpolating." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+
+
 
         event.Skip()
 

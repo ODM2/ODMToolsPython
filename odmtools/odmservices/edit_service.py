@@ -358,48 +358,24 @@ class EditService():
         In [77]: interp_s = ser.reindex(new_index).interpolate(method='pchip')
         '''
 
-        filtered_points = self.get_filtered_points()
-        query = "UPDATE DataValues SET DataValue = "
+
+        tmp_filter_list =self.get_filtered_points()
+        df = self._series_points_df
 
 
-        values = filtered_points['ValueID'].tolist()
-        result = ','.join(map(str, values))
-        query += "WHERE ValueID IN (%s)" % result
-        self._cursor.execute(query)
-        self._populate_series()
-        #self.filtered_dataframe = None
+        for x in tmp_filter_list.index:
+            df.loc[x, "DataValue"]=np.nan
+        df.interpolate(method = "time", inplace=True)
+        tmp_filter_list=df[df.index.isin(tmp_filter_list.index)]
 
-        '''tmp_filter_list = self._filter_list
-        groups = self.get_selection_groups()
-
-        for group in groups:
-            # determine first and last point for the interpolation
-            first_index = group[0] - 1
-            last_index = group[-1] + 1
-            # ignore this group (which is actually the whole set)
-            # if it includes the first or last point of the series
-            if first_index <= 0 or last_index == len(self._series_points):
-                continue
-
-            first_point = self._series_points[first_index]
-            last_point = self._series_points[last_index]
-            a = 0
-            c = (last_point[2] - first_point[2]).total_seconds()
-            f_a = first_point[1]
-            f_c = last_point[1]
-            update_list = []
-            for i in group:
-                b = (self._series_points[i][2] - first_point[2]).total_seconds()
-                # linear interpolation formula: f(b) = f(a) + ((b-a)/(c-a))*(f(c) - f(a))
-                new_val = f_a + ((b - a) / (c - a)) * (f_c - f_a)
-                point_id = self._series_points[i][0]
-                update_list.append((new_val, point_id))
-            query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-            self._cursor.executemany(query, update_list)
+        update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+        query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
+        self._cursor.executemany(query, update_list)
 
         self._populate_series()
-        self._filter_list = tmp_filter_list
-        '''
+        values = tmp_filter_list['ValueID'].tolist()
+        self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(values)]
+
 
     def drift_correction(self, gap_width):
         tmp_filter_list = self._filter_list
@@ -431,25 +407,7 @@ class EditService():
         else:
             return False
 
-    def get_selection_groups(self):
-        length = len(self._series_points)
-        found_group = False
-        groups = []
-        cur_group = []
-        for i in range(length):
-            if self._filter_list[i]:
-                if not found_group:
-                    found_group = True
-                cur_group.append(i)  # Append the actual index to the point
-                if i == length - 1:
-                    groups.append(cur_group)
-            elif not self._filter_list[i] and found_group:
-                found_group = False
-                groups.append(cur_group)
-                cur_group = []
-            else:
-                continue
-        return groups
+
 
     def flag(self, qualifier_id):
         filtered_points = self.get_filtered_points()

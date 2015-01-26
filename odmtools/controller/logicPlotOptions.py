@@ -564,6 +564,7 @@ class Probability(object):
         self.xAxis = PrbExc
         self.yAxis = data['DataValue']
 
+
 def numToMonth(date):
     date = int(date)
     return {
