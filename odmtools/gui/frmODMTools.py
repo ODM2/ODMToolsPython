@@ -462,6 +462,14 @@ class frmODMToolsMain(wx.Frame):
             print "error saving docking data"
         self._mgr.UnInit()
 
+        
+        # Shut down processes running in background
+        if self.taskserver.numprocesses > 0 and self.taskserver.anyAlive:
+            busy = wx.BusyInfo("Waiting for processes to terminate...")
+
+            # Terminate the processes
+            self.taskserver.processTerm()
+
         # IMPORTANT! if wx.TaskBarIcons exist, it will keep mainloop running
 
         windowsRemaining = len(wx.GetTopLevelWindows())

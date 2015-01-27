@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue
+import time
 from controller.logicPlotOptions import SeriesPlotInfo, Probability, BoxWhisker, Statistics
 
 __author__ = 'jmeline'
@@ -104,6 +105,18 @@ class TaskServerMP:
         for n in range(self.numprocesses):
             isalive = (isalive or self.Processes[n].is_alive())
         return isalive
+
+    def processTerm(self):
+        """
+        Stop the execution of tasks by the processes.
+        """
+        for n in range(self.numprocesses):
+            # Terminate any running processes
+            self.Processes[n].terminate()
+
+        # Wait for all processes to stop
+        while (self.anyAlive()):
+            time.sleep(0.5)
 
 
     def worker(cls, dispatcher):
