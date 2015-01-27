@@ -99,7 +99,6 @@ The other buttons on the Add Point form are described here:
 
 ![FormatGuide](images/FormatGuide.png)
 
-
 ##Restoring Data Series##
 
 Because ODM Tools Python holds edits in memory until the user commits them to the database, the original data values can be restored at any time during the edit session prior to saving edits. To restore the data series to the original values, click the 'Restore Series' button in the ribbon. This will restore all edits that have not been committed to the database. The functionality to 'undo' individual editing steps is not implemented as a built-in function of ODM Tools Python, but it can be performed by using the Python Script (i.e., the data series are restored to original values, and the desired steps recorded in the script are run). 
