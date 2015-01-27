@@ -190,13 +190,7 @@ class SeriesPlotInfo(object):
             # # add dictionary entry with no data
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
-
-            results = None
-            while True:
-                if not self.taskserver.anyAlive():
-                    results = self.taskserver.getCompletedTasks()
-                    break
-
+            results = self.taskserver.getCompletedTasks()
             self._seriesInfos[key].Probability = results['Probability']
             self._seriesInfos[key].Statistics = results['Summary']
             self._seriesInfos[key].BoxWhisker = results['BoxWhisker']
@@ -314,12 +308,14 @@ class SeriesPlotInfo(object):
         #Tests to see if any values were returned for the given daterange
 
         # construct tasks for the task server
-        tasks = [("Probability", seriesInfo), ("BoxWhisker", seriesInfo), ("Summary", seriesInfo)]
+        tasks = [("Probability", seriesInfo.filteredData),
+                 ("BoxWhisker", (seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)),
+                 ("Summary", seriesInfo.filteredData)]
 
         self.taskserver.setTasks(tasks)
         self.taskserver.processTasks()
 
-        self.build(seriesInfo)
+        #self.build(seriesInfo)
 
         i = len(self._seriesInfos)
         if self.editID == seriesInfo.seriesID:

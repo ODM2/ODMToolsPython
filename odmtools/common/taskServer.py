@@ -69,28 +69,25 @@ class TaskServerMP:
         Start the execution of tasks by the processes.
         """
 
-        self.keepgoing = True
-
-        # determine which tasks to run
-
-        self.j = -1
-        self.i = 0
-
-        # while there are tasks that still need to be completed
-        while self.j < self.i:
-            if self.keepgoing and self.i < self.numtasks:
-                self.dispatcher.putTask(self.tasks[self.i])
-                self.i += 1
-
+        for i in self.tasks:
+            self.dispatcher.putTask(i)
             self.getOutput()
 
     def getOutput(self):
         """
         Collect completed tasks
         """
-        self.j += 1
+
+        print "Trying to get something..."
+
         output = self.dispatcher.getResult()
+
+        print "Got %s, %s" % output
+
         self.completedTasks[output[0]] = output[1]
+
+        self.j += 1
+
 
     def getCompletedTasks(self):
         """
@@ -114,6 +111,7 @@ class TaskServerMP:
         The worker creates a TaskProcessor Object
         :return:
         """
+
         while True:
             arg = dispatcher.getTask()
 
@@ -123,14 +121,17 @@ class TaskServerMP:
             task = arg[1]
 
             if task_type == "Probability":
-                result = Probability(task.filteredData)
+                result = Probability(task)
             if task_type == "BoxWhisker":
-                result = BoxWhisker(task.filteredData, task.boxWhiskerMethod)
+                result = BoxWhisker(task[0], task[1])
             if task_type == "Summary":
-                result = Statistics(task.filteredData)
+                result = Statistics(task)
+
+            result = (task_type, result)
 
             # save the result
-            dispatcher.putResult((task_type, result))
+            dispatcher.putResult(result)
+
 
     # The multiprocessing worker must not require any existing object for execution
     worker = classmethod(worker)
