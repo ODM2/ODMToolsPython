@@ -344,10 +344,23 @@ class mnuRibbon(RB.RibbonBar):
 
 
     def onLineDrift(self, event):
+        dataframe = self.parent.getRecordService().get_filtered_points()
+        if isinstance(dataframe, pd.DataFrame):
+            if dataframe.empty:
+                val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+        else:
+            if not dataframe:
+                val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+
         lin_drift = frmLinearDrift(self, self.parent.getRecordService())
         lin_drift.ShowModal()
         lin_drift.Destroy()
         event.Skip()
+
+
+
 
     def onRecord(self, event):
 
