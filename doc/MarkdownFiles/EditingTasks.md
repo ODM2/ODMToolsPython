@@ -69,6 +69,7 @@ When data values are questionable or when an edit has been performed on data val
 To apply a flag, select the points of interest based on the methods in the Selecting Points or Filtering Points sections. If points have already been selected for an editing action, they will remain selected and a qualifier can be applied. Click the 'Flag' button in the ribbon. A dialog box will appear prompting selection of a qualifier from a dropdown. If the desired qualifier is not present in the database, 'Create New...' can be selected and a code and descriptor created in the following dialog box. The new qualifier will be applied to the selected points.
 
 ![Qualifier](images/Qualifier.png)
+
 ![QualifierCreate](images/QualifierCreate.png)
 
 ##Inserting Data Values##
@@ -76,6 +77,7 @@ To apply a flag, select the points of interest based on the methods in the Selec
 ODM Tools Python includes the ability to insert values into data series. This may be necessary when an aquatic sensor is out of the water for a calibration or a when datalogger malfunctions and a measurement at the typical time is missed. To add a data value, click on the 'Add Point' button in the ribbon. A form appears. The fields in this form correspond to fields in the DataValues table in the ODM database. Required fields (DataValue, Date, Time, UTCOffset, CensorCode) are indicated with a star. Fields with controlled vocabularies use dropdowns with available options (OffsetType, CensorCode, QualifierCode). Site, variable, method, source, and quality control information are not shown as they remain consistent with the other values in the data series. Note that the QualifierCode dropdown includes the ability to add a new qualifier to the database, shown below.
 
 ![AddPoint](images/AddPoint.png)
+
 ![NewQualifier](images/NewQualifier.png)
 
 Points are added in one of two ways, either individual rows or a bulk upload. To add individual rows, click on the 'Add Row' button. This adds a row to the form for which the value and metadata are populated and can be changed as needed, shown below.
