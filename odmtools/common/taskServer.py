@@ -17,7 +17,6 @@ class TaskServerMP:
 
         self.numprocesses = numproc
 
-
         self.keepgoing = True
 
         # Initialize Dispatcher
@@ -38,7 +37,6 @@ class TaskServerMP:
 
         self.completedTasks = {}
 
-
         # initialize task id
         self.taskId = None
 
@@ -47,23 +45,12 @@ class TaskServerMP:
             process.start()
             self.Processes.append(process)
 
-    def setTaskType(self, taskId):
-        """
-        Sets the task ID to determine which type of tasks to run
-        """
-        self.taskId = taskId
-
     def setTasks(self, taskList):
         """
         Sets the tasks for the TaskServerMP to handle.
         """
         self.tasks = taskList
         self.numtasks = len(taskList)
-
-        # reset counters
-        self.i = 0
-        self.j = 0
-
 
     def processTasks(self, resfunc=None):
         """
@@ -72,6 +59,8 @@ class TaskServerMP:
 
         for i in self.tasks:
             self.dispatcher.putTask(i)
+
+        for _ in range(len(self.tasks)):
             self.getOutput()
 
     def getOutput(self):
@@ -86,9 +75,6 @@ class TaskServerMP:
         print "Got %s, %s" % output
 
         self.completedTasks[output[0]] = output[1]
-
-        self.j += 1
-
 
     def getCompletedTasks(self):
         """
