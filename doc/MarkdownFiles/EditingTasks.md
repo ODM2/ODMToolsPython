@@ -68,7 +68,7 @@ When data values are questionable or when an edit has been performed on data val
 
 To apply a flag, select the points of interest based on the methods in the Selecting Points or Filtering Points sections. If points have already been selected for an editing action, they will remain selected and a qualifier can be applied. Click the 'Flag' button in the ribbon. A dialog box will appear prompting selection of a qualifier from a dropdown. If the desired qualifier is not present in the database, 'Create New...' can be selected and a code and descriptor created in the following dialog box. The new qualifier will be applied to the selected points.
 
-![Qualifier](images/Qualifier.png)
+![Qualifier](images/Qualifier.png)  
 
 ![QualifierCreate](images/QualifierCreate.png)
 
@@ -76,7 +76,7 @@ To apply a flag, select the points of interest based on the methods in the Selec
 
 ODM Tools Python includes the ability to insert values into data series. This may be necessary when an aquatic sensor is out of the water for a calibration or a when datalogger malfunctions and a measurement at the typical time is missed. To add a data value, click on the 'Add Point' button in the ribbon. A form appears. The fields in this form correspond to fields in the DataValues table in the ODM database. Required fields (DataValue, Date, Time, UTCOffset, CensorCode) are indicated with a star. Fields with controlled vocabularies use dropdowns with available options (OffsetType, CensorCode, QualifierCode). Site, variable, method, source, and quality control information are not shown as they remain consistent with the other values in the data series. Note that the QualifierCode dropdown includes the ability to add a new qualifier to the database, shown below.
 
-![AddPoint](images/AddPoint.png)
+![AddPoint](images/AddPoint.png)  
 
 ![NewQualifier](images/NewQualifier.png)
 
@@ -90,7 +90,8 @@ Points are added in one of two ways, either individual rows or a bulk upload. To
 
 The template, shown below, provides a first line of field names, which the upload function expects as a header. It also gives the expected data type and format as well as an example. Note that spreadsheet programs may automatically re-format the date entry, but it needs to have a YYYY-MM-DD for upload. After populating the template with the specific date, times, and values for the data series, it can then be uploaded to the Add Point form as shown below.
 
-![Template](images/Template.png)
+![Template](images/Template.png)  
+
 ![AddPointBulkUpload](images/AddPointBulkUpload.png)
 
 The other buttons on the Add Point form are described here:
