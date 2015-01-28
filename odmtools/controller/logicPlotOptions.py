@@ -321,11 +321,24 @@ class SeriesPlotInfo(object):
 
     def build(self, seriesInfo):
 
-        logger.debug("Starting tasks")
-
+        logger.debug("Starting Probability")
+        start_time = timeit.default_timer()
         seriesInfo.Probability = Probability(seriesInfo.filteredData)
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("Finished Probability in: %s Seconds" % elapsed)
+
+        logger.debug("Starting Statistics")
+        start_time = timeit.default_timer()
         seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("Finished Statistics in: %s Seconds" % elapsed)
+
+        logger.debug("Starting BoxWhisker")
+        start_time = timeit.default_timer()
         seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("Finished BoxWhisker in: %s Seconds" % elapsed)
+
 
 
     def updateDateRange(self, startDate=None, endDate=None):
