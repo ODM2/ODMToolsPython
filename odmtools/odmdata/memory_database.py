@@ -1,7 +1,11 @@
 
 import sqlite3
 import pandas as pd
+import logging
+from odmtools.common.logger import LoggerTool
 
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class MemoryDatabase(object):
 ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
 
@@ -112,7 +116,9 @@ class MemoryDatabase(object):
 
     def initEditValues(self, seriesID):
         if not self.editLoaded:
+            logger.debug("Load series from db")
             series = self.series_service.get_series_by_id(seriesID)
+            logger.debug("Load series into memory db ")
             self.DataValues = [(dv.id, dv.data_value, dv.value_accuracy, dv.local_date_time, dv.utc_offset, dv.date_time_utc,
                 dv.site_id, dv.variable_id, dv.offset_value, dv.offset_type_id, dv.censor_code,
                 dv.qualifier_id, dv.method_id, dv.source_id, dv.sample_id, dv.derived_from_id,
@@ -120,6 +126,7 @@ class MemoryDatabase(object):
 
             self.cursor.executemany("INSERT INTO DataValues VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", self.DataValues)
             self.conn.commit()
+            logger.debug("done loading")
             self.editLoaded = True
 
 

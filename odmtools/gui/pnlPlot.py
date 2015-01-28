@@ -155,7 +155,7 @@ class pnlPlot(fnb.FlatNotebook):
         self.pltProb.Plot(self._seriesPlotInfo)
 
         self.pltHist.Plot(self._seriesPlotInfo)
-        self.pltBox.Plot(self._seriesPlotInfo)
+        #self.pltBox.Plot(self._seriesPlotInfo)
 
         self.pltTS.Plot(self._seriesPlotInfo)
 

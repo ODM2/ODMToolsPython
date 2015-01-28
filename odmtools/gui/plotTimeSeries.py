@@ -177,8 +177,6 @@ class plotTimeSeries(wx.Panel):
 
     def lassoChangeSelection(self, filtered_datetime):
         self.parent.record_service.select_points(dataframe=filtered_datetime)
-        #self.changePlotSelection(filtered_datetime)
-        #Publisher.sendMessage("changeTableSelection",  datetime_list=filtered_datetime)
 
 
     def onShowLegend(self, isVisible):

@@ -364,7 +364,7 @@ class SeriesPlotInfo(object):
 
         seriesInfo.Probability = Probability(seriesInfo.filteredData)
         seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
-        seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
+        #seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
 
 
     def updateDateRange(self, startDate=None, endDate=None):
