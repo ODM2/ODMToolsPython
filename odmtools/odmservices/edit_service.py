@@ -361,12 +361,13 @@ class EditService():
 
         tmp_filter_list =self.get_filtered_points()
         df = self._series_points_df
+        issel = df.index.isin(tmp_filter_list.index)
 
-
-        for x in tmp_filter_list.index:
-            df.loc[x, "DataValue"]=np.nan
-        df.interpolate(method = "time", inplace=True)
-        tmp_filter_list=df[df.index.isin(tmp_filter_list.index)]
+        #for x in tmp_filter_list.index:
+        #    df.loc[x, "DataValue"]=np.nan
+        mdf = df["DataValue"].mask(issel)
+        mdf.interpolate(method = "time", inplace=True)
+        tmp_filter_list=mdf[issel]
 
         update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
         query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
@@ -407,6 +408,25 @@ class EditService():
         else:
             return False
 
+    def isOneGroup(self):
+
+        issel = self._series_points_df.index.isin(self.get_filtered_points().index)
+
+        found_group = False
+        count = 0
+
+        for x in issel:
+            if x:
+                if not found_group:
+                    found_group=True
+                    count =count+1
+            else:
+                found_group = False
+
+            if count >1:
+                return False
+        if count == 1:
+            return True
 
 
     def flag(self, qualifier_id):
