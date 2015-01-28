@@ -2,9 +2,9 @@
 import datetime
 import math
 import wx
-import multiprocessing as mp
 import numpy
-from pandas import DataFrame
+import pandas as pd
+from scipy import stats
 
 import logging
 from odmtools.common.logger import LoggerTool
@@ -133,7 +133,7 @@ class SeriesPlotInfo(object):
         else:
             ## Pandas DataFrame
             #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
             data.set_index(data['LocalDateTime'], inplace=True)
             self._seriesInfos[self.editID].dataTable = data
 
@@ -145,7 +145,7 @@ class SeriesPlotInfo(object):
     def updateEditSeries(self):
         if self.editID in self._seriesInfos:
             # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
             data.set_index(data['LocalDateTime'], inplace=True)
             self._seriesInfos[self.editID].dataTable = data
 
@@ -160,7 +160,7 @@ class SeriesPlotInfo(object):
                                                  self._seriesInfos[self.editID].endDate)
             '''
 
-            data = DataFrame(
+            data = pd.DataFrame(
                 self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
                                                  self._seriesInfos[self.editID].startDate,
                                                  self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
@@ -248,11 +248,11 @@ class SeriesPlotInfo(object):
         noDataValue = series.variable.no_data_value
         if self.editID == seriesID:
             #d= DataFrame(pandas.read_sql())
-            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
 
         else:
             # using current variable keeps the series subsetted
-            data = DataFrame(
+            data = pd.DataFrame(
                 self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
                 columns=self.memDB.columns)
 
@@ -323,47 +323,6 @@ class SeriesPlotInfo(object):
 
         logger.debug("Starting tasks")
 
-        """
-        result = mp.Queue()
-
-        def _runProbability(seriesInfo, result):
-            logger.debug("Starting Probability %s" % seriesInfo.seriesID)
-            prob = Probability(seriesInfo.filteredData)
-            result.put(prob)
-            logger.debug("Finishing Probability %s" % seriesInfo.seriesID)
-
-        def _runStatistics(seriesInfo, result):
-            logger.debug("Starting Statistics %s" % seriesInfo.seriesID)
-            stats = Statistics(seriesInfo.filteredData)
-            result.put(stats)
-            logger.debug("Finishing Statistics %s" % seriesInfo.seriesID)
-
-        def _runBoxWhisker(seriesInfo, result):
-            logger.debug("Starting BoxWhisker %s" % seriesInfo.seriesID)
-            boxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
-            result.put(boxWhisker)
-            logger.debug("Finishing BoxWhisker %s" % seriesInfo.seriesID)
-
-        probability = None
-        statistics = None
-        boxWhisker = None
-
-        tasklist = [mp.Process(target=_runProbability, args=(seriesInfo, result, )),
-                    mp.Process(target=_runStatistics, args=(seriesInfo, result, )),
-                    mp.Process(target=_runBoxWhisker, args=(seriesInfo, result, ))]
-
-        for task in tasklist:
-            task.start()
-
-        for task in tasklist:
-            task.join()
-
-        seriesInfo.Probability = probability
-        seriesInfo.Statistics = statistics
-        seriesInfo.BoxWhisker = boxWhisker
-        logger.debug("Finished Tasks")
-        """
-
         seriesInfo.Probability = Probability(seriesInfo.filteredData)
         seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
         seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
@@ -432,105 +391,98 @@ class BoxWhisker(object):
 
         self.intervals = {}
         self.method = method
-        mean = []
-        median = []
-        confint = []
-        conflimit = []
 
-        from scipy import stats
+        interval_types = ["Overall", "Year", "Month", "Season"]
+        intervals = ["Overall", "Year", "Month", "Season"]
 
-        # for x in dataTable:
-        # print x, x[3]
-
-        start_time = timeit.default_timer()
-
-        mean.append(data.mean())
-        median.append(data.median())
-        ci = stats.norm.interval(.95, data.mean(), scale=10 * (data.std() / math.sqrt(len(data))))
-        confint.append((ci[0][0], ci[1][0]))
-        cl = stats.norm.interval(.95, data.median(), scale=(data.std() / math.sqrt(len(data))))
-        conflimit.append((cl[0][0], cl[1][0]))
-
-        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", None, [], [median, conflimit, mean, confint])
-
-        elapsed = timeit.default_timer() - start_time
-        logger.debug("elapsed time for Overall: %s" % elapsed)
-
-
-        start_time = timeit.default_timer()
-
-        mean = []
-        median = []
-        confint = []
-        conflimit = []
-        names = []
-
-
-        y = data.groupby("Year")
-        for name, group in y:
-            names.append(name)
-            mean.append(group.mean())
-            median.append(group.median())
-            ci = stats.norm.interval(.95, data.mean(), scale=10 * (data.std() / math.sqrt(len(data))))
-            confint.append((ci[0][0], ci[1][0]))
-            cl = stats.norm.interval(.95, data.median(), scale=(data.std() / math.sqrt(len(data))))
-            conflimit.append((cl[0][0], cl[1][0]))
-
-        # return medians, conflimit, means, confint
-        self.intervals["Year"] = BoxWhiskerPlotInfo("Year", "Year", names, [median, conflimit, mean, confint])
-
-        elapsed = timeit.default_timer() - start_time
-        logger.debug("elapsed time for Year: %s" % elapsed)
-
-
-        start_time = timeit.default_timer()
-
-        mean = []
-        median = []
-        confint = []
-        conflimit = []
-        names = []
-        m = data.groupby("Month")
-        for name, group in m:
-            names.append(name)
-            mean.append(group.mean())
-            median.append(group.median())
-            ci = stats.norm.interval(.95, group.mean(), scale=10 * (group.std() / math.sqrt(len(group))))
-            confint.append((ci[0][0], ci[1][0]))
-            cl = stats.norm.interval(.95, group.median(), scale=(group.std() / math.sqrt(len(group))))
-            conflimit.append((cl[0][0], cl[1][0]))
-
-        self.intervals["Month"] = BoxWhiskerPlotInfo("Month", "Month", [numToMonth(x) for x in names],
-                                                     [median, conflimit, mean, confint])
-        elapsed = timeit.default_timer() - start_time
-        logger.debug("elapsed time for Month: %s" % elapsed)
-
-
-        start_time = timeit.default_timer()
-
-        mean = []
-        median = []
-        confint = []
-        conflimit = []
-        names = []
-        m = data.groupby("Season")
-
-        for name, group in m:
-            names.append(name)
-            mean.append(group.mean())
-            median.append(group.median())
-            ci = stats.norm.interval(.95, group.mean(), scale=10 * (group.std() / math.sqrt(len(group))))
-            confint.append((ci[0][0], ci[1][0]))
-            cl = stats.norm.interval(.95, group.median(), scale=(group.std() / math.sqrt(len(group))))
-            conflimit.append((cl[0][0], cl[1][0]))
-
-        self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season", [numToSeason(x) for x in names],
-                                                      [median, conflimit, mean, confint])
-        elapsed = timeit.default_timer() - start_time
-        logger.debug("elapsed time for Season: %s" % elapsed)
+        interval_options = zip(interval_types, intervals)
+        for interval_type, interval in interval_options:
+            start_time = timeit.default_timer()
+            if interval_type == "Overall":
+                interval = data
+            else:
+                interval = data.groupby(interval_type)
+            self.calculateBoxWhiskerData(interval, interval_type)
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for %s: %s" % (interval_type, elapsed))
 
         self.currinterval = self.intervals[self.method]
 
+    def calculateBoxWhiskerData(self, interval, interval_type):
+        """
+
+        :param interval:
+        :return:
+        """
+
+        results = self.calculateIntervalsOnGroups(interval)
+
+        if interval_type == "Season" or interval_type == "Month":
+            func = None
+            if interval_type == "Season":
+                func = numToSeason
+            elif interval_type == "Month":
+                func = numToMonth
+
+            self.intervals[interval_type] = BoxWhiskerPlotInfo(
+                interval_type, interval_type, [func(x) for x in results["names"]],
+                [results["median"], results["conflimit"], results["mean"], results["confint"]])
+
+        elif interval_type == "Overall":
+            self.intervals[interval_type] = BoxWhiskerPlotInfo(
+                interval_type, None, [],
+                [results["median"], results["conflimit"], results["mean"], results["confint"]])
+
+        else:
+            self.intervals[interval_type] = BoxWhiskerPlotInfo(
+                interval_type, interval_type, results["names"],
+                [results["median"], results["conflimit"], results["mean"], results["confint"]])
+
+
+    def calculateIntervalsOnGroups(self, interval):
+
+        mean = []
+        median = []
+        confint = []
+        conflimit = []
+        names = []
+
+        if isinstance(interval, pd.core.groupby.DataFrameGroupBy):
+            for name, group in interval:
+                group_mean = group.mean()
+                group_median = group.median()
+                group_std = group.std()
+                group_sqrt = math.sqrt(len(group))
+                group_deviation = group_std / group_sqrt
+                ci = stats.norm.interval(.95, group_mean, scale=10*group_deviation)
+                cl = stats.norm.interval(.95, group_median, scale=group_deviation)
+                names.append(name)
+                conflimit.append((cl[0][0], cl[1][0]))
+                confint.append((ci[0][0], ci[1][0]))
+                median.append(group_median)
+                mean.append(group_mean)
+        else:
+            data_mean = interval.mean()
+            data_median = interval.median()
+            data_std = interval.std()
+            data_sqrt = math.sqrt(len(interval))
+            data_deviation = data_std / data_sqrt
+
+            ci = stats.norm.interval(.95, data_mean, scale=10*data_deviation)
+            cl = stats.norm.interval(.95, data_median, scale=data_deviation)
+            mean.append(data_mean)
+            median.append(data_median)
+            confint.append((ci[0][0], ci[1][0]))
+            conflimit.append((cl[0][0], cl[1][0]))
+
+        results = {}
+        results["names"] = names
+        results["mean"] = mean
+        results["median"] = median
+        results["confint"] = confint
+        results["conflimit"] = conflimit
+
+        return results
 
     def setInterval(self, title):
         self.method = title
