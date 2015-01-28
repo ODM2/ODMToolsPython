@@ -4,7 +4,7 @@ ODM Tools Python can be used to access and export data and associated metadata. 
 
 ![Export](images/Export.png)
 
-A dialog will then prompt for a location for saving the data series locally. The data is exported as a CSV file. Each data point is represented by a single line in the CSV file and includes fairly complete metadata by way of the columns in the file. Exported columns are: 
+A dialog will then prompt for a location for saving the data series locally. The data is exported as a CSV file. Each data point is represented by a single line in the CSV file and includes fairly complete metadata by way of the columns in the file. Exported columns are:   
 -SeriesId  
 -ValueId  
 -DataValue  
