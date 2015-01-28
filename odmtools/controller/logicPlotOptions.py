@@ -9,6 +9,8 @@ from pandas import DataFrame
 import logging
 from odmtools.common.logger import LoggerTool
 
+import timeit
+
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
@@ -364,7 +366,7 @@ class SeriesPlotInfo(object):
 
         seriesInfo.Probability = Probability(seriesInfo.filteredData)
         seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
-        #seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
+        seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
 
 
     def updateDateRange(self, startDate=None, endDate=None):
@@ -440,6 +442,8 @@ class BoxWhisker(object):
         # for x in dataTable:
         # print x, x[3]
 
+        start_time = timeit.default_timer()
+
         mean.append(data.mean())
         median.append(data.median())
         ci = stats.norm.interval(.95, data.mean(), scale=10 * (data.std() / math.sqrt(len(data))))
@@ -449,13 +453,20 @@ class BoxWhisker(object):
 
         self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", None, [], [median, conflimit, mean, confint])
 
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("elapsed time for Overall: %s" % elapsed)
+
+
+        start_time = timeit.default_timer()
+
         mean = []
         median = []
         confint = []
         conflimit = []
         names = []
-        y = data.groupby("Year")
 
+
+        y = data.groupby("Year")
         for name, group in y:
             names.append(name)
             mean.append(group.mean())
@@ -468,13 +479,18 @@ class BoxWhisker(object):
         # return medians, conflimit, means, confint
         self.intervals["Year"] = BoxWhiskerPlotInfo("Year", "Year", names, [median, conflimit, mean, confint])
 
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("elapsed time for Year: %s" % elapsed)
+
+
+        start_time = timeit.default_timer()
+
         mean = []
         median = []
         confint = []
         conflimit = []
         names = []
         m = data.groupby("Month")
-
         for name, group in m:
             names.append(name)
             mean.append(group.mean())
@@ -486,6 +502,11 @@ class BoxWhisker(object):
 
         self.intervals["Month"] = BoxWhiskerPlotInfo("Month", "Month", [numToMonth(x) for x in names],
                                                      [median, conflimit, mean, confint])
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("elapsed time for Month: %s" % elapsed)
+
+
+        start_time = timeit.default_timer()
 
         mean = []
         median = []
@@ -505,6 +526,8 @@ class BoxWhisker(object):
 
         self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season", [numToSeason(x) for x in names],
                                                       [median, conflimit, mean, confint])
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("elapsed time for Season: %s" % elapsed)
 
         self.currinterval = self.intervals[self.method]
 
