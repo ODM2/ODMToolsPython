@@ -22,5 +22,4 @@ When editing is active, all editing steps are automatically recorded. Every time
 3. Open an existing script: This brings up a dialog to open a previously saved script, which can then be edited, exectued, and appended with any new edits performed. 
 
 Note that the credentials of the database connection will be displayed here. The user can edit the script to delete usernames and passwords. The screenshot below shows the program duing an editing session with code and annotations being recorded in the script editor.
-
 ![ScriptEditor](images/ScriptEditor.png)
