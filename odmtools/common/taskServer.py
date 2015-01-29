@@ -1,9 +1,15 @@
 from multiprocessing import Process, Queue
 import time
-from controller.logicPlotOptions import SeriesPlotInfo, Probability, BoxWhisker, Statistics
+from controller.logicPlotOptions import Probability, BoxWhisker, Statistics
 
 __author__ = 'jmeline'
 
+import logging
+from odmtools.common.logger import LoggerTool
+
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class TaskServerMP:
     """
@@ -68,11 +74,11 @@ class TaskServerMP:
         Collect completed tasks
         """
 
-        print "Trying to get something..."
+        logger.debug("Trying to get something...")
 
         output = self.dispatcher.getResult()
 
-        print "Got %s, %s" % output
+        logger.debug("Got %s, %s" % output)
 
         self.completedTasks[output[0]] = output[1]
 

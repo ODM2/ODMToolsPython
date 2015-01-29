@@ -11,6 +11,7 @@ import os
 from odmtools.lib.Appdirs.appdirs import user_log_dir
 
 
+
 class LoggerTool():
     def __init__(self):
         self.formatString = '%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s'

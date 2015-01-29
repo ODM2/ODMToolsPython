@@ -2,7 +2,7 @@
 import datetime
 import math
 import wx
-import numpy
+import numpy as np
 import pandas as pd
 from scipy import stats
 
@@ -391,11 +391,11 @@ class Statistics(object):
         sign = 1
         for dv in data["DataValue"]:
             if dv == 0:
-                sumval = sumval + numpy.log2(1)
+                sumval = sumval + np.log2(1)
             else:
                 if dv < 0:
                     sign = sign * -1
-                sumval = sumval + numpy.log2(numpy.absolute(dv))
+                sumval = sumval + np.log2(np.absolute(dv))
 
         if count > 0:
             self.GeometricMean = round(sign * (2 ** float(sumval / float(count))), 5)
@@ -475,31 +475,91 @@ class BoxWhisker(object):
 
         if isinstance(interval, pd.core.groupby.DataFrameGroupBy):
             for name, group in interval:
-                group_mean = group.mean()
-                group_median = group.median()
-                group_std = group.std()
+
+                datavalue = group['DataValue']
+                start_time = timeit.default_timer()
+                group_mean = np.mean(datavalue)
+                elapsed = timeit.default_timer() - start_time
+                logger.debug("elapsed time for mean of %s: %s" % (name, elapsed))
+
+                start_time = timeit.default_timer()
+                group_median = np.median(datavalue)
+                elapsed = timeit.default_timer() - start_time
+                logger.debug("elapsed time for median of %s: %s" % (name, elapsed))
+
+                start_time = timeit.default_timer()
+                group_std = math.sqrt(np.var(datavalue))
+                elapsed = timeit.default_timer() - start_time
+                logger.debug("elapsed time for std of %s: %s" % (name, elapsed))
+
+                start_time = timeit.default_timer()
                 group_sqrt = math.sqrt(len(group))
+                elapsed = timeit.default_timer() - start_time
+                logger.debug("elapsed time for std of %s: %s" % (name, elapsed))
+
+                start_time = timeit.default_timer()
                 group_deviation = group_std / group_sqrt
+                elapsed = timeit.default_timer() - start_time
+                logger.debug("elapsed time for deviation of %s: %s" % (name, elapsed))
+
+                start_time = timeit.default_timer()
                 ci = stats.norm.interval(.95, group_mean, scale=10*group_deviation)
+                elapsed = timeit.default_timer() - start_time
+                logger.debug("elapsed time for stats.norm.interval of group_mean for %s: %s" % (name, elapsed))
+
+                start_time = timeit.default_timer()
                 cl = stats.norm.interval(.95, group_median, scale=group_deviation)
+                elapsed = timeit.default_timer() - start_time
+                logger.debug("elapsed time for stats.norm.interval of group_median for %s: %s" % (name, elapsed))
+
                 names.append(name)
-                conflimit.append((cl[0][0], cl[1][0]))
-                confint.append((ci[0][0], ci[1][0]))
+                conflimit.append((cl[0], cl[1]))
+                confint.append((ci[0], ci[1]))
                 median.append(group_median)
                 mean.append(group_mean)
         else:
-            data_mean = interval.mean()
-            data_median = interval.median()
-            data_std = interval.std()
-            data_sqrt = math.sqrt(len(interval))
-            data_deviation = data_std / data_sqrt
+            name = "Overall"
+            datavalue = interval['DataValue']
+            start_time = timeit.default_timer()
+            data_mean = np.mean(datavalue)
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for np.mean with datavalue of %s: %s -- %s" % (name, elapsed, data_mean))
 
+            start_time = timeit.default_timer()
+            data_median = np.median(datavalue)
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for np.median with datavalue of %s: %s -- %s" % (name, elapsed, data_median))
+
+            start_time = timeit.default_timer()
+            data_std = math.sqrt(np.var(datavalue))
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for np.variance std of %s: %s -- %s" % (name, elapsed, data_std))
+
+            start_time = timeit.default_timer()
+            data_sqrt = math.sqrt(len(interval))
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for sqrt of %s: %s" % (name, elapsed))
+
+            start_time = timeit.default_timer()
+            data_deviation = data_std / data_sqrt
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for deviation of %s: %s" % (name, elapsed))
+
+            start_time = timeit.default_timer()
             ci = stats.norm.interval(.95, data_mean, scale=10*data_deviation)
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for stats.norm.interval of mean for %s: %s" % (name, elapsed))
+
+            start_time = timeit.default_timer()
             cl = stats.norm.interval(.95, data_median, scale=data_deviation)
+            elapsed = timeit.default_timer() - start_time
+            logger.debug("elapsed time for stats.norm.interval of median for %s: %s" % (name, elapsed))
+
             mean.append(data_mean)
             median.append(data_median)
-            confint.append((ci[0][0], ci[1][0]))
-            conflimit.append((cl[0][0], cl[1][0]))
+            logger.info("ci %s, %s" % ci)
+            confint.append((ci[0], ci[1]))
+            conflimit.append((cl[0], cl[1]))
 
         results = {}
         results["names"] = names
