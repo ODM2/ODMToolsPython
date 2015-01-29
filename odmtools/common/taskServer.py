@@ -1,6 +1,6 @@
 from multiprocessing import Process, Queue
 import time
-from controller.logicPlotOptions import Probability, BoxWhisker, Statistics
+from odmtools.controller.logicPlotOptions import Probability, BoxWhisker, Statistics
 
 __author__ = 'jmeline'
 

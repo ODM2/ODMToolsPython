@@ -129,7 +129,7 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc)
+        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot)
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
@@ -319,11 +319,6 @@ class frmODMToolsMain(wx.Frame):
     def onPlotSelection(self, value):
         self.pnlPlot.selectPlot(value)
 
-    def addPlot(self, memDB, seriesID):
-        # Memory Database
-        self.pnlPlot.addPlot(memDB, seriesID)
-        Publisher.sendMessage("EnablePlotButton", plot=self.pnlPlot.getActivePlotID(), isActive=True)
-        #self._ribbon.enableButtons(self.pnlPlot.getActivePlotID)
 
     def onSetScriptTitle(self, title):
         scriptPane = self._mgr.GetPane(self.txtPythonScript)

@@ -68,6 +68,7 @@ class SeriesPlotInfo(object):
     # self._siteDisplayColumn = ""
 
     def __init__(self, memDB, taskserver):
+        logger.debug("Initializing SeriesPlotInfo")
 
         # memDB is a connection to the memory_database
         self.memDB = memDB
@@ -183,6 +184,7 @@ class SeriesPlotInfo(object):
         return len(self._seriesInfos)
 
     def update(self, key, isselected):
+        logger.debug("Begin generating plots")
         if not isselected:
             try:
                 self.colorList.append(self._seriesInfos[key].color)
@@ -190,8 +192,6 @@ class SeriesPlotInfo(object):
             except KeyError:
                 self.resetDates()
         else:
-            # # add dictionary entry with no data
-
             self._seriesInfos[key] = self.getSeriesInfo(key)
             results = self.taskserver.getCompletedTasks()
             self._seriesInfos[key].Probability = results['Probability']
@@ -292,21 +292,18 @@ class SeriesPlotInfo(object):
     def getSeriesInfo(self, seriesID):
         assert seriesID is not None
 
-        #if seriesInfo is None:
-
+        logger.debug("Obtain SeriesInfo")
         oneSeriesInfo = OneSeriesPlotInfo(self)
+
         series = self.getSeriesById(seriesID)
 
-        #add dictionary entry
-        #self._seriesInfos[key] = seriesInfo
-        #print "series date: ", type(series.begin_date_time)
         if not series:
             message = "Please check your database connection. Unable to retrieve series %d from the database" % seriesID
             wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
             return
 
+        logger.debug("Create Series Info")
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
-
 
         #Tests to see if any values were returned for the given daterange
 
@@ -315,12 +312,11 @@ class SeriesPlotInfo(object):
                  ("BoxWhisker", (seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)),
                  ("Summary", seriesInfo.filteredData)]
 
+        # Give tasks to the taskserver to run parallelly
+        logger.debug("Sending tasks to taskserver")
         self.taskserver.setTasks(tasks)
         self.taskserver.processTasks()
 
-        #self.build(seriesInfo)
-
-        i = len(self._seriesInfos)
         if self.editID == seriesInfo.seriesID:
             #set color to black for editing
             seriesInfo.edit = True
@@ -328,31 +324,7 @@ class SeriesPlotInfo(object):
             seriesInfo.color = "Black"
         else:
             seriesInfo.color = self.colorList.pop(0)
-        #lst.append(seriesInfo)
-        #return lst
         return seriesInfo
-
-    def build(self, seriesInfo):
-
-        logger.debug("Starting Probability")
-        start_time = timeit.default_timer()
-        seriesInfo.Probability = Probability(seriesInfo.filteredData)
-        elapsed = timeit.default_timer() - start_time
-        logger.debug("Finished Probability in: %s Seconds" % elapsed)
-
-        logger.debug("Starting Statistics")
-        start_time = timeit.default_timer()
-        seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
-        elapsed = timeit.default_timer() - start_time
-        logger.debug("Finished Statistics in: %s Seconds" % elapsed)
-
-        logger.debug("Starting BoxWhisker")
-        start_time = timeit.default_timer()
-        seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
-        elapsed = timeit.default_timer() - start_time
-        logger.debug("Finished BoxWhisker in: %s Seconds" % elapsed)
-
-
 
     def updateDateRange(self, startDate=None, endDate=None):
         self.currentStart = startDate
@@ -475,42 +447,14 @@ class BoxWhisker(object):
 
         if isinstance(interval, pd.core.groupby.DataFrameGroupBy):
             for name, group in interval:
-
                 datavalue = group['DataValue']
-                start_time = timeit.default_timer()
                 group_mean = np.mean(datavalue)
-                elapsed = timeit.default_timer() - start_time
-                logger.debug("elapsed time for mean of %s: %s" % (name, elapsed))
-
-                start_time = timeit.default_timer()
                 group_median = np.median(datavalue)
-                elapsed = timeit.default_timer() - start_time
-                logger.debug("elapsed time for median of %s: %s" % (name, elapsed))
-
-                start_time = timeit.default_timer()
                 group_std = math.sqrt(np.var(datavalue))
-                elapsed = timeit.default_timer() - start_time
-                logger.debug("elapsed time for std of %s: %s" % (name, elapsed))
-
-                start_time = timeit.default_timer()
                 group_sqrt = math.sqrt(len(group))
-                elapsed = timeit.default_timer() - start_time
-                logger.debug("elapsed time for std of %s: %s" % (name, elapsed))
-
-                start_time = timeit.default_timer()
                 group_deviation = group_std / group_sqrt
-                elapsed = timeit.default_timer() - start_time
-                logger.debug("elapsed time for deviation of %s: %s" % (name, elapsed))
-
-                start_time = timeit.default_timer()
                 ci = stats.norm.interval(.95, group_mean, scale=10*group_deviation)
-                elapsed = timeit.default_timer() - start_time
-                logger.debug("elapsed time for stats.norm.interval of group_mean for %s: %s" % (name, elapsed))
-
-                start_time = timeit.default_timer()
                 cl = stats.norm.interval(.95, group_median, scale=group_deviation)
-                elapsed = timeit.default_timer() - start_time
-                logger.debug("elapsed time for stats.norm.interval of group_median for %s: %s" % (name, elapsed))
 
                 names.append(name)
                 conflimit.append((cl[0], cl[1]))
@@ -520,44 +464,17 @@ class BoxWhisker(object):
         else:
             name = "Overall"
             datavalue = interval['DataValue']
-            start_time = timeit.default_timer()
             data_mean = np.mean(datavalue)
-            elapsed = timeit.default_timer() - start_time
-            logger.debug("elapsed time for np.mean with datavalue of %s: %s -- %s" % (name, elapsed, data_mean))
-
-            start_time = timeit.default_timer()
             data_median = np.median(datavalue)
-            elapsed = timeit.default_timer() - start_time
-            logger.debug("elapsed time for np.median with datavalue of %s: %s -- %s" % (name, elapsed, data_median))
-
-            start_time = timeit.default_timer()
             data_std = math.sqrt(np.var(datavalue))
-            elapsed = timeit.default_timer() - start_time
-            logger.debug("elapsed time for np.variance std of %s: %s -- %s" % (name, elapsed, data_std))
-
-            start_time = timeit.default_timer()
             data_sqrt = math.sqrt(len(interval))
-            elapsed = timeit.default_timer() - start_time
-            logger.debug("elapsed time for sqrt of %s: %s" % (name, elapsed))
-
-            start_time = timeit.default_timer()
             data_deviation = data_std / data_sqrt
-            elapsed = timeit.default_timer() - start_time
-            logger.debug("elapsed time for deviation of %s: %s" % (name, elapsed))
 
-            start_time = timeit.default_timer()
             ci = stats.norm.interval(.95, data_mean, scale=10*data_deviation)
-            elapsed = timeit.default_timer() - start_time
-            logger.debug("elapsed time for stats.norm.interval of mean for %s: %s" % (name, elapsed))
-
-            start_time = timeit.default_timer()
             cl = stats.norm.interval(.95, data_median, scale=data_deviation)
-            elapsed = timeit.default_timer() - start_time
-            logger.debug("elapsed time for stats.norm.interval of median for %s: %s" % (name, elapsed))
 
             mean.append(data_mean)
             median.append(data_median)
-            logger.info("ci %s, %s" % ci)
             confint.append((ci[0], ci[1]))
             conflimit.append((cl[0], cl[1]))
 

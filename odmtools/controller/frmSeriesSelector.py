@@ -16,7 +16,16 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 __author__ = 'Jacob'
 
 class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
+    """
+
+    """
     def __init__(self, *args, **kwargs):
+        """
+
+        """
+
+        self.pnlPlot = kwargs.pop("plot")
+
         clsSeriesSelector.ClsSeriesSelector.__init__(self, *args, **kwargs)
 
     def initPubSub(self):
@@ -431,10 +440,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :param event: EVT_OVL_CHECK_EVENT type
         """
+        logger.debug("Starting to Plot")
 
         checkedCount = len(self.tblSeries.GetCheckedObjects())
+
         Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=(checkedCount > 0))
 
+        logger.debug("Obtain object")
         try:
             object = event.object
         except:
@@ -443,11 +455,15 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         if not self.tblSeries.IsChecked(object):
             Publisher.sendMessage("removePlot", seriesID=object.id)
         else:
-            #logger.debug("%d" % (len(self.tblSeries.GetCheckedObjects())))
-            self.parent.Parent.addPlot(self.memDB, object.id)
+            logger.debug("Obtained object, entering addplot")
+            self.pnlPlot.addPlot(self.memDB, object.id)
             #Publisher.sendMessage("updateCursor", selectedObject=object)
 
+        logger.debug("refreshing...")
         self.Refresh()
+
+        logger.debug("Finish Plotting")
+
 
         #from meliae import scanner
         #scanner.dump_all_objects("plot_plotting.dat")

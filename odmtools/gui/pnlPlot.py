@@ -131,10 +131,18 @@ class pnlPlot(fnb.FlatNotebook):
         self.redrawPlots()
 
     def addPlot(self, memDB, seriesID):
+        """
+        Creates the plot
+        """
+        logger.debug("Adding plot")
+
+        Publisher.sendMessage("EnablePlotButton", plot=self.getActivePlotID(), isActive=True)
+
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB, self.taskserver)
         self._seriesPlotInfo.update(seriesID, True)
 
+        logger.debug("Redrawing plots")
         self.redrawPlots()
 
     def onRemovePlot(self, seriesID):
@@ -143,13 +151,20 @@ class pnlPlot(fnb.FlatNotebook):
 
     def redrawPlots(self):
 
+        logger.debug("Plot Summary")
         self.pltSum.Plot(self._seriesPlotInfo)
+
+        logger.debug("Plot Probability")
         self.pltProb.Plot(self._seriesPlotInfo)
 
+        logger.debug("Plot Histogram")
         self.pltHist.Plot(self._seriesPlotInfo)
-        self.pltBox.Plot(self._seriesPlotInfo)
-        self.pltTS.Plot(self._seriesPlotInfo)
 
+        logger.debug("Plot Boxwhisker")
+        self.pltBox.Plot(self._seriesPlotInfo)
+
+        logger.debug("Plot Timeseries")
+        self.pltTS.Plot(self._seriesPlotInfo)
 
         self.onShowLegend(event=None, isVisible=self.legendVisible)
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()

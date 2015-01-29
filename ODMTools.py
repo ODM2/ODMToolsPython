@@ -13,7 +13,7 @@ Repository is located on www.github.com/UCHIC/ODMToolsPython
 import wx
 import logging
 from odmtools.gui.frmODMTools import frmODMToolsMain
-from common.taskServer import TaskServerMP
+from odmtools.common.taskServer import TaskServerMP
 from odmtools.common.logger import LoggerTool
 from multiprocessing import cpu_count, freeze_support
 
