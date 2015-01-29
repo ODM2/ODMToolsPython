@@ -368,7 +368,7 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onAggregate(self, event):
-        agg_function = frmAggregate(self, None)
+        agg_function = frmAggregate(self, self.parent.getRecordService())
         agg_function.ShowModal()
         agg_function.Destroy()
         event.Skip()

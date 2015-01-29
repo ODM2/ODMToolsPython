@@ -316,6 +316,15 @@ class EditTools():
             self._record = True
         '''
 
+    def getAggAverage(self, duration, function):
+        result = self._edit_service.AggAverage(duration, function)
+        self.refresh_plot()
+        if self._record:
+            self._script('result = edit_service.AggAverage(%s, %s)\n' % (duration, function))
+            Publisher.sendMessage("scroll")
+
+        return result
+
     ###################
     # Creates
     ###################

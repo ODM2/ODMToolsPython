@@ -5,7 +5,6 @@ import wx
 
 from odmtools.view import clsEquation
 
-
 # Implementing dlg_equation
 class frmEquation(clsEquation.dlg_equation):
 	def __init__(self, parent, series):

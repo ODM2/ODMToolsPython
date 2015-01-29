@@ -392,6 +392,38 @@ class EditService():
         query = "UPDATE DataValues SET QualifierID = %s WHERE ValueID = ?" % (qualifier_id)
         self._cursor.executemany(query, [(str(x[0]),) for x in filtered_points])
 
+
+    #(DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
+    #    query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID)
+    #    
+    def AggAverage(self, duration, function):
+        query = """SELECT AVG(DataValue), 
+                    MIN(ValueAccuracy),
+                    LocalDateTime,
+                    MIN(UTCOffset),
+                    MIN(DateTimeUTC),
+                    MIN(OffsetValue),
+                    MIN(OffsetTypeID),
+                    MIN(CensorCode),
+                    MIN(QualifierID),
+                    MIN(SampleID),
+                    SiteID,
+                    MIN(VariableID),
+                    MIN(MethodID),
+                    MIN(SourceID),
+                    MIN(QualityControlLevelID)
+                    FROM DataValues GROUP BY strftime('%d', LocalDateTime), strftime('%m', LocalDateTime), strftime('%y', LocalDateTime);"""
+        self._cursor.execute(query)
+        result = self._cursor.fetchall()
+        print result
+
+        query = "DELETE FROM DataValues"
+        self._cursor.execute(query)
+
+        self.add_points(result)
+
+        return result
+
     ###################
     # Save/Restore
     ###################
