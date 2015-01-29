@@ -112,8 +112,8 @@ class MyCustomToolbar(NavigationToolbar):
             wx.EVT_TOOL(self, self.zoom_tool.Id, self.on_toggle_pan_zoom)
             wx.EVT_TOOL(self, self.pan_tool.Id, self.on_toggle_pan_zoom)
             self.lassoAction = None
-            self.select_tool.Enable(False)
-            self.zoom_to_data.Enable(False)
+            #self.select_tool.Enable(False)
+            #self.zoom_to_data.Enable(False)
 
         else:
             ZOOM_DATA_BTN_POSITION = 1
@@ -124,10 +124,10 @@ class MyCustomToolbar(NavigationToolbar):
 
         self.SetToolBitmapSize(wx.Size(16, 16))
 
-        msg = wx.StaticText(self, -1, '|')
-        msg.SetForegroundColour((108, 123, 139))
+        #msg = wx.StaticText(self, -1, '|')
+        #msg.SetForegroundColour((108, 123, 139))
 
-        self.AddControl(msg)
+        #self.AddControl(msg)
         self.AddSeparator()
 
         self.msg = wx.StaticText(self, -1, "")
@@ -154,7 +154,7 @@ class MyCustomToolbar(NavigationToolbar):
         self.zoom_to_data.Enable(False)
         self.Realize()
         #untoggle lasso button
-        self.ToggleTool(self.select_tool.Id, False)
+        #self.ToggleTool(self.select_tool.Id, False)
 
 
     # pan the graph to the left    
@@ -189,19 +189,12 @@ class MyCustomToolbar(NavigationToolbar):
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
 
-        seldatetimes = []
-        #seldatavalues = []
-        for i in range(len(ind)):
-            if ind[i]:
-                seldatetimes.append(self.editCurve.dataTable[i][1])
-                #seldatavalues.append(self.editCurve.dataTable[i][0])
-                # print seldatetimes
-
-
-        self._parent.changeSelection(datetime_list=seldatetimes)
-
+        df = self.editCurve.dataTable
+        #selected_datetime_list = df[ind].LocalDateTime.tolist()
+        filtered_datetime_dataframe = df[ind]
+        self._parent.lassoChangeSelection(filtered_datetime=filtered_datetime_dataframe)
+        #self._parent.lassoChangeSelection(datetime_list=selected_datetime_list)
         self.canvas.draw_idle()
-        #self.canvas.widgetlock.release(self.lasso)
         del self.lasso
 
 

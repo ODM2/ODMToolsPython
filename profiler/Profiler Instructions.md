@@ -13,8 +13,7 @@ Then, run the following command:
 
 ```python runsnake.py profile.dat```
 
-
-# To run memory profiler with meliae
+# To run memory profiler with meliae 
 
 To install Meliae, you will need a working C extension compilation environment (Meliae uses a Cython extension):
 
@@ -26,6 +25,7 @@ Now instrument your application to be able to trigger a memory dump at the momen
 from meliae import scanner
 scanner.dump_all_objects( filename ) # you can pass a file-handle if you prefer
 ```
+
 The memory dump will generally be quite large (e.g. 2MB to describe an application with 200KB of user-controllable memory usage (i.e. not the interpreter itself)) and for any real application will take an extremely long time to load (multiple minutes for 16MB dumps).
 
 ```

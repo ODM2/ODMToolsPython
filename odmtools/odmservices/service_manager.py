@@ -125,13 +125,15 @@ class ServiceManager():
         self.get_db_version(conn_string)
 
     def get_db_version(self, conn_string):
+        if isinstance(conn_string, dict):
+            conn_string = self._build_connection_string(conn_string)
         service = SeriesService(conn_string)
-        if not self.version:
-            try:
-                self.version = service.get_db_version()
-            except Exception as e:
-                logger.error("Exception: %s" % e.message)
-                return None
+        #if not self.version:
+        try:
+            self.version = service.get_db_version()
+        except Exception as e:
+            logger.error("Exception: %s" % e.message)
+            return None
         return self.version
 
     def get_series_service(self, conn_dict=""):

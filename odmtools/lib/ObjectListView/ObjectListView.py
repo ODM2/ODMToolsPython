@@ -1624,7 +1624,6 @@ class ObjectListView(wx.ListCtrl):
         Handle a left down on the ListView
         """
         evt.Skip()
-
         # Test for a mouse down on the image of the check box column
         if self.InReportView():
             (row, flags, subitem) = self.HitTestSubItem(evt.GetPosition())

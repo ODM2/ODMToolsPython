@@ -19,6 +19,7 @@ from frmLinearDrift import frmLinearDrift
 from odmtools.controller.frmAbout import frmAbout
 import wizSave
 from odmtools.common import *
+import pandas as pd
 
 
 # # Enable logging
@@ -64,7 +65,7 @@ class mnuRibbon(RB.RibbonBar):
                                     RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
         self.plots_bar = RB.RibbonButtonBar(plot_panel, wx.ID_ANY)
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTTIMESERIES, "Time Series", tsa_icon.GetBitmap(), "")
-        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTPROB, "Probablity", probability.GetBitmap(), "")
+        self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTPROB, "Exceedance Frequency", probability.GetBitmap(), "")
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTHIST, "Histogram", histogram.GetBitmap(), "")
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTBOX, "Box/Whisker", box_whisker.GetBitmap(), "")
         self.plots_bar.AddSimpleButton(wxID_RIBBONPLOTSUMMARY, "Summary", summary.GetBitmap(), "")
@@ -356,6 +357,16 @@ class mnuRibbon(RB.RibbonBar):
 
 
     def onLineDrift(self, event):
+        dataframe = self.parent.getRecordService().get_filtered_points()
+        if isinstance(dataframe, pd.DataFrame):
+            if dataframe.empty:
+                val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+        else:
+            if not dataframe:
+                val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+
         lin_drift = frmLinearDrift(self, self.parent.getRecordService())
         lin_drift.ShowModal()
         lin_drift.Destroy()
@@ -372,6 +383,7 @@ class mnuRibbon(RB.RibbonBar):
         agg_function.ShowModal()
         agg_function.Destroy()
         event.Skip()
+
 
     def onRecord(self, event):
 
@@ -448,15 +460,26 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditInterpolate(self, event):
-        logger.debug("Interpolate!")
 
-        numPoints = len(self.parent.getRecordService().get_filtered_points())
-        val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % numPoints,
-                            'Interpolation', wx.YES_NO | wx.ICON_QUESTION)
-        if val == 2:  #wx.ID_YES:
-            self.parent.getRecordService().interpolate()
 
-        self.redrawPlotTable()
+        dataframe = self.parent.getRecordService().get_filtered_points()
+        if isinstance(dataframe, pd.DataFrame):
+            if not dataframe.empty:
+                val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % len(dataframe),
+                                'Interpolation', wx.YES_NO | wx.ICON_QUESTION)
+                if val == 2:  #wx.ID_YES:
+                    self.parent.getRecordService().interpolate()
+
+                self.redrawPlotTable()
+            else:
+                val = wx.MessageBox("You have no points selected, Please select points before interpolating." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+        else:
+            if not dataframe:
+                val = wx.MessageBox("You have no points selected, Please select points before interpolating." ,
+                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+
+
 
         event.Skip()
 
@@ -469,8 +492,14 @@ class mnuRibbon(RB.RibbonBar):
 
         add_flag = frmFlagValues(self, cv_service, qualifierChoices)
         val = add_flag.ShowModal()
-        logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
-        if val == 5101:  #wx.ID_OK:
+
+        # If user closes dialog box
+        # if val == wx.ID_CANCEL:
+        #     return
+
+
+        if val == wx.ID_OK:
+            logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
             self.parent.getRecordService().flag(add_flag.GetValue())
             # Publisher.sendMessage(("updateValues"), event=event)
         add_flag.Destroy()
@@ -493,8 +522,16 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditDelPoint(self, event):
-        numPoints = len(self.parent.getRecordService().get_filtered_points())
-        val = wx.MessageBox("You have chosen to delete the %s selected points.\nDo you want to continue?" % numPoints,
+        dataframe = self.parent.getRecordService().get_filtered_points()
+        if isinstance(dataframe, pd.DataFrame):
+            if dataframe.empty:
+                return
+        else:
+            if not dataframe:
+                return
+
+        #numPoints = len(self.parent.getRecordService().get_filtered_points())
+        val = wx.MessageBox("You have chosen to delete the %s selected points.\nDo you want to continue?" % len(dataframe),
                             'Deleting Points', wx.YES_NO | wx.ICON_QUESTION)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().delete_points()
@@ -520,6 +557,7 @@ class mnuRibbon(RB.RibbonBar):
             return None
 
     def onEditSeries(self, event=None):
+
         #logger.debug(dir(event))
 
 

@@ -1,9 +1,30 @@
-import math
+
 import datetime
+import math
 import wx
-
+import multiprocessing as mp
 import numpy
+from pandas import DataFrame
 
+import logging
+from odmtools.common.logger import LoggerTool
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
+
+def calcSeason(x):
+    x = int(x)
+    if x in (1, 2, 3):
+        return "1"
+    elif x in (4, 5, 6):
+        return "2"
+    elif x in (7, 8, 9):
+        return "3"
+    elif x in (10, 11, 12):
+        return "4"
+
+        # return x*2, x*3
 
 
 class OneSeriesPlotInfo(object):
@@ -12,7 +33,7 @@ class OneSeriesPlotInfo(object):
 
         self.seriesID = None
         self.series = None
-        self.noDataValue= -9999
+        self.noDataValue = -9999
 
         self.startDate = None
         self.endDate = None
@@ -23,24 +44,22 @@ class OneSeriesPlotInfo(object):
         self.variableName = ""
         self.dataType = ""
         self.variableUnits = ""
+        self.filteredData = None
         self.BoxWhisker = None
         self.Probability = None
         self.Statistics = None
         self.plotTitle = None
         self.numBins = 25
         self.binWidth = 1.5
-        self.boxWhiskerMethod = "Monthly"
-        self.useCensoredData = False
-        self.yrange=0
+        self.boxWhiskerMethod = "Month"
 
+        self.yrange = 0
         self.color = ""
 
-        #edit functions
+        # edit functions
         self.edit = False
         #the color the plot should be when not editing
         self.plotcolor = None
-        self.timeRadius= None
-
 
 
 class SeriesPlotInfo(object):
@@ -48,17 +67,16 @@ class SeriesPlotInfo(object):
 
     def __init__(self, memDB):
 
-        #memDB is a connection to the memory_database
+        # memDB is a connection to the memory_database
         self.memDB = memDB
         self._seriesInfos = {}
         self.editID = None
-        self.colorList = ['blue', 'green',  'cyan', 'orange', 'purple',  'saddlebrown', 'magenta', 'teal','red']
+        self.colorList = ['blue', 'green', 'cyan', 'orange', 'purple', 'saddlebrown', 'magenta', 'teal', 'red']
         self.startDate = datetime.datetime(2100, 12, 31)
-        self.endDate= datetime.datetime(1800, 01, 01)
-        self.currentStart=self.startDate
-        self.currentEnd=self.endDate
+        self.endDate = datetime.datetime(1800, 01, 01)
+        self.currentStart = self.startDate
+        self.currentEnd = self.endDate
         self.isSubsetted = False
-
 
 
     def getDates(self):
@@ -68,13 +86,13 @@ class SeriesPlotInfo(object):
         self.currentStart = start
 
     def setCurrentEnd(self, end):
-        self.currentEnd= end
+        self.currentEnd = end
 
     def resetDates(self):
         self.startDate = datetime.datetime(2100, 12, 31)
         self.endDate = datetime.datetime(1800, 01, 01)
 
-        #self.isSubsetted = False
+        # self.isSubsetted = False
         for key in self.getSeriesIDs():
             start = self._seriesInfos[key].startDate
             end = self._seriesInfos[key].endDate
@@ -88,8 +106,6 @@ class SeriesPlotInfo(object):
         if not self.isSubsetted:
             self.currentStart = self.startDate
             self.currentEnd = self.endDate
-
-
 
 
     def isPlotted(self, sid):
@@ -107,13 +123,17 @@ class SeriesPlotInfo(object):
     def setEditSeries(self, seriesID):
 
         self.editID = int(seriesID)
-        #self.memDB.initEditValues(self.editID)
+        # self.memDB.initEditValues(self.editID)
 
         if self.editID not in self._seriesInfos:
             self.update(self.editID, True)
-           # self.getSeriesInfo(self.editID)
+            # self.getSeriesInfo(self.editID)
         else:
-            self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            ## Pandas DataFrame
+            #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data.set_index(data['LocalDateTime'], inplace=True)
+            self._seriesInfos[self.editID].dataTable = data
 
         self._seriesInfos[self.editID].edit = True
         self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
@@ -122,17 +142,31 @@ class SeriesPlotInfo(object):
 
     def updateEditSeries(self):
         if self.editID in self._seriesInfos:
-            self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data.set_index(data['LocalDateTime'], inplace=True)
+            self._seriesInfos[self.editID].dataTable = data
+
 
     def stopEditSeries(self):
 
         if self.editID in self._seriesInfos:
+            '''
             self._seriesInfos[self.editID].dataTable = \
                 self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
                                                  self._seriesInfos[self.editID].startDate,
                                                  self._seriesInfos[self.editID].endDate)
+            '''
+
+            data = DataFrame(
+                self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
+                                                 self._seriesInfos[self.editID].startDate,
+                                                 self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
+            data.set_index(data['LocalDateTime'], inplace=True)
+            self._seriesInfos[self.editID].dataTable = data
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
+
         self.editID = None
         self.memDB.stopEdit()
 
@@ -153,14 +187,13 @@ class SeriesPlotInfo(object):
             except KeyError:
                 self.resetDates()
         else:
-            ## add dictionary entry with no data
+            # # add dictionary entry with no data
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
 
 
-
     # def Update(self):
-    #     for key, value in enumerate(self._seriesInfos):
+    # for key, value in enumerate(self._seriesInfos):
     #         self._seriesInfos[key]=None
 
     def setBoxInterval(self, title):
@@ -212,13 +245,20 @@ class SeriesPlotInfo(object):
         dataType = series.data_type
         noDataValue = series.variable.no_data_value
         if self.editID == seriesID:
-            data = self.memDB.getEditDataValuesforGraph()
+            #d= DataFrame(pandas.read_sql())
+            data = DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+
         else:
             # using current variable keeps the series subsetted
-            data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
+            data = DataFrame(
+                self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
+                columns=self.memDB.columns)
+
+        data.set_index(["LocalDateTime"], inplace=True)
+
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
-
+        seriesInfo.columns = self.memDB.columns
         seriesInfo.startDate = startDate
         seriesInfo.endDate = endDate
         seriesInfo.dataType = dataType
@@ -229,29 +269,28 @@ class SeriesPlotInfo(object):
         seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
-        seriesInfo.timeRadius = self.setTimeRadius(series)
-        yvals = [y[0] for y in data]
-        if len(data)>0:
-            seriesInfo.yrange = max(yvals) - min(yvals)
+        #remove all of the nodatavalues from the pandas table
+        seriesInfo.filteredData = data[data["DataValue"] != noDataValue]
+        val = seriesInfo.filteredData["Month"].map(calcSeason)
+        seriesInfo.filteredData["Season"] = val
+        #calcSeason(seriesInfo.filteredData["Month"])
+
+
+        if len(data) > 0:
+            seriesInfo.yrange = data['DataValue'].max() - data['DataValue'].min()
         else:
-            seriesInfo.yrange=0
+            seriesInfo.yrange = 0
 
         return seriesInfo
 
     def getSeriesInfo(self, seriesID):
         assert seriesID is not None
-        #lst = []  #of length len(seriesInfos)
-
-        #for key in self.getSeriesIDs():
-
-        #if the current series is not already in the list
-        #seriesInfo = self._seriesInfos[key
 
         #if seriesInfo is None:
-        # if key in self._seriesInfos.keys():
-        # if not self._seriesInfos[key] == None:
+
         oneSeriesInfo = OneSeriesPlotInfo(self)
         series = self.getSeriesById(seriesID)
+
         #add dictionary entry
         #self._seriesInfos[key] = seriesInfo
         #print "series date: ", type(series.begin_date_time)
@@ -264,13 +303,7 @@ class SeriesPlotInfo(object):
 
 
         #Tests to see if any values were returned for the given daterange
-        #if data is not None:
         self.build(seriesInfo)
-
-        # else:
-        #     seriesInfo = self._seriesInfos[key]
-        #     #print "seriesInfo.startDate ", seriesInfo.startDate
-        #     #print "seriesInfo.endDate ", seriesInfo.endDate
 
         i = len(self._seriesInfos)
         if self.editID == seriesInfo.seriesID:
@@ -285,38 +318,69 @@ class SeriesPlotInfo(object):
         return seriesInfo
 
     def build(self, seriesInfo):
-        data = seriesInfo.dataTable
-        seriesInfo.Probability = Probability(data, seriesInfo.noDataValue)
-        seriesInfo.Statistics = Statistics(data, seriesInfo.useCensoredData, seriesInfo.noDataValue)
-        seriesInfo.BoxWhisker = BoxWhisker(data, seriesInfo.boxWhiskerMethod, seriesInfo.noDataValue)
 
-    def setTimeRadius(self, series):
-        ts = series.time_support
-        if ts ==0:  ts = 1
+        logger.debug("Starting tasks")
 
-        if series.time_units_name == 'second':
-            return ts/2
-        elif series.time_units_name == 'minute':
-            return ts/2 *60 #convert minutes to seconds
-        elif series.time_units_name == 'hour':
-            return ts/2 *120 #120 converts hours to seconds
-        else:
-            return 43200 #12 hours in seconds
+        """
+        result = mp.Queue()
+
+        def _runProbability(seriesInfo, result):
+            logger.debug("Starting Probability %s" % seriesInfo.seriesID)
+            prob = Probability(seriesInfo.filteredData)
+            result.put(prob)
+            logger.debug("Finishing Probability %s" % seriesInfo.seriesID)
+
+        def _runStatistics(seriesInfo, result):
+            logger.debug("Starting Statistics %s" % seriesInfo.seriesID)
+            stats = Statistics(seriesInfo.filteredData)
+            result.put(stats)
+            logger.debug("Finishing Statistics %s" % seriesInfo.seriesID)
+
+        def _runBoxWhisker(seriesInfo, result):
+            logger.debug("Starting BoxWhisker %s" % seriesInfo.seriesID)
+            boxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
+            result.put(boxWhisker)
+            logger.debug("Finishing BoxWhisker %s" % seriesInfo.seriesID)
+
+        probability = None
+        statistics = None
+        boxWhisker = None
+
+        tasklist = [mp.Process(target=_runProbability, args=(seriesInfo, result, )),
+                    mp.Process(target=_runStatistics, args=(seriesInfo, result, )),
+                    mp.Process(target=_runBoxWhisker, args=(seriesInfo, result, ))]
+
+        for task in tasklist:
+            task.start()
+
+        for task in tasklist:
+            task.join()
+
+        seriesInfo.Probability = probability
+        seriesInfo.Statistics = statistics
+        seriesInfo.BoxWhisker = boxWhisker
+        logger.debug("Finished Tasks")
+        """
+
+        seriesInfo.Probability = Probability(seriesInfo.filteredData)
+        seriesInfo.Statistics = Statistics(seriesInfo.filteredData)
+        #seriesInfo.BoxWhisker = BoxWhisker(seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)
 
 
     def updateDateRange(self, startDate=None, endDate=None):
         self.currentStart = startDate
-        self.currentEnd=endDate
+        self.currentEnd = endDate
         for key in self.getSeriesIDs():
             seriesInfo = self._seriesInfos[key]
             if startDate:
                 data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, startDate, endDate)
-                self.isSubsetted=True
+                self.isSubsetted = True
                 self.currentStart = startDate
-                self.currentEnd=endDate
+                self.currentEnd = endDate
             else:
                 #this returns the series to its full daterange
-                data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate, seriesInfo.endDate)
+                data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate,
+                                                        seriesInfo.endDate)
                 self.isSubsetted = False
                 self.currentStart = self.startDate
                 self.currentEnd = self.endDate
@@ -327,21 +391,18 @@ class SeriesPlotInfo(object):
 
 
 class Statistics(object):
-    def __init__(self, dataTable, useCensoredData, noDataValue):
-        useCensoredData=True
-        #TODO do we plot censored datavalues
-        if useCensoredData:
-            dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
-        else:
-            dataValues = [x[0] for x in dataTable if x[2] == 'nc' if x[0] <> noDataValue]
-        data = sorted(dataValues)
-        count = self.NumberofObservations = len(data)
-        self.NumberofCensoredObservations = count-len([x[0] for x in dataTable if x[2] == 'nc'])  #self.cursor.fetchone()[0]
-        self.ArithemticMean = round(numpy.mean(data), 5)
+    def __init__(self, data):
+
+        # dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
+        #data = sorted(dataValues)
+        d = data.describe(percentiles=[.10, .25, .5, .75, .90])
+        count = self.NumberofObservations = d["DataValue"]["count"]
+        self.NumberofCensoredObservations = data[data["CensorCode"] != "nc"].count().DataValue
+        self.ArithemticMean = round(d["DataValue"]["mean"], 5)
 
         sumval = 0
         sign = 1
-        for dv in data:
+        for dv in data["DataValue"]:
             if dv == 0:
                 sumval = sumval + numpy.log2(1)
             else:
@@ -351,66 +412,100 @@ class Statistics(object):
 
         if count > 0:
             self.GeometricMean = round(sign * (2 ** float(sumval / float(count))), 5)
-            self.Maximum = round(max(data), 5)
-            self.Minimum = round(min(data), 5)
-            self.StandardDeviation = round(numpy.std(data), 5)
-            self.CoefficientofVariation = round(numpy.var(data), 5)
-
+            self.Maximum = round(d["DataValue"]["max"], 5)
+            self.Minimum = round(d["DataValue"]["min"], 5)
+            self.StandardDeviation = round(d["DataValue"]["std"], 5)
+            self.CoefficientofVariation = round(data.var().DataValue, 5)
 
             ##Percentiles
-            self.Percentile10 = round(data[int(math.floor(count / 10))], 5)
-            self.Percentile25 = round(data[int(math.floor(count / 4))], 5)
-
-            if count % 2 == 0:
-                self.Percentile50 = round((data[int(math.floor((count / 2) - 1))] + data[int(count / 2)]) / 2, 5)
-            else:
-                self.Percentile50 = round(data[int(numpy.ceil(count / 2))], 5)
-
-            self.Percentile75 = round(data[int(math.floor(count / 4 * 3))], 5)
-            self.Percentile90 = round(data[int(math.floor(count / 10 * 9))], 5)
+            self.Percentile10 = round(d["DataValue"]["10%"], 5)
+            self.Percentile25 = round(d["DataValue"]["25%"], 5)
+            self.Percentile50 = round(d["DataValue"]["50%"], 5)
+            self.Percentile75 = round(d["DataValue"]["75%"], 5)
+            self.Percentile90 = round(d["DataValue"]["90%"], 5)
 
 
 class BoxWhisker(object):
-    def __init__(self, dataTable, method, noDataValue):
+    def __init__(self, data, method):
 
         self.intervals = {}
         self.method = method
+        mean = []
+        median = []
+        confint = []
+        conflimit = []
+
+        from scipy import stats
 
         # for x in dataTable:
-        #     print x, x[3]
+        # print x, x[3]
 
+        mean.append(data.mean())
+        median.append(data.median())
+        ci = stats.norm.interval(.95, data.mean(), scale=10 * (data.std() / math.sqrt(len(data))))
+        confint.append((ci[0][0], ci[1][0]))
+        cl = stats.norm.interval(.95, data.median(), scale=(data.std() / math.sqrt(len(data))))
+        conflimit.append((cl[0][0], cl[1][0]))
 
-        data = [x[0] for x in dataTable if x[0] <> noDataValue]
-        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", data, [''], self.calcConfInterval([data,]))
+        self.intervals["Overall"] = BoxWhiskerPlotInfo("Overall", None, [], [median, conflimit, mean, confint])
 
-        years = sorted(list(set([x[4] for x in dataTable])))
-        data = []
-        for y in years:
-            data.append([x[0] for x in dataTable if x[4] == y if x[0] <> noDataValue])
-        self.intervals["Yearly"] = BoxWhiskerPlotInfo("Yearly", data, years, self.calcConfInterval(data))
+        mean = []
+        median = []
+        confint = []
+        conflimit = []
+        names = []
+        y = data.groupby("Year")
 
-        data = [[x[0] for x in dataTable if x[1].month in (1, 2, 3) if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month in (4, 5, 6) if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month in (7, 8, 9) if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month in (10, 11, 12) if x[0] <> noDataValue]]
-        self.intervals["Seasonally"] = BoxWhiskerPlotInfo("Seasonally", data, ['Winter', 'Spring', 'Summer', 'Fall'],
-                                                          self.calcConfInterval(data))
+        for name, group in y:
+            names.append(name)
+            mean.append(group.mean())
+            median.append(group.median())
+            ci = stats.norm.interval(.95, data.mean(), scale=10 * (data.std() / math.sqrt(len(data))))
+            confint.append((ci[0][0], ci[1][0]))
+            cl = stats.norm.interval(.95, data.median(), scale=(data.std() / math.sqrt(len(data))))
+            conflimit.append((cl[0][0], cl[1][0]))
 
-        data = [[x[0] for x in dataTable if x[1].month == 1 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 2 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 3 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 4 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 5 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 6 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 7 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 8 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 9 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 10 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 11 if x[0] <> noDataValue],
-                [x[0] for x in dataTable if x[1].month == 12 if x[0] <> noDataValue]]
-        self.intervals["Monthly"] = BoxWhiskerPlotInfo("Monthly", data,
-                                                       ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep',
-                                                        'Oct', 'Nov', 'Dec'], self.calcConfInterval(data))
+        # return medians, conflimit, means, confint
+        self.intervals["Year"] = BoxWhiskerPlotInfo("Year", "Year", names, [median, conflimit, mean, confint])
+
+        mean = []
+        median = []
+        confint = []
+        conflimit = []
+        names = []
+        m = data.groupby("Month")
+
+        for name, group in m:
+            names.append(name)
+            mean.append(group.mean())
+            median.append(group.median())
+            ci = stats.norm.interval(.95, group.mean(), scale=10 * (group.std() / math.sqrt(len(group))))
+            confint.append((ci[0][0], ci[1][0]))
+            cl = stats.norm.interval(.95, group.median(), scale=(group.std() / math.sqrt(len(group))))
+            conflimit.append((cl[0][0], cl[1][0]))
+
+        self.intervals["Month"] = BoxWhiskerPlotInfo("Month", "Month", [numToMonth(x) for x in names],
+                                                     [median, conflimit, mean, confint])
+
+        mean = []
+        median = []
+        confint = []
+        conflimit = []
+        names = []
+        m = data.groupby("Season")
+
+        for name, group in m:
+            names.append(name)
+            mean.append(group.mean())
+            median.append(group.median())
+            ci = stats.norm.interval(.95, group.mean(), scale=10 * (group.std() / math.sqrt(len(group))))
+            confint.append((ci[0][0], ci[1][0]))
+            cl = stats.norm.interval(.95, group.median(), scale=(group.std() / math.sqrt(len(group))))
+            conflimit.append((cl[0][0], cl[1][0]))
+
+        self.intervals["Season"] = BoxWhiskerPlotInfo("Season", "Season", [numToSeason(x) for x in names],
+                                                      [median, conflimit, mean, confint])
+
         self.currinterval = self.intervals[self.method]
 
 
@@ -418,63 +513,13 @@ class BoxWhisker(object):
         self.method = title
         self.currinterval = self.intervals[self.method]
 
-    def calcConfInterval(self, PlotData):
-        medians = []
-        confint = []
-        conflimit = []
-        means = []
-        '''if len(PlotData) > 12:
-            vals = self.indivConfInter(PlotData)
-            medians.append(vals[0])
-            means.append(vals[1])
-            conflimit.append((vals[4], vals[5]))
-            confint.append((vals[2], vals[3]))
-            # print vals
-
-        else:'''
-        for data in PlotData:
-            vals = self.indivConfInter(data)
-            medians.append(vals[0])
-            means.append(vals[1])
-            conflimit.append((vals[4], vals[5]))
-            confint.append((vals[2], vals[3]))
-            # print vals
-
-        return medians, conflimit, means, confint
-
-
-    def indivConfInter(self, data):
-        if type(data) is float:
-            med = numpy.median(data)
-            mean = numpy.mean(data)
-            stdDev = math.sqrt(numpy.var(data))
-            ci95low = mean - 10 * (1.96 * (stdDev / math.sqrt(1)))
-            ci95up = mean + 10 * (1.96 * (stdDev / math.sqrt(1)))
-
-            cl95low = med - (1.96 * (stdDev / math.sqrt(1)))
-            cl95up = med + (1.96 * (stdDev / math.sqrt(1)))
-
-            return [med, mean, ci95low, ci95up, cl95low, cl95up]
-        elif len(data) > 0:
-            med = numpy.median(data)
-            mean = numpy.mean(data)
-            stdDev = math.sqrt(numpy.var(data))
-            ci95low = mean - 10 * (1.96 * (stdDev / math.sqrt(len(data))))
-            ci95up = mean + 10 * (1.96 * (stdDev / math.sqrt(len(data))))
-
-            cl95low = med - (1.96 * (stdDev / math.sqrt(len(data))))
-            cl95up = med + (1.96 * (stdDev / math.sqrt(len(data))))
-
-            return [med, mean, ci95low, ci95up, cl95low, cl95up]
-        else:
-            return [None, None, None, None, None, None]
-
 
 class BoxWhiskerPlotInfo(object):
-    def __init__(self, title, data,  xLabels, dets):
+    def __init__(self, title, groupby, xLabels, dets):
         self.title = title
-        self.data = data
+
         self.xlabels = xLabels
+        self.groupby = groupby
 
         self.medians = dets[0]
         self.confint = dets[1]
@@ -483,40 +528,70 @@ class BoxWhiskerPlotInfo(object):
 
 
 class Probability(object):
-    def __init__(self, dataTable, noDataValue):
-        dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
-        self.curFreq = None
-        self.Xaxis = []
-        self.Yaxis = sorted(dataValues)
-        length = len(dataValues)
+    def __init__(self, data):
+        """
 
-        for it in range(length):
-            #curValue = datavalues[it]
-            curFreq = self.calcualteProbabilityFreq(it + 1, length)
-            curX = self.calculateProbabilityXPosition(curFreq)
-            #self.Yaxis.append(curValue)
-            self.Xaxis.append(curX)
+        Probability (Frequency of Exceedence) Algorithm
+        * sorted = Sort values
+        * ranks = Rank sorted values
+        * Reverse the ranking
+        * Calculate Probability of Exceedence using algorithm: ranks/(len(sorted)+1) * 100
 
-    def calculateProbabilityXPosition(self, freq):
-        try:
-            return round(4.91 * ((freq ** .14) - (1.00 - freq) ** .14), 3)
-        except:
-            print "An error occurred while calculating the X-Position for a point in the prob plot"
-            pass
+        #First, I sort the values.
+        ##sorted <- sort(TSSpred)
 
-    def calcualteProbabilityFreq(self, rank, numRows):
-        try:
-            return round((rank - .0375) / (numRows + 1 - (2 * 0.375)), 3)
-        except:
-            print "An error occured while calculating the frequency for a point in the prob plot"
-            pass
+        #Then, I rank the sorted values.
+        ##ranks <- rank(sorted, ties.method="max")
+
+        #Then, I reverse the ranking.
+        ##ranks <- max(ranks)-ranks
+
+        #This is the actual formula- rank/(length+1) as a %
+        #PrbExc = ranks/(length(sorted)+1)*100
+
+        #Here I plot the probability of exceedance (PrbExc) against the sorted initial values (sorted).
+        #plot(PrbExc, sorted, type='n', col='white', font.lab=1.5, xlab="Frequency of Exceedance, percent", ylab="TSS, mg/L",log="y")
 
 
+        :param data:
+        :return:
+        """
+
+        # Determine rank, sorting values doesn't change outcome while using pandas.
+        ranks = data['DataValue'].rank()
+        PrbExc = ranks / (len(ranks) + 1) * 100
+
+        self.xAxis = PrbExc
+        self.yAxis = data['DataValue']
 
 
+def numToMonth(date):
+    date = int(date)
+    return {
+        1: 'Jan',
+        2: 'Feb',
+        3: 'Mar',
+        4: 'Apr',
+        5: 'May',
+        6: 'Jun',
+        7: 'Jul',
+        8: 'Aug',
+        9: 'Sep',
+        10: 'Oct',
+        11: 'Nov',
+        12: 'Dec'
+    }[date]
 
 
+def numToSeason(date):
+    date = int(date)
+    return {
+        1: 'Winter',
+        2: 'Spring',
+        3: 'Summer',
+        4: 'Fall'
 
+    }[date]
 
 
 

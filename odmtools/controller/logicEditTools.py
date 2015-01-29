@@ -2,6 +2,7 @@ import logging
 
 from wx.lib.pubsub import pub as Publisher
 #from odmtools.odmservices import ServiceManager
+import pandas as pd
 from odmtools.odmdata import Qualifier
 from odmtools.common.logger import LoggerTool
 
@@ -42,8 +43,6 @@ class EditTools():
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
-
-
     def filter_date(self, endDate, startDate):
         self._edit_service.filter_date(endDate, startDate)
         self.refresh_plot()
@@ -53,9 +52,7 @@ class EditTools():
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
-
     def data_gaps(self, value, time_period):
-
         self._edit_service.data_gaps(value, time_period)
         self.refresh_plot()
         if self._record:
@@ -69,7 +66,6 @@ class EditTools():
         if self._record:
             self._script("edit_service.value_change_threshold(%s,'%s')\n" % (value, operator), 'black')
             Publisher.sendMessage("scroll")
-
 
     def filter_from_previous(self, value):
         '''
@@ -90,7 +86,6 @@ class EditTools():
         '''
         return self._edit_service.get_toggle()
 
-
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
         self.refresh_plot()
@@ -100,12 +95,42 @@ class EditTools():
             self._script("edit_service.select_points(points)\n")
             Publisher.sendMessage("scroll")
 
-    def select_points(self, id_list=[], datetime_list=[]):
-        self._edit_service.select_points(id_list, datetime_list)
+    def _list2dataframestub(self, datetime_list):
+        result = None
+        if isinstance(datetime_list, list):
+            result = pd.DataFrame(datetime_list)
+
+        return result
+        #elif isinstance(datetime_list, pd.DataFrame):
+        #    result = datetime_list.
+
+
+    def _dataframe2liststub(self, dataframe):
+        result = None
+        if isinstance(dataframe, pd.DataFrame):
+            result = pd.DataFrame()
+
+
+        ## return dataframe
+
+    def select_points(self, id_list=[], dataframe=[]):
+        """
+
+        :param id_list:
+        :param dataframe:
+        :return:
+        """
+
+        """ Handle list to dataframe conversion """
+        if isinstance(dataframe, list):
+            dataframe = self._edit_service.datetime2dataframe(dataframe)
+            #df = self._edit_list2dataframestub(datetime_list)
+        self._edit_service.select_points(dataframe=dataframe)
         self.refresh_plot()
+
         if self._record:
-            self._script(
-                "points = [\n\t{list}][0]\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
+            selectedpoints = self._edit_service.selectPointsStub()
+            self._script("points = [\n\t{list}][0]\n".format(list=selectedpoints))
             self._script("edit_service.select_points({id}, points)\n".format(id=id_list))
             Publisher.sendMessage("scroll")
             #print self._edit_service.get_filtered_points()
@@ -155,7 +180,6 @@ class EditTools():
         if self._record:
             self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
             Publisher.sendMessage("scroll")
-
         return ret
 
     def reset_filter(self):
@@ -337,14 +361,11 @@ class EditTools():
         return qcl
 
     def create_qualifer(self, code, description):
-
-
-        cv_service = self.serv_man.get_cv_service()
-        q = Qualifier()
-        q.code = code
-        q.description = description
-        cv_service.create_qualifer(q)
-        return q.id
+        qual = self._edit_service.create_qualifier(code, description)
+        if self._record:
+            self._script('new_qual = series_service.get_qualifier_by_code(%s)\n' % (qual.code))
+            Publisher.sendMessage("scroll")
+        return qual
 
     def create_method(self, m):
         method = self._edit_service.create_method(m.description, m.link)
@@ -402,4 +423,4 @@ class EditTools():
     def refresh_plot(self):
         Publisher.sendMessage("updateValues", event=None)
         Publisher.sendMessage("changePlotSelection",  datetime_list=self.get_filtered_dates())
-        Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())
+        #Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())

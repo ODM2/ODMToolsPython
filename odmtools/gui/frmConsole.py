@@ -27,7 +27,7 @@ class ModifiedFrame(Frame):
             remove(253)'''
         remove(wx.ID_ABOUT)
 
-class ODMConsole(wx.Panel, ShellFrameMixin):
+class ODMToolsConsole(wx.Panel, ShellFrameMixin):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self,  *args, **kwargs)
         ShellFrameMixin.__init__(self, config=None, dataDir=None)

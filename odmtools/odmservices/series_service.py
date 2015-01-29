@@ -27,6 +27,9 @@ class SeriesService():
         self._edit_session = self._session_factory.get_session()
         self._debug = debug
 
+
+
+
     def get_db_version(self):
         return self._edit_session.query(ODMVersion).first().version_number
 
@@ -376,6 +379,7 @@ class SeriesService():
             result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
             return True
         except:
+
             return False
 
     def method_exists(self, m):
