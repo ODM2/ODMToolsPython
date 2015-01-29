@@ -252,16 +252,20 @@ class SeriesPlotInfo(object):
         noDataValue = series.variable.no_data_value
         if self.editID == seriesID:
             #d= DataFrame(pandas.read_sql())
+            logger.debug("editing -- getting datavalues for graph")
             data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            logger.debug("Finished editing -- getting datavalues for graph")
+
 
         else:
-            # using current variable keeps the series subsetted
+            logger.debug("plotting -- getting datavalues for graph")
             data = pd.DataFrame(
                 self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
                 columns=self.memDB.columns)
+            logger.debug("Finished plotting -- getting datavalues for graph")
 
         data.set_index(["LocalDateTime"], inplace=True)
-
+        logger.debug("assigning variables...")
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
         seriesInfo.columns = self.memDB.columns
@@ -287,6 +291,8 @@ class SeriesPlotInfo(object):
         else:
             seriesInfo.yrange = 0
 
+
+        logger.debug("Finished creating SeriesInfo")
         return seriesInfo
 
     def getSeriesInfo(self, seriesID):
