@@ -67,10 +67,11 @@ class OneSeriesPlotInfo(object):
 class SeriesPlotInfo(object):
     # self._siteDisplayColumn = ""
 
-    def __init__(self, memDB):
+    def __init__(self, memDB, taskserver):
 
         # memDB is a connection to the memory_database
         self.memDB = memDB
+        self.taskserver = taskserver
         self._seriesInfos = {}
         self.editID = None
         self.colorList = ['blue', 'green', 'cyan', 'orange', 'purple', 'saddlebrown', 'magenta', 'teal', 'red']
@@ -192,7 +193,10 @@ class SeriesPlotInfo(object):
             # # add dictionary entry with no data
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
-
+            results = self.taskserver.getCompletedTasks()
+            self._seriesInfos[key].Probability = results['Probability']
+            self._seriesInfos[key].Statistics = results['Summary']
+            self._seriesInfos[key].BoxWhisker = results['BoxWhisker']
 
     # def Update(self):
     # for key, value in enumerate(self._seriesInfos):
@@ -305,7 +309,16 @@ class SeriesPlotInfo(object):
 
 
         #Tests to see if any values were returned for the given daterange
-        self.build(seriesInfo)
+
+        # construct tasks for the task server
+        tasks = [("Probability", seriesInfo.filteredData),
+                 ("BoxWhisker", (seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)),
+                 ("Summary", seriesInfo.filteredData)]
+
+        self.taskserver.setTasks(tasks)
+        self.taskserver.processTasks()
+
+        #self.build(seriesInfo)
 
         i = len(self._seriesInfos)
         if self.editID == seriesInfo.seriesID:
