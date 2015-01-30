@@ -5,7 +5,8 @@ import itertools as iter
 import pandas as pd
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
-import datetime
+
+import timeit
 
 from odmtools.common.logger import LoggerTool
 
@@ -31,7 +32,7 @@ class pnlDataTable(wx.Panel):
                           parent=self.parent, size=wx.Size(677, 449),
                           style=wx.TAB_TRAVERSAL)
         self.record_service = self.parent.Parent.getRecordService()
-        self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)  #Virtual
+        self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
 
         # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
@@ -44,7 +45,8 @@ class pnlDataTable(wx.Panel):
         sizer_2.Add(self.myOlv, 1, wx.ALL | wx.EXPAND, 4)
         self.SetSizer(sizer_2)
 
-        #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
+        self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
+
         #self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
         #self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
         Publisher.subscribe(self.onChangeSelection, ("changeTableSelection"))
@@ -95,6 +97,24 @@ class pnlDataTable(wx.Panel):
         self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns], )
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
+    @staticmethod
+    def initWorker(self, memDB):
+
+        self.memDB = memDB
+        myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
+
+        myOlv.SetColumns(
+            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=100, width=-1,
+                       stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
+            for x, i in self.memDB.getEditColumns()
+        )
+        myOlv.useAlternateBackColors = True
+        myOlv.oddRowsBackColor = wx.Colour(191, 217, 217)
+        myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns])
+        myOlv.SetObjects(self.memDB.getDataValuesforEdit())
+        return (myOlv, myOlvDataFrame)
+
+
     def onRefresh(self, e):
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
@@ -109,10 +129,9 @@ class pnlDataTable(wx.Panel):
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
         #self.currentItem = event.GetEventObject().GetSelectedObjects()
-        logger.debug("Called!!")
         try:
-            self.currentItem = self.myOlv.GetSelectedObjects()
-            #logger.debug("selectedObjects %s" % self.currentItem)
+            self.currentItem = pd.Series(self.myOlv.GetSelectedObjects())
+            logger.debug("selectedObjects %s" % len(self.currentItem))
 
             self.record_service.select_points(datetime_list=[x[3] for x in self.currentItem])
             #update plot
@@ -123,20 +142,32 @@ class pnlDataTable(wx.Panel):
 
     def onChangeSelection(self,  datetime_list=[]):
         if isinstance(datetime_list, pd.DataFrame):
+            start_time = timeit.default_timer()
             olv = self.myOlvDataFrame.set_index("LocalDateTime")
             filtered_dataframe = self.myOlvDataFrame[olv.index.isin(datetime_list.index)]
             values = filtered_dataframe.values.tolist()
+            elapsed_time = timeit.default_timer() - start_time
+            logger.debug("Change table took: %s seconds" % elapsed_time)
 
             ## Convert np timestamp to useable datetime.datetime format
             ## Improvements can be made. But this is faster than before.
             ##  Need to figure out how to convert pandas columns to datetime without loops.
+
+            start_time = timeit.default_timer()
             for i in values:
                 i[3] = i[3].to_pydatetime()
                 i[5] = i[5].to_pydatetime()
+            elapsed_time = timeit.default_timer() - start_time
+            logger.debug("Change table took: %s seconds to correct the datatypes" % elapsed_time)
+
 
             if len(values) > 0:
                 self.myOlv.SelectObject(values[0], deselectOthers=True, ensureVisible=True)
+            start_time = timeit.default_timer()
             self.myOlv.SelectObjects(values, deselectOthers=True)
+            elapsed_time = timeit.default_timer() - start_time
+            logger.debug("Change table took: %s seconds to select in objectlistview" % elapsed_time)
+
 
 
     def onKeyPress(self, evt):

@@ -1,9 +1,7 @@
 import logging
-
-from wx.lib.pubsub import pub as Publisher
-#from odmtools.odmservices import ServiceManager
 import pandas as pd
-from odmtools.odmdata import Qualifier
+import timeit
+from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
 
 
@@ -409,6 +407,17 @@ class EditTools():
 # UI methods
 ###############
     def refresh_plot(self):
+        start_time = timeit.default_timer()
         Publisher.sendMessage("updateValues", event=None)
+        elapsed_time = timeit.default_timer() - start_time
+        logger.debug("UpdateValues took: %s seconds" % elapsed_time)
+
+        start_time = timeit.default_timer()
         Publisher.sendMessage("changePlotSelection",  datetime_list=self.get_filtered_dates())
-        #Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())
+        elapsed_time = timeit.default_timer() - start_time
+        logger.debug("Change Plot Selection: %s seconds" % elapsed_time)
+
+        # start_time = timeit.default_timer()
+        # Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())
+        # elapsed_time = timeit.default_timer() - start_time
+        # logger.debug("Change table took: %s seconds" % elapsed_time)

@@ -153,19 +153,11 @@ class SeriesPlotInfo(object):
 
 
     def stopEditSeries(self):
-
         if self.editID in self._seriesInfos:
-            '''
-            self._seriesInfos[self.editID].dataTable = \
-                self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
-                                                 self._seriesInfos[self.editID].startDate,
-                                                 self._seriesInfos[self.editID].endDate)
-            '''
-
-            data = pd.DataFrame(
-                self.memDB.getDataValuesforGraph(self.editID, self._seriesInfos[self.editID].noDataValue,
-                                                 self._seriesInfos[self.editID].startDate,
-                                                 self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
+            data = pd.DataFrame(self.memDB.getDataValuesforGraph(
+                self.editID, self._seriesInfos[self.editID].noDataValue,
+                self._seriesInfos[self.editID].startDate,
+                self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
             data.set_index(data['LocalDateTime'], inplace=True)
             self._seriesInfos[self.editID].dataTable = data
             self._seriesInfos[self.editID].edit = False
@@ -197,10 +189,6 @@ class SeriesPlotInfo(object):
             self._seriesInfos[key].Probability = results['Probability']
             self._seriesInfos[key].Statistics = results['Summary']
             self._seriesInfos[key].BoxWhisker = results['BoxWhisker']
-
-    # def Update(self):
-    # for key, value in enumerate(self._seriesInfos):
-    #         self._seriesInfos[key]=None
 
     def setBoxInterval(self, title):
 
@@ -253,15 +241,13 @@ class SeriesPlotInfo(object):
         if self.editID == seriesID:
             #d= DataFrame(pandas.read_sql())
             logger.debug("editing -- getting datavalues for graph")
-            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            data = self.memDB.getEditDataValuesforGraph()
             logger.debug("Finished editing -- getting datavalues for graph")
 
 
         else:
             logger.debug("plotting -- getting datavalues for graph")
-            data = pd.DataFrame(
-                self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd),
-                columns=self.memDB.columns)
+            data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
             logger.debug("Finished plotting -- getting datavalues for graph")
 
         data.set_index(["LocalDateTime"], inplace=True)
@@ -310,8 +296,6 @@ class SeriesPlotInfo(object):
 
         logger.debug("Create Series Info")
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
-
-        #Tests to see if any values were returned for the given daterange
 
         # construct tasks for the task server
         tasks = [("Probability", seriesInfo.filteredData),

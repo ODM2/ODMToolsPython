@@ -5,6 +5,11 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
+import logging
+from odmtools.common.logger import LoggerTool
+
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 class plotHist(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -78,6 +83,7 @@ class plotHist(wx.Panel):
     def updatePlot(self):
         self.clear()
         rows, cols = self.gridSize(self.seriesPlotInfo.count())
+        logger.debug("Rows: %s, cols: %s" % (rows,cols))
 
         i = 1
         for oneSeries in self.seriesPlotInfo.getAllSeries():
@@ -91,6 +97,8 @@ class plotHist(wx.Panel):
 
     def _createPlot(self, oneSeries, rows, cols, index):
         ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
+
+        logger.debug("HISTOGRAM: %s"% ax)
 
         # oneSeries.filteredData.hist(ax= ax, color='k', alpha=0.5, bins=50)
         his = oneSeries.filteredData.hist(column="DataValue", ax=ax, bins=self.bins,

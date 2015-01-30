@@ -24,6 +24,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         """
 
+        self.taskserver = kwargs.pop("taskserver")
         self.pnlPlot = kwargs.pop("plot")
 
         clsSeriesSelector.ClsSeriesSelector.__init__(self, *args, **kwargs)
@@ -510,6 +511,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             logger.debug("Initializing Memory Database")
             self.memDB.initEditValues(object.id)
             logger.debug("Finished Initializing Memory Database")
+
+            logger.debug("Initializing DataTable")
+
+            # tasks = [("dataTable", self.memDB)]
+            # self.taskserver.setTasks(tasks)
+            # self.taskserver.processTasks()
+
             self.isEditing = True
             ovl.editingObject = object
             ovl.RefreshObject(ovl.editingObject)

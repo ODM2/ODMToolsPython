@@ -129,7 +129,7 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot)
+        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver)
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
@@ -339,6 +339,7 @@ class frmODMToolsMain(wx.Frame):
 
             logger.debug("Initializing Plot")
             self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+
             logger.debug("Initializing DataTable")
             self.dataTable.init(memDB, self.record_service)
 

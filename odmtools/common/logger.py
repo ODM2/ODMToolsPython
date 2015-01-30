@@ -37,6 +37,7 @@ class LoggerTool():
         streamHandler.setFormatter(formatter)
 
         l.setLevel(level)
+        #l.setLevel(20) #Set logger to 20 to hide debug statements
         l.addHandler(fileHandler)
         l.addHandler(streamHandler)
 
