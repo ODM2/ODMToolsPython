@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+
 import logging
 from odmtools.common.logger import LoggerTool
 
@@ -341,38 +342,61 @@ class SeriesPlotInfo(object):
 
 class Statistics(object):
     def __init__(self, data):
-
+        start_time = timeit.default_timer()
         # dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
         #data = sorted(dataValues)
-        d = data.describe(percentiles=[.10, .25, .5, .75, .90])
-        count = self.NumberofObservations = d["DataValue"]["count"]
-        self.NumberofCensoredObservations = data[data["CensorCode"] != "nc"].count().DataValue
-        self.ArithemticMean = round(d["DataValue"]["mean"], 5)
-
-        sumval = 0
-        sign = 1
-        for dv in data["DataValue"]:
-            if dv == 0:
-                sumval = sumval + np.log2(1)
-            else:
-                if dv < 0:
-                    sign = sign * -1
-                sumval = sumval + np.log2(np.absolute(dv))
-
+        dvs = data["DataValue"]
+        count = len(dvs)
         if count > 0:
-            self.GeometricMean = round(sign * (2 ** float(sumval / float(count))), 5)
-            self.Maximum = round(d["DataValue"]["max"], 5)
-            self.Minimum = round(d["DataValue"]["min"], 5)
-            self.StandardDeviation = round(d["DataValue"]["std"], 5)
-            self.CoefficientofVariation = round(data.var().DataValue, 5)
+
+
+
+            time = timeit.default_timer()
+            self.NumberofCensoredObservations = len(data[data["CensorCode"] != "nc"])
+            elapsed = timeit.default_timer() - time
+            logger.debug("censored observations using len: %s" % elapsed)
+
+            '''
+            time = timeit.default_timer()
+            cc= data["CensorCode"]
+            tf= cc!="nc"
+            self.NumberofCensoredObservations=len(cc.mask(cc!="nc"))
+
+
+            # = len(cc[cc != "nc"])
+            elapsed = timeit.default_timer() - time
+            logger.debug("censored observations using cc %s" % elapsed)
+            '''
+
+
+
+            time = timeit.default_timer()
+            self.GeometricMean= stats.gmean(dvs)
+            elapsed = timeit.default_timer() - time
+            logger.debug("Geometric mean using scipy: %s" % elapsed)
+
+            time = timeit.default_timer()
+
+
+            self.NumberofObservations = count
+            self.ArithemticMean = round(np.mean(dvs), 5)
+            self.Maximum = round(np.max(dvs), 5)
+            self.Minimum = round(min(dvs), 5)
+            self.CoefficientofVariation = round(np.var(dvs), 5)
+            self.StandardDeviation = round(math.sqrt(self.CoefficientofVariation), 5)
 
             ##Percentiles
-            self.Percentile10 = round(d["DataValue"]["10%"], 5)
-            self.Percentile25 = round(d["DataValue"]["25%"], 5)
-            self.Percentile50 = round(d["DataValue"]["50%"], 5)
-            self.Percentile75 = round(d["DataValue"]["75%"], 5)
-            self.Percentile90 = round(d["DataValue"]["90%"], 5)
+            percentiles = np.percentile(dvs ,[10, 25, 50, 75, 90])
+            self.Percentile10 = round(percentiles[0], 5)
+            self.Percentile25 = round(percentiles[1], 5)
+            self.Percentile50 = round(percentiles[2], 5)
+            self.Percentile75 = round(percentiles[3], 5)
+            self.Percentile90 = round(percentiles[4], 5)
+            elapsed = timeit.default_timer() - time
+            logger.debug("describe using numpy: %s" % elapsed)
 
+        elapsed = timeit.default_timer() - start_time
+        logger.debug("Summary completed in: %s" % elapsed)
 
 class BoxWhisker(object):
     def __init__(self, data, method):
