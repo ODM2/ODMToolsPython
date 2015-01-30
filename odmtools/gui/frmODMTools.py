@@ -332,6 +332,12 @@ class frmODMToolsMain(wx.Frame):
         logger.debug("Beginning editing")
         isSelected, seriesID, memDB = self.pnlSelector.onReadyToEdit()
 
+        # logger.debug("Initializing DataTable")
+        # # tasks = [("dataTable", (memDB.conn, self.dataTable.myOlv))]
+        # tasks = [("dataTable", (self.dataTable.myOlv))]
+        # self.taskserver.setTasks(tasks)
+        # self.taskserver.processTasks()
+
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
                                                                           connection=memDB.conn)

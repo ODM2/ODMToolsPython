@@ -512,9 +512,9 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.memDB.initEditValues(object.id)
             logger.debug("Finished Initializing Memory Database")
 
-            logger.debug("Initializing DataTable")
-
-            # tasks = [("dataTable", self.memDB)]
+            # logger.debug("Initializing DataTable")
+            #
+            # tasks = [("dataTable", self.memDB.conn)]
             # self.taskserver.setTasks(tasks)
             # self.taskserver.processTasks()
 

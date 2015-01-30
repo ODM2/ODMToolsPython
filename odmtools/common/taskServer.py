@@ -1,6 +1,5 @@
 from multiprocessing import Process, Queue
 from odmtools.controller.logicPlotOptions import Probability, BoxWhisker, Statistics
-from odmtools.gui.pnlDataTable import pnlDataTable
 import time
 
 __author__ = 'jmeline'
@@ -35,12 +34,6 @@ class TaskServerMP:
         # List of tasks to be run
         self.tasks = []
         self.numtasks = len(self.tasks)
-
-        # i = tasks
-        self.i = 0
-
-        # j = completed_tasks
-        self.j = 0
 
         self.completedTasks = {}
 
@@ -135,9 +128,6 @@ class TaskServerMP:
                 result = BoxWhisker(task[0], task[1])
             if task_type == "Summary":
                 result = Statistics(task)
-            if task_type == "dataTable":
-                arg = task
-                result = pnlDataTable.initWorker(arg)
 
             result = (task_type, result)
 

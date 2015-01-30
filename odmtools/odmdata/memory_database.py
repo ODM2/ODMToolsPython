@@ -14,7 +14,7 @@ class MemoryDatabase(object):
         self.series_service = series_service        
         self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
-        self.editLoaded= False
+        self.editLoaded = False
         self.columns = ['DataValue', 'LocalDateTime', 'CensorCode', 'Month', 'Year', 'Season']
         self.createEditTable()
 

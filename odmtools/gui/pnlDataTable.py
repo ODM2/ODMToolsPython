@@ -97,24 +97,6 @@ class pnlDataTable(wx.Panel):
         self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns], )
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
-    @staticmethod
-    def initWorker(self, memDB):
-
-        self.memDB = memDB
-        myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
-
-        myOlv.SetColumns(
-            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=100, width=-1,
-                       stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
-            for x, i in self.memDB.getEditColumns()
-        )
-        myOlv.useAlternateBackColors = True
-        myOlv.oddRowsBackColor = wx.Colour(191, 217, 217)
-        myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns])
-        myOlv.SetObjects(self.memDB.getDataValuesforEdit())
-        return (myOlv, myOlvDataFrame)
-
-
     def onRefresh(self, e):
         self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
 
