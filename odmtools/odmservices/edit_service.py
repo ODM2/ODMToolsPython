@@ -367,7 +367,7 @@ class EditService():
         #    df.loc[x, "DataValue"]=np.nan
         mdf = df["DataValue"].mask(issel)
         mdf.interpolate(method = "time", inplace=True)
-        tmp_filter_list=mdf[issel]
+        tmp_filter_list["DataValue"]=mdf[issel]
 
         update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
         query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"

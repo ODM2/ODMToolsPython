@@ -136,7 +136,10 @@ class SeriesPlotInfo(object):
         else:
             ## Pandas DataFrame
             #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            st= timeit.default_timer()
             data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
+            elapsed = timeit.default_timer() - st
+            logging.debug ("Time to load getEditValuesForGraph into dataframe: %s" %elapsed)
             data.set_index(data['LocalDateTime'], inplace=True)
             self._seriesInfos[self.editID].dataTable = data
 
@@ -146,6 +149,7 @@ class SeriesPlotInfo(object):
 
 
     def updateEditSeries(self):
+        #update values
         if self.editID in self._seriesInfos:
             # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
             data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
@@ -343,32 +347,15 @@ class SeriesPlotInfo(object):
 class Statistics(object):
     def __init__(self, data):
         start_time = timeit.default_timer()
-        # dataValues = [x[0] for x in dataTable if x[0] <> noDataValue]
-        #data = sorted(dataValues)
+
         dvs = data["DataValue"]
         count = len(dvs)
         if count > 0:
-
-
 
             time = timeit.default_timer()
             self.NumberofCensoredObservations = len(data[data["CensorCode"] != "nc"])
             elapsed = timeit.default_timer() - time
             logger.debug("censored observations using len: %s" % elapsed)
-
-            '''
-            time = timeit.default_timer()
-            cc= data["CensorCode"]
-            tf= cc!="nc"
-            self.NumberofCensoredObservations=len(cc.mask(cc!="nc"))
-
-
-            # = len(cc[cc != "nc"])
-            elapsed = timeit.default_timer() - time
-            logger.debug("censored observations using cc %s" % elapsed)
-            '''
-
-
 
             time = timeit.default_timer()
             self.GeometricMean= stats.gmean(dvs)
@@ -393,7 +380,7 @@ class Statistics(object):
             self.Percentile75 = round(percentiles[3], 5)
             self.Percentile90 = round(percentiles[4], 5)
             elapsed = timeit.default_timer() - time
-            logger.debug("describe using numpy: %s" % elapsed)
+            logger.debug("describe using numpy and round: %s" % elapsed)
 
         elapsed = timeit.default_timer() - start_time
         logger.debug("Summary completed in: %s" % elapsed)

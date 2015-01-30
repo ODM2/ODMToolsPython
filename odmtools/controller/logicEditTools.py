@@ -34,7 +34,7 @@ class EditTools():
     ###################
     def filter_value(self, value, operator):
         self._edit_service.filter_value(value, operator)
-        self.refresh_plot()
+        self.refresh_selection()
         if self._record:
             self._script("edit_service.filter_value(%s, '%s')\n" % (value, operator), 'black')
             Publisher.sendMessage("scroll")
@@ -43,7 +43,7 @@ class EditTools():
 
     def filter_date(self, endDate, startDate):
         self._edit_service.filter_date(endDate, startDate)
-        self.refresh_plot()
+        self.refresh_selection()
         if self._record:
             self._script("edit_service.filter_date(%s, %s)\n" % (repr(endDate), repr(startDate)), 'black')
             Publisher.sendMessage("scroll")
@@ -52,7 +52,7 @@ class EditTools():
 
     def data_gaps(self, value, time_period):
         self._edit_service.data_gaps(value, time_period)
-        self.refresh_plot()
+        self.refresh_selection()
         if self._record:
             self._script("edit_service.data_gaps(%s, '%s')\n" % (value, time_period), 'black')
             Publisher.sendMessage("scroll")
@@ -60,7 +60,7 @@ class EditTools():
 
     def value_change_threshold(self, value, operator):
         self._edit_service.value_change_threshold(value, operator)
-        self.refresh_plot()
+        self.refresh_selection()
         if self._record:
             self._script("edit_service.value_change_threshold(%s,'%s')\n" % (value, operator), 'black')
             Publisher.sendMessage("scroll")
@@ -86,7 +86,7 @@ class EditTools():
 
     def select_points_tf(self, tf_list):
         self._edit_service.select_points_tf(tf_list)
-        self.refresh_plot()
+        self.refresh_selection()
         if self._record:
             self._script(
                 "points = [\n\t{list}][0]\n".format(list=[x[2] for x in self._edit_service.get_filtered_points()]))
@@ -124,7 +124,7 @@ class EditTools():
             dataframe = self._edit_service.datetime2dataframe(dataframe)
             #df = self._edit_list2dataframestub(datetime_list)
         self._edit_service.select_points(dataframe=dataframe)
-        self.refresh_plot()
+        self.refresh_selection()
 
         if self._record:
             selectedpoints = self._edit_service.selectPointsStub()
@@ -139,7 +139,7 @@ class EditTools():
     ###################
     def add_points(self, points):
         self._edit_service.add_points(points)
-        self.refresh_plot()
+        self.refresh_edit()
 
         if self._record:
             self._script(
@@ -149,7 +149,7 @@ class EditTools():
 
     def delete_points(self):
         self._edit_service.delete_points()
-        self.refresh_plot()
+        self.refresh_edit()
         if self._record:
             self._script("edit_service.delete_points()\n", 'black')
             Publisher.sendMessage("scroll")
@@ -157,7 +157,7 @@ class EditTools():
 
     def change_value(self, operator, value):
         self._edit_service.change_value(operator, value)
-        self.refresh_plot()
+        self.refresh_edit()
         if self._record:
             self._script("edit_service.change_value(%s, '%s')\n" % (operator, value), 'black')
             Publisher.sendMessage("scroll")
@@ -166,7 +166,7 @@ class EditTools():
     def interpolate(self):
         #print "Interpolate"
         self._edit_service.interpolate()
-        self.refresh_plot()
+        self.refresh_edit()
         if self._record:
             self._script("edit_service.interpolate()\n", 'black')
             Publisher.sendMessage("scroll")
@@ -174,7 +174,7 @@ class EditTools():
 
     def drift_correction(self, gap_width):
         ret = self._edit_service.drift_correction(gap_width)
-        self.refresh_plot()
+        self.refresh_edit()
         if self._record:
             self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
             Publisher.sendMessage("scroll")
@@ -182,7 +182,7 @@ class EditTools():
 
     def reset_filter(self):
         self._edit_service.reset_filter()
-        self.refresh_plot()
+        self.refresh_selection()
         if self._record:
             self._script("edit_service.reset_filter()\n", 'black')
             Publisher.sendMessage("scroll")
@@ -190,7 +190,7 @@ class EditTools():
 
     def flag(self, qualifier_id):
         self._edit_service.flag(qualifier_id)
-        self.refresh_plot()
+        self.refresh_edit()
         if self._record:
             self._script("edit_service.flag(%s)\n" % qualifier_id, 'black')
             Publisher.sendMessage("scroll")
@@ -198,7 +198,7 @@ class EditTools():
 
     def restore(self):
         self._edit_service.restore()
-        self.refresh_plot()
+        self.refresh_edit()
         if self._record:
             self._script("edit_service.restore()\n", 'black')
             Publisher.sendMessage("scroll")
@@ -406,12 +406,15 @@ class EditTools():
 ###############
 # UI methods
 ###############
-    def refresh_plot(self):
+    def refresh_edit(self):
         start_time = timeit.default_timer()
         Publisher.sendMessage("updateValues", event=None)
         elapsed_time = timeit.default_timer() - start_time
         logger.debug("UpdateValues took: %s seconds" % elapsed_time)
 
+        self.refresh_selection()
+
+    def refresh_selection(self):
         start_time = timeit.default_timer()
         Publisher.sendMessage("changePlotSelection",  datetime_list=self.get_filtered_dates())
         elapsed_time = timeit.default_timer() - start_time
@@ -421,3 +424,4 @@ class EditTools():
         # Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())
         # elapsed_time = timeit.default_timer() - start_time
         # logger.debug("Change table took: %s seconds" % elapsed_time)
+
