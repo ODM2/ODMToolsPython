@@ -3,7 +3,7 @@ import wx.grid
 import logging
 import itertools as iter
 import pandas as pd
-from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView
+from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView, VirtualObjectListView
 from wx.lib.pubsub import pub as Publisher
 
 import timeit
@@ -32,13 +32,11 @@ class pnlDataTable(wx.Panel):
                           parent=self.parent, size=wx.Size(677, 449),
                           style=wx.TAB_TRAVERSAL)
         self.record_service = self.parent.Parent.getRecordService()
-        self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
+        # self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
+        ## Trying out virtualObjectListView
+        self.myOlv = VirtualObjectListView(self, -1, style=wx.LC_REPORT)
 
-        # self.myOlv.SetObjectGetter(self.fetchFromDatabase)
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
-        #self.myOlv.handleStandardKeys = True
-        #self.myOlv.rowFormatter = self._rowFormatter
-
         self.currentItem = None
 
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
@@ -81,29 +79,41 @@ class pnlDataTable(wx.Panel):
     def init(self, memDB, record_service):
         self.memDB = memDB
         self.record_service = record_service
-        self.myOlv.SetColumns(
-            ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=100, width=-1,
-                       stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
-            for x, i in self.memDB.getEditColumns()
-        )
 
-        #####table Settings
+        columns = [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=100, width=-1,
+                              stringConverter= '%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
+                   for x, i in self.memDB.getEditColumns()]
+
+
         self.myOlv.useAlternateBackColors = True
         self.myOlv.oddRowsBackColor = wx.Colour(191, 217, 217)
-        #self.myOlv.oddRowsBackColor = "SlateGray"
-        #self.myOlv.AutoSizeColumns()
 
-        # self.values = [list(x) for x in self.cursor.fetchall()]
-        self.myOlvDataFrame = pd.DataFrame(self.memDB.getDataValuesforEdit(), columns=[x.title for x in self.myOlv.columns], )
-        self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
+        values = self.memDB.getDataValuesforEdit()
+        value_length = len(values)
+
+        self.myOlv.SetObjectGetter(self.objectGetter)
+        self.myOlv.SetItemCount(value_length)
+
+        self.myOlvDataFrame = pd.DataFrame(values, columns=[x.title for x in columns])
+        self.myOlv.SetColumns(columns)
+        self.dataObjects = self.myOlvDataFrame.values.tolist()
+
+    def objectGetter(self, index):
+        """
+        A Virtual list has to have a callable installed that says which model object is shown
+        at a given index
+        """
+        return self.dataObjects[index % len(self.dataObjects)]
 
     def onRefresh(self, e):
-        self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
+        #self.myOlv.SetObjects(self.memDB.getDataValuesforEdit())
+        pass
 
     def clear(self):
         self.memDB = None
         self.record_service = None
-        self.myOlv.SetObjects(None)
+        #self.myOlv.SetObjects(None)
+
 
     def onItemSelected(self, event):
         """Capture the currently selected Object to be used for editing
