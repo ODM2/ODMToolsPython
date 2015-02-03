@@ -233,15 +233,18 @@ class pnlDataTable(wx.Panel):
         Select values within
         """
         if isinstance(datetime_list, pd.DataFrame):
-            self.enableSelectDataTable = True
-            olv = self.myOlvDataFrame.set_index("LocalDateTime")
-            filtered_dataframe = self.myOlvDataFrame[olv.index.isin(datetime_list.index)]
-            results = np.where(self.myOlvDataFrame.index.isin(filtered_dataframe.index))
+            try:
+                self.enableSelectDataTable = True
+                olv = self.myOlvDataFrame.set_index("LocalDateTime")
+                filtered_dataframe = self.myOlvDataFrame[olv.index.isin(datetime_list.index)]
+                results = np.where(self.myOlvDataFrame.index.isin(filtered_dataframe.index))
 
-            for i in results[0]:
-                self.myOlv.SetItemState(i, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-            self.myOlv.Focus(results[0][0])
-            self.enableSelectDataTable = False
+                for i in results[0]:
+                    self.myOlv.SetItemState(i, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+                self.myOlv.Focus(results[0][0])
+                self.enableSelectDataTable = False
+            except:
+                pass
 
 
     def onKeyPress(self, evt):
