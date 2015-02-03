@@ -43,7 +43,7 @@ class pnlDataTable(wx.Panel):
         sizer_2.Add(self.myOlv, 1, wx.ALL | wx.EXPAND, 4)
         self.SetSizer(sizer_2)
 
-        self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
+        #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onItemSelected)
         # for wxMSW
@@ -59,6 +59,7 @@ class pnlDataTable(wx.Panel):
         Publisher.subscribe(self.onRefresh, ("refreshTable"))
 
         self.ascending = False
+        self.enableSelectDataTable = False
 
         self.Layout()
 
@@ -223,7 +224,8 @@ class pnlDataTable(wx.Panel):
         """
         Disable selecting of an item in the DataTable, only sorting is available
         """
-        self.myOlv.SetItemState(event.m_itemIndex, 0, wx.LIST_STATE_SELECTED)
+        if not self.enableSelectDataTable:
+            self.myOlv.SetItemState(event.m_itemIndex, 0, wx.LIST_STATE_SELECTED)
 
 
     def onChangeSelection(self,  datetime_list=[]):
@@ -231,6 +233,7 @@ class pnlDataTable(wx.Panel):
         Select values within
         """
         if isinstance(datetime_list, pd.DataFrame):
+            self.enableSelectDataTable = True
             olv = self.myOlvDataFrame.set_index("LocalDateTime")
             filtered_dataframe = self.myOlvDataFrame[olv.index.isin(datetime_list.index)]
             results = np.where(self.myOlvDataFrame.index.isin(filtered_dataframe.index))
@@ -238,6 +241,8 @@ class pnlDataTable(wx.Panel):
             for i in results[0]:
                 self.myOlv.SetItemState(i, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
             self.myOlv.Focus(results[0][0])
+            self.enableSelectDataTable = False
+
 
     def onKeyPress(self, evt):
         """Ignores Keypresses"""
