@@ -66,18 +66,19 @@ class EditService():
     def _populate_series(self):
         # [(ID, value, datetime), ...]
         #self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
+
         self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
 
         results = self._cursor.fetchall()
 
         self._series_points = results
-
+        '''
         self.columns = [
             "ValueID", "DataValue", "ValueAccuracy", "LocalDateTime", "UTCOffset", "DateTimeUTC",
             "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
             "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
-
-        self._series_points_df = pd.DataFrame(results,  columns=self.columns)
+        '''
+        self._series_points_df = pd.DataFrame(results,  columns=[x[0] for x in self._cursor.description])
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
 
 
@@ -473,7 +474,7 @@ class EditService():
             dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
-        logging.debug("original editing series id: %s" % str(series.id))
+        logger.debug("original editing series id: %s" % str(series.id))
         #        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
         #                                                             , method if method else series.method_id, series.source_id
         #                                                             , qcl if qcl else series.qcl_id)
@@ -488,7 +489,7 @@ class EditService():
                                                                   qcl_id=qcl.id if qcl else int(
                                                                       series.quality_control_level_id))
             if tseries:
-                logging.debug("Save existing series ID: %s" % str(series.id))
+                logger.debug("Save existing series ID: %s" % str(series.id))
                 series = tseries
             else:
                 print "Series doesn't exist (if you are not, you should be running SaveAs)"

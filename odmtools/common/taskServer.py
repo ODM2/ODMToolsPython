@@ -1,6 +1,7 @@
 from multiprocessing import Process, Queue
 from odmtools.controller.logicPlotOptions import Probability, BoxWhisker, Statistics
 import time
+import sqlite3
 
 __author__ = 'jmeline'
 
@@ -119,7 +120,7 @@ class TaskServerMP:
 
             result = None
 
-            task_type = arg[0]
+            task_type = arg[0] #(task_type, (arg1, arg2))
             task = arg[1]
 
             if task_type == "Probability":
@@ -128,6 +129,13 @@ class TaskServerMP:
                 result = BoxWhisker(task[0], task[1])
             if task_type == "Summary":
                 result = Statistics(task)
+            if task_type == "InitEditValues":
+                connection =  sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+                df = task[1]
+                logger.debug("Load series from db")
+                df.to_sql("DataValues", connection, 'sqlite', chunksize = 10000)
+                logger.debug("done loading database")
+                result = connection
 
             result = (task_type, result)
 

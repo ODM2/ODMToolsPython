@@ -509,7 +509,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
                 ovl.ToggleCheck(object)
 
             logger.debug("Initializing Memory Database")
-            self.memDB.initEditValues(object.id)
+            self.memDB.initEditValues(object.id, self.taskserver)
             logger.debug("Finished Initializing Memory Database")
 
             # logger.debug("Initializing DataTable")

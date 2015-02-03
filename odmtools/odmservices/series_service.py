@@ -15,7 +15,7 @@ from odmtools.odmdata import Method
 from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
-
+import pandas as pd
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
@@ -28,7 +28,8 @@ class SeriesService():
         self._debug = debug
 
 
-
+    def reset_session(self):
+        self._edit_session = self._session_factory.get_session()  # Reset the session in order to prevent memory leaks
 
     def get_db_version(self):
         return self._edit_session.query(ODMVersion).first().version_number
@@ -138,8 +139,7 @@ class SeriesService():
         #logger.debug("%s" % self._edit_session.query(Series).order_by(Series.id).all())
         return self._edit_session.query(Series).order_by(Series.id).all()
 
-    def reset_session(self):
-        self._edit_session = self._session_factory.get_session()  # Reset the session in order to prevent memory leaks
+
 
     def get_series_by_site(self , site_id):
         try:
@@ -150,8 +150,7 @@ class SeriesService():
 
     def get_series_by_id(self, series_id):
         try:
-            selectedSeries = self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).first()
-            return selectedSeries
+            return self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).first()
         except:
             return None
 
@@ -167,6 +166,23 @@ class SeriesService():
         # Pass in probably a Series object, match it against the database
         pass
 
+    def get_values_by_series(self, series):
+        '''
+
+        :param series:  Series object
+        :return: pandas dataframe
+        '''
+        q = self._edit_session.query(DataValue).filter_by(
+                site_id=series.site_id,
+                variable_id=series.variable_id,
+                method_id=series.method_id,
+                source_id=series.source_id,
+                quality_control_level_id=series.quality_control_level_id)
+
+        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+        return pd.read_sql_query(sql= query,
+                          con = self._session_factory.engine,
+                          params = query.params )
 
     def save_series(self, series):
         """ Save to an Existing Series

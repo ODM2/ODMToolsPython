@@ -1,8 +1,10 @@
 
 import sqlite3
 import pandas as pd
+import timeit
 import logging
 from odmtools.common.logger import LoggerTool
+import odmtools.common.taskServer
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -15,8 +17,7 @@ class MemoryDatabase(object):
         self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
         self.editLoaded = False
-        self.columns = ['DataValue', 'LocalDateTime', 'CensorCode', 'Month', 'Year', 'Season']
-        self.createEditTable()
+
 
     ############
     # DB Queries
@@ -44,6 +45,7 @@ class MemoryDatabase(object):
         return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
+
         series = self.series_service.get_series_by_id(seriesID)
         DataValues = [
             (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
@@ -51,23 +53,37 @@ class MemoryDatabase(object):
             for dv in series.data_values
             if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
         ]
-        return pd.DataFrame(DataValues, columns=self.columns)
+        data = pd.DataFrame(DataValues, columns=self.columns)
+        data.set_index(data['LocalDateTime'], inplace=True)
+        return data
+
+
 
     def getEditDataValuesforGraph(self):
-        query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, " \
-               "strftime('%Y', LocalDateTime) as DateYear, Null AS DateSeason  FROM DataValues ORDER BY LocalDateTime"
+        query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as Month, " \
+               "strftime('%Y', LocalDateTime) as Year  FROM DataValues ORDER BY LocalDateTime"
+
+
+        start=timeit.default_timer()
         self.cursor.execute(query)
-        #return pd.read_sql_query(query, self.conn)
-        return pd.DataFrame(self.cursor.fetchall(), columns=self.columns)
+
+        data= pd.DataFrame(self.cursor.fetchall(), columns=[x[0]for x in self.cursor.description])
+        elapsed = timeit.default_timer()- start
+        logger.debug("load fetchall into dataframe: %s"% elapsed)
+
+        start=timeit.default_timer()
+        df2= pd.read_sql_query(query, self.conn)
+        elapsed = timeit.default_timer()- start
+        logger.debug("load read_sql_query into dataframe: %s"% elapsed)
+        data.set_index(data['LocalDateTime'], inplace=True)
+        return  data
 
     def resetDB(self, series_service):
         self.series_service = series_service
 
         self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
         self.cursor = self.conn.cursor()
-        self.createEditTable()
 
-        self.DataValues= None
 
     def commit(self):
         self.conn.commit()
@@ -76,13 +92,39 @@ class MemoryDatabase(object):
         self.conn.rollback()
 
     def stopEdit(self):       
-        self.DataValues= None
+
         self.editLoaded= False
         self.cursor.execute("DROP TABLE DataValues")
-        self.conn.commit()
-        self.createEditTable()
+        self.commit()
+    def setConnection(self, connection):
+        self.conn= connection
 
 
+    def initEditValues(self, seriesID, taskserver):
+        """
+        :param df: dataframe
+        :return: nothing
+        """
+        if not self.editLoaded:
+            logger.debug("Load series from db")
+            series = self.series_service.get_series_by_id(seriesID)
+            df = self.series_service.get_values_by_series(series)
+            self.editLoaded = True
+            taskserver.setTasks([("InitEditValues", (self.conn, df))])
+            taskserver.processTasks()
+            # results = self.taskserver.getCompletedTasks()
+            # self.conn = results["InitEditValues"]
+
+
+
+    def initDVTable(df, connection):
+        logger.debug("Load series from db")
+        df= df.to_sql("DataValues", connection, 'sqlite', chunksize = 10000)
+        logger.debug("done loading database")
+
+
+
+    '''
     def initEditValues(self, seriesID):
         if not self.editLoaded:
             logger.debug("Load series from db")
@@ -94,7 +136,7 @@ class MemoryDatabase(object):
                 dv.quality_control_level_id) for dv in series.data_values]
 
             self.cursor.executemany("INSERT INTO DataValues VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", self.DataValues)
-            self.conn.commit()
+            self.commit()
             logger.debug("done loading")
             self.editLoaded = True
 
@@ -123,3 +165,4 @@ class MemoryDatabase(object):
                 PRIMARY KEY (ValueID),
                 UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID, SampleID))
                """)
+            '''

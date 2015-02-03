@@ -136,11 +136,8 @@ class SeriesPlotInfo(object):
         else:
             ## Pandas DataFrame
             #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            st= timeit.default_timer()
-            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
-            elapsed = timeit.default_timer() - st
-            logging.debug ("Time to load getEditValuesForGraph into dataframe: %s" %elapsed)
-            data.set_index(data['LocalDateTime'], inplace=True)
+            data = self.memDB.getEditDataValuesforGraph()
+
             self._seriesInfos[self.editID].dataTable = data
 
         self._seriesInfos[self.editID].edit = True
@@ -152,18 +149,16 @@ class SeriesPlotInfo(object):
         #update values
         if self.editID in self._seriesInfos:
             # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
-            data.set_index(data['LocalDateTime'], inplace=True)
+            data =self.memDB.getEditDataValuesforGraph()
             self._seriesInfos[self.editID].dataTable = data
 
 
     def stopEditSeries(self):
         if self.editID in self._seriesInfos:
-            data = pd.DataFrame(self.memDB.getDataValuesforGraph(
+            data = self.memDB.getDataValuesforGraph(
                 self.editID, self._seriesInfos[self.editID].noDataValue,
                 self._seriesInfos[self.editID].startDate,
-                self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
-            data.set_index(data['LocalDateTime'], inplace=True)
+                self._seriesInfos[self.editID].endDate)
             self._seriesInfos[self.editID].dataTable = data
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
@@ -189,6 +184,10 @@ class SeriesPlotInfo(object):
             except KeyError:
                 self.resetDates()
         else:
+            results = self.taskserver.getCompletedTasks()
+            self.memDB.setConnection(results["InitEditValues"])
+
+
             self._seriesInfos[key] = self.getSeriesInfo(key)
             results = self.taskserver.getCompletedTasks()
             self._seriesInfos[key].Probability = results['Probability']
@@ -255,7 +254,7 @@ class SeriesPlotInfo(object):
             data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
             logger.debug("Finished plotting -- getting datavalues for graph")
 
-        data.set_index(["LocalDateTime"], inplace=True)
+
         logger.debug("assigning variables...")
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
@@ -535,13 +534,13 @@ class Probability(object):
         :param data:
         :return:
         """
-
+        self.yAxis = data['DataValue']
         # Determine rank, sorting values doesn't change outcome while using pandas.
-        ranks = data['DataValue'].rank()
+        ranks = self.yAxis.rank()
         PrbExc = ranks / (len(ranks) + 1) * 100
 
         self.xAxis = PrbExc
-        self.yAxis = data['DataValue']
+
 
 
 def numToMonth(date):
