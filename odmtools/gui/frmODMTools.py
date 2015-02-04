@@ -41,7 +41,6 @@ class frmODMToolsMain(wx.Frame):
         """
 
         self.taskserver = kwargs.pop('taskServer')
-        self.memdb = kwargs.pop('memdb')
 
         # Determine the optimal size of the screen resolution
         size = self._obtainScreenResolution()
@@ -217,8 +216,8 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-
         self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memdb)
+
 
 
         ####################grid Table View##################

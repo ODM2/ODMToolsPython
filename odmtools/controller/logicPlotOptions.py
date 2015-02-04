@@ -189,7 +189,6 @@ class SeriesPlotInfo(object):
 
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
-
             results = self.taskserver.getCompletedTasks()
             self._seriesInfos[key].Probability = results['Probability']
             self._seriesInfos[key].Statistics = results['Summary']

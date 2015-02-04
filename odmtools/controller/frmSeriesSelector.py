@@ -25,7 +25,6 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
 
         self.taskserver = kwargs.pop("taskserver")
-        self.memDB = kwargs.pop("memdb")
         self.pnlPlot = kwargs.pop("plot")
 
         clsSeriesSelector.ClsSeriesSelector.__init__(self, *args, **kwargs)
@@ -65,7 +64,6 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         try:
-
             self.memDB.set_series_service(self.dbservice)
 
             object = self.dbservice.get_all_series()
@@ -85,7 +83,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
-        self.memDB.set_series_service(db)
+        self.memDB = MemoryDatabase(db)
         object = self.dbservice.get_all_series()
         #checkedObjs = self.tblSeries.GetCheckedObjects()
         idList = [x.id for x in self.tblSeries.modelObjects]
@@ -526,7 +524,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
                 ovl.ToggleCheck(object)
 
             logger.debug("Initializing Memory Database")
-            self.memDB.initEditValues(object.id)
+            self.memDB.initEditValues(object.id, self.taskserver)
             logger.debug("Finished Initializing Memory Database")
 
             # logger.debug("Initializing DataTable")
