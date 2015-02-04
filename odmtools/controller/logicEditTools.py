@@ -289,7 +289,7 @@ class EditTools():
         return self._edit_service.get_series()
 
     def get_series_points(self):
-        return self._edit_service.get_series_points()
+        return self._edit_service.get_series_points_df()
 
     def get_filtered_points(self):
         return self._edit_service.get_filtered_points()

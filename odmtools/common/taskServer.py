@@ -1,7 +1,7 @@
 from multiprocessing import Process, Queue
 from odmtools.controller.logicPlotOptions import Probability, BoxWhisker, Statistics
 import time
-import sqlite3
+from odmtools.odmservices import SeriesService
 
 __author__ = 'jmeline'
 
@@ -130,12 +130,15 @@ class TaskServerMP:
             if task_type == "Summary":
                 result = Statistics(task)
             if task_type == "InitEditValues":
-                connection =  sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+                connection =  SeriesService("sqlite:///:memory:")
                 df = task[1]
                 logger.debug("Load series from db")
-                df.to_sql("DataValues", connection, 'sqlite', chunksize = 10000)
+                df.to_sql(name="DataValues", con=connection._session_factory.engine, flavor='sqlite', index = False, chunksize = 10000)
                 logger.debug("done loading database")
                 result = connection
+            if task_type == "UpdateEditDF":
+                connection = task[1]
+                result = connection.get_all_values_df()
 
             result = (task_type, result)
 

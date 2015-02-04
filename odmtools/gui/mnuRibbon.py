@@ -462,12 +462,12 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditFlag(self, event):
         serviceManager = self.parent.getDBService()
-        cv_service = serviceManager.get_cv_service()
-        qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in cv_service.get_qualifiers()
+        series_service = serviceManager.get_series_service()
+        qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in series_service.get_qualifiers()
                                        if x.code and x.description)
         #choices = qualifierChoices.keys() + ["Create New....."]
 
-        add_flag = frmFlagValues(self, cv_service, qualifierChoices)
+        add_flag = frmFlagValues(self, series_service, qualifierChoices)
         val = add_flag.ShowModal()
 
         # If user closes dialog box

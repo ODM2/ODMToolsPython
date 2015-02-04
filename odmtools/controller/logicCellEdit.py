@@ -23,18 +23,18 @@ class CellEdit():
         self.recordService = recordService
         if serviceManager:
             self.serviceManager = serviceManager
-            self.cvService = serviceManager.get_cv_service()
+            self.seriesService = serviceManager.get_series_service()
             offsetChoices = OrderedDict((x.description, x.id) for x in
-                                        self.cvService.get_offset_type_cvs())
+                                        self.seriesService.get_offset_type_cvs())
             self.offSetTypeChoices = [NULL] + offsetChoices.keys()
 
-            labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cvService.get_samples())
+            labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.seriesService.get_samples())
 
-            self.censorCodeChoices = [NULL] + [x.term for x in self.cvService.get_censor_code_cvs()]
+            self.censorCodeChoices = [NULL] + [x.term for x in self.seriesService.get_censor_code_cvs()]
             self.labSampleChoices = [NULL] + labChoices.keys()
 
             self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
-                                           for x in self.cvService.get_qualifiers() if x.code and x.description)
+                                           for x in self.seriesService.get_qualifiers() if x.code and x.description)
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
 
         else:
@@ -361,7 +361,7 @@ class CellEdit():
             """
 
             if event.GetEventObject().Value == NEW:
-                dlg = frmFlagValues(self.parent, self.cvService, self.qualifierChoices, isNew=True)
+                dlg = frmFlagValues(self.parent, self.seriesService, self.qualifierChoices, isNew=True)
 
                 value = dlg.ShowModal()
                 if value == wx.ID_OK and dlg.selectedValue:
@@ -372,7 +372,7 @@ class CellEdit():
 
         try:
             self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
-                                               for x in self.cvService.get_qualifiers() if x.code and x.description)
+                                               for x in self.seriesService.get_qualifiers() if x.code and x.description)
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
         except:
             pass

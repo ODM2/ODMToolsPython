@@ -88,7 +88,7 @@ class pnlDataTable(wx.Panel):
         self.myOlv.useAlternateBackColors = True
         self.myOlv.oddRowsBackColor = wx.Colour(191, 217, 217)
 
-        values = self.memDB.getDataValuesforEdit()
+        values = self.memDB.getDataValues()
         value_length = len(values)
 
         self.myOlv.SetObjectGetter(self.objectGetter)

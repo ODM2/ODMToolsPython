@@ -36,23 +36,7 @@ class CVService():
         result = self._edit_session.query(Sample).order_by(Sample.lab_sample_code).all()
         return result
 
-    def get_qualifiers(self):
-        result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
-        return result
 
-    '''
-    def create_qualifier(self, qualifier):
-        self._edit_session.add(qualifier)
-        self._edit_session.commit()
-    '''
-    def create_qualifier(self,  code, description):
-        qual = Qualifier()
-        qual.code = code
-        qual.description = description
-
-        self._edit_session.add(qual)
-        self._edit_session.commit()
-        return qual
 
     def get_site_type_cvs(self):
         result = self._edit_session.query(SiteTypeCV).order_by(SiteTypeCV.term).all()

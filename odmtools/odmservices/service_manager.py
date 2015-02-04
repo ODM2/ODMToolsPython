@@ -144,8 +144,8 @@ class ServiceManager():
         return CVService(conn_string, self.debug)
 
     def get_edit_service(self, series_id, connection):
-        conn_string = self._build_connection_string(self._current_conn_dict)
-        return EditService(series_id, connection=connection, connection_string=conn_string, debug=self.debug)
+        #conn_string = self._build_connection_string(self._current_conn_dict)
+        return EditService(series_id, connection=connection,  debug=self.debug)
 
     def get_record_service(self, script, series_id, connection):
         return EditTools(self, script, self.get_edit_service(series_id, connection),

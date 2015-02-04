@@ -184,8 +184,8 @@ class SeriesPlotInfo(object):
             except KeyError:
                 self.resetDates()
         else:
-            results = self.taskserver.getCompletedTasks()
-            self.memDB.setConnection(results["InitEditValues"])
+            #results = self.taskserver.getCompletedTasks()
+            #self.memDB.setConnection(results["InitEditValues"])
 
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
@@ -258,7 +258,7 @@ class SeriesPlotInfo(object):
         logger.debug("assigning variables...")
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
-        seriesInfo.columns = self.memDB.columns
+        seriesInfo.columns = data.columns
         seriesInfo.startDate = startDate
         seriesInfo.endDate = endDate
         seriesInfo.dataType = dataType

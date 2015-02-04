@@ -4,7 +4,9 @@ import pandas as pd
 import timeit
 import logging
 from odmtools.common.logger import LoggerTool
-import odmtools.common.taskServer
+from odmtools.odmservices import SeriesService
+from odmtools.common.taskServer import TaskServerMP
+from multiprocessing import cpu_count, freeze_support
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -14,59 +16,87 @@ class MemoryDatabase(object):
     # series_service is a SeriesService
     def __init__(self, series_service):
         self.series_service = series_service        
-        self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-        self.cursor = self.conn.cursor()
+        #self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+        #self.cursor = self.conn.cursor()
+        self.mem_service = SeriesService("sqlite:///:memory:")
         self.editLoaded = False
+        self.df = None
 
 
-    ############
+        # Initialize TaskServer.
+        # This class starts the processes before starting wxpython and is needed
+        numproc = cpu_count()
+        self.taskserver = TaskServerMP(numproc=numproc)
+
+
+
+
+    ##############
     # DB Queries
-    ############
+    ##############
 
-    def get_data_values(self):
-        return []
+    def getDataValuesDF(self):
+        logging.debug("update in memory dataframe")
+        self.updateDF()
+        #pick up thread here before it is needed
+        logging.debug("done updating memory dataframe")
+        return self.df
 
-    def getDataValuesforEdit(self):  
+    def getDataValues(self):
         # query = "SELECT ValueID, SeriesID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, QualifierCode, OffsetValue, OffsetTypeID, CensorCode, SampleID FROM DataValues AS d LEFT JOIN Qualifiers AS q ON (d.QualifierID = q.QualifierID) "
+        '''
         query = "SELECT * from DataValues ORDER BY LocalDateTime"
         self.cursor.execute(query)
         return [list(x) for x in self.cursor.fetchall()]
+        '''
+        return self.mem_service.get_all_values_list()
 
     
     def getEditRowCount(self):
+        '''
         query ="SELECT COUNT(ValueID) FROM DataValues "
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
+        '''
+        return len(self.df)
 
 
     def getEditColumns(self):
+        '''
         sql = "SELECT * FROM DataValues WHERE 1=0 "
         self.cursor.execute(sql)
         return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]
+        '''
+        return [(x,i) for (i,x) in enumerate(self.df.columns)]
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
-
+        '''
         series = self.series_service.get_series_by_id(seriesID)
         DataValues = [
             (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
-                dv.local_date_time.strftime('%Y') , None)
+                dv.local_date_time.strftime('%Y'))
             for dv in series.data_values
             if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
         ]
         data = pd.DataFrame(DataValues, columns=self.columns)
         data.set_index(data['LocalDateTime'], inplace=True)
         return data
-
-
+        '''
+        self.mem_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
 
     def getEditDataValuesforGraph(self):
+        '''
         query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as Month, " \
                "strftime('%Y', LocalDateTime) as Year  FROM DataValues ORDER BY LocalDateTime"
 
 
         start=timeit.default_timer()
-        self.cursor.execute(query)
+        DataValues = [
+            (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
+                dv.local_date_time.strftime('%Y'))
+            for dv in series.data_values
 
+        ]
         data= pd.DataFrame(self.cursor.fetchall(), columns=[x[0]for x in self.cursor.description])
         elapsed = timeit.default_timer()- start
         logger.debug("load fetchall into dataframe: %s"% elapsed)
@@ -77,92 +107,57 @@ class MemoryDatabase(object):
         logger.debug("load read_sql_query into dataframe: %s"% elapsed)
         data.set_index(data['LocalDateTime'], inplace=True)
         return  data
+        '''
+        return self.mem_service.get_all_plot_values()
 
     def resetDB(self, series_service):
         self.series_service = series_service
-
-        self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-        self.cursor = self.conn.cursor()
+        self.mem_service = SeriesService("sqlite:///:memory:")
 
 
     def commit(self):
-        self.conn.commit()
+        self.mem_service._session_factory.engine.connect().connection.commit()
 
     def rollback(self):
         self.conn.rollback()
 
-    def stopEdit(self):       
-
+    def stopEdit(self):
         self.editLoaded= False
-        self.cursor.execute("DROP TABLE DataValues")
+        query = " DROP TABLE DataValues"
+        #self.cursor.execute("DROP TABLE DataValues")
+        self.mem_service._session_factory.engine.connect().execute(query)
         self.commit()
-    def setConnection(self, connection):
-        self.conn= connection
+
+    def setConnection(self, service):
+        self.mem_service= service
+
+    #TODO Thread this function
+    def updateDF(self):
+        self.df = self.mem_service.get_all_values_df()
 
 
-    def initEditValues(self, seriesID, taskserver):
+    def initEditValues(self, seriesID, taskserver=None):
         """
         :param df: dataframe
         :return: nothing
         """
         if not self.editLoaded:
             logger.debug("Load series from db")
-            series = self.series_service.get_series_by_id(seriesID)
-            df = self.series_service.get_values_by_series(series)
+
+            self.df = self.series_service.get_values_by_series(seriesID)
             self.editLoaded = True
-            taskserver.setTasks([("InitEditValues", (self.conn, df))])
-            taskserver.processTasks()
+
+            '''
+            if taskserver:
+                taskserver.setTasks([("InitEditValues", (self.mem_service._session_factory.engine, self.df))])
+                taskserver.processTasks()
             # results = self.taskserver.getCompletedTasks()
             # self.conn = results["InitEditValues"]
-
-
-
-    def initDVTable(df, connection):
-        logger.debug("Load series from db")
-        df= df.to_sql("DataValues", connection, 'sqlite', chunksize = 10000)
-        logger.debug("done loading database")
-
-
-
-    '''
-    def initEditValues(self, seriesID):
-        if not self.editLoaded:
+            else:
+            '''#TODO: Thread this call
             logger.debug("Load series from db")
-            series = self.series_service.get_series_by_id(seriesID)
-            logger.debug("Load series into memory db ")
-            self.DataValues = [(dv.id, dv.data_value, dv.value_accuracy, dv.local_date_time, dv.utc_offset, dv.date_time_utc,
-                dv.site_id, dv.variable_id, dv.offset_value, dv.offset_type_id, dv.censor_code,
-                dv.qualifier_id, dv.method_id, dv.source_id, dv.sample_id, dv.derived_from_id,
-                dv.quality_control_level_id) for dv in series.data_values]
-
-            self.cursor.executemany("INSERT INTO DataValues VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", self.DataValues)
-            self.commit()
-            logger.debug("done loading")
-            self.editLoaded = True
+            self.df.to_sql(name="DataValues", con=self.mem_service._session_factory.engine, flavor='sqlite', index = False, chunksize = 10000)
+            logger.debug("done loading database")
 
 
 
-    def createEditTable(self):
-        self.cursor.execute("""CREATE TABLE DataValues
-                (ValueID INTEGER NOT NULL,
-                DataValue FLOAT NOT NULL,
-                ValueAccuracy FLOAT,
-                LocalDateTime TIMESTAMP NOT NULL,
-                UTCOffset FLOAT NOT NULL,
-                DateTimeUTC TIMESTAMP NOT NULL,
-                SiteID INTEGER NOT NULL,
-                VariableID INTEGER NOT NULL,
-                OffsetValue FLOAT,
-                OffsetTypeID INTEGER,
-                CensorCode VARCHAR(50) NOT NULL,
-                QualifierID INTEGER,
-                MethodID INTEGER NOT NULL,
-                SourceID INTEGER NOT NULL,
-                SampleID INTEGER,
-                DerivedFromID INTEGER,
-                QualityControlLevelID INTEGER NOT NULL,
-
-                PRIMARY KEY (ValueID),
-                UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID, SampleID))
-               """)
-            '''

@@ -93,8 +93,8 @@ class frmFlagValues(wx.Dialog):
 
         self._init_sizers()
 
-    def __init__(self, parent, cv_service, choices, isNew=False):
-        self.cv_service = cv_service
+    def __init__(self, parent, series_service, choices, isNew=False):
+        self.series_service = series_service
 
         self.qualchoices = choices
         if isNew:
@@ -144,7 +144,7 @@ class frmFlagValues(wx.Dialog):
             q.code = code
             q.description = desc
 
-            self.cv_service.create_qualifier(q)
+            self.series_service.create_qualifier(q)
             self.qid = q.id
             self.selectedValue = q.code + '-' + q.description
 

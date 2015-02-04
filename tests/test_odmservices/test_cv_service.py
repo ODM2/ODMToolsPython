@@ -34,24 +34,7 @@ class TestCVService:
         assert sample.id == db_sample.id
         assert sample.lab_method_id == db_sample.lab_method_id
 
-    def test_create_qualifier(self):
-        qual = Qualifier()
-        qual.code = "ABC123"
-        qual.description = "This is a test"
-        self.cv_service.create_qualifier(qual)
 
-        assert qual.id is not None
-
-    def test_get_qualifiers(self):
-        assert self.cv_service.get_qualifiers() == []
-
-        qual = Qualifier()
-        qual.code = "ABC123"
-        qual.description = "This is a test"
-        self.cv_service.create_qualifier(qual)
-
-        db_qual = self.cv_service.get_qualifiers()[0]
-        assert qual.id == db_qual.id
 
     def test_get_site_type_cvs(self):
         assert self.cv_service.get_site_type_cvs() == []

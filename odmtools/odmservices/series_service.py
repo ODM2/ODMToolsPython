@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import distinct
+from sqlalchemy import distinct, func
 
 from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import Site
@@ -133,6 +133,12 @@ class SeriesService():
             Series.data_values).filter(Series.id == series_id, DataValue.sample_id != None).distinct().subquery()
         return self._edit_session.query(Sample).join(subquery).distinct().all()
 
+    def get_qualifiers(self):
+        result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
+        return result
+
+
+
     # Series Catalog methods
     def get_all_series(self):
         """Returns all series as a modelObject"""
@@ -166,12 +172,65 @@ class SeriesService():
         # Pass in probably a Series object, match it against the database
         pass
 
-    def get_values_by_series(self, series):
+    def get_all_values_df(self):
+        q = self._edit_session.query(DataValue)
+        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql= query,
+                          con = self._session_factory.engine,
+                          params = query.params )
+        return data.set_index(data['LocalDateTime'])
+
+    def get_all_values_list(self):
+        result = self._edit_session.query(DataValue).all()
+
+        return [x.list_repr() for x in result]
+
+    def get_all_plot_values (self):
+        q=self._edit_session.query(DataValue.data_value.label('DataValue'),
+                                   DataValue.local_date_time.label('LocalDateTime'),
+                                   DataValue.censor_code.label('CensorCode'),
+                                   func.strftime('%m', DataValue.local_date_time).label('Month'),
+                                   func.strftime('%Y', DataValue.local_date_time).label('Year'),
+                                   #DataValue.local_date_time.strftime('%m'),
+                                   #DataValue.local_date_time.strftime('%Y'))
+        ).order_by( DataValue.local_date_time)
+        print str(q)
+        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data= pd.read_sql_query(sql= query,
+                          con = self._session_factory.engine,
+                          params = query.params )
+        return data.set_index(data['LocalDateTime'])
+
+    def get_plot_values(self, seriesID, noDataValue, startDate = None, endDate = None ):
+        series= self.get_series_by_id(seriesID)
+        q=self._edit_session.query(DataValue.data_value,
+                                   DataValue.local_date_time,
+                                   DataValue.censor_code,
+                                   func.strftime('%m', DataValue.local_date_time).label('Month'),
+                                   func.strftime('%Y', DataValue.local_date_time).label('Year'),
+                                   #DataValue.local_date_time.strftime('%m'),
+                                   #DataValue.local_date_time.strftime('%Y'))
+        ).filter_by(DataValue.data_value != noDataValue,
+                       DataValue.local_date_time >startDate,
+                       DataValue.local_date_time<endDate
+        ).order_by( DataValue.local_date_time)
+
+
+        print str(q)
+        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data= pd.read_sql_query(sql= query,
+                          con = self._session_factory.engine,
+                          params = query.params )
+        return data.set_index(data['LocalDateTime'])
+
+
+    def get_values_by_series(self, series_id):
         '''
 
-        :param series:  Series object
+        :param series_id:  Series id
         :return: pandas dataframe
         '''
+        series= self.get_series_by_id(series_id)
         q = self._edit_session.query(DataValue).filter_by(
                 site_id=series.site_id,
                 variable_id=series.variable_id,
@@ -180,9 +239,11 @@ class SeriesService():
                 quality_control_level_id=series.quality_control_level_id)
 
         query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-        return pd.read_sql_query(sql= query,
+        data= pd.read_sql_query(sql= query,
                           con = self._session_factory.engine,
                           params = query.params )
+        #return data.set_index(data['LocalDateTime'])
+        return data
 
     def save_series(self, series):
         """ Save to an Existing Series
@@ -361,6 +422,20 @@ class SeriesService():
         self._edit_session.add(qcl)
         self._edit_session.commit()
         return qcl
+
+    '''
+    def create_qualifier(self, qualifier):
+        self._edit_session.add(qualifier)
+        self._edit_session.commit()
+    '''
+    def create_qualifier(self,  code, description):
+        qual = Qualifier()
+        qual.code = code
+        qual.description = description
+
+        self._edit_session.add(qual)
+        self._edit_session.commit()
+        return qual
 
     def delete_series(self, series):
         self.delete_dvs(series.data_values)

@@ -340,7 +340,7 @@ class frmODMToolsMain(wx.Frame):
 
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
-                                                                          connection=memDB.conn)
+                                                                          connection=memDB)
             self._ribbon.toggleEditButtons(True)
 
             logger.debug("Initializing Plot")
