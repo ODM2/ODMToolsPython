@@ -420,8 +420,8 @@ class EditTools():
         elapsed_time = timeit.default_timer() - start_time
         logger.debug("Change Plot Selection: %s seconds" % elapsed_time)
 
-        # start_time = timeit.default_timer()
-        # Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())
-        # elapsed_time = timeit.default_timer() - start_time
-        # logger.debug("Change table took: %s seconds" % elapsed_time)
+        start_time = timeit.default_timer()
+        Publisher.sendMessage("changeTableSelection",  datetime_list=self.get_filtered_dates())
+        elapsed_time = timeit.default_timer() - start_time
+        logger.debug("Change table took: %s seconds" % elapsed_time)
 
