@@ -61,17 +61,13 @@ class TaskServerMP:
         for i in self.tasks:
             self.dispatcher.putTask(i)
 
-        for _ in range(len(self.tasks)):
-            self.getOutput()
 
-        self.tasks = []
 
 
     def getOutput(self):
         """
         Collect completed tasks
         """
-
         logger.debug("Trying to get something...")
 
         output = self.dispatcher.getResult()
@@ -84,7 +80,10 @@ class TaskServerMP:
         """
         Retrieve all of the completedTasks
         """
+        for _ in range(len(self.tasks)):
+            self.getOutput()
 
+        self.tasks = []
         return self.completedTasks
 
     def anyAlive(self):
@@ -127,6 +126,7 @@ class TaskServerMP:
                 result = Probability(task)
             if task_type == "BoxWhisker":
                 result = BoxWhisker(task[0], task[1])
+
             if task_type == "Summary":
                 result = Statistics(task)
             if task_type == "InitEditValues":

@@ -14,22 +14,26 @@ class MemoryDatabase(object):
 ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
 
     # series_service is a SeriesService
-    def __init__(self, series_service):
-        self.series_service = series_service        
-        #self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-        #self.cursor = self.conn.cursor()
-        self.mem_service = SeriesService("sqlite:///:memory:")
+    def __init__(self, taskServer= None):
+        #self.series_service = series_service
+
         self.editLoaded = False
         self.df = None
 
 
-        # Initialize TaskServer.
-        # This class starts the processes before starting wxpython and is needed
-        numproc = cpu_count()
-        self.taskserver = TaskServerMP(numproc=numproc)
 
+        if not taskServer:
+            # Initialize TaskServer.
+            # This class starts the processes before starting wxpython and is needed
+            numproc = cpu_count()
+            self.taskserver = TaskServerMP(numproc=numproc)
+        else:
+            self.taskserver= taskServer
 
+    def set_series_service(self, service):
 
+        self.series_service = service
+        self.mem_service = SeriesService("sqlite:///:memory:")
 
     ##############
     # DB Queries
@@ -43,88 +47,29 @@ class MemoryDatabase(object):
         return self.df
 
     def getDataValues(self):
-        # query = "SELECT ValueID, SeriesID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, QualifierCode, OffsetValue, OffsetTypeID, CensorCode, SampleID FROM DataValues AS d LEFT JOIN Qualifiers AS q ON (d.QualifierID = q.QualifierID) "
-        '''
-        query = "SELECT * from DataValues ORDER BY LocalDateTime"
-        self.cursor.execute(query)
-        return [list(x) for x in self.cursor.fetchall()]
-        '''
         return self.mem_service.get_all_values_list()
-
     
     def getEditRowCount(self):
-        '''
-        query ="SELECT COUNT(ValueID) FROM DataValues "
-        self.cursor.execute(query)
-        return self.cursor.fetchone()[0]
-        '''
         return len(self.df)
 
-
     def getEditColumns(self):
-        '''
-        sql = "SELECT * FROM DataValues WHERE 1=0 "
-        self.cursor.execute(sql)
-        return [(x[0],i) for (i,x) in enumerate(self.cursor.description)]
-        '''
         return [(x,i) for (i,x) in enumerate(self.df.columns)]
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
-        '''
-        series = self.series_service.get_series_by_id(seriesID)
-        DataValues = [
-            (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
-                dv.local_date_time.strftime('%Y'))
-            for dv in series.data_values
-            if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
-        ]
-        data = pd.DataFrame(DataValues, columns=self.columns)
-        data.set_index(data['LocalDateTime'], inplace=True)
-        return data
-        '''
         self.mem_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
 
     def getEditDataValuesforGraph(self):
-        '''
-        query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as Month, " \
-               "strftime('%Y', LocalDateTime) as Year  FROM DataValues ORDER BY LocalDateTime"
-
-
-        start=timeit.default_timer()
-        DataValues = [
-            (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
-                dv.local_date_time.strftime('%Y'))
-            for dv in series.data_values
-
-        ]
-        data= pd.DataFrame(self.cursor.fetchall(), columns=[x[0]for x in self.cursor.description])
-        elapsed = timeit.default_timer()- start
-        logger.debug("load fetchall into dataframe: %s"% elapsed)
-
-        start=timeit.default_timer()
-        df2= pd.read_sql_query(query, self.conn)
-        elapsed = timeit.default_timer()- start
-        logger.debug("load read_sql_query into dataframe: %s"% elapsed)
-        data.set_index(data['LocalDateTime'], inplace=True)
-        return  data
-        '''
         return self.mem_service.get_all_plot_values()
 
-    def resetDB(self, series_service):
-        self.series_service = series_service
-        self.mem_service = SeriesService("sqlite:///:memory:")
-
-
     def commit(self):
-        self.mem_service._session_factory.engine.connect().connection.commit()
+        self.mem_service._session_factory.engine.connect().commit()
 
     def rollback(self):
         self.conn.rollback()
 
     def stopEdit(self):
         self.editLoaded= False
-        query = " DROP TABLE DataValues"
-        #self.cursor.execute("DROP TABLE DataValues")
+        query = "DROP TABLE DataValues"
         self.mem_service._session_factory.engine.connect().execute(query)
         self.commit()
 
@@ -135,8 +80,7 @@ class MemoryDatabase(object):
     def updateDF(self):
         self.df = self.mem_service.get_all_values_df()
 
-
-    def initEditValues(self, seriesID, taskserver=None):
+    def initEditValues(self, seriesID):
         """
         :param df: dataframe
         :return: nothing
