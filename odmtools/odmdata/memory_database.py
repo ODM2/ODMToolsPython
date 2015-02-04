@@ -21,6 +21,19 @@ class MemoryDatabase(object):
         self.df = None
 
 
+    def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
+        series = self.series_service.get_series_by_id(seriesID)
+        try:
+            DataValues = [
+                (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'), dv.local_date_time.strftime('%Y') )
+                for dv in series.data_values
+                if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
+            ]
+            return DataValues
+        except Exception as e:
+            print "FATAL: ", e
+            return False
+
 
         if not taskServer:
             # Initialize TaskServer.

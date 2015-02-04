@@ -162,6 +162,7 @@ class frmFlagValues(wx.Dialog):
 
 
     def OnBtnCancelButton(self, event):
+        self.EndModal(wx.ID_CANCEL)
         event.Skip()
         self.EndModal(wx.ID_CANCEL)
 

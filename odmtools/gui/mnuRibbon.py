@@ -365,7 +365,7 @@ class mnuRibbon(RB.RibbonBar):
     def onRecord(self, event):
 
         record_service = self.parent.getRecordService()
-        record_service.toggle_record()
+        record_service.toggle_record(True)
         #logger.debug("Recording? %s" % record_service._record)
 
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
@@ -420,8 +420,8 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection info to wizard
         # get site, Variable and Source from current dataset
 
-        wiz=wizSave.wizSave(self, self.parent.getDBService(), self.parent.getRecordService())
-        wiz.Destroy()
+        wiz=wizSave.wizSave(self, self.parent.getServiceManager(), self.parent.getRecordService())
+        wiz.Close()
         event.Skip()
 
     def onEditFilter(self, event):
@@ -461,9 +461,15 @@ class mnuRibbon(RB.RibbonBar):
         event.Skip()
 
     def onEditFlag(self, event):
+<<<<<<< HEAD
         serviceManager = self.parent.getDBService()
         series_service = serviceManager.get_series_service()
         qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in series_service.get_qualifiers()
+=======
+        serviceManager = self.parent.getServiceManager()
+        cv_service = serviceManager.get_cv_service()
+        qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in cv_service.get_qualifiers()
+>>>>>>> ec068ec3b14bba8990b67265f81f10051e0ce8c7
                                        if x.code and x.description)
         #choices = qualifierChoices.keys() + ["Create New....."]
 
@@ -484,7 +490,7 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditAddPoint(self, event):
         recordService = self.parent.getRecordService()
-        serviceManager = self.parent.getDBService()
+        serviceManager = self.parent.getServiceManager()
 
         addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
         addPoint.Show()
@@ -526,6 +532,12 @@ class mnuRibbon(RB.RibbonBar):
 
     def setEdit(self, isEdit):
         self.isEdit = isEdit
+
+    def getEditStatus(self):
+        try:
+            return self.isEdit
+        except:
+            return None
 
     def onEditSeries(self, event=None):
 

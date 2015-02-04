@@ -34,6 +34,7 @@ class frmODMToolsMain(wx.Frame):
     """
 
     """
+
     def __init__(self, **kwargs):
         """
 
@@ -47,6 +48,7 @@ class frmODMToolsMain(wx.Frame):
         kwargs['size'] = size
 
         wx.Frame.__init__(self, **kwargs)
+
 
         self._init_database()
         self._init_ctrls()
@@ -94,6 +96,91 @@ class frmODMToolsMain(wx.Frame):
 
 
     #############Entire Form Sizers##########
+
+    def _init_sizers(self):
+        # generated method, don't edit
+        self.s = wx.BoxSizer(wx.VERTICAL)
+        self._init_s_Items(self.s)
+        self.SetSizer(self.s)
+
+    def _init_s_Items(self, parent):
+        # generated method, don't edit
+        parent.AddWindow(self._ribbon, 0, wx.EXPAND)
+        parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
+
+    def _init_database(self, quit_if_cancel=True):
+        logger.debug("Loading Database...")
+
+        while True:
+            ## Database connection is valid, threfore proceed through the rest of the program
+            if self.service_manager.is_valid_connection():
+                service = None
+                conn_dict = None
+
+                service = self.createService()
+                conn_dict = self.service_manager.get_current_conn_dict()
+
+                if self.servicesValid(service):
+                    self.service_manager.add_connection(conn_dict)
+                    break
+
+            db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
+            value = db_config.ShowModal()
+            if value == wx.ID_CANCEL and quit_if_cancel:
+                logger.fatal("ODMTools is now closing because there is no database connection.")
+                sys.exit(0)
+            elif not quit_if_cancel:
+                return False
+
+            newConnection = db_config.panel.getFieldValues()
+            self.service_manager.set_current_conn_dict(newConnection)
+            db_config.Destroy()
+
+        conn_dict = self.service_manager.get_current_conn_dict()
+        msg = '%s://%s@%s/%s' % (
+            conn_dict['engine'], conn_dict['user'], conn_dict['address'], conn_dict['db']
+        )
+        logger.debug("...Connected to '%s'" % msg)
+
+        return True
+
+
+    def servicesValid(self, service, displayMsg=True):
+        """
+
+        :param displayMsg:
+            Option to display a message box if there is an issue with a service. Default: True
+        :return:
+        """
+        valid = True
+
+        ## Test if Series Catalog is empty
+        if not service.get_all_used_sites():
+            if displayMsg:
+                msg = wx.MessageDialog(None, 'Series Catalog cannot be empty. Please enter in a new database connection',
+                                           'Series Catalog is empty', wx.OK | wx.ICON_ERROR )
+                msg.ShowModal()
+            valid = False
+
+        # @TODO If Jeff runs into other issues with services not being available, we can simply test different services here
+        #if not service.get_all_variables():
+        #    valid = False
+
+        return valid
+
+    def on_about_request(self, event):
+        frmAbout(self)
+
+    def MacReopenApp(self):
+        """Called when the doc icon is clicked, and ???"""
+
+        try: # it's possible for this event to come when the frame is closed
+            self.GetTopWindow().Raise()
+        except:
+            pass
+
+    ###################### Frame ################
+
     def _init_ctrls(self):
         # generated method, don't edit
         logger.debug("Loading frame...")
@@ -130,7 +217,9 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
+
         self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memdb)
+
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
@@ -354,14 +443,15 @@ class frmODMToolsMain(wx.Frame):
             # set record service for console
             Publisher.sendMessage("setEdit", isEdit=True)
             logger.debug("Enabling Edit")
-            self.record_service.toggle_record()
-            # self._mgr.GetPane(self.txtPythonScript).Show(show=True)
+            self.record_service.toggle_record(True)
+
 
         else:
             logger.debug("disabling Edit")
             Publisher.sendMessage("setEdit", isEdit=False)
-            self.record_service.toggle_record()
-            # self._mgr.GetPane(self.txtPythonScript).Show(show=False)
+            self.record_service.toggle_record(True)
+            #self._mgr.GetPane(self.txtPythonScript).Show(show=False)
+
 
         # self._mgr.Update()
 
@@ -391,30 +481,26 @@ class frmODMToolsMain(wx.Frame):
         return self.record_service
 
     def onChangeDBConn(self, event):
+        db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
+        value = db_config.ShowModal()
+        if value == wx.ID_CANCEL:
+            return
 
-        value = None
-        while True:
-            db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
-            value = db_config.ShowModal()
+        newConnection = db_config.panel.getFieldValues()
+        self.service_manager.set_current_conn_dict(newConnection)
+        db_config.Destroy()
 
-            if value == wx.ID_CANCEL:
-                return
+        if self._init_database(quit_if_cancel=False):
+            if self._ribbon.getEditStatus():
+                self.stopEdit(event=None)
 
-            conn_dict = db_config.panel.getFieldValues()
-            service = self.createService(conn_dict)
-            if self.servicesValid(service):
-                self.service_manager.add_connection(conn_dict)
-                db_config.Destroy()
-                break
 
         if value == wx.ID_OK:
             # self.createService()
             self.pnlSelector.resetDB(self.sc)
             self.refreshConnectionInfo()
             self.pnlPlot.clear()
-            #self.pnlSelector.tableSeries.clearFilter()
             self.dataTable.clear()
-            #self.pnlSelector.tableSeries.checkCount = 0
 
     def createService(self, conn_dict=""):
         """
@@ -428,7 +514,7 @@ class frmODMToolsMain(wx.Frame):
         self.sc = self.service_manager.get_series_service(conn_dict=conn_dict)
         return self.sc
 
-    def getDBService(self):
+    def getServiceManager(self):
         return self.service_manager
 
     def toggleConsoleTools(self):

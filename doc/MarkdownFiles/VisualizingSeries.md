@@ -4,7 +4,7 @@ The 'Plot' tab is used to visualize data series. Series are selected for plottin
 
 ##Multiple Data Series##
 
-Multiple data series can be plotted by toggling the checkboxes to the left of each series entry in the Series Selector table. Up to six data series may be selected for plotting at once. Different color symbology is automatically assigned to each new series that is plotted. For time series and probability plots, series are plotted in the same frame. For histogram and box and whisker plots, each data series is plotted in its own frame, so there may be multiple subplots in the plot window.
+Multiple data series can be plotted by toggling the checkboxes to the left of each series entry in the Series Selector table or by right clicking on the series and selecting 'Plot'. Up to six data series may be selected for plotting at once. Different color symbology is automatically assigned to each new series that is plotted. For time series and probability plots, series are plotted in the same frame. For histogram and box and whisker plots, each data series is plotted in its own frame, so there may be multiple subplots in the plot window.
 
 ![MultipleSeries](images/MultipleSeries.png)
 ![Probabilitiy](images/Probability.png)

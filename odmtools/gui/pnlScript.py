@@ -160,25 +160,29 @@ class pnlScript(wx.Panel):
         elif result == wx.ID_CANCEL:
             dlg.Destroy()
             return False
+    def runCommand(self, text):
+        #TODO Stop recording
+        # get ahold of record service and turn it off do i need a publisher command?
+
+        self.parent.record_service.toggle_record(False)
+        for line in text.split("\n"):
+            self.console.shell.run(line)
+        #self.console.shell.run("\n")
+        self.parent.record_service.toggle_record(True)
+        #restart recording
 
     def OnExecute(self, e):
-        text = self.control.GetText()
-        for line in text.split("\n"):
-            self.console.shell.run(line)
-        self.console.shell.run("\n")
+        self.runCommand(self.control.GetText() )
 
     def OnExecuteSelection(self, e):
-        text = self.control.GetSelectedTextRaw()
-        for line in text.split("\n"):
-            self.console.shell.run(line)
+        self.runCommand(self.control.GetSelectedTextRaw())
 
     def OnExecuteLine(self, e):
         text = self.control.GetSelectedTextRaw()
         if text == "":
             text = self.control.GetLine(self.control.GetCurrentLine())
 
-        for line in text.split("\n"):
-            self.console.shell.run(line)
+        self.runCommand(text)
 
     def newKeyPressed(self):
         if self.filename:

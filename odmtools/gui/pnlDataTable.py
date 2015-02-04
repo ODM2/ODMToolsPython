@@ -2,11 +2,17 @@ import wx
 import wx.grid
 import logging
 import itertools as iter
+<<<<<<< HEAD
 import pandas as pd
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView, VirtualObjectListView
 from wx.lib.pubsub import pub as Publisher
 
 import timeit
+=======
+from odmtools.lib.oldOlv import ColumnDefn, FastObjectListView
+from wx.lib.pubsub import pub as Publisher
+#import datetime
+>>>>>>> ec068ec3b14bba8990b67265f81f10051e0ce8c7
 
 from odmtools.common.logger import LoggerTool
 
@@ -121,6 +127,10 @@ class pnlDataTable(wx.Panel):
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
         #self.currentItem = event.GetEventObject().GetSelectedObjects()
+<<<<<<< HEAD
+=======
+        #logger.debug("Called!!")
+>>>>>>> ec068ec3b14bba8990b67265f81f10051e0ce8c7
         try:
             self.currentItem = pd.Series(self.myOlv.GetSelectedObjects())
             logger.debug("selectedObjects %s" % len(self.currentItem))

@@ -1,0 +1,245 @@
+ListCtrlPrinter CalculateTotalPages 1862.3 ms
+Tue Aug 05 10:50:53 2008    app.prof
+
+         267006 function calls in 1.742 CPU seconds
+
+   Ordered by: internal time, call count
+   List reduced from 209 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    12584    0.211    0.000    0.291    0.000 _controls.py:4521(GetItem)
+    18920    0.084    0.000    0.120    0.000 _controls.py:4178(<lambda>)
+     6336    0.082    0.000    0.122    0.000 _controls.py:4491(GetColumn)
+     3167    0.079    0.000    0.495    0.000 ListCtrlPrinter.py:1140(DrawText)
+      305    0.078    0.000    1.064    0.003 ListCtrlPrinter.py:1411(DrawSelf)
+     3167    0.066    0.000    0.066    0.000 _gdi.py:3585(DrawLabel)
+      572    0.061    0.000    0.245    0.000 ListCtrlPrinter.py:2027(GetTexts)
+      572    0.061    0.000    0.237    0.000 ListCtrlPrinter.py:2039(GetImages)
+      572    0.060    0.000    0.212    0.000 ListCtrlPrinter.py:1310(GetColumnAlignments)
+      610    0.051    0.000    0.885    0.001 ListCtrlPrinter.py:1269(GetCombinedLists)
+     3163    0.049    0.000    0.260    0.000 WordWrapRenderer.py:95(DrawTruncatedString)
+     3209    0.045    0.000    0.048    0.000 _gdi.py:3791(GetPartialTextExtents)
+    18920    0.036    0.000    0.036    0.000 {method 'own' of 'PySwigObject' objects}
+    18920    0.036    0.000    0.036    0.000 _controls.py:4184(<lambda>)
+     6325    0.036    0.000    0.036    0.000 _controls.py:4501(GetColumnWidth)
+     6288    0.033    0.000    0.102    0.000 ListCtrlPrinter.py:962(GetFormat)
+     3163    0.030    0.000    0.098    0.000 WordWrapRenderer.py:113(_Truncate)
+     6324    0.030    0.000    0.069    0.000 ListCtrlPrinter.py:205(GetNamedFormat)
+     6422    0.027    0.000    0.042    0.000 ListCtrlPrinter.py:2304(__init__)
+     6324    0.025    0.000    0.039    0.000 ListCtrlPrinter.py:603(GetNamedFormat)
+     6314    0.025    0.000    0.025    0.000 _controls.py:4261(GetText)
+     3080    0.023    0.000    0.079    0.000 ListCtrlPrinter.py:1987(GetTextColor)
+      574    0.021    0.000    0.058    0.000 ListCtrlPrinter.py:1323(GetColumnWidths)
+     3168    0.018    0.000    0.025    0.000 _core.py:1133(__init__)
+     6314    0.018    0.000    0.018    0.000 _controls.py:4265(GetImage)
+     6292    0.018    0.000    0.018    0.000 _controls.py:4277(GetAlign)
+     3179    0.016    0.000    0.016    0.000 _gdi.py:4022(SetTextForeground)
+     6422    0.015    0.000    0.015    0.000 {method 'update' of 'dict' objects}
+     3167    0.014    0.000    0.022    0.000 _core.py:1440(__getitem__)
+     6324    0.014    0.000    0.014    0.000 {getattr}
+
+ListCtrlPrinter CalculateTotalPages 1770.4 ms
+Tue Aug 05 11:11:21 2008    app.prof
+
+         266950 function calls in 1.722 CPU seconds
+
+   Ordered by: internal time, call count
+   List reduced from 209 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    12584    0.208    0.000    0.288    0.000 _controls.py:4521(GetItem)
+     3167    0.083    0.000    0.489    0.000 ListCtrlPrinter.py:1140(DrawText)
+    18920    0.083    0.000    0.119    0.000 _controls.py:4178(<lambda>)
+     6336    0.081    0.000    0.121    0.000 _controls.py:4491(GetColumn)
+      305    0.078    0.000    1.058    0.003 ListCtrlPrinter.py:1411(DrawSelf)
+     3167    0.065    0.000    0.065    0.000 _gdi.py:3585(DrawLabel)
+      572    0.061    0.000    0.236    0.000 ListCtrlPrinter.py:2041(GetImages)
+      572    0.061    0.000    0.238    0.000 ListCtrlPrinter.py:2027(GetTexts)
+      572    0.059    0.000    0.209    0.000 ListCtrlPrinter.py:1310(GetColumnAlignments)
+      610    0.050    0.000    0.874    0.001 ListCtrlPrinter.py:1269(GetCombinedLists)
+     3163    0.046    0.000    0.251    0.000 WordWrapRenderer.py:95(DrawTruncatedString)
+     3213    0.038    0.000    0.040    0.000 _gdi.py:3791(GetPartialTextExtents)
+    18920    0.036    0.000    0.036    0.000 {method 'own' of 'PySwigObject' objects}
+    18920    0.036    0.000    0.036    0.000 _controls.py:4184(<lambda>)
+     6325    0.035    0.000    0.035    0.000 _controls.py:4501(GetColumnWidth)
+     6288    0.034    0.000    0.100    0.000 ListCtrlPrinter.py:962(GetFormat)
+     3163    0.030    0.000    0.092    0.000 WordWrapRenderer.py:113(_Truncate)
+     6324    0.028    0.000    0.067    0.000 ListCtrlPrinter.py:205(GetNamedFormat)
+     6422    0.027    0.000    0.042    0.000 ListCtrlPrinter.py:2308(__init__)
+     6324    0.025    0.000    0.039    0.000 ListCtrlPrinter.py:603(GetNamedFormat)
+     3080    0.022    0.000    0.077    0.000 ListCtrlPrinter.py:1987(GetTextColor)
+      574    0.021    0.000    0.057    0.000 ListCtrlPrinter.py:1323(GetColumnWidths)
+     6314    0.019    0.000    0.019    0.000 _controls.py:4261(GetText)
+     6314    0.019    0.000    0.019    0.000 _controls.py:4265(GetImage)
+     3168    0.019    0.000    0.025    0.000 _core.py:1133(__init__)
+     6292    0.017    0.000    0.017    0.000 _controls.py:4277(GetAlign)
+     3179    0.016    0.000    0.016    0.000 _gdi.py:4022(SetTextForeground)
+     6422    0.014    0.000    0.014    0.000 {method 'update' of 'dict' objects}
+     3167    0.014    0.000    0.022    0.000 _core.py:1440(__getitem__)
+     6324    0.014    0.000    0.014    0.000 {getattr}
+
+
+
+ListCtrlPrinter CalculateTotalPages 1855.8 ms
+Tue Aug 05 10:56:46 2008    app.prof
+
+         294965 function calls in 1.805 CPU seconds
+
+   Ordered by: internal time, call count
+   List reduced from 232 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     6336    0.084    0.000    0.126    0.000 _controls.py:4491(GetColumn)
+     3167    0.079    0.000    0.560    0.000 ListCtrlPrinter.py:1140(DrawText)
+     3167    0.078    0.000    0.097    0.000 _gdi.py:3585(DrawLabel)
+      305    0.073    0.000    1.132    0.004 ListCtrlPrinter.py:1411(DrawSelf)
+     6292    0.061    0.000    0.134    0.000 ObjectListView.py:929(GetImageAt)
+     3224    0.060    0.000    0.083    0.000 _gdi.py:3791(GetPartialTextExtents)
+      572    0.060    0.000    0.215    0.000 ListCtrlPrinter.py:1310(GetColumnAlignments)
+     7436    0.059    0.000    0.081    0.000 ObjectListView.py:3420(_Munge)
+      610    0.051    0.000    0.879    0.001 ListCtrlPrinter.py:1269(GetCombinedLists)
+     6292    0.050    0.000    0.246    0.000 ObjectListView.py:3274(GetStringValue)
+     3163    0.048    0.000    0.324    0.000 WordWrapRenderer.py:95(DrawTruncatedString)
+     6292    0.045    0.000    0.096    0.000 ObjectListView.py:3282(_StringToValue)
+     6325    0.036    0.000    0.036    0.000 _controls.py:4501(GetColumnWidth)
+     6292    0.035    0.000    0.100    0.000 ObjectListView.py:3267(GetValue)
+     6288    0.033    0.000    0.106    0.000 ListCtrlPrinter.py:962(GetFormat)
+     6324    0.032    0.000    0.046    0.000 ListCtrlPrinter.py:603(GetNamedFormat)
+     6292    0.030    0.000    0.276    0.000 ObjectListView.py:1028(GetStringValueAt)
+     3163    0.030    0.000    0.131    0.000 WordWrapRenderer.py:113(_Truncate)
+    13760    0.029    0.000    0.029    0.000 {getattr}
+     6924    0.029    0.000    0.051    0.000 cp1252.py:14(decode)
+     6336    0.029    0.000    0.042    0.000 _controls.py:4178(<lambda>)
+     6324    0.027    0.000    0.073    0.000 ListCtrlPrinter.py:205(GetNamedFormat)
+     6422    0.026    0.000    0.041    0.000 ListCtrlPrinter.py:2308(__init__)
+      572    0.024    0.000    0.309    0.001 ListCtrlPrinter.py:2027(GetTexts)
+     1188    0.023    0.000    0.023    0.000 {method 'strftime' of 'datetime.date' objects}
+     3080    0.023    0.000    0.078    0.000 ListCtrlPrinter.py:1987(GetTextColor)
+      572    0.022    0.000    0.165    0.000 ListCtrlPrinter.py:2041(GetImages)
+     6292    0.021    0.000    0.041    0.000 ObjectListView.py:3349(GetImage)
+     6924    0.021    0.000    0.021    0.000 {_codecs.charmap_decode}
+      574    0.021    0.000    0.058    0.000 ListCtrlPrinter.py:1323(GetColumnWidths)
+
+ListCtrlPrinter CalculateTotalPages 1700.5 ms
+Tue Aug 05 11:14:24 2008    app.prof
+
+         275373 function calls in 1.665 CPU seconds
+
+   Ordered by: internal time, call count
+   List reduced from 231 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     3167    0.078    0.000    0.564    0.000 ListCtrlPrinter.py:1140(DrawText)
+     3167    0.076    0.000    0.095    0.000 _gdi.py:3585(DrawLabel)
+      305    0.075    0.000    1.064    0.003 ListCtrlPrinter.py:1411(DrawSelf)
+     7436    0.061    0.000    0.083    0.000 ObjectListView.py:3420(_Munge)
+     6292    0.060    0.000    0.135    0.000 ObjectListView.py:929(GetImageAt)
+     3209    0.055    0.000    0.084    0.000 _gdi.py:3791(GetPartialTextExtents)
+      610    0.052    0.000    0.743    0.001 ListCtrlPrinter.py:1269(GetCombinedLists)
+     6292    0.051    0.000    0.253    0.000 ObjectListView.py:3274(GetStringValue)
+     3163    0.049    0.000    0.324    0.000 WordWrapRenderer.py:95(DrawTruncatedString)
+     6292    0.045    0.000    0.099    0.000 ObjectListView.py:3282(_StringToValue)
+     6325    0.036    0.000    0.036    0.000 _controls.py:4501(GetColumnWidth)
+     6292    0.036    0.000    0.102    0.000 ObjectListView.py:3267(GetValue)
+     6905    0.035    0.000    0.056    0.000 cp1252.py:14(decode)
+     6292    0.034    0.000    0.045    0.000 ObjectListView.py:3241(GetAlignment)
+     6288    0.033    0.000    0.102    0.000 ListCtrlPrinter.py:962(GetFormat)
+     6292    0.030    0.000    0.283    0.000 ObjectListView.py:1028(GetStringValueAt)
+     3163    0.030    0.000    0.132    0.000 WordWrapRenderer.py:113(_Truncate)
+    13760    0.029    0.000    0.029    0.000 {getattr}
+     6324    0.029    0.000    0.069    0.000 ListCtrlPrinter.py:205(GetNamedFormat)
+     6422    0.026    0.000    0.041    0.000 ListCtrlPrinter.py:2309(__init__)
+     6324    0.026    0.000    0.040    0.000 ListCtrlPrinter.py:603(GetNamedFormat)
+      572    0.025    0.000    0.316    0.001 ListCtrlPrinter.py:2027(GetTexts)
+     3080    0.023    0.000    0.081    0.000 ListCtrlPrinter.py:1987(GetTextColor)
+      572    0.023    0.000    0.166    0.000 ListCtrlPrinter.py:2042(GetImages)
+      572    0.023    0.000    0.070    0.000 ListCtrlPrinter.py:2035(GetAlignments)
+      574    0.022    0.000    0.060    0.000 ListCtrlPrinter.py:1323(GetColumnWidths)
+     1188    0.022    0.000    0.022    0.000 {method 'strftime' of 'datetime.date' objects}
+     6292    0.021    0.000    0.042    0.000 ObjectListView.py:3349(GetImage)
+     6905    0.021    0.000    0.021    0.000 {_codecs.charmap_decode}
+     9724    0.020    0.000    0.020    0.000 {isinstance}
+
+#======================================================================
+
+FASTLIST 10,000 rows
+
+ListCtrlPrinter CalculateTotalPages 142273.9 ms
+Tue Aug 05 11:23:54 2008    app.prof
+
+         22351842 function calls in 142.228 CPU seconds
+
+   Ordered by: internal time, call count
+   List reduced from 214 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   507298   19.119    0.000   70.122    0.000 _controls.py:4521(GetItem)
+   507298    5.051    0.000   11.103    0.000 ObjectListView.py:929(GetImageAt)
+   599534    5.027    0.000    6.828    0.000 ObjectListView.py:3420(_Munge)
+   507298    4.048    0.000   20.396    0.000 ObjectListView.py:3274(GetStringValue)
+   507298    3.718    0.000    7.838    0.000 ObjectListView.py:3282(_StringToValue)
+   507298    3.444    0.000   28.113    0.000 ObjectListView.py:2116(OnGetItemText)
+   760991    3.437    0.000    4.925    0.000 _controls.py:4178(<lambda>)
+   253693    3.416    0.000    5.045    0.000 _controls.py:4491(GetColumn)
+   507298    3.400    0.000   16.120    0.000 ObjectListView.py:2130(OnGetItemColumnImage)
+  1014596    3.338    0.000    3.396    0.000 ObjectListView.py:2155(GetObjectAt)
+    25042    3.274    0.000   75.245    0.003 ListCtrlPrinter.py:1411(DrawSelf)
+   131137    3.253    0.000   21.029    0.000 ListCtrlPrinter.py:1140(DrawText)
+   507298    2.930    0.000    8.510    0.000 ObjectListView.py:3267(GetValue)
+    50082    2.834    0.000   97.934    0.002 ListCtrlPrinter.py:1269(GetCombinedLists)
+    46118    2.810    0.000   39.491    0.001 ListCtrlPrinter.py:2027(GetTexts)
+    46118    2.783    0.000   38.978    0.001 ListCtrlPrinter.py:2039(GetImages)
+    46118    2.677    0.000    9.037    0.000 ListCtrlPrinter.py:1310(GetColumnAlignments)
+   131137    2.601    0.000    2.601    0.000 _gdi.py:3585(DrawLabel)
+   507298    2.494    0.000   22.890    0.000 ObjectListView.py:1028(GetStringValueAt)
+   533378    2.348    0.000    4.062    0.000 cp1252.py:14(decode)
+   990365    2.132    0.000    2.132    0.000 {getattr}
+   386871    2.069    0.000    6.193    0.000 ListCtrlPrinter.py:962(GetFormat)
+   131131    1.995    0.000   10.308    0.000 WordWrapRenderer.py:95(DrawTruncatedString)
+    96209    1.921    0.000    1.921    0.000 {method 'strftime' of 'datetime.date' objects}
+   507298    1.777    0.000    3.327    0.000 ObjectListView.py:3349(GetImage)
+   144064    1.770    0.000    1.971    0.000 _gdi.py:3791(GetPartialTextExtents)
+   157504    1.752    0.000    1.752    0.000 _gdi.py:3659(SetFont)
+   390831    1.744    0.000    4.167    0.000 ListCtrlPrinter.py:205(GetNamedFormat)
+   784006    1.722    0.000    1.722    0.000 {isinstance}
+   533378    1.714    0.000    1.714    0.000 {_codecs.charmap_decode}
+
+ListCtrlPrinter CalculateTotalPages 79258.0 ms
+Tue Aug 05 11:26:44 2008    app.prof
+
+         13485917 function calls in 79.211 CPU seconds
+
+   Ordered by: internal time, call count
+   List reduced from 210 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+    25042    3.295    0.000   45.882    0.002 ListCtrlPrinter.py:1411(DrawSelf)
+   131137    3.253    0.000   23.338    0.000 ListCtrlPrinter.py:1140(DrawText)
+   131137    2.955    0.000    3.753    0.000 _gdi.py:3585(DrawLabel)
+    50082    2.806    0.000   32.646    0.001 ListCtrlPrinter.py:1269(GetCombinedLists)
+   253649    2.452    0.000    5.388    0.000 ObjectListView.py:929(GetImageAt)
+   299767    2.376    0.000    3.247    0.000 ObjectListView.py:3420(_Munge)
+   144264    2.206    0.000    3.250    0.000 _gdi.py:3791(GetPartialTextExtents)
+   386871    2.045    0.000    6.129    0.000 ListCtrlPrinter.py:962(GetFormat)
+   131131    2.019    0.000   12.593    0.000 WordWrapRenderer.py:95(DrawTruncatedString)
+   253649    1.997    0.000    9.879    0.000 ObjectListView.py:3274(GetStringValue)
+   253649    1.808    0.000    3.832    0.000 ObjectListView.py:3282(_StringToValue)
+   157504    1.788    0.000    1.788    0.000 _gdi.py:3659(SetFont)
+   390831    1.705    0.000    4.125    0.000 ListCtrlPrinter.py:205(GetNamedFormat)
+   390831    1.572    0.000    2.420    0.000 ListCtrlPrinter.py:603(GetNamedFormat)
+   253682    1.489    0.000    1.489    0.000 _controls.py:4501(GetColumnWidth)
+   690598    1.465    0.000    1.465    0.000 {getattr}
+   253649    1.421    0.000    4.050    0.000 ObjectListView.py:3267(GetValue)
+   253649    1.390    0.000    1.861    0.000 ObjectListView.py:3241(GetAlignment)
+   300016    1.305    0.000    2.212    0.000 cp1252.py:14(decode)
+   253649    1.242    0.000   11.121    0.000 ObjectListView.py:1028(GetStringValueAt)
+   131131    1.201    0.000    4.871    0.000 WordWrapRenderer.py:113(_Truncate)
+    46118    1.195    0.000   12.728    0.000 ListCtrlPrinter.py:2045(GetTexts)
+   265551    1.117    0.000    1.741    0.000 ListCtrlPrinter.py:2324(__init__)
+    46118    1.091    0.000    6.745    0.000 ListCtrlPrinter.py:2058(GetImages)
+    46118    1.082    0.000    3.062    0.000 ListCtrlPrinter.py:2052(GetAlignments)
+   101484    1.060    0.000    1.683    0.000 ListCtrlPrinter.py:1355(_CalculateCellPadding)
+    46122    0.998    0.000    2.608    0.000 ListCtrlPrinter.py:1323(GetColumnWidths)
+   123200    0.936    0.000    3.169    0.000 ListCtrlPrinter.py:1987(GetTextColor)
+    50091    0.930    0.000    0.930    0.000 {method 'strftime' of 'datetime.date' objects}
+   300016    0.907    0.000    0.907    0.000 {_codecs.charmap_decode}
