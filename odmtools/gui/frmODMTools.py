@@ -41,6 +41,7 @@ class frmODMToolsMain(wx.Frame):
         """
 
         self.taskserver = kwargs.pop('taskServer')
+        self.memDB = kwargs.pop('memdb')
 
         # Determine the optimal size of the screen resolution
         size = self._obtainScreenResolution()
@@ -216,7 +217,7 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memdb)
+        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memDB)
 
 
 
@@ -419,7 +420,7 @@ class frmODMToolsMain(wx.Frame):
     def addEdit(self, event):
 
         logger.debug("Beginning editing")
-        isSelected, seriesID, memDB = self.pnlSelector.onReadyToEdit()
+        isSelected, seriesID = self.pnlSelector.onReadyToEdit()
 
         # logger.debug("Initializing DataTable")
         # # tasks = [("dataTable", (memDB.conn, self.dataTable.myOlv))]
@@ -429,14 +430,14 @@ class frmODMToolsMain(wx.Frame):
 
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
-                                                                          connection=memDB)
+                                                                          connection=self.memDB)
             self._ribbon.toggleEditButtons(True)
 
             logger.debug("Initializing Plot")
-            self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+            self.pnlPlot.addEditPlot(self.memDB, seriesID, self.record_service)
 
             logger.debug("Initializing DataTable")
-            self.dataTable.init(memDB, self.record_service)
+            self.dataTable.init(self.memDB, self.record_service)
 
 
             # set record service for console

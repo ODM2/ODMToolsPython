@@ -14,21 +14,22 @@ class MemoryDatabase(object):
 ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
 
     # series_service is a SeriesService
-    def __init__(self, series_service):
-        self.series_service = series_service        
-        #self.conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-        #self.cursor = self.conn.cursor()
-        self.mem_service = SeriesService("sqlite:///:memory:")
+    def __init__(self, taskserver = None ):
+
         self.editLoaded = False
         self.df = None
 
-
         # Initialize TaskServer.
         # This class starts the processes before starting wxpython and is needed
-        numproc = cpu_count()
-        self.taskserver = TaskServerMP(numproc=numproc)
+        if not taskserver:
+            numproc = cpu_count()
+            self.taskserver = TaskServerMP(numproc=numproc)
+        else:
+            self.taskserver = taskserver
 
-
+    def set_series_service(self, service):
+        self.series_service = service
+        self.mem_service = SeriesService("sqlite:///:memory:")
 
     ##############
     # DB Queries
@@ -109,11 +110,6 @@ class MemoryDatabase(object):
         '''
         return self.mem_service.get_all_plot_values()
 
-    def resetDB(self, series_service):
-        self.series_service = series_service
-        self.mem_service = SeriesService("sqlite:///:memory:")
-
-
     def commit(self):
         self.mem_service._session_factory.engine.connect().connection.commit()
 
@@ -135,7 +131,7 @@ class MemoryDatabase(object):
         self.df = self.mem_service.get_all_values_df()
 
 
-    def initEditValues(self, seriesID, taskserver=None):
+    def initEditValues(self, seriesID):
         """
         :param df: dataframe
         :return: nothing

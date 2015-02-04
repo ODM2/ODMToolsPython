@@ -25,6 +25,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
 
         self.taskserver = kwargs.pop("taskserver")
+        self.memDB = kwargs.pop("memdb")
         self.pnlPlot = kwargs.pop("plot")
 
         clsSeriesSelector.ClsSeriesSelector.__init__(self, *args, **kwargs)
@@ -83,7 +84,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
-        self.memDB = MemoryDatabase(db)
+        self.memDB.set_series_service(db)
         object = self.dbservice.get_all_series()
         #checkedObjs = self.tblSeries.GetCheckedObjects()
         idList = [x.id for x in self.tblSeries.modelObjects]
@@ -524,7 +525,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
                 ovl.ToggleCheck(object)
 
             logger.debug("Initializing Memory Database")
-            self.memDB.initEditValues(object.id, self.taskserver)
+            self.memDB.initEditValues(object.id)
             logger.debug("Finished Initializing Memory Database")
 
             # logger.debug("Initializing DataTable")
@@ -537,7 +538,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             ovl.editingObject = object
             ovl.RefreshObject(ovl.editingObject)
 
-            return True, object.id, self.memDB
+            return True, object.id#, self.memDB
         else:
             isSelected = False
             logger.debug("series was not checked")
@@ -546,7 +547,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         self.isEditing = False
         ovl.editingObject = None
-        return False, object.id, self.memDB
+        return False, object.id#, self.memDB
 
     def stopEdit(self):
         """When edit button is untoggled, the editing feature closes

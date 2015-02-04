@@ -35,14 +35,14 @@ class EditService():
         self._debug = debug
 
         if connection_string is  "" and connection is not None:
-            self.memdb= connection
-            self._series_service = self.memdb.series_service#SeriesService(connection_string, debug)
+            self.memDB= connection
+            self._series_service = self.memDB.series_service#SeriesService(connection_string, debug)
 
         elif connection_string is not "" and connection is None:
             series_service = SeriesService(connection_string, False)
             from odmtools.odmdata import MemoryDatabase
-            self.memdb= MemoryDatabase(series_service)
-            self.memdb.initEditValues(series_id)
+            self.memDB= MemoryDatabase(series_service)
+            self.memDB.initEditValues(series_id)
         else:
             logger.error("must send in either a remote db connection string or a memory database object")
         self._cursor = self._connection.cursor()
@@ -71,7 +71,7 @@ class EditService():
         self._series_points_df = pd.DataFrame(results,  columns=[x[0] for x in self._cursor.description])
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
         '''
-        self._series_points_df = self.memdb.getDataValuesDF()
+        self._series_points_df = self.memDB.getDataValuesDF()
 
     def _test_filter_previous(self):
 
