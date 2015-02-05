@@ -21,11 +21,12 @@ class MemoryDatabase(object):
 
         # Initialize TaskServer.
         # This class starts the processes before starting wxpython and is needed
-        if not taskserver:
-            numproc = cpu_count()
-            self.taskserver = TaskServerMP(numproc=numproc)
-        else:
-            self.taskserver = taskserver
+        # TODO clean up closing of program
+        #if taskserver is None:
+            #numproc = cpu_count()
+            #self.taskserver = TaskServerMP(numproc=numproc)
+        #else:
+        self.taskserver = taskserver
 
     def set_series_service(self, service):
         self.series_service = service

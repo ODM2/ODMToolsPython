@@ -408,6 +408,8 @@ class plotTimeSeries(wx.Panel):
 
             #logger.debug("axis label: %s" % (axis))
             self.axislist[axis] = newAxis
+            plt.tight_layout()
+            self.canvas.draw()
 
     def updatePlot(self):
         self.clear()
