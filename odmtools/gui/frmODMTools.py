@@ -419,6 +419,7 @@ class frmODMToolsMain(wx.Frame):
 
     def addEdit(self, event):
 
+        busy = wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database")
         logger.debug("Beginning editing")
         isSelected, seriesID = self.pnlSelector.onReadyToEdit()
 
