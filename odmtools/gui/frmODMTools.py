@@ -554,10 +554,10 @@ class frmODMToolsMain(wx.Frame):
         
         # Shut down processes running in background
         if self.taskserver.numprocesses > 0 and self.taskserver.anyAlive:
-            busy = wx.BusyInfo("Waiting for processes to terminate...")
+            busy = wx.BusyInfo("Closing ODMTools ...")
 
             # Terminate the processes
-            self.taskserver.processTerm()
+            self.taskserver.processTerminate()
 
         # IMPORTANT! if wx.TaskBarIcons exist, it will keep mainloop running
 
