@@ -419,7 +419,7 @@ class frmODMToolsMain(wx.Frame):
 
     def addEdit(self, event):
 
-        busy = wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database")
+        busy = wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self)
         logger.debug("Beginning editing")
         isSelected, seriesID = self.pnlSelector.onReadyToEdit()
 
@@ -555,7 +555,7 @@ class frmODMToolsMain(wx.Frame):
         
         # Shut down processes running in background
         if self.taskserver.numprocesses > 0 and self.taskserver.anyAlive:
-            busy = wx.BusyInfo("Closing ODMTools ...")
+            busy = wx.BusyInfo("Closing ODMTools ...", parent=self)
 
             # Terminate the processes
             self.taskserver.processTerminate()

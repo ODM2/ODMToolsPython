@@ -349,12 +349,15 @@ class mnuRibbon(RB.RibbonBar):
             if dataframe.empty:
                 val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
                                 'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+                return
         else:
             if not dataframe:
                 val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
                                 'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+                return
 
         lin_drift = frmLinearDrift(self, self.parent.getRecordService())
+        lin_drift.CenterOnParent()
         lin_drift.ShowModal()
         lin_drift.Destroy()
         event.Skip()
@@ -426,12 +429,14 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditFilter(self, event):
         data_filter = frmDataFilter(self, self.parent.getRecordService())
+        data_filter.CenterOnParent()
         data_filter.ShowModal()
         data_filter.Destroy()
         event.Skip()
 
     def onEditChangeValue(self, event):
         change_value = frmChangeValue(self, self.parent.getRecordService())
+        change_value.CenterOnParent()
         change_value.ShowModal()
         change_value.Destroy()
         event.Skip()
@@ -443,7 +448,7 @@ class mnuRibbon(RB.RibbonBar):
         if isinstance(dataframe, pd.DataFrame):
             if not dataframe.empty:
                 val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % len(dataframe),
-                                'Interpolation', wx.YES_NO | wx.ICON_QUESTION)
+                                'Interpolation', wx.YES_NO | wx.ICON_QUESTION | wx.CENTRE)
                 if val == 2:  #wx.ID_YES:
                     self.parent.getRecordService().interpolate()
 
@@ -488,8 +493,10 @@ class mnuRibbon(RB.RibbonBar):
         recordService = self.parent.getRecordService()
         serviceManager = self.parent.getServiceManager()
 
-        addPoint = AddPoints(self, serviceManager=serviceManager,recordService=recordService)
-        addPoint.Show()
+        addPoint = AddPoints(self, serviceManager=serviceManager, recordService=recordService)
+        addPoint.Center()
+        addPoint.ShowModal()
+
 
         '''
         add_value = frmAddPoint(self, self.parent.getRecordService())
@@ -502,12 +509,14 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditDelPoint(self, event):
         dataframe = self.parent.getRecordService().get_filtered_points()
+
         if isinstance(dataframe, pd.DataFrame):
             if dataframe.empty:
                 return
         else:
             if not dataframe:
                 return
+
 
         #numPoints = len(self.parent.getRecordService().get_filtered_points())
         val = wx.MessageBox("You have chosen to delete the %s selected points.\nDo you want to continue?" % len(dataframe),

@@ -6,9 +6,9 @@ from wx.lib.pubsub import pub as Publisher
 def create(parent):
     return frmLinearDrift(parent)
 
-[wxID_FRMLINEARDRIFT, wxID_FRMLINEARDRIFTBTNCANCEL, wxID_FRMLINEARDRIFTBTNOK, 
- wxID_FRMLINEARDRIFTLBLFNLGAP, wxID_FRMLINEARDRIFTLBLMESSAGE, 
- wxID_FRMLINEARDRIFTTXTFINALGAPVALUE, 
+[wxID_FRMLINEARDRIFT, wxID_FRMLINEARDRIFTBTNCANCEL, wxID_FRMLINEARDRIFTBTNOK,
+ wxID_FRMLINEARDRIFTLBLFNLGAP, wxID_FRMLINEARDRIFTLBLMESSAGE,
+ wxID_FRMLINEARDRIFTTXTFINALGAPVALUE,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
 class frmLinearDrift(wx.Dialog):
@@ -52,7 +52,7 @@ class frmLinearDrift(wx.Dialog):
 
     def OnBtnOKButton(self, event):
         self._record_service.drift_correction(float(self.txtFinalGapValue.GetValue()))
-        
+
         #Publisher.sendMessage(("updateValues"), event=event)
         self.Close()
 
