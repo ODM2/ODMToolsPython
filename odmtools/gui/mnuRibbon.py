@@ -1,4 +1,3 @@
-# Boa:FramePanel:Panel1
 from collections import OrderedDict
 
 import datetime
@@ -6,13 +5,14 @@ import datetime
 import wx
 import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
+from common.exceptions import EmptySelection
 
 from odmtools.controller.frmAddPoints import AddPoints
 
 from odmtools.controller.frmDataFilters import frmDataFilter
-from frmChangeValue import frmChangeValue
+from odmtools.controller.frmChangeValue import frmChangeValue
 from frmFlagValues import frmFlagValues
-from frmLinearDrift import frmLinearDrift
+from odmtools.controller.frmLinearDrift import frmLinearDrift
 from odmtools.controller.frmAbout import frmAbout
 import wizSave
 from odmtools.common import *
@@ -208,7 +208,6 @@ class mnuRibbon(RB.RibbonBar):
         self.bindEvents()
         self.initPubSub()
 
-
     def __init__(self, parent, id, name):
         self.parent = parent
         self._init_ctrls(parent)
@@ -252,7 +251,6 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditAddPoint, id=wxID_RIBBONEDITADDPOINT)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditDelPoint, id=wxID_RIBBONEDITDELPOINT)
 
-        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecord, id=wxID_RIBBONEDITRECORD)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordNew, id=wxID_RIBBONRECORDNEW)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordOpen, id=wxID_RIBBONRECORDOPEN)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordSave, id=wxID_RIBBONRECORDSAVE)
@@ -263,7 +261,6 @@ class mnuRibbon(RB.RibbonBar):
 
         ###Ribbon Event
         self.Bind(RB.EVT_RIBBONBAR_PAGE_CHANGED, self.onFileMenu, id=wxID_PANEL1)
-
 
     def initPubSub(self):
         Publisher.subscribe(self.toggleEditButtons, "EnableEditButtons")
@@ -319,17 +316,14 @@ class mnuRibbon(RB.RibbonBar):
         self.dpStartDate.SetRange(maxStart, maxEnd)
         if currStart:
             self.dpStartDate.SetValue(_pydate2wxdate(currStart))
-            #self.dpStartDate.SetValue(wx.DateTimeFromDMY(currStart.day, currStart.month - 1, currStart.year))
         else:
             self.dpEndDate.SetValue(self.maxStart)
 
         self.dpEndDate.SetRange(maxStart, maxEnd)
         if currEnd:
             self.dpEndDate.SetValue(_pydate2wxdate(currEnd))
-            #self.dpEndDate.SetValue(wx.DateTimeFromDMY(currEnd.day, currEnd.month - 1, currEnd.year))
         else:
             self.dpEndDate.SetValue(self.maxEnd)
-
 
     def onResetFilter(self, event):
         recordService = self.parent.getRecordService()
@@ -342,19 +336,27 @@ class mnuRibbon(RB.RibbonBar):
         #Publisher.sendMessage("changeTableSelection",  datetime_list=recordService.get_filtered_dates())
         pass
 
+    def isEmptySelection(self, dataframe):
+        if isinstance(dataframe, pd.DataFrame):
+            if dataframe.empty:
+                raise EmptySelection
+        else:
+            if not dataframe:
+                raise EmptySelection
+
+    # ###################################
+    #   Linear Drift Correction
+    # ###################################
 
     def onLineDrift(self, event):
         dataframe = self.parent.getRecordService().get_filtered_points()
-        if isinstance(dataframe, pd.DataFrame):
-            if dataframe.empty:
-                val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
-                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
-                return
-        else:
-            if not dataframe:
-                val = wx.MessageBox("You have no points selected, Please select points before performing the correction." ,
-                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
-                return
+        try:
+            self.isEmptySelection(dataframe)
+        except EmptySelection:
+            val = wx.MessageBox("You have no points selected, "
+                                "Please select points before applying a Linear Drift Correction",
+                                    'Linear Drift Correction', wx.OK | wx.ICON_WARNING)
+            return
 
         lin_drift = frmLinearDrift(self, self.parent.getRecordService())
         lin_drift.CenterOnParent()
@@ -362,44 +364,9 @@ class mnuRibbon(RB.RibbonBar):
         lin_drift.Destroy()
         event.Skip()
 
-
-
-
-    def onRecord(self, event):
-
-        record_service = self.parent.getRecordService()
-        record_service.toggle_record(True)
-        #logger.debug("Recording? %s" % record_service._record)
-
-        panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
-        if event.IsChecked():
-            if not panedet.IsShown():
-                panedet.Show(show=True)
-            if panedet.IsFloating():
-                panedet.Dock()
-        else:
-            if panedet.IsShown():
-                panedet.Hide()
-
-        if self.record_panel.IsShown():
-            self.record_panel.Hide()
-        else:
-            self.record_panel.Show()
-
-        self.parent._mgr.Update()
-
-        '''
-        panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
-        logger.debug("pandet is shown? %s" % panedet.IsShown())
-        if not panedet.IsShown():
-            logger.debug("%s" % panedet.IsShown())
-            panedet.Show(show=True)
-            panedet.Hide(hide=False)
-        '''
-
-
-        event.Skip()
-
+    # ###################################
+    #   Record Script
+    # ###################################
     def onRecordNew(self, event):
         panedet = self.parent._mgr.GetPane(self.parent.txtPythonScript)
         if not panedet.IsShown():
@@ -419,20 +386,30 @@ class mnuRibbon(RB.RibbonBar):
         script.OnSaveAs(event)
         #pass
 
+    # ###################################
+    #   Save Wizard
+    # ###################################
     def onSave(self, event):
         # send  db connection info to wizard
         # get site, Variable and Source from current dataset
 
-        wiz=wizSave.wizSave(self, self.parent.getServiceManager(), self.parent.getRecordService())
+        wiz = wizSave.wizSave(self, self.parent.getServiceManager(), self.parent.getRecordService())
         wiz.Close()
         event.Skip()
 
+    # ###################################
+    #   Data Filter
+    # ###################################
+
     def onEditFilter(self, event):
         data_filter = frmDataFilter(self, self.parent.getRecordService())
-        data_filter.CenterOnParent()
         data_filter.ShowModal()
         data_filter.Destroy()
         event.Skip()
+
+    # ###################################
+    #   Change Value
+    # ###################################
 
     def onEditChangeValue(self, event):
         change_value = frmChangeValue(self, self.parent.getRecordService())
@@ -441,54 +418,48 @@ class mnuRibbon(RB.RibbonBar):
         change_value.Destroy()
         event.Skip()
 
+    # ###################################
+    #   Interpolate
+    # ###################################
     def onEditInterpolate(self, event):
 
 
         dataframe = self.parent.getRecordService().get_filtered_points()
-        if isinstance(dataframe, pd.DataFrame):
-            if not dataframe.empty:
-                val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % len(dataframe),
-                                'Interpolation', wx.YES_NO | wx.ICON_QUESTION | wx.CENTRE)
-                if val == 2:  #wx.ID_YES:
-                    self.parent.getRecordService().interpolate()
+        try:
+            self.isEmptySelection(dataframe)
+        except EmptySelection:
+            val = wx.MessageBox("You have no points selected, Please select points before interpolating.",
+                                    'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+            return
 
-                self.redrawPlotTable()
-            else:
-                val = wx.MessageBox("You have no points selected, Please select points before interpolating." ,
-                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
-        else:
-            if not dataframe:
-                val = wx.MessageBox("You have no points selected, Please select points before interpolating." ,
-                                'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
-
-
+        val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % len(dataframe),
+                                            'Interpolation', wx.YES_NO | wx.ICON_QUESTION | wx.CENTRE)
+        if val == 2:  #wx.ID_YES:
+            self.parent.getRecordService().interpolate()
+        self.redrawPlotTable()
 
         event.Skip()
-
+    # ###################################
+    #   Flag
+    # ###################################
     def onEditFlag(self, event):
 
         serviceManager = self.parent.getDBService()
         series_service = serviceManager.get_series_service()
         qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in series_service.get_qualifiers()
-
                                        if x.code and x.description)
-        #choices = qualifierChoices.keys() + ["Create New....."]
-
         add_flag = frmFlagValues(self, series_service, qualifierChoices)
         val = add_flag.ShowModal()
-
-        # If user closes dialog box
-        # if val == wx.ID_CANCEL:
-        #     return
-
 
         if val == wx.ID_OK:
             logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
             self.parent.getRecordService().flag(add_flag.GetValue())
-            # Publisher.sendMessage(("updateValues"), event=event)
         add_flag.Destroy()
         event.Skip()
 
+    # ###################################
+    #   Add Point
+    # ###################################
     def onEditAddPoint(self, event):
         recordService = self.parent.getRecordService()
         serviceManager = self.parent.getServiceManager()
@@ -497,39 +468,29 @@ class mnuRibbon(RB.RibbonBar):
         addPoint.Center()
         addPoint.ShowModal()
 
-
-        '''
-        add_value = frmAddPoint(self, self.parent.getRecordService())
-        add_value.ShowModal()
-        add_value.Destroy()
-        '''
-
-        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
+    # ###################################
+    #   Delete Point
+    # ###################################
     def onEditDelPoint(self, event):
         dataframe = self.parent.getRecordService().get_filtered_points()
+        try:
+            self.isEmptySelection(dataframe)
+        except EmptySelection:
+            wx.MessageBox("There are no points to delete",
+                        'Delete Points', wx.OK | wx.ICON_WARNING)
+            return
 
-        if isinstance(dataframe, pd.DataFrame):
-            if dataframe.empty:
-                return
-        else:
-            if not dataframe:
-                return
-
-
-        #numPoints = len(self.parent.getRecordService().get_filtered_points())
         val = wx.MessageBox("You have chosen to delete the %s selected points.\nDo you want to continue?" % len(dataframe),
                             'Deleting Points', wx.YES_NO | wx.ICON_QUESTION)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().delete_points()
-            #Publisher.sendMessage(("updateValues"), event=event)
         self.redrawPlotTable()
         event.Skip()
 
     def onRestore(self, event):
         self.parent.getRecordService().restore()
-        #Publisher.sendMessage(("updateValues"), event=event)
         event.Skip()
 
     def onToggleEdit(self, checked=True):
@@ -545,9 +506,6 @@ class mnuRibbon(RB.RibbonBar):
             return None
 
     def onEditSeries(self, event=None):
-
-        #logger.debug(dir(event))
-
 
         if event.IsChecked():
             Publisher.sendMessage("selectEdit", event=event)

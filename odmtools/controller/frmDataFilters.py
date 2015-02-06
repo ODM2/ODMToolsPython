@@ -25,6 +25,8 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.recordService = series
         clsDataFilters.clsDataFilters.__init__(self, parent)
 
+        self.Center()
+
         self.chkToggleFilterSelection.SetValue(self.recordService.get_toggle())
         self.setDates()
 

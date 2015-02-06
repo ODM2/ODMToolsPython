@@ -115,7 +115,7 @@ class clsDataFilters(wx.Dialog):
         self.tpAfter = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(80, -1),
                                        name="24 hour control",
                                        fmt24hr=True, spinButton=self.sbAfter, oob_color="White")
-        #self.tpAfter.Wrap( -1 )
+        # self.tpAfter.Wrap( -1 )
         fgSizer3.Add(self.tpAfter, 0, wx.ALL, 5)
 
         fgSizer3.Add(self.sbAfter, 0, wx.ALL, 5)
@@ -179,22 +179,19 @@ class clsDataFilters(wx.Dialog):
 
         bsButtons = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.btnClear = wx.Button(self, wx.ID_ANY, u"Clear Filter", wx.DefaultPosition, wx.Size(64, 23), 0)
-        bsButtons.Add(self.btnClear, 0, wx.ALL, 5)
-
-        self.m_panel1 = wx.Panel(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(-1, 23), wx.TAB_TRAVERSAL)
-        bsButtons.Add(self.m_panel1, 1, wx.EXPAND | wx.ALL, 5)
-
         self.btnOK = wx.Button(self, wx.ID_ANY, u"OK", wx.DefaultPosition, wx.Size(64, 23), 0)
-        bsButtons.Add(self.btnOK, 0, wx.ALL, 5)
+        bsButtons.Add(self.btnOK, 1, wx.ALL | wx.EXPAND, 5)
 
         self.btnCancel = wx.Button(self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.Size(64, 23), 0)
-        bsButtons.Add(self.btnCancel, 0, wx.ALL, 5)
+        bsButtons.Add(self.btnCancel, 1, wx.ALL | wx.EXPAND, 5)
 
         self.btnApply = wx.Button(self, wx.ID_ANY, u"Apply", wx.DefaultPosition, wx.Size(64, 23), 0)
-        bsButtons.Add(self.btnApply, 0, wx.ALL, 5)
+        bsButtons.Add(self.btnApply, 1, wx.ALL | wx.EXPAND, 5)
 
-        bSizer3.Add(bsButtons, 1, wx.EXPAND, 0)
+        self.btnClear = wx.Button(self, wx.ID_ANY, u"Clear Filter", wx.DefaultPosition, wx.Size(64, 23), 0)
+        bsButtons.Add(self.btnClear, 1, wx.ALL | wx.EXPAND, 5)
+
+        bSizer3.Add(bsButtons, 0, wx.EXPAND, 0)
 
         bSizer1.Add(bSizer3, 1, wx.EXPAND, 5)
 
@@ -245,5 +242,5 @@ class clsDataFilters(wx.Dialog):
 
     def onBtnApplyButton(self, event):
         event.Skip()
-	
+
 
