@@ -261,7 +261,7 @@ class wizSave(wx.wizard.Wizard):
         self.pgVariable.SetPrev(self.pgQCL)
         self.pgVariable.SetNext(self.pgSummary)
 
-                #Save existing  page
+        #Save existing  page
         self.pgExisting.SetPrev(self.pgIntro)
         self.pgExisting.SetNext(self.pgSummary)
 
@@ -298,23 +298,30 @@ class wizSave(wx.wizard.Wizard):
         Site, Variable, Method, Source, QCL = self.get_metadata()
         #if qcl exits use its its
         closeSuccessful = False
-        if QCL.id == 0 and not self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
+
+        rbSave = self.pgIntro.pnlIntroduction.rbSave.GetValue()
+        rbSaveAs = self.pgIntro.pnlIntroduction.rbSaveAs.GetValue()
+        rbSaveExisting = self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue()
+
+        if QCL.id == 0 and not rbSaveAs:
+            """
+            If we're looking at a QCL with Control level 0 and the following cases:
+                Save
+                SaveExisting
+            """
             val = wx.MessageBox("You are writing a level 0 dataset, which is usually reserved for raw data.\n"
                                 "Are you sure you want to save?",
                                 'Are you Sure?',
                                 wx.YES_NO | wx.ICON_QUESTION)
-            if val == 2 :
+            if val == 2:
                 logger.debug("User selected yes to save a level 0 dataset")
-                val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure, you are sure?\n",
+                val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure you are sure?\n",
                                       'Are you REALLY sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
                 if val_2 == 2:
                     closeSuccessful = True
 
-        else:
-            closeSuccessful = True
-
-        if self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
+        elif rbSaveExisting:
             cont = wx.MessageBox("You are about to overwrite an existing series,\nthis action cannot be undone.\nWould you like to continue?\n",
                                       'Are you  sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
@@ -322,7 +329,8 @@ class wizSave(wx.wizard.Wizard):
                 closeSuccessful = True
             else:
                 closeSuccessful = False
-
+        else:
+            closeSuccessful = True
 
         if closeSuccessful:
             if self.series_service.qcl_exists(QCL):
@@ -357,9 +365,9 @@ class wizSave(wx.wizard.Wizard):
             '''
 
             try:
-                if self.pgIntro.pnlIntroduction.rbSave.GetValue():
+                if rbSave:
                     result = self.record_service.save()
-                elif self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
+                elif rbSaveAs:
                     result = self.record_service.save_as(Variable, Method, QCL)
                 else:
                     result = self.record_service.save_existing(Variable, Method, QCL)

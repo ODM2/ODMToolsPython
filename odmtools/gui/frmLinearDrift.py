@@ -53,7 +53,7 @@ class frmLinearDrift(wx.Dialog):
     def OnBtnOKButton(self, event):
         self._record_service.drift_correction(float(self.txtFinalGapValue.GetValue()))
         
-        Publisher.sendMessage(("updateValues"), event=event)
+        #Publisher.sendMessage(("updateValues"), event=event)
         self.Close()
 
     def OnBtnCancelButton(self, event):

@@ -122,8 +122,10 @@ class pnlPlot(fnb.FlatNotebook):
 
     def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
+
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB, self.taskserver)
+
 
         self.editID = seriesID
         self._seriesPlotInfo.setEditSeries(self.editID)
@@ -131,6 +133,7 @@ class pnlPlot(fnb.FlatNotebook):
         self.redrawPlots()
 
     def addPlot(self, memDB, seriesID):
+
         """
         Creates the plot
         """
@@ -140,6 +143,7 @@ class pnlPlot(fnb.FlatNotebook):
 
         if not self._seriesPlotInfo:
             self._seriesPlotInfo = SeriesPlotInfo(memDB, self.taskserver)
+
         self._seriesPlotInfo.update(seriesID, True)
 
         logger.debug("Redrawing plots")

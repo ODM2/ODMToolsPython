@@ -45,13 +45,19 @@ class MemoryDatabase(object):
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
         series = self.series_service.get_series_by_id(seriesID)
-        DataValues = [
-            (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
-                dv.local_date_time.strftime('%Y') , None)
-            for dv in series.data_values
-            if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
-        ]
-        return pd.DataFrame(DataValues, columns=self.columns)
+
+        try:
+            DataValues = [
+                (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'), dv.local_date_time.strftime('%Y') )
+                for dv in series.data_values
+                if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
+            ]
+            return DataValues
+        except Exception as e:
+            print "FATAL: ", e
+            return False
+
+
 
     def getEditDataValuesforGraph(self):
         query ="SELECT DataValue, LocalDateTime, CensorCode, strftime('%m', LocalDateTime) as DateMonth, " \

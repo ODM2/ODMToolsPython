@@ -8,14 +8,6 @@
 # License:      wxWindows license
 #----------------------------------------------------------------------------
 # Change log:
-# 2009-06-09  JPP   - AutoSizeColumns() now updates space filling columns
-#                   - FastObjectListView.RepopulateList() now uses Freeze/Thaw
-#                   - Fixed bug with virtual lists being clearws when scrolled vertically
-# 2008-12-16  JPP   - Removed flicker from RefreshObject() on FastObjectListView and GroupListView
-# 2008-12-01  JPP   - Handle wierd toggle check box on selection when there is no selection
-#                   - Fixed bug in RefreshObjects() when the list is empty
-# 2008-11-30  JPP   - Fixed missing variable bug in CancelCellEdit()
-# v1.2
 # 2008/09/02  JPP   - Added BatchedUpdate adaptor
 #                   - Improved speed of selecting and refreshing by keeping a map
 #                     of objects to indicies
@@ -104,7 +96,6 @@ import locale
 import operator
 import string
 import time
-import sys
 
 import CellEditor
 import OLVEvent
@@ -354,10 +345,7 @@ class ObjectListView(wx.ListCtrl):
         info.m_format = defn.GetAlignment()
         info.m_text = defn.title
         info.m_width = defn.width
-        if 'phoenix' in wx.PlatformInfo:
-            self.InsertColumn(len(self.columns)-1, info)
-        else:
-            self.InsertColumnInfo(len(self.columns)-1, info)
+        self.InsertColumnInfo(len(self.columns)-1, info)
 
         # Under Linux, the width doesn't take effect without this call
         self.SetColumnWidth(len(self.columns)-1, defn.width)
@@ -372,10 +360,7 @@ class ObjectListView(wx.ListCtrl):
         Initialize some checkbox images for use by this control.
         """
         def _makeBitmap(state, size):
-            if 'phoenix' in wx.PlatformInfo:
-                bitmap = wx.Bitmap(size, size)
-            else:
-                bitmap = wx.EmptyBitmap(size, size)
+            bitmap = wx.EmptyBitmap(size, size)
             dc = wx.MemoryDC(bitmap)
             dc.Clear()
 
@@ -558,12 +543,8 @@ class ObjectListView(wx.ListCtrl):
 
         # There must always be the same number of small and normal bitmaps,
         # so if we aren't given one, we have to make an empty one of the right size
-        if 'phoenix' in wx.PlatformInfo:
-            smallImage = smallImage or wx.Bitmap(*self.smallImageList.GetSize(0))
-            normalImage = normalImage or wx.Bitmap(*self.normalImageList.GetSize(0))
-        else:
-            smallImage = smallImage or wx.EmptyBitmap(*self.smallImageList.GetSize(0))
-            normalImage = normalImage or wx.EmptyBitmap(*self.normalImageList.GetSize(0))
+        smallImage = smallImage or wx.EmptyBitmap(*self.smallImageList.GetSize(0))
+        normalImage = normalImage or wx.EmptyBitmap(*self.normalImageList.GetSize(0))
 
         self.smallImageList.AddNamedImage(name, smallImage)
         return self.normalImageList.AddNamedImage(name, normalImage)
@@ -583,7 +564,6 @@ class ObjectListView(wx.ListCtrl):
                 if colWidth != boundedWidth:
                     self.SetColumnWidth(iCol, boundedWidth)
 
-        self._ResizeSpaceFillingColumns()
 
     def Check(self, modelObject):
         """
@@ -878,11 +858,6 @@ class ObjectListView(wx.ListCtrl):
         # Calculate how much free space is available in the control
         totalFixedWidth = sum(self.GetColumnWidth(i) for (i, x) in enumerate(self.columns)
                               if not x.isSpaceFilling)
-        #if wx.Platform == "__WXGTK__":
-        #    clientSize = self.MainWindow.GetClientSizeTuple()[0]
-        #else:
-        #    clientSize = self.GetClientSizeTuple()[0]
-        #freeSpace = max(0, clientSize - totalFixedWidth)
         freeSpace = max(0, self.GetClientSizeTuple()[0] - totalFixedWidth)
 
         # Calculate the total number of slices the free space will be divided into
@@ -1333,7 +1308,7 @@ class ObjectListView(wx.ListCtrl):
             left = right
             right += self.GetColumnWidth(i)
             if scrolledX < right:
-                if self.smallImageList and (scrolledX - left) < self.smallImageList.GetSize(0)[0]:
+                if (scrolledX - left) < self.smallImageList.GetSize(0)[0]:
                     flag = wx.LIST_HITTEST_ONITEMICON
                 else:
                     flag = wx.LIST_HITTEST_ONITEMLABEL
@@ -1546,8 +1521,6 @@ class ObjectListView(wx.ListCtrl):
         Toggles the checkedness of the selected modelObjects.
         """
         selection = self.GetSelectedObjects()
-        if not selection:
-            return
         newValue = not self.IsChecked(selection[0])
         for x in selection:
             self.SetCheckState(x, newValue)
@@ -1624,6 +1597,7 @@ class ObjectListView(wx.ListCtrl):
         Handle a left down on the ListView
         """
         evt.Skip()
+
         # Test for a mouse down on the image of the check box column
         if self.InReportView():
             (row, flags, subitem) = self.HitTestSubItem(evt.GetPosition())
@@ -1661,12 +1635,8 @@ class ObjectListView(wx.ListCtrl):
         #    we should edit on double click and this is a single click, OR
         #    we should edit on single click and this is a double click,
         # THEN we don't try to start a cell edit operation
-        if wx.VERSION > (2, 9, 1, 0):
-            if evt.altDown or evt.controlDown or evt.shiftDown:
-                 return
-        else:
-            if evt.m_altDown or evt.m_controlDown or evt.m_shiftDown:
-                return
+        if evt.m_altDown or evt.m_controlDown or evt.m_shiftDown:
+            return
         if self.cellEditMode == self.CELLEDIT_NONE:
             return
         if evt.LeftUp() and self.cellEditMode == self.CELLEDIT_DOUBLECLICK:
@@ -1711,14 +1681,7 @@ class ObjectListView(wx.ListCtrl):
         self._ResizeSpaceFillingColumns()
         # Make sure our empty msg is reasonably positioned
         sz = self.GetClientSize()
-        if 'phoenix' in wx.PlatformInfo:
-            self.stEmptyListMsg.SetSize(0, sz.GetHeight()/3,
-                                        sz.GetWidth(),
-                                        sz.GetHeight())
-        else:
-            self.stEmptyListMsg.SetDimensions(0, sz.GetHeight()/3,
-                                              sz.GetWidth(),
-                                              sz.GetHeight())
+        self.stEmptyListMsg.SetDimensions(0, sz.GetHeight()/3, sz.GetWidth(), sz.GetHeight())
         #self.stEmptyListMsg.Wrap(sz.GetWidth())
 
 
@@ -2033,7 +1996,6 @@ class ObjectListView(wx.ListCtrl):
         self.selectionBeforeCellEdit = self.GetSelectedObjects()
         self.DeselectAll()
         self.cellEditor = evt.newEditor or evt.editor
-
         self.cellBeingEdited = (rowIndex, subItemIndex)
 
         # If we aren't using the default editor, destroy it
@@ -2084,10 +2046,7 @@ class ObjectListView(wx.ListCtrl):
 
         editor.Bind(wx.EVT_CHAR, self._Editor_OnChar)
         editor.Bind(wx.EVT_COMMAND_ENTER, self._Editor_OnChar)
-
-        ## TODO OSX doesn't recognize properly when a combo box
-        if sys.platform != "darwin":
-            editor.Bind(wx.EVT_KILL_FOCUS, self._Editor_KillFocus)
+        editor.Bind(wx.EVT_KILL_FOCUS, self._Editor_KillFocus)
 
 
     def _MakeDefaultCellEditor(self, rowIndex, subItemIndex, value):
@@ -2168,9 +2127,8 @@ class ObjectListView(wx.ListCtrl):
         """
         # Tell the world that the user cancelled the edit
         (rowIndex, subItemIndex) = self.cellBeingEdited
-        rowModel = self.GetObjectAt(rowIndex)
         evt = OLVEvent.CellEditFinishingEvent(self, rowIndex, subItemIndex,
-                                              rowModel,
+                                              self.GetObjectAt(rowIndex),
                                               self.cellEditor.GetValue(),
                                               self.cellEditor,
                                               True)
@@ -2267,7 +2225,7 @@ class AbstractVirtualObjectListView(ObjectListView):
         Refresh the display of the given modelObject
         """
         # We only have a hammer so everything looks like a nail
-        self.RefreshObjects([modelObject])
+        self.RefreshObjects()
 
 
     def RefreshObjects(self, aList=None):
@@ -2276,8 +2234,7 @@ class AbstractVirtualObjectListView(ObjectListView):
         """
         # We can only refresh everything
         self.lastGetObjectIndex = -1
-        if self.GetItemCount() > 1:
-            self.RefreshItems(0, max(0, self.GetItemCount()-1))
+        if self.GetItemCount() > 0:self.RefreshItems(0, self.GetItemCount()-1)
         #self.Refresh()
 
 
@@ -2365,9 +2322,8 @@ class AbstractVirtualObjectListView(ObjectListView):
 
         # For reasons of performance, it may even be worthwhile removing this test and
         # ensure/assume that objectGetter is never None
-
-        #if self.objectGetter is None:
-        #    return None
+        if self.objectGetter is None:
+            return None
 
         #if index == self.lastGetObjectIndex:
         #    self.cacheHit += 1
@@ -2378,10 +2334,7 @@ class AbstractVirtualObjectListView(ObjectListView):
         # Cache the last result (the hit rate is normally good: 5-10 hits to 1 miss)
         if index != self.lastGetObjectIndex:
             self.lastGetObjectIndex = index
-            try:
-                self.lastGetObject = self.objectGetter(index)
-            except IndexError:
-                pass
+            self.lastGetObject = self.objectGetter(index)
 
         return self.lastGetObject
 
@@ -2522,18 +2475,14 @@ class FastObjectListView(AbstractVirtualObjectListView):
         Completely rebuild the contents of the list control
         """
         self.lastGetObjectIndex = -1
-        self.Freeze()
-        try:
-            self._SortObjects()
-            self._BuildInnerList()
-            wx.ListCtrl.DeleteAllItems(self)
-            self.SetItemCount(len(self.innerList))
-            self.RefreshObjects()
+        self._SortObjects()
+        self._BuildInnerList()
+        self.SetItemCount(len(self.innerList))
+        self.RefreshObjects()
 
-            # Auto-resize once all the data has been added
-            self.AutoSizeColumns()
-        finally:
-            self.Thaw()
+        # Auto-resize once all the data has been added
+        self.AutoSizeColumns()
+
 
     def RefreshObjects(self, aList=None):
         """
@@ -2547,8 +2496,7 @@ class FastObjectListView(AbstractVirtualObjectListView):
                 if idx != -1:
                     self.RefreshItem(idx)
         else:
-            if self.GetItemCount():
-                self.RefreshItems(0, self.GetItemCount() - 1)
+            if self.GetItemCount() > 0:self.RefreshItems(0, self.GetItemCount() - 1)
 
     #----------------------------------------------------------------------------
     #  Accessing
@@ -2646,10 +2594,7 @@ class GroupListView(FastObjectListView):
         Initialize the images used to indicate expanded/collapsed state of groups.
         """
         def _makeBitmap(state, size):
-            if 'phoenix' in wx.PlatformInfo:
-                bitmap = wx.Bitmap(size, size)
-            else:
-                bitmap = wx.EmptyBitmap(size, size)
+            bitmap = wx.EmptyBitmap(size, size)
             dc = wx.MemoryDC(bitmap)
             dc.SetBackground(wx.Brush(self.groupBackgroundColour))
             dc.Clear()
@@ -4172,10 +4117,7 @@ def _getSmallUpArrowData():
 
 def _getSmallUpArrowBitmap():
     stream = cStringIO.StringIO(_getSmallUpArrowData())
-    if 'phoenix' in wx.PlatformInfo:
-        return wx.Bitmap(wx.Image(stream))
-    else:
-        return wx.BitmapFromImage(wx.ImageFromStream(stream))
+    return wx.BitmapFromImage(wx.ImageFromStream(stream))
 
 def _getSmallDownArrowData():
     return zlib.decompress(
@@ -4188,10 +4130,7 @@ def _getSmallDownArrowData():
 
 def _getSmallDownArrowBitmap():
     stream = cStringIO.StringIO(_getSmallDownArrowData())
-    if 'phoenix' in wx.PlatformInfo:
-        return wx.Bitmap(wx.Image(stream))
-    else:
-        return wx.BitmapFromImage(wx.ImageFromStream(stream))
+    return wx.BitmapFromImage(wx.ImageFromStream(stream))
 
 
 #

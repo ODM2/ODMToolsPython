@@ -367,8 +367,11 @@ class CellEdit():
                 if value == wx.ID_OK and dlg.selectedValue:
                     self.qualifierCodeChoices.insert(0, dlg.selectedValue)
                     event.GetEventObject().SetItems(self.qualifierCodeChoices)
+                    print event.GetEventObject().GetValue()
+                    print type(event.GetEventObject())
                     event.GetEventObject().SetValue(dlg.selectedValue)
-                dlg.Destroy()
+                    print event.GetEventObject().GetValue()
+                #dlg.Destroy()
 
         try:
             self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)

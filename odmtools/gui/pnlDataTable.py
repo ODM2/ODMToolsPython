@@ -2,11 +2,17 @@ import wx
 import wx.grid
 import logging
 import itertools as iter
+<<<<<<< HEAD
 import pandas as pd
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView, VirtualObjectListView
 from wx.lib.pubsub import pub as Publisher
 import numpy as np
 import timeit
+=======
+from odmtools.lib.oldOlv import ColumnDefn, FastObjectListView
+from wx.lib.pubsub import pub as Publisher
+#import datetime
+>>>>>>> 4788d9903a4f70315eacb6cb6b036e7d75f330e8
 
 from odmtools.common.logger import LoggerTool
 
@@ -222,10 +228,12 @@ class pnlDataTable(wx.Panel):
 
     def onItemSelected(self, event):
         """
+
         Disable selecting of an item in the DataTable, only sorting is available
         """
         if not self.enableSelectDataTable:
             self.myOlv.SetItemState(event.m_itemIndex, 0, wx.LIST_STATE_SELECTED)
+
 
 
     def onChangeSelection(self,  datetime_list=[]):

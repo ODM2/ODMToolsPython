@@ -79,7 +79,6 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
     def validateInput(self, conn_dict):
         message = ""
 
-        ## FIXME TODO Fix this crap
         '''Check that everything has been filled out'''
         if not all(x for x in conn_dict.values()):
             message = "Please complete every field in order to proceed"

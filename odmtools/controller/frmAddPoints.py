@@ -251,7 +251,7 @@ class AddPoints(clsAddPoints.AddPoints):
         points = []
 
         for i in objects:
-            if i.isCorrect():
+            if self.olv.isCorrect(i):
                 row = [None] * 10
                 if i.valueAccuracy != "NULL":
                     row[1] = i.valueAccuracy
@@ -301,6 +301,11 @@ class AddPoints(clsAddPoints.AddPoints):
             newDate = datetime.datetime.strptime(date, "%Y-%m-%d").date()
 
         return datetime.datetime.combine(newDate, newTime)
+
+    def onCheck(self, event):
+        object = event.object
+        #print "Object: ", object, event.value, event.checkedObjects
+
 
 class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
