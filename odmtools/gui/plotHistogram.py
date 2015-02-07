@@ -101,10 +101,10 @@ class plotHist(wx.Panel):
         logger.debug("HISTOGRAM: %s"% ax)
 
         # oneSeries.filteredData.hist(ax= ax, color='k', alpha=0.5, bins=50)
-        his = oneSeries.filteredData.hist(column="DataValue", ax=ax, bins=self.bins,
+        his = oneSeries.filteredData.hist(column="DataValue",  bins=self.bins,
                                           facecolor=oneSeries.color,
                                           label=oneSeries.siteName + " " + oneSeries.variableName,
-                                          grid=False)
+                                          grid=False, ax=ax)
 
         wrap, text = self.textSize(self.seriesPlotInfo.count())
         ax.set_xlabel("\n".join(textwrap.wrap(oneSeries.variableName, wrap)))

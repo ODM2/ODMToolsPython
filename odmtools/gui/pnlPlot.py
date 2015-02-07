@@ -157,11 +157,11 @@ class pnlPlot(fnb.FlatNotebook):
         logger.debug("Plot Probability")
         self.pltProb.Plot(self._seriesPlotInfo)
 
-        logger.debug("Plot Histogram")
-        self.pltHist.Plot(self._seriesPlotInfo)
-
         logger.debug("Plot Boxwhisker")
         self.pltBox.Plot(self._seriesPlotInfo)
+
+        logger.debug("Plot Histogram")
+        self.pltHist.Plot(self._seriesPlotInfo)
 
         logger.debug("Plot Timeseries")
         self.pltTS.Plot(self._seriesPlotInfo)
