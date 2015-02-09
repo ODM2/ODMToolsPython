@@ -1,5 +1,5 @@
 import wx
-from view.clsLinearDrift import clsLinearDrift
+from odmtools.view.clsLinearDrift import clsLinearDrift
 
 __author__ = 'jmeline'
 

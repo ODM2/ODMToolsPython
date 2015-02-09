@@ -1,5 +1,5 @@
 import wx
-from view.clsChangeValue import clsChangeValue
+from odmtools.view.clsChangeValue import clsChangeValue
 __author__ = 'jmeline'
 
 class frmChangeValue(clsChangeValue):

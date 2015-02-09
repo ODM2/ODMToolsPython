@@ -5,7 +5,7 @@ import datetime
 import wx
 import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
-from common.exceptions import EmptySelection
+from odmtools.common.exceptions import EmptySelection
 
 from odmtools.controller.frmAddPoints import AddPoints
 
