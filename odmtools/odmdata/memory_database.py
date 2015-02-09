@@ -21,11 +21,13 @@ class MemoryDatabase(object):
 
         # Initialize TaskServer.
         # This class starts the processes before starting wxpython and is needed
+
         # TODO clean up closing of program
         #if taskserver is None:
             #numproc = cpu_count()
             #self.taskserver = TaskServerMP(numproc=numproc)
         #else:
+
         self.taskserver = taskserver
 
     def set_series_service(self, service):
@@ -83,7 +85,8 @@ class MemoryDatabase(object):
         data.set_index(data['LocalDateTime'], inplace=True)
         return data
         '''
-        self.mem_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
+        return self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
+        #self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
 
     def getEditDataValuesforGraph(self):
         '''

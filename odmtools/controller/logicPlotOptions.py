@@ -258,7 +258,7 @@ class SeriesPlotInfo(object):
         logger.debug("assigning variables...")
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
-        seriesInfo.columns = data.columns
+        #seriesInfo.columns = data.columns
         seriesInfo.startDate = startDate
         seriesInfo.endDate = endDate
         seriesInfo.dataType = dataType
@@ -269,15 +269,10 @@ class SeriesPlotInfo(object):
         seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
-        #remove all of the nodatavalues from the pandas table
-        seriesInfo.filteredData = data[data["DataValue"] != noDataValue]
-        val = seriesInfo.filteredData["Month"].map(calcSeason)
-        seriesInfo.filteredData["Season"] = val
-        #calcSeason(seriesInfo.filteredData["Month"])
 
 
         if len(data) > 0:
-            seriesInfo.yrange = data['DataValue'].max() - data['DataValue'].min()
+            seriesInfo.yrange = np.max(data['DataValue']) - np.min(data['DataValue'])
         else:
             seriesInfo.yrange = 0
 
@@ -301,10 +296,16 @@ class SeriesPlotInfo(object):
         logger.debug("Create Series Info")
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
 
+
+        #remove all of the nodatavalues from the pandas table
+        filteredData = seriesInfo.dataTable[seriesInfo.dataTable["DataValue"] != seriesInfo.noDataValue]
+        val = filteredData["Month"].map(calcSeason)
+        filteredData["Season"] = val
+
         # construct tasks for the task server
-        tasks = [("Probability", seriesInfo.filteredData),
-                 ("BoxWhisker", (seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)),
-                 ("Summary", seriesInfo.filteredData)]
+        tasks = [("Probability", filteredData),
+                 ("BoxWhisker", (filteredData, seriesInfo.boxWhiskerMethod)),
+                 ("Summary", filteredData)]
 
         # Give tasks to the taskserver to run parallelly
         logger.debug("Sending tasks to taskserver")
@@ -357,7 +358,7 @@ class Statistics(object):
             logger.debug("censored observations using len: %s" % elapsed)
 
             time = timeit.default_timer()
-            self.GeometricMean= stats.gmean(dvs)
+            self.GeometricMean=round( stats.gmean(dvs),5)
             elapsed = timeit.default_timer() - time
             logger.debug("Geometric mean using scipy: %s" % elapsed)
 
