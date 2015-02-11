@@ -10,7 +10,7 @@ class frmChangeValue(clsChangeValue):
         clsChangeValue.__init__(self, parent)
 
     def OnBtnOk(self, event):
-        operator = self.cbValue.GetValue()
+        operator = self.cbValue.GetStringSelection()
         value = self.txtValue.GetValue()
 
         try:
