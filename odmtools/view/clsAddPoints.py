@@ -21,14 +21,15 @@ from odmtools.common.icons.icons4addpoint import *
 ## Class AddPoints
 ###########################################################################
 
-class AddPoints(wx.Frame):
+class AddPoints(wx.Dialog):
     def __init__(self, parent, **kwargs):
-        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools -", pos=wx.DefaultPosition,
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title="- Add Point -",
                           size=(1140, 425), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         mainPanel = wx.Panel(self, -1)
         vSizer = wx.BoxSizer(wx.VERTICAL)
         mainPanel.SetSizer(vSizer)
+
 
         self.olv = None
         self.titleBar = None
@@ -36,7 +37,7 @@ class AddPoints(wx.Frame):
 
         self.buildButtonPanel(mainPanel)
         self.initiateObjectListView(mainPanel, **kwargs)
-        self.sb = self.CreateStatusBar()
+        #self.sb = self.CreateStatusBar()
 
         vSizer.Add(self.titleBar, 0, wx.EXPAND | wx.ALL)
         vSizer.Add(self.olv, 1, wx.EXPAND | wx.ALL, 5)

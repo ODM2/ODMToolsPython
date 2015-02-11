@@ -20,12 +20,10 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class ServiceManager():
     def __init__(self, debug=False):
         self.debug = debug
+        f = self._get_file('r')
         self._conn_dicts = []
         self.version = 0
         self._connection_format = "%s+%s://%s:%s@%s/%s"
-
-    def extractConnectionInfo(self):
-        f = self._get_file('r')
 
         # Read all lines (connections) in the connection.cfg file
         while True:
@@ -70,9 +68,6 @@ class ServiceManager():
 
     def get_current_conn_dict(self):
         return self._current_conn_dict
-
-    def set_current_conn_dict(self, dict):
-        self._current_conn_dict = dict
 
     def add_connection(self, conn_dict):
         """conn_dict must be a dictionary with keys: engine, user, password, address, db"""
@@ -149,8 +144,8 @@ class ServiceManager():
         return CVService(conn_string, self.debug)
 
     def get_edit_service(self, series_id, connection):
-        conn_string = self._build_connection_string(self._current_conn_dict)
-        return EditService(series_id, connection=connection, connection_string=conn_string, debug=self.debug)
+        
+        return EditService(series_id, connection=connection,  debug=self.debug)
 
     def get_record_service(self, script, series_id, connection):
         return EditTools(self, script, self.get_edit_service(series_id, connection),

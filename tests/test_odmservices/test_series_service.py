@@ -22,6 +22,25 @@ class TestSeriesService:
         assert len(sites) == 0
         assert sites == []
 
+    def test_create_qualifier(self):
+        qual = Qualifier()
+        qual.code = "ABC123"
+        qual.description = "This is a test"
+        self.cv_service.create_qualifier(qual)
+
+        assert qual.id is not None
+
+    def test_get_qualifiers(self):
+        assert self.cv_service.get_qualifiers() == []
+
+        qual = Qualifier()
+        qual.code = "ABC123"
+        qual.description = "This is a test"
+        self.cv_service.create_qualifier(qual)
+
+        db_qual = self.cv_service.get_qualifiers()[0]
+        assert qual.id == db_qual.id
+
     ## TODO unittest Fix test_get_All_sites
     def test_get_all_sites(self):
         assert self.series_service.get_all_used_sites() == []

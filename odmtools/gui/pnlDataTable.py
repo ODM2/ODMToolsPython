@@ -1,18 +1,16 @@
 import wx
 import wx.grid
 import logging
-import itertools as iter
-<<<<<<< HEAD
+
 import pandas as pd
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView, VirtualObjectListView
 from wx.lib.pubsub import pub as Publisher
 import numpy as np
 import timeit
-=======
+
 from odmtools.lib.oldOlv import ColumnDefn, FastObjectListView
 from wx.lib.pubsub import pub as Publisher
-#import datetime
->>>>>>> 4788d9903a4f70315eacb6cb6b036e7d75f330e8
+
 
 from odmtools.common.logger import LoggerTool
 
@@ -104,7 +102,7 @@ class pnlDataTable(wx.Panel):
         self.myOlv.useAlternateBackColors = True
         self.myOlv.oddRowsBackColor = wx.Colour(191, 217, 217)
 
-        values = self.memDB.getDataValuesforEdit()
+        values = self.memDB.getDataValues()
         value_length = len(values)
 
         self.myOlvDataFrame = pd.DataFrame(values, columns=[x.title for x in columns])

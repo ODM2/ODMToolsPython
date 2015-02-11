@@ -333,6 +333,7 @@ class wizSave(wx.wizard.Wizard):
             closeSuccessful = True
 
         if closeSuccessful:
+            #if qcl exists use its id
             if self.series_service.qcl_exists(QCL):
                 if QCL == self.currSeries.quality_control_level:
                     QCL = None
@@ -342,11 +343,11 @@ class wizSave(wx.wizard.Wizard):
                 QCL = self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
 
             #if variable exists use its id
-            new_var = self.series_service.variable_exists(Variable)
-            if new_var:
-                Variable = new_var
+            if self.series_service.variable_exists(Variable):
+                Variable = self.record_service.get_variable(Variable)
             else:
                 Variable = self.record_service.create_variable(Variable)
+
             #if method exists use its id
             if self.series_service.method_exists(Method):
                 if Method == self.currSeries.method:

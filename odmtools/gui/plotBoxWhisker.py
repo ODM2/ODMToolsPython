@@ -115,7 +115,7 @@ class PlotBox(wx.Panel):
         # Plot Median
         ax.scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
 
-        bp = oneSeries.filteredData.boxplot(column="DataValue", ax=ax, by=oneSeries.BoxWhisker.currinterval.groupby,
+        bp = oneSeries.dataTable.boxplot(column="DataValue", ax=ax, by=oneSeries.BoxWhisker.currinterval.groupby,
                                             rot=35,  notch=True, sym="-s", conf_intervals=ci, return_type = 'dict',
                                             grid=False)
 

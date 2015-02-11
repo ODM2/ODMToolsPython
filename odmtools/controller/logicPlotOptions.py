@@ -136,11 +136,8 @@ class SeriesPlotInfo(object):
         else:
             ## Pandas DataFrame
             #self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            st= timeit.default_timer()
-            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
-            elapsed = timeit.default_timer() - st
-            logging.debug ("Time to load getEditValuesForGraph into dataframe: %s" %elapsed)
-            data.set_index(data['LocalDateTime'], inplace=True)
+            data = self.memDB.getEditDataValuesforGraph()
+
             self._seriesInfos[self.editID].dataTable = data
 
         self._seriesInfos[self.editID].edit = True
@@ -152,18 +149,16 @@ class SeriesPlotInfo(object):
         #update values
         if self.editID in self._seriesInfos:
             # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            data = pd.DataFrame(self.memDB.getEditDataValuesforGraph(), columns=self.memDB.columns)
-            data.set_index(data['LocalDateTime'], inplace=True)
+            data =self.memDB.getEditDataValuesforGraph()
             self._seriesInfos[self.editID].dataTable = data
 
 
     def stopEditSeries(self):
         if self.editID in self._seriesInfos:
-            data = pd.DataFrame(self.memDB.getDataValuesforGraph(
+            data = self.memDB.getDataValuesforGraph(
                 self.editID, self._seriesInfos[self.editID].noDataValue,
                 self._seriesInfos[self.editID].startDate,
-                self._seriesInfos[self.editID].endDate), columns=self.memDB.columns)
-            data.set_index(data['LocalDateTime'], inplace=True)
+                self._seriesInfos[self.editID].endDate)
             self._seriesInfos[self.editID].dataTable = data
             self._seriesInfos[self.editID].edit = False
             self._seriesInfos[self.editID].color = self._seriesInfos[self.editID].plotcolor
@@ -189,6 +184,10 @@ class SeriesPlotInfo(object):
             except KeyError:
                 self.resetDates()
         else:
+            #results = self.taskserver.getCompletedTasks()
+            #self.memDB.setConnection(results["InitEditValues"])
+
+
             self._seriesInfos[key] = self.getSeriesInfo(key)
             results = self.taskserver.getCompletedTasks()
             self._seriesInfos[key].Probability = results['Probability']
@@ -255,11 +254,11 @@ class SeriesPlotInfo(object):
             data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
             logger.debug("Finished plotting -- getting datavalues for graph")
 
-        data.set_index(["LocalDateTime"], inplace=True)
+
         logger.debug("assigning variables...")
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
-        seriesInfo.columns = self.memDB.columns
+        #seriesInfo.columns = data.columns
         seriesInfo.startDate = startDate
         seriesInfo.endDate = endDate
         seriesInfo.dataType = dataType
@@ -270,15 +269,10 @@ class SeriesPlotInfo(object):
         seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
-        #remove all of the nodatavalues from the pandas table
-        seriesInfo.filteredData = data[data["DataValue"] != noDataValue]
-        val = seriesInfo.filteredData["Month"].map(calcSeason)
-        seriesInfo.filteredData["Season"] = val
-        #calcSeason(seriesInfo.filteredData["Month"])
 
 
         if len(data) > 0:
-            seriesInfo.yrange = data['DataValue'].max() - data['DataValue'].min()
+            seriesInfo.yrange = np.max(data['DataValue']) - np.min(data['DataValue'])
         else:
             seriesInfo.yrange = 0
 
@@ -302,10 +296,16 @@ class SeriesPlotInfo(object):
         logger.debug("Create Series Info")
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
 
+
+        #remove all of the nodatavalues from the pandas table
+        filteredData = seriesInfo.dataTable[seriesInfo.dataTable["DataValue"] != seriesInfo.noDataValue]
+        val = filteredData["Month"].map(calcSeason)
+        filteredData["Season"] = val
+
         # construct tasks for the task server
-        tasks = [("Probability", seriesInfo.filteredData),
-                 ("BoxWhisker", (seriesInfo.filteredData, seriesInfo.boxWhiskerMethod)),
-                 ("Summary", seriesInfo.filteredData)]
+        tasks = [("Probability", filteredData),
+                 ("BoxWhisker", (filteredData, seriesInfo.boxWhiskerMethod)),
+                 ("Summary", filteredData)]
 
         # Give tasks to the taskserver to run parallelly
         logger.debug("Sending tasks to taskserver")
@@ -358,7 +358,7 @@ class Statistics(object):
             logger.debug("censored observations using len: %s" % elapsed)
 
             time = timeit.default_timer()
-            self.GeometricMean= stats.gmean(dvs)
+            self.GeometricMean=round( stats.gmean(dvs),5)
             elapsed = timeit.default_timer() - time
             logger.debug("Geometric mean using scipy: %s" % elapsed)
 
@@ -535,13 +535,13 @@ class Probability(object):
         :param data:
         :return:
         """
-
+        self.yAxis = data['DataValue']
         # Determine rank, sorting values doesn't change outcome while using pandas.
-        ranks = data['DataValue'].rank()
+        ranks = self.yAxis.rank()
         PrbExc = ranks / (len(ranks) + 1) * 100
 
         self.xAxis = PrbExc
-        self.yAxis = data['DataValue']
+
 
 
 def numToMonth(date):

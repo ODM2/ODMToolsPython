@@ -25,6 +25,8 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.recordService = series
         clsDataFilters.clsDataFilters.__init__(self, parent)
 
+        self.Center()
+
         self.chkToggleFilterSelection.SetValue(self.recordService.get_toggle())
         self.setDates()
 
@@ -121,9 +123,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
 
     def setDates(self):
-
-        dateAfter = self.recordService.get_series_points()[0][3]
-        dateBefore = self.recordService.get_series_points()[-1][3]
+        idx=self.recordService.get_series_points().index
+        dateAfter = idx[0]
+        dateBefore = idx[-1]
 
         formattedDateAfter = _pydate2wxdate(dateAfter)
         formattedDateBefore = _pydate2wxdate(dateBefore)

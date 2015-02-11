@@ -1,10 +1,11 @@
 import sqlite3
 
-from odmtools.odmdata import SessionFactory
+
 from odmtools.odmdata import DataValue
 from series_service import SeriesService
-from cv_service import CVService
+
 from odmtools.odmdata import series as series_module
+
 import pandas as pd
 import datetime
 import numpy as np
@@ -19,42 +20,31 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class EditService():
     # Mutual exclusion: cursor, or connection_string
     def __init__(self, series_id, connection=None, connection_string="", debug=False):
-        self._connection = connection
+        '''
+
+        :param series_id:
+        :param connection: memory database,  contains connection to remote database
+        :param connection_string: connection to remote database
+        :param debug:
+        :return:
+        '''
+        self._connection = connection.mem_service._session_factory.engine.connect().connection
+
         self._series_id = series_id
         self._filter_from_selection = False
         self._debug = debug
 
-        if (connection_string is not ""):
-            self._session_factory = SessionFactory(connection_string, debug)
-            self._series_service = SeriesService(connection_string, debug)
-            self._cv_service = CVService(connection_string, debug)
+        if connection_string is  "" and connection is not None:
+            self.memDB= connection
+            self._series_service = self.memDB.series_service#SeriesService(connection_string, debug)
 
-        elif (factory is not None):
-            # TODO code has changed to no longer use a session factory, refactor so it is correct SR
-            self._session_factory = factory
-            service_manager = ServiceManager()
-            self._series_service = service_manager.get_series_service()
-        else:
-            # One or the other must be set
-            logger.debug("Must have either a connection string or session factory")
-            #
-            # TODO throw an exception
-
-        self._edit_session = self._session_factory.get_session()
-
-        if self._connection == None:
+        elif connection_string is not "" and connection is None:
             series_service = SeriesService(connection_string, False)
-            series = series_service.get_series_by_id(series_id)
-            DataValues = [(dv.id, dv.data_value, dv.value_accuracy, dv.local_date_time, dv.utc_offset, dv.date_time_utc,
-                           dv.site_id, dv.variable_id, dv.offset_value, dv.offset_type_id, dv.censor_code,
-                           dv.qualifier_id, dv.method_id, dv.source_id, dv.sample_id, dv.derived_from_id,
-                           dv.quality_control_level_id) for dv in series.data_values]
-            self._connection = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-            tmpCursor = self._connection.cursor()
-            self.init_table(tmpCursor)
-            tmpCursor.executemany("INSERT INTO DataValues VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", DataValues)
-
-        self._connection.commit()
+            from odmtools.odmdata import MemoryDatabase
+            self.memDB= MemoryDatabase(series_service)
+            self.memDB.initEditValues(series_id)
+        else:
+            logger.error("must send in either a remote db connection string or a memory database object")
         self._cursor = self._connection.cursor()
 
         self._populate_series()
@@ -66,6 +56,7 @@ class EditService():
     def _populate_series(self):
         # [(ID, value, datetime), ...]
         #self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
+        '''
         self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
 
         results = self._cursor.fetchall()
@@ -77,9 +68,10 @@ class EditService():
             "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
             "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
 
-        self._series_points_df = pd.DataFrame(results,  columns=self.columns)
+        self._series_points_df = pd.DataFrame(results,  columns=[x[0] for x in self._cursor.description])
         self._series_points_df.set_index(["LocalDateTime"], inplace=True)
-
+        '''
+        self._series_points_df = self.memDB.getDataValuesDF()
 
     def _test_filter_previous(self):
 
@@ -473,7 +465,7 @@ class EditService():
             dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
-        logging.debug("original editing series id: %s" % str(series.id))
+        logger.debug("original editing series id: %s" % str(series.id))
         #        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
         #                                                             , method if method else series.method_id, series.source_id
         #                                                             , qcl if qcl else series.qcl_id)
@@ -488,7 +480,7 @@ class EditService():
                                                                   qcl_id=qcl.id if qcl else int(
                                                                       series.quality_control_level_id))
             if tseries:
-                logging.debug("Save existing series ID: %s" % str(series.id))
+                logger.debug("Save existing series ID: %s" % str(series.id))
                 series = tseries
             else:
                 print "Series doesn't exist (if you are not, you should be running SaveAs)"
@@ -585,7 +577,7 @@ class EditService():
         return self._series_service.create_method(description, link)
 
     def create_qualifier(self, code, definition):
-        return self.cv_service.create_qualifier(code, definition)
+        return self._series_service.create_qualifier(code, definition)
 
     def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
                         value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):

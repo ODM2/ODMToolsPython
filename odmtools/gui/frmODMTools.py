@@ -34,13 +34,14 @@ class frmODMToolsMain(wx.Frame):
     """
 
     """
-<<<<<<< HEAD
+
     def __init__(self, **kwargs):
         """
 
         """
 
         self.taskserver = kwargs.pop('taskServer')
+        self.memDB = kwargs.pop('memdb')
 
         # Determine the optimal size of the screen resolution
         size = self._obtainScreenResolution()
@@ -95,8 +96,7 @@ class frmODMToolsMain(wx.Frame):
 
 
     #############Entire Form Sizers##########
-<<<<<<< HEAD
-=======
+
     def _init_sizers(self):
         # generated method, don't edit
         self.s = wx.BoxSizer(wx.VERTICAL)
@@ -180,7 +180,7 @@ class frmODMToolsMain(wx.Frame):
             pass
 
     ###################### Frame ################
->>>>>>> 4788d9903a4f70315eacb6cb6b036e7d75f330e8
+
     def _init_ctrls(self):
         # generated method, don't edit
         logger.debug("Loading frame...")
@@ -217,13 +217,10 @@ class frmODMToolsMain(wx.Frame):
 
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
-<<<<<<< HEAD
-        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver)
-=======
-        self.pnlSelector = FrmSeriesSelector(name=u'pnlSelector', parent=self.pnlDocking,
-                                             size=wx.Size(770, 388), style=wx.TAB_TRAVERSAL, dbservice=self.sc,
-                                             serviceManager=self.service_manager)
->>>>>>> 4788d9903a4f70315eacb6cb6b036e7d75f330e8
+
+
+        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memDB)
+
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
@@ -423,8 +420,9 @@ class frmODMToolsMain(wx.Frame):
 
     def addEdit(self, event):
 
+        busy = wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self)
         logger.debug("Beginning editing")
-        isSelected, seriesID, memDB = self.pnlSelector.onReadyToEdit()
+        isSelected, seriesID = self.pnlSelector.onReadyToEdit()
 
         # logger.debug("Initializing DataTable")
         # # tasks = [("dataTable", (memDB.conn, self.dataTable.myOlv))]
@@ -434,38 +432,29 @@ class frmODMToolsMain(wx.Frame):
 
         if isSelected:
             self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
-                                                                          connection=memDB.conn)
+                                                                          connection=self.memDB)
             self._ribbon.toggleEditButtons(True)
 
             logger.debug("Initializing Plot")
-            self.pnlPlot.addEditPlot(memDB, seriesID, self.record_service)
+            self.pnlPlot.addEditPlot(self.memDB, seriesID, self.record_service)
 
             logger.debug("Initializing DataTable")
-            self.dataTable.init(memDB, self.record_service)
+            self.dataTable.init(self.memDB, self.record_service)
 
 
             # set record service for console
             Publisher.sendMessage("setEdit", isEdit=True)
             logger.debug("Enabling Edit")
-<<<<<<< HEAD
             self.record_service.toggle_record()
-            # self._mgr.GetPane(self.txtPythonScript).Show(show=True)
-=======
-            self.record_service.toggle_record(True)
-            #self._mgr.GetPane(self.txtPythonScript).Show(show=True)
 
->>>>>>> 4788d9903a4f70315eacb6cb6b036e7d75f330e8
+
 
         else:
             logger.debug("disabling Edit")
             Publisher.sendMessage("setEdit", isEdit=False)
-<<<<<<< HEAD
+
             self.record_service.toggle_record()
-            # self._mgr.GetPane(self.txtPythonScript).Show(show=False)
-=======
-            self.record_service.toggle_record(True)
-            #self._mgr.GetPane(self.txtPythonScript).Show(show=False)
->>>>>>> 4788d9903a4f70315eacb6cb6b036e7d75f330e8
+
 
         # self._mgr.Update()
 
@@ -508,11 +497,10 @@ class frmODMToolsMain(wx.Frame):
             if self._ribbon.getEditStatus():
                 self.stopEdit(event=None)
 
-<<<<<<< HEAD
+
         if value == wx.ID_OK:
             # self.createService()
-=======
->>>>>>> 4788d9903a4f70315eacb6cb6b036e7d75f330e8
+
             self.pnlSelector.resetDB(self.sc)
             self.refreshConnectionInfo()
             self.pnlPlot.clear()
@@ -570,10 +558,10 @@ class frmODMToolsMain(wx.Frame):
         
         # Shut down processes running in background
         if self.taskserver.numprocesses > 0 and self.taskserver.anyAlive:
-            busy = wx.BusyInfo("Waiting for processes to terminate...")
+            busy = wx.BusyInfo("Closing ODMTools ...", parent=self)
 
             # Terminate the processes
-            self.taskserver.processTerm()
+            self.taskserver.processTerminate()
 
         # IMPORTANT! if wx.TaskBarIcons exist, it will keep mainloop running
 

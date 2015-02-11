@@ -1,6 +1,7 @@
 from multiprocessing import Process, Queue
 from odmtools.controller.logicPlotOptions import Probability, BoxWhisker, Statistics
 import time
+from odmtools.odmservices import SeriesService
 
 __author__ = 'jmeline'
 
@@ -37,9 +38,6 @@ class TaskServerMP:
 
         self.completedTasks = {}
 
-        # initialize task id
-        self.taskId = None
-
         for n in range(self.numprocesses):
             process = Process(target=TaskServerMP.worker, args=(self.dispatcher,))
             process.start()
@@ -52,7 +50,7 @@ class TaskServerMP:
         self.tasks.extend(taskList)
         self.numtasks = len(taskList)
 
-    def processTasks(self, resfunc=None):
+    def processTasks(self):
         """
         Start the execution of tasks by the processes.
         """
@@ -95,7 +93,7 @@ class TaskServerMP:
             isalive = (isalive or self.Processes[n].is_alive())
         return isalive
 
-    def processTerm(self):
+    def processTerminate(self):
         """
         Stop the execution of tasks by the processes.
         """
@@ -117,10 +115,10 @@ class TaskServerMP:
         while True:
             arg = dispatcher.getTask()
 
-            result = None
-
-            task_type = arg[0]
+            task_type = arg[0] #(task_type, (arg1, arg2))
             task = arg[1]
+
+            result = arg
 
             if task_type == "Probability":
                 result = Probability(task)
@@ -128,6 +126,16 @@ class TaskServerMP:
                 result = BoxWhisker(task[0], task[1])
             if task_type == "Summary":
                 result = Statistics(task)
+            if task_type == "InitEditValues":
+                connection = SeriesService("sqlite:///:memory:")
+                df = task[1]
+                logger.debug("Load series from db")
+                df.to_sql(name="DataValues", con=connection._session_factory.engine, flavor='sqlite', index = False, chunksize = 10000)
+                logger.debug("done loading database")
+                result = connection
+            if task_type == "UpdateEditDF":
+                connection = task[1]
+                result = connection.get_all_values_df()
 
             result = (task_type, result)
 

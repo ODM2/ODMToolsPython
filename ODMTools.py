@@ -16,7 +16,7 @@ from odmtools.gui.frmODMTools import frmODMToolsMain
 from odmtools.common.taskServer import TaskServerMP
 from odmtools.common.logger import LoggerTool
 from multiprocessing import cpu_count, freeze_support
-
+from odmtools.odmdata import MemoryDatabase
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 wx.Log.SetLogLevel(0)
@@ -26,11 +26,12 @@ class MyApp(wx.App):
     A Simple App class, modified to hold the processes and task queues
     """
 
-    def __init__(self, redirect=True, filename=None, useBestVisual=False, clearSigInt=True, taskserver=None):
+    def __init__(self, redirect=True, filename=None, useBestVisual=False, clearSigInt=True, taskserver=None, memdb = None):
         """
         Initialise the App.
         """
         self.taskserver = taskserver
+        self.memdb = memdb
         wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
 
     def OnInit(self):
@@ -47,6 +48,7 @@ class MyApp(wx.App):
 
         # multiprocessing task server
         kwargs['taskServer'] = self.taskserver
+        kwargs['memdb']= self.memdb
         self.frame = frmODMToolsMain(**kwargs)
         self.frame.Show(True)
         return True
@@ -75,8 +77,9 @@ if __name__ == '__main__':
     # Initialize TaskServer.
     # This class starts the processes before starting wxpython and is needed
     tsmp = TaskServerMP(numproc=numproc)
+    memdb = MemoryDatabase()
 
     # Build app with taskserver included
-    app = MyApp(False, taskserver=tsmp)
+    app = MyApp(False, taskserver=tsmp, memdb = memdb)
     app.MainLoop()
 

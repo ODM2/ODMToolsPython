@@ -25,7 +25,7 @@ class ClsSeriesSelector(wx.Panel):
         self.initSVBoxes()
         # Subscribe functions
         self.initPubSub()
-        self.service_manager = serviceManager
+        self.service_manager = ServiceManager()
         self.export_service = self.service_manager.get_export_service()
         self.selectedIndex = 0
         self.isEditing = False
