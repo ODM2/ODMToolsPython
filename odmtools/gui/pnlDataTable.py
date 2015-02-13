@@ -1,15 +1,13 @@
 import wx
 import wx.grid
 import logging
+import itertools as iter
 
 import pandas as pd
 from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView, VirtualObjectListView
 from wx.lib.pubsub import pub as Publisher
 import numpy as np
 import timeit
-
-from odmtools.lib.oldOlv import ColumnDefn, FastObjectListView
-from wx.lib.pubsub import pub as Publisher
 
 
 from odmtools.common.logger import LoggerTool
