@@ -407,6 +407,9 @@ class frmODMToolsMain(wx.Frame):
             paneDetails.Show(show=True)
         self._mgr.Update()
 
+    def getDBService(self):
+        return self.service_manager
+
     def onPlotSelection(self, value):
         self.pnlPlot.selectPlot(value)
 
