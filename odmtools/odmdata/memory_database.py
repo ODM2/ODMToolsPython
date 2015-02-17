@@ -5,6 +5,7 @@ import timeit
 import logging
 from odmtools.common.logger import LoggerTool
 from odmtools.odmservices import SeriesService
+from odmtools.odmdata import DataValue
 from odmtools.common.taskServer import TaskServerMP
 from multiprocessing import cpu_count, freeze_support
 
@@ -124,10 +125,15 @@ class MemoryDatabase(object):
 
     def stopEdit(self):
         self.editLoaded= False
-        query = " DROP TABLE DataValues"
+        self.df = None
+
+        #query = " DROP TABLE DataValues"
         #self.cursor.execute("DROP TABLE DataValues")
-        self.mem_service._session_factory.engine.connect().execute(query)
-        self.commit()
+        #self.mem_service._session_factory.engine.connect().execute(query)
+        #en = self.mem_service._session_factory.engine
+        #DataValue.__table__.drop(en)
+        #self.mem_service._session_factory.engine.drop("DataValues")
+        #self.commit()
 
     def setConnection(self, service):
         self.mem_service= service
@@ -157,7 +163,7 @@ class MemoryDatabase(object):
             else:
             '''#TODO: Thread this call
             logger.debug("Load series from db")
-            self.df.to_sql(name="DataValues", con=self.mem_service._session_factory.engine, flavor='sqlite', index = False, chunksize = 10000)
+            self.df.to_sql(name="DataValues", if_exists= 'replace', con=self.mem_service._session_factory.engine, flavor='sqlite', index = False, chunksize = 10000)
             logger.debug("done loading database")
 
 
