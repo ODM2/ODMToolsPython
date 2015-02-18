@@ -58,17 +58,14 @@ class TaskServerMP:
         for i in self.tasks:
             self.dispatcher.putTask(i)
 
-        for _ in range(len(self.tasks)):
-            self.getOutput()
-
-        self.tasks = []
-
 
     def getOutput(self):
         """
         Collect completed tasks
         """
 
+
+        #pull the output from completed tasks
         logger.debug("Trying to get something...")
 
         output = self.dispatcher.getResult()
@@ -81,6 +78,10 @@ class TaskServerMP:
         """
         Retrieve all of the completedTasks
         """
+        #wait for all tasks to complete running
+        for _ in range(len(self.tasks)):
+            self.getOutput()
+        self.tasks = []
 
         return self.completedTasks
 

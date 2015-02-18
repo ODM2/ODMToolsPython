@@ -56,22 +56,9 @@ class EditService():
     def _populate_series(self):
         # [(ID, value, datetime), ...]
         #self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
-        '''
-        self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
 
-        results = self._cursor.fetchall()
-
-        self._series_points = results
-
-        self.columns = [
-            "ValueID", "DataValue", "ValueAccuracy", "LocalDateTime", "UTCOffset", "DateTimeUTC",
-            "SiteID", "VariableID", "OffsetValue", "OffsetTypeID", "CensorCode", "QualifierID",
-            "MethodID", "SourceID", "SampleID", "DerivedFromID", "QualityControlLevelID"]
-
-        self._series_points_df = pd.DataFrame(results,  columns=[x[0] for x in self._cursor.description])
-        self._series_points_df.set_index(["LocalDateTime"], inplace=True)
-        '''
         self._series_points_df = self.memDB.getDataValuesDF()
+
 
     def _test_filter_previous(self):
 
@@ -83,11 +70,8 @@ class EditService():
         df = None
 
         if not self._filter_from_selection:
-
             df = self._series_points_df
-
         else:
-
             df = self.filtered_dataframe
 
         # Ensure that we're not working with an empty dataframe
@@ -303,6 +287,7 @@ class EditService():
 
     def change_value(self, value, operator):
         filtered_points = self.get_filtered_points()
+        '''
         query = "UPDATE DataValues SET DataValue = "
         if operator == '+':
             query += " DataValue + %s " % (value)
@@ -315,11 +300,17 @@ class EditService():
         values = filtered_points['ValueID'].tolist()
         result = ','.join(map(str, values))
         query += "WHERE ValueID IN (%s)" % result
+
+
         self._cursor.execute(query)
+        '''
+
+        ids = filtered_points["ValueID"].tolist()
+        self.memDB.updateValue(ids, operator, value)
         self._populate_series()
 
         ## update filtered_dataframe
-        self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(values)]
+        self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(ids)]
 
 
     def add_points(self, points):
@@ -336,9 +327,12 @@ class EditService():
         filtered_points = self.get_filtered_points()
         if not filtered_points.empty:
             values = filtered_points['ValueID'].tolist()
+            '''
             result = ','.join(map(str, values))
             query = "DELETE FROM DataValues WHERE ValueID IN (%s)" % result
             self._cursor.execute(query)
+            '''
+            self.memDB.delete(values)
             self._populate_series()
             self.filtered_dataframe = None
 
@@ -359,15 +353,17 @@ class EditService():
         #    df.loc[x, "DataValue"]=np.nan
         mdf = df["DataValue"].mask(issel)
         mdf.interpolate(method = "time", inplace=True)
-        tmp_filter_list["DataValue"]=mdf[issel]
-
-        update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
-        query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-        self._cursor.executemany(query, update_list)
+        #tmp_filter_list["DataValue"]=mdf[issel]
+        ids = tmp_filter_list['ValueID'].tolist()
+        values = mdf[issel].tolist()
+        #update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+        #query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
+        self.memDB.update(ids, values)
+        #self._cursor.executemany(query, update_list)
 
         self._populate_series()
-        values = tmp_filter_list['ValueID'].tolist()
-        self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(values)]
+
+        self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(ids)]
 
 
     def drift_correction(self, gap_width):
@@ -378,16 +374,18 @@ class EditService():
 
             # y_n = y_0 + G(x_i / x_l)
             f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
-            tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
+            #tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
+            values = tmp_filter_list.apply(f, axis = 1).tolist()
+            #update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+            #query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
+            #self._cursor.executemany(query, update_list)
+            ids = tmp_filter_list['ValueID'].tolist()
+            self.memDB.update(ids, values)
 
-            update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
-            query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-
-            self._cursor.executemany(query, update_list)
 
             self._populate_series()
-            values = tmp_filter_list['ValueID'].tolist()
-            self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(values)]
+
+            self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(ids)]
             return True
         return False
 
