@@ -140,9 +140,9 @@ class SeriesPlotInfo(object):
 
             self._seriesInfos[self.editID].dataTable = data
 
-        self._seriesInfos[self.editID].edit = True
-        self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
-        self._seriesInfos[self.editID].color = "Black"
+            self._seriesInfos[self.editID].edit = True
+            self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
+            self._seriesInfos[self.editID].color = "Black"
 
 
     def updateEditSeries(self):

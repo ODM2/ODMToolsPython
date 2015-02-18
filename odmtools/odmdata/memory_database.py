@@ -97,7 +97,7 @@ class MemoryDatabase(object):
 
 
     def delete(self, ids):
-        self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete()
+        self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete(False)
         #self.updateDF()
 
     def stopEdit(self):
