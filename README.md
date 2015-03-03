@@ -7,6 +7,8 @@ ODMTools is a python application for managing observational data using the Obser
 
 <p align="center"><img src="https://github.com/UCHIC/ODMToolsPython/raw/master/doc/images/ODMToolsScreenShot.jpg"></p>
 
+If you want to try ODM Tools, we have created a couple of [testing databases](https://github.com/UCHIC/ODMToolsPython/tree/master/examples) that you can use. 
+
 ##Releases
 
 To make running ODMTools easier we have included installers. Please select the one that is appropriate for your operating system
