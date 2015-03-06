@@ -51,8 +51,6 @@ class plotTimeSeries(wx.Panel):
 
         # matplotlib.axes.AxesSubplot
         self.timeSeries = host_subplot( 111, axes_class=AA.Axes)
-        #self.timeSeries = self.figure.add_subplot(111)
-        #self.timeSeries.plot([], [], picker=5)
         self.setTimeSeriesTitle("No Data to Plot")
 
         # matplotlib.backends.backend_wxagg.FigureCanvasWxAgg
@@ -61,8 +59,6 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
-        #self.hoverAction = self.canvas.mpl_connect('motion_notify_event', self._onMotion)
-        #self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
         Publisher.subscribe(self.updateCursor, "updateCursor")
 
@@ -261,7 +257,8 @@ class plotTimeSeries(wx.Panel):
             self.editCurve = self.seriesPlotInfo.getEditSeriesInfo()
             self.drawEditPlot(self.editCurve)
             self.canvas.draw()
-        Publisher.sendMessage("refreshTable", e=None)
+
+        Publisher.sendMessage("refreshTable", e=self.editCurve.dataTable)
         # self.parent.parent.dataTable.Refresh()
         plt.gcf().autofmt_xdate()
         self.canvas.draw()

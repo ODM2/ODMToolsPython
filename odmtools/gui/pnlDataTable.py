@@ -100,16 +100,18 @@ class pnlDataTable(wx.Panel):
         self.myOlv.useAlternateBackColors = True
         self.myOlv.oddRowsBackColor = wx.Colour(191, 217, 217)
 
-        values = self.memDB.getDataValues()
+        '''values = self.memDB.getDataValues()
         value_length = len(values)
 
         self.myOlvDataFrame = pd.DataFrame(values, columns=[x.title for x in columns])
+        '''
         self.myOlv.SetColumns(columns)
 
+        self.myOlvDataFrame = self.memDB.getDataValuesDF()
         self.dataObjects = self.myOlvDataFrame.values.tolist()
 
         self.myOlv.SetObjectGetter(self.objectGetter)
-        self.myOlv.SetItemCount(value_length)
+        self.myOlv.SetItemCount(len(self.myOlvDataFrame))
 
 
     def objectGetter(self, index):
@@ -214,7 +216,10 @@ class pnlDataTable(wx.Panel):
         return col_selected
 
     def onRefresh(self, e):
-        pass
+        self.myOlvDataFrame = self.memDB.getDataValuesDF()
+        self.dataObjects = self.myOlvDataFrame.values.tolist()
+
+        self.myOlv.Refresh()
 
     def clear(self):
         self.memDB = None

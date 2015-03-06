@@ -328,13 +328,8 @@ class mnuRibbon(RB.RibbonBar):
     def onResetFilter(self, event):
         recordService = self.parent.getRecordService()
         recordService.reset_filter()
-        self.redrawPlotTable()
 
-    def redrawPlotTable(self):
-        #recordService = self.parent.getRecordService()
-        #Publisher.sendMessage("changeSelection", datetime_list=recordService.get_filtered_dates())
-        #Publisher.sendMessage("changeTableSelection",  datetime_list=recordService.get_filtered_dates())
-        pass
+
 
     def isEmptySelection(self, dataframe):
         if isinstance(dataframe, pd.DataFrame):
@@ -436,7 +431,6 @@ class mnuRibbon(RB.RibbonBar):
                                             'Interpolation', wx.YES_NO | wx.ICON_QUESTION | wx.CENTRE)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().interpolate()
-        self.redrawPlotTable()
 
         event.Skip()
     # ###################################
@@ -486,7 +480,6 @@ class mnuRibbon(RB.RibbonBar):
                             'Deleting Points', wx.YES_NO | wx.ICON_QUESTION)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().delete_points()
-        self.redrawPlotTable()
         event.Skip()
 
     def onRestore(self, event):

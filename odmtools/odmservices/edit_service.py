@@ -43,6 +43,7 @@ class EditService():
             from odmtools.odmdata import MemoryDatabase
             self.memDB= MemoryDatabase(series_service)
             self.memDB.initEditValues(series_id)
+            self._connection = self.memDB.mem_service._session_factory.engine.connect().connection
         else:
             logger.error("must send in either a remote db connection string or a memory database object")
         self._cursor = self._connection.cursor()
@@ -287,23 +288,6 @@ class EditService():
 
     def change_value(self, value, operator):
         filtered_points = self.get_filtered_points()
-        '''
-        query = "UPDATE DataValues SET DataValue = "
-        if operator == '+':
-            query += " DataValue + %s " % (value)
-        if operator == '-':
-            query += " DataValue - %s " % (value)
-        if operator == '*':
-            query += " DataValue * %s " % (value)
-        if operator == '=':
-            query += "%s " % (value)
-        values = filtered_points['ValueID'].tolist()
-        result = ','.join(map(str, values))
-        query += "WHERE ValueID IN (%s)" % result
-
-
-        self._cursor.execute(query)
-        '''
 
         ids = filtered_points["ValueID"].tolist()
         self.memDB.updateValue(ids, operator, value)
@@ -327,11 +311,7 @@ class EditService():
         filtered_points = self.get_filtered_points()
         if not filtered_points.empty:
             values = filtered_points['ValueID'].tolist()
-            '''
-            result = ','.join(map(str, values))
-            query = "DELETE FROM DataValues WHERE ValueID IN (%s)" % result
-            self._cursor.execute(query)
-            '''
+
             self.memDB.delete(values)
             self._populate_series()
             self.filtered_dataframe = None
@@ -349,17 +329,14 @@ class EditService():
         df = self._series_points_df
         issel = df.index.isin(tmp_filter_list.index)
 
-        #for x in tmp_filter_list.index:
-        #    df.loc[x, "DataValue"]=np.nan
         mdf = df["DataValue"].mask(issel)
         mdf.interpolate(method = "time", inplace=True)
-        #tmp_filter_list["DataValue"]=mdf[issel]
+        tmp_filter_list["DataValue"]=mdf[issel]
         ids = tmp_filter_list['ValueID'].tolist()
-        values = mdf[issel].tolist()
-        #update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
-        #query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-        self.memDB.update(ids, values)
-        #self._cursor.executemany(query, update_list)
+
+        update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+        self.memDB.update(update_list)
+
 
         self._populate_series()
 
@@ -374,13 +351,12 @@ class EditService():
 
             # y_n = y_0 + G(x_i / x_l)
             f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
-            #tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
-            values = tmp_filter_list.apply(f, axis = 1).tolist()
-            #update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
-            #query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-            #self._cursor.executemany(query, update_list)
+            tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
+
+            update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+
             ids = tmp_filter_list['ValueID'].tolist()
-            self.memDB.update(ids, values)
+            self.memDB.update(update_list)
 
 
             self._populate_series()
@@ -411,10 +387,14 @@ class EditService():
 
 
     def flag(self, qualifier_id):
+
         filtered_points = self.get_filtered_points()
+        '''
         query = "UPDATE DataValues SET QualifierID = %s WHERE ValueID = ?" % (qualifier_id)
         #self._cursor.executemany(query, [(str(x[0]),) for x in filtered_points])
         self._cursor.executemany(query, [(str(x),) for x in filtered_points["ValueID"].tolist()])
+        '''
+        self.memDB.updateFlag(filtered_points["ValueID"].tolist(), qualifier_id)
 
     ###################
     # Save/Restore
@@ -436,6 +416,7 @@ class EditService():
         """
         dvs = []
 
+        '''
         if var is not None:
             logger.debug(var.id)
             self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
@@ -450,8 +431,13 @@ class EditService():
         # else:
         #    raise ValueError("Quality Control Level cannot be zero")
 
+
         self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
+        '''
+
+        self.memDb.newSeries(var, method, qcl)
+        results = self.memDB.getDataValues
 
         # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID,
         # OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID
@@ -611,27 +597,3 @@ class EditService():
         dv.quality_control_level_id = dv_tuple[16]
 
         return dv
-
-    def init_table(self, cursor):
-        cursor.execute("""CREATE TABLE DataValues
-                (ValueID INTEGER NOT NULL,
-                DataValue FLOAT NOT NULL,
-                ValueAccuracy FLOAT,
-                LocalDateTime TIMESTAMP NOT NULL,
-                UTCOffset FLOAT NOT NULL,
-                DateTimeUTC TIMESTAMP NOT NULL,
-                SiteID INTEGER NOT NULL,
-                VariableID INTEGER NOT NULL,
-                OffsetValue FLOAT,
-                OffsetTypeID INTEGER,
-                CensorCode VARCHAR(50) NOT NULL,
-                QualifierID INTEGER,
-                MethodID INTEGER NOT NULL,
-                SourceID INTEGER NOT NULL,
-                SampleID INTEGER,
-                DerivedFromID INTEGER,
-                QualityControlLevelID INTEGER NOT NULL,
-
-                PRIMARY KEY (ValueID)
-                UNIQUE (DataValue, LocalDateTime, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID))
-               """)

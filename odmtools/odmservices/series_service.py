@@ -199,7 +199,6 @@ class SeriesService():
                                    #DataValue.local_date_time.strftime('%m'),
                                    #DataValue.local_date_time.strftime('%Y'))
         ).order_by( DataValue.local_date_time)
-        print str(q)
         query=q.statement.compile(dialect=self._session_factory.engine.dialect)
         data= pd.read_sql_query(sql= query,
                           con = self._session_factory.engine,
@@ -208,26 +207,7 @@ class SeriesService():
 
     def get_plot_values(self, seriesID, noDataValue, startDate = None, endDate = None ):
         series= self.get_series_by_id(seriesID)
-        '''q=self._edit_session.query(DataValue.data_value,
-                                   DataValue.local_date_time,
-                                   DataValue.censor_code,
-                                   func.strftime('%m', DataValue.local_date_time).label('Month'),
-                                   func.strftime('%Y', DataValue.local_date_time).label('Year'),
-                                   #DataValue.local_date_time.strftime('%m'),
-                                   #DataValue.local_date_time.strftime('%Y'))
-        ).filter(DataValue.data_value != noDataValue,
-                       DataValue.local_date_time >startDate,
-                       DataValue.local_date_time<endDate
-        ).order_by( DataValue.local_date_time)
 
-
-        print str(q)
-        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-        data= pd.read_sql_query(sql= query,
-                          con = self._session_factory.engine,
-                          params = query.params )
-        return data.set_index(data['LocalDateTime'])
-        '''
         DataValues = [
             (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
                 dv.local_date_time.strftime('%Y'))

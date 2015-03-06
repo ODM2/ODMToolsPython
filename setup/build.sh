@@ -7,4 +7,5 @@ if [ -d build ] && [ -d dist ]; then
 	rm -ir build dist
 fi
 
-sudo /usr/local/Cellar/python/2.7.8/bin/python setup.py py2app 
+sudo python setup.py py2app
+#sudo /usr/local/Cellar/python/2.7.8/bin/python setup.py py2app

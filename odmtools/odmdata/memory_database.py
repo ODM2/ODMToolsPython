@@ -5,7 +5,7 @@ import logging
 from odmtools.common.logger import LoggerTool
 from odmtools.odmservices import SeriesService
 from odmtools.odmdata import DataValue
-from sqlalchemy import update
+from sqlalchemy import update, bindparam
 from odmtools.common.taskServer import TaskServerMP
 from multiprocessing import cpu_count, freeze_support
 
@@ -76,9 +76,31 @@ class MemoryDatabase(object):
         self.mem_service._edit_session.rollback()
         #self.updateDF()
 
-    def update(self, ids, values):
-        self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).update({DataValue.data_value: -9999999}, False)
+    def update(self, updates):
+        '''
+        updates=[]
+        for id, val in zip(ids, values):
+            #updates.append({"id":id, "value":val})
+            updates.append((id, val))
+        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id == bindparam("id")).update({DataValue.data_value: bindparam("value")}, False)
+
+
+        stmt = (DataValue.__table__.update().
+            where(DataValue.id == bindparam('username')).
+            values(fullname=bindparam('fullname'))
+        )
+
+        self.mem_service._session_factory.engine.connect().execute(stmt, updates)
+
+        '''
+        query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
+        self.mem_service._session_factory.engine.connect().connection.cursor().executemany(query, updates)
+
+
+        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).update({DataValue.data_value: -9999999}, False)
         #self.updateDF()
+
+
 
     def updateValue(self, ids, operator, value):
         #query = DataValue.data_value+value
@@ -95,6 +117,27 @@ class MemoryDatabase(object):
             .update({DataValue.data_value: query}, False)
         #self.updateDF()
 
+    def updateFlag(self, ids, value):
+        self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids))\
+            .update({DataValue.qualifier_id: value}, False)
+
+    def newSeries(self, var, qcl, method):
+
+        query = self.mem_service._edit_session.query(DataValue)
+        if var is not None:
+            logger.debug(var.id)
+            query.update({DataValue.variable_id: var.id})
+            #self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
+
+        if method is not None:
+            logger.debug(method.id)
+            #self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
+            query.update({DataValue.method_id: method.id})
+        # check that the code is not zero
+        # if qcl is not None and qcl.code != 0:
+        if qcl is not None:
+            #self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
+            query.update({DataValue.quality_control_level_id: qcl.id})
 
     def delete(self, ids):
         self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete(False)
@@ -132,9 +175,9 @@ class MemoryDatabase(object):
             self.editLoaded = True
 
             '''
-            if taskserver:
-                taskserver.setTasks([("InitEditValues", (self.mem_service._session_factory.engine, self.df))])
-                taskserver.processTasks()
+            if self.taskserver:
+                self.taskserver.setTasks([("InitEditValues", (self.mem_service._session_factory.engine, self.df))])
+                self.taskserver.processTasks()
             # results = self.taskserver.getCompletedTasks()
             # self.conn = results["InitEditValues"]
             else:
