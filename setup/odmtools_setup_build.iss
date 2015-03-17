@@ -5,7 +5,7 @@
 
 #define MyAppName "ODMTools"
 #defing OrgName "UCHIC"
-#define MyAppVersion "v1.0.2-beta"
+#define MyAppVersion "v1.0.5-beta"
 #define MyAppURL "https://github.com/UCHIC/ODMToolsPython"
 
 [Setup]
@@ -30,7 +30,7 @@ SolidCompression=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "D:\Dev\ODMTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\jmeline_\Documents\GitHub\ODMToolsPython\odmtools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

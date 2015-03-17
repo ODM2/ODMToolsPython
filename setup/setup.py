@@ -24,7 +24,7 @@ ez_setup.use_setuptools()
 
 
 NAME = 'ODMTools'
-
+APP = ['C:\Users\jmeline_\Documents\GitHub\ODMToolsPython\ODMTools.py']
 extra_options = None
 sys.setrecursionlimit(2000)
 if sys.platform == 'darwin':
@@ -41,8 +41,16 @@ elif sys.platform == 'win32':
     from distutils.core import setup
     APP = ['C:\Users\Jacob\Documents\ODMToolsPython\ODMTools.py']
     import numpy
+    import os
+    import zmq
     import py2exe
     from glob import glob
+    
+    ## Work around for missing libzmq.dll (www.py2exe.org/index.cgi/Py2exeAndzmq)
+    os.environ['PATH'] = \
+        os.environ['PATH'] + \
+        os.path.pathsep + os.path.split(zmq.__file__)[0]
+        
     data_files = [
         ("Microsoft.VC90.CRT", glob(r'C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Microsoft.VC90.CRT\*.*')),
         (r'mpl-data', [r'C:\Anaconda\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\matplotlibrc']),
@@ -51,11 +59,13 @@ elif sys.platform == 'win32':
 
     OPTIONS = {
         #'excludes': ['_ssl', 'pyreadline', 'difflib', 'doctest', 'optparse', 'pickle', 'calendar'],
+        
         "compressed": 1,
         'dll_excludes': ['msvcr71.dll', 'OLEAUT32.dll', 'USER32.dll', 'IMM32.dll', 'SHELL32.dll',
                          'ole32.dll', 'ODBC32.dll', 'WSOCK32.dll', 'WINMM.dll', 'ADVAPI32.dll',
                          'MSVCP90.dll', 'WS2_32.dll', 'WINSPOOL.DRV', 'GDI32.dll', 'KERNEL32.dll',
                          'ntdll.dll', 'COMCTL32.dll', 'COMDLG32.dll', 'msvcrt.dll', 'RPCRT4.dll'],
+        "includes": ["zmq.utils", "zmq.utils.jsonapi", "zmq.utils.strtypes"],
         "optimize": 2,
         "bundle_files": 3,
         "dist_dir": "dist",
@@ -63,12 +73,13 @@ elif sys.platform == 'win32':
         "skip_archive": False,
         "ascii": False,
         "custom_boot_script": '',
-        "packages": ['wx.lib.pubsub', 'ObjectListView', 'pyodbc'],
+        "packages": ['wx.lib.pubsub', 'psycopg2', 'pandas', 'pyodbc'],
     }
 
-
+    INCLUDES = ["zmq.utils", "zmq.utils.jsonapi", "zmq.utils.strtypes"]
+    
     sys.path.append("C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\Microsoft.VC90.CRT")
-    sys.path.append("C:\\Users\\Jacob\\Documents\\ODMToolsPython")
+    sys.path.append("C:\\Users\\jmeline_\\Documents\\GitHub\\ODMToolsPython")
     extra_options = dict(console=APP, data_files=data_files, options={'py2exe': OPTIONS})
 
 setup(name=NAME, **extra_options)
