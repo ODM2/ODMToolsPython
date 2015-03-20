@@ -295,6 +295,7 @@ class EditService():
         self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(ids)]
 
 
+
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
 
