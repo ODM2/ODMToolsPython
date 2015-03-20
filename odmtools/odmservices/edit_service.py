@@ -28,7 +28,6 @@ class EditService():
         :param debug:
         :return:
         '''
-        self._connection = connection.mem_service._session_factory.engine.connect().connection
 
         self._series_id = series_id
         self._filter_from_selection = False
@@ -43,10 +42,10 @@ class EditService():
             from odmtools.odmdata import MemoryDatabase
             self.memDB= MemoryDatabase(series_service)
             self.memDB.initEditValues(series_id)
-            self._connection = self.memDB.mem_service._session_factory.engine.connect().connection
+
         else:
             logger.error("must send in either a remote db connection string or a memory database object")
-        self._cursor = self._connection.cursor()
+
 
         self._populate_series()
         self.reset_filter()
@@ -237,7 +236,6 @@ class EditService():
     # Gets
     ###################
     def get_series(self):
-
         return self._series_service.get_series_by_id(self._series_id)
 
     def get_series_points(self):
@@ -289,8 +287,8 @@ class EditService():
     def change_value(self, value, operator):
         filtered_points = self.get_filtered_points()
 
-        ids = filtered_points["ValueID"].tolist()
-        self.memDB.updateValue(ids, operator, value)
+        ids = filtered_points["ValueID"].astype(int).tolist()
+        self.memDB.updateValue(ids, operator, int(value))
         self._populate_series()
 
         ## update filtered_dataframe
@@ -300,10 +298,7 @@ class EditService():
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
 
-        query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
-        query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
-        query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-        self._cursor.executemany(query, points)
+        self.memDB.addpoints(points)
         self._populate_series()
         self.reset_filter()
 
@@ -392,16 +387,17 @@ class EditService():
         '''
         query = "UPDATE DataValues SET QualifierID = %s WHERE ValueID = ?" % (qualifier_id)
         #self._cursor.executemany(query, [(str(x[0]),) for x in filtered_points])
-        self._cursor.executemany(query, [(str(x),) for x in filtered_points["ValueID"].tolist()])
+        self._cursor.executemany(query, [(str(x),) for x in filtered_points["ValueID"].astype(int).tolist()])
         '''
-        self.memDB.updateFlag(filtered_points["ValueID"].tolist(), qualifier_id)
+        self.memDB.updateFlag(filtered_points["ValueID"].astype(int).tolist(), qualifier_id)
 
     ###################
     # Save/Restore
     ###################
 
     def restore(self):
-        self._connection.rollback()
+        self.memDB.rollback()
+
         self._populate_series()
         self.reset_filter()
 

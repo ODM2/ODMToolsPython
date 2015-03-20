@@ -74,6 +74,7 @@ class MemoryDatabase(object):
 
     def rollback(self):
         self.mem_service._edit_session.rollback()
+        #self._connection.rollback()
         #self.updateDF()
 
     def update(self, updates):
@@ -94,11 +95,13 @@ class MemoryDatabase(object):
 
         '''
         query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-        self.mem_service._session_factory.engine.connect().connection.cursor().executemany(query, updates)
+        cursor = self.mem_service._session_factory.engine.connect().connection.cursor()
+        cursor.executemany(query, updates)
+        # self.mem_service._session_factory.engine.connect().connection
 
 
-        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).update({DataValue.data_value: -9999999}, False)
-        #self.updateDF()
+        # self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).update({DataValue.data_value: -9999999}, False)
+        # self.updateDF()
 
 
 
@@ -106,15 +109,15 @@ class MemoryDatabase(object):
         #query = DataValue.data_value+value
         if operator == '+':
             query = DataValue.data_value+value
-        if operator == '-':
+        elif operator == '-':
             query = DataValue.data_value-value
-        if operator == '*':
+        elif operator == '*':
             query = DataValue.data_value*value
-        if operator == '=':
+        elif operator == '=':
             query = value
 
-        self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids))\
-            .update({DataValue.data_value: query}, False)
+        q=self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids))
+        q.update({DataValue.data_value: query}, False)
         #self.updateDF()
 
     def updateFlag(self, ids, value):
@@ -127,24 +130,29 @@ class MemoryDatabase(object):
         if var is not None:
             logger.debug(var.id)
             query.update({DataValue.variable_id: var.id})
-            #self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
 
         if method is not None:
             logger.debug(method.id)
-            #self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
             query.update({DataValue.method_id: method.id})
         # check that the code is not zero
         # if qcl is not None and qcl.code != 0:
         if qcl is not None:
-            #self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
             query.update({DataValue.quality_control_level_id: qcl.id})
 
     def delete(self, ids):
         self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete(False)
         #self.updateDF()
 
+    def addpoints(self, points):
+        query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
+        query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
+        query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        #self._cursor.executemany(query, points)
+        cursor =self.mem_service._session_factory.engine.connect().connection.cursor()
+        cursor.executemany(query, points)
+
     def stopEdit(self):
-        self.editLoaded= False
+        self.editLoaded = False
         self.df = None
 
 
