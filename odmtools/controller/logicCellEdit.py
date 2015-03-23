@@ -35,7 +35,7 @@ class CellEdit():
             self.labSampleChoices = [NULL] + labChoices.keys()
 
             self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
-                                           for x in self.series_service.get_qualifiers() if x.code and x.description)
+                                           for x in self.series_service.get_all_qualifiers() if x.code and x.description)
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
 
         else:
@@ -376,7 +376,7 @@ class CellEdit():
 
         try:
             self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
-                                               for x in self.cv_service.get_qualifiers() if x.code and x.description)
+                                               for x in self.cv_service.get_all_qualifiers() if x.code and x.description)
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
         except:
             pass

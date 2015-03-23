@@ -440,7 +440,7 @@ class mnuRibbon(RB.RibbonBar):
 
         serviceManager = self.parent.getDBService()
         series_service = serviceManager.get_series_service()
-        qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in series_service.get_qualifiers()
+        qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in series_service.get_all_qualifiers()
                                        if x.code and x.description)
         add_flag = frmFlagValues(self, series_service, qualifierChoices)
         val = add_flag.ShowModal()

@@ -18,37 +18,43 @@ class TestSeriesService:
         assert version.version_number == db_version
 
     def test_get_all_sites_empty(self):
-        sites = self.series_service.get_all_used_sites()
-        assert len(sites) == 0
-        assert sites == []
+        sites = self.series_service.get_used_sites()
+        #assert len(sites) == 0
+        assert sites is None
 
     def test_create_qualifier(self):
         qual = Qualifier()
         qual.code = "ABC123"
         qual.description = "This is a test"
-        self.cv_service.create_qualifier(qual)
+        self.series_service.create_qualifier_by_qual(qual)
 
         assert qual.id is not None
 
     def test_get_qualifiers(self):
-        assert self.cv_service.get_qualifiers() == []
+        assert self.series_service.get_all_qualifiers() == []
 
-        qual = Qualifier()
-        qual.code = "ABC123"
-        qual.description = "This is a test"
-        self.cv_service.create_qualifier(qual)
+        qual= self.series_service.create_qualifier("ABC123","This is a test")
 
-        db_qual = self.cv_service.get_qualifiers()[0]
+        db_qual = self.series_service.get_all_qualifiers()[0]
         assert qual.id == db_qual.id
 
-    ## TODO unittest Fix test_get_All_sites
+
     def test_get_all_sites(self):
-        assert self.series_service.get_all_used_sites() == []
+        assert self.series_service.get_used_sites() is None
+
         site = test_util.add_site(self.session)
-        sites = self.series_service.get_all_used_sites()
-        assert len(sites) == 0
+        sites = self.series_service.get_used_sites()
+        assert sites is None
         if isinstance(sites, list) and len(sites) > 0:
             assert site.code == sites[0].code
+
+        series = test_util.add_series(self.session)
+        site = series.site
+        sites = self.series_service.get_used_sites()
+        assert len(sites) == 1
+        if isinstance(sites, list) and len(sites) > 0:
+            assert site.code == sites[0].code
+
 
     def test_get_site_by_id_fail(self):
         assert self.series_service.get_site_by_id(0) == None
@@ -141,7 +147,7 @@ class TestSeriesService:
         assert series.id == db_series.id
 
     def test_series_exists(self):
-        assert self.series_service.series_exists(10, 10, 10, 10, 10) == False
+        assert self.series_service.series_exists_quint(10, 10, 10, 10, 10) == False
 
         series = test_util.add_series(self.session)
         site_id = series.site_id
@@ -150,7 +156,7 @@ class TestSeriesService:
         source_id = series.source_id
         qcl_id = series.quality_control_level_id
 
-        assert self.series_service.series_exists(site_id, var_id, method_id, source_id, qcl_id) == True
+        assert self.series_service.series_exists_quint(site_id, var_id, method_id, source_id, qcl_id) == True
 
     ## TODO Unittest save_series, save_as, save_as_existing
     '''

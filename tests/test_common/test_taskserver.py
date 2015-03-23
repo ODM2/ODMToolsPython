@@ -1,4 +1,4 @@
-from common.taskServer import TaskServerMP
+from odmtools.common.taskServer import TaskServerMP
 from multiprocessing import cpu_count
 
 __author__ = 'jmeline'

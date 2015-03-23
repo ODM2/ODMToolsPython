@@ -1,5 +1,5 @@
 import multiprocessing
-from common.taskServer import Dispatcher
+from odmtools.common.taskServer import Dispatcher
 
 __author__ = 'jmeline'
 
