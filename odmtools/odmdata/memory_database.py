@@ -83,7 +83,7 @@ class MemoryDatabase(object):
         for id, val in zip(ids, values):
             #updates.append({"id":id, "value":val})
             updates.append((id, val))
-        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id == bindparam("id")).update({DataValue.data_value: bindparam("value")}, False)
+        #        self.mem_service._edit_session.query(DataValue).filter(DataValue.id == bindparam("id")).update({DataValue.data_value: bindparam("value")}, False)
 
 
         stmt = (DataValue.__table__.update().
@@ -94,13 +94,19 @@ class MemoryDatabase(object):
         self.mem_service._session_factory.engine.connect().execute(stmt, updates)
 
         '''
+
+
+        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id == bindparam("id")).update({DataValue.data_value: bindparam("value")}, False)
+
         query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-        cursor = self.mem_service._session_factory.engine.connect().connection.cursor()
+        conn = self.mem_service._session_factory.engine.connect().connection
+        cursor = conn.cursor()
         cursor.executemany(query, updates)
-        # self.mem_service._session_factory.engine.connect().connection
+        conn.commit()
 
 
-        # self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).update({DataValue.data_value: -9999999}, False)
+        print "test"
+
         # self.updateDF()
 
 
@@ -140,7 +146,8 @@ class MemoryDatabase(object):
             query.update({DataValue.quality_control_level_id: qcl.id})
 
     def delete(self, ids):
-        self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete(False)
+        self.mem_service.delete_dvs(ids)
+        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete(False)
         #self.updateDF()
 
     def addPoints(self, points):
@@ -148,9 +155,11 @@ class MemoryDatabase(object):
         query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         #self._cursor.executemany(query, points)
-        cursor =self.mem_service._session_factory.engine.connect().connection.cursor()
+        conn = self.mem_service._session_factory.engine.connect().connection
+        cursor = conn.cursor()
         cursor.executemany(query, points)
-        print "test"
+        conn.commit()
+        
 
     def stopEdit(self):
         self.editLoaded = False

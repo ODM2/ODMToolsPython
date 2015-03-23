@@ -238,7 +238,7 @@ class TestSeriesService:
         dvs = series.data_values
 
         subset = dvs[:5]
-        self.series_service.delete_dvs(subset)
+        self.series_service.delete_dvs([x.id for x in subset])
         assert self.series_service.get_data_value_by_id(subset[0].id) == None
         series = self.series_service.get_series_by_id(series.id)  # Reload
         assert len(series.data_values) == 5

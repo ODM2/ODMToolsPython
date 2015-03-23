@@ -612,7 +612,7 @@ class SeriesService():
         :param series:
         :return:
         """
-        self.delete_dvs(series.data_values)
+        self.delete_values_by_series(series)
 
         delete_series = self._edit_session.merge(series)
         self._edit_session.delete(delete_series)
@@ -633,12 +633,15 @@ class SeriesService():
         except:
             return None
 
-    def delete_dvs(self, dv_list):
+    def delete_dvs(self, id_list):
         """
 
-        :param dv_list:
+        :param id_list: list of ids
         :return:
         """
+        q=self._edit_session.query(DataValue).filter(DataValue.id.in_(id_list)).delete(False)
+
+        '''
         #TODO: what is this? why is there a progress bar in the service? -SR
         import wx
         dlg = wx.ProgressDialog("Delete Progress", "Deleting %s values" % len(dv_list), maximum=len(dv_list),
@@ -653,6 +656,7 @@ class SeriesService():
         dlg.Update(length, "Commiting to database")
         self._edit_session.commit()
         dlg.Destroy()
+        '''
 
 
 

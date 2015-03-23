@@ -51,6 +51,7 @@ class MyApp(wx.App):
         kwargs['memdb']= self.memdb
         self.frame = frmODMToolsMain(**kwargs)
         self.frame.Show(True)
+        app= self.frame
         return True
 
 def runODM():

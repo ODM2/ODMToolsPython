@@ -231,8 +231,7 @@ class frmODMToolsMain(wx.Frame):
         self.txtPythonConsole = ODMToolsConsole(parent=self.pnlDocking, size=wx.Size(200, 200))
         wx.CallAfter(self._postStartup)
 
-        self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
-        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
+
 
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(name=u'txtPython', parent=self,
@@ -595,3 +594,5 @@ class frmODMToolsMain(wx.Frame):
         """
         if self.txtPythonConsole.ToolsShown():
             self.txtPythonConsole.ToggleTools()
+        self.txtPythonConsole.shell.run("import datetime", prompt=False, verbose=False)
+        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
