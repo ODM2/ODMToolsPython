@@ -236,12 +236,13 @@ class MyCustomToolbar(NavigationToolbar):
     def on_toggle_zoom_data_tool(self, event):
         if self._views.empty():
             self.push_current()
-        dvs = [x[0] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
-        date= [x[1] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
+        nodvvals= self.editCurve.dataTable[self.editCurve.dataTable["DataValue"] != self.editCurve.noDataValue]
+        #dvs = [x["DataValue"] for x in  if x[0] != self.editCurve.noDataValue]
+        #date= [x[1] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
 
         axes = self.canvas.figure.axes[0]
-        axes.set_ylim(min(dvs), max(dvs))
-        axes.set_xlim(dates.date2num([min(date), max(date)]))
+        axes.set_ylim(min(nodvvals["DataValue"]), max(nodvvals["DataValue"]))
+        axes.set_xlim(dates.date2num([min(nodvvals.index), max(nodvvals.index)]))
 
         self.push_current()
         self.canvas.draw()

@@ -143,13 +143,14 @@ class MemoryDatabase(object):
         self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete(False)
         #self.updateDF()
 
-    def addpoints(self, points):
+    def addPoints(self, points):
         query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
         query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
         query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         #self._cursor.executemany(query, points)
         cursor =self.mem_service._session_factory.engine.connect().connection.cursor()
         cursor.executemany(query, points)
+        print "test"
 
     def stopEdit(self):
         self.editLoaded = False

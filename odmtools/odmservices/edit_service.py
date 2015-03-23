@@ -299,7 +299,7 @@ class EditService():
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
 
-        self.memDB.addpoints(points)
+        self.memDB.addPoints(points)
         self._populate_series()
         self.reset_filter()
 
