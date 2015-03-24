@@ -74,7 +74,7 @@ class MemoryDatabase(object):
 
     def rollback(self):
         self.mem_service._edit_session.rollback()
-        #self._connection.rollback()
+        self.mem_service._session_factory.engine.connect().connection.rollback()
         #self.updateDF()
 
     def update(self, updates):
@@ -95,14 +95,18 @@ class MemoryDatabase(object):
 
         '''
 
+        stmt=DataValue.__table__.update(False).where(DataValue.id == bindparam("id")).values(DataValue = bindparam("value"))
+        self.mem_service._edit_session.execute(stmt, updates)
 
         #self.mem_service._edit_session.query(DataValue).filter(DataValue.id == bindparam("id")).update({DataValue.data_value: bindparam("value")}, False)
 
-        query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-        conn = self.mem_service._session_factory.engine.connect().connection
-        cursor = conn.cursor()
-        cursor.executemany(query, updates)
-        conn.commit()
+        #self.mem_service._edit_session.execute(DataValue.__table__.update(), updates)
+
+        #query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
+        #conn = self.mem_service._session_factory.engine.connect().connection
+        #cursor = conn.cursor()
+        #cursor.executemany(query, updates)
+        #conn.commit()
 
 
         print "test"
@@ -151,15 +155,19 @@ class MemoryDatabase(object):
         #self.updateDF()
 
     def addPoints(self, points):
-        query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
-        query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
-        query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-        #self._cursor.executemany(query, points)
-        conn = self.mem_service._session_factory.engine.connect().connection
-        cursor = conn.cursor()
-        cursor.executemany(query, points)
-        conn.commit()
-        
+        stmt = DataValue.__table__.insert()
+        vals= {"DataValue": points[0][0], "ValueAccuracy":points[0][1], "LocalDateTime":points[0][2], "UTCOffset":points[0][3], "DateTimeUTC:":points[0][4], "OffsetValue":points[0][5], "OffsetTypeID":points[0][6],"CensorCode":points[0][7], "QualifierID":points[0][8], "SampleID":points[0][9], "SiteID":points[0][10], "VariableID":points[0][11], "MethodID":points[0][12], "SourceID":points[0][13], "QualityControlLevelID":points[0][14]}
+        self.mem_service._edit_session.execute(stmt, vals)
+
+        # query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
+        # query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
+        # query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        #
+        # conn = self.mem_service._session_factory.engine.connect().connection
+        # cursor = conn.cursor()
+        # cursor.executemany(query, points)
+        # conn.commit()
+
 
     def stopEdit(self):
         self.editLoaded = False

@@ -330,7 +330,9 @@ class EditService():
         tmp_filter_list["DataValue"]=mdf[issel]
         ids = tmp_filter_list['ValueID'].tolist()
 
-        update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+        #update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+        update_list = [{"value": row["DataValue"], "id": row["ValueID"]} for index, row in tmp_filter_list.iterrows()]
+
         self.memDB.update(update_list)
 
 
@@ -349,7 +351,7 @@ class EditService():
             f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
             tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
 
-            update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
+            update_list = [{"value": row["DataValue"], "id": row["ValueID"]} for index, row in tmp_filter_list.iterrows()]
 
             ids = tmp_filter_list['ValueID'].tolist()
             self.memDB.update(update_list)
