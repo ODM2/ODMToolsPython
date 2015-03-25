@@ -156,7 +156,19 @@ class MemoryDatabase(object):
 
     def addPoints(self, points):
         stmt = DataValue.__table__.insert()
-        vals= {"DataValue": points[0][0], "ValueAccuracy":points[0][1], "LocalDateTime":points[0][2], "UTCOffset":points[0][3], "DateTimeUTC:":points[0][4], "OffsetValue":points[0][5], "OffsetTypeID":points[0][6],"CensorCode":points[0][7], "QualifierID":points[0][8], "SampleID":points[0][9], "SiteID":points[0][10], "VariableID":points[0][11], "MethodID":points[0][12], "SourceID":points[0][13], "QualityControlLevelID":points[0][14]}
+        '''DataValue=bindparam("DataValue"), ValueAccuracy= bindparam("ValueAccuracy"),
+                                          LocalDateTime = bindparam("LocalDateTime"), UTCOffset = bindparam("UTCOffset"),
+                                          DateTimeUTC = bindparam("DateTimeUTC"), OffsetValue = bindparam("OffsetValue"),
+                                          OffsetTypeID = bindparam("OffsetTypeID"), CensorCode = bindparam("CensorCode"),
+                                          QualifierID = bindparam("QualifierID"), SampleID = bindparam("SampleID"),
+                                          SiteID = bindparam("SiteID"), VariableID = bindparam("VariableID"),
+                                          MethodID = bindparam("MethodID"), SourceID = bindparam("SourceID"),
+                                          QualityControlLevelID = bindparam("QualityControlLevelID"))
+        '''
+        vals= {"DataValue": points[0][0], "ValueAccuracy":points[0][1], "LocalDateTime":points[0][2], "UTCOffset":points[0][3],
+               "DateTimeUTC:":points[0][4], "OffsetValue":points[0][5], "OffsetTypeID":points[0][6],"CensorCode":points[0][7],
+               "QualifierID":points[0][8], "SampleID":points[0][9], "SiteID":points[0][10], "VariableID":points[0][11],
+               "MethodID":points[0][12], "SourceID":points[0][13], "QualityControlLevelID":points[0][14]}
         self.mem_service._edit_session.execute(stmt, vals)
 
         # query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
@@ -210,7 +222,7 @@ class MemoryDatabase(object):
             '''#TODO: Thread this call
             logger.debug("Load series from db")
             self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
-                           flavor='sqlite', index=False, chunksize=10000)
+                           flavor='sqlite', index=False)#, chunksize=10000)
             logger.debug("done loading database")
 
 

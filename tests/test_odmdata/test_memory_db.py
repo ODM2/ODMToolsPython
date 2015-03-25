@@ -24,8 +24,9 @@ class TestMemoryDB:
         self.memory_db.delete_points("filter")
     '''
     def test_update_points(self):
-        self.memory_db.update([(15,1)])
+        self.memory_db.update([{"value":15,"id":1}])
         dvs = self.memory_db.getDataValues()
+        print dvs
         assert dvs[0][1] == 15
 
     def test_update_value(self):

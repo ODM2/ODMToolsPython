@@ -111,6 +111,8 @@ class frmODMToolsMain(wx.Frame):
     def _init_database(self, quit_if_cancel=True):
         logger.debug("Loading Database...")
 
+        self.service_manager = ServiceManager()
+        self.record_service = None
         while True:
             ## Database connection is valid, threfore proceed through the rest of the program
             if self.service_manager.is_valid_connection():
@@ -303,7 +305,7 @@ class frmODMToolsMain(wx.Frame):
         # generated method, don't edit
         parent.AddWindow(self._ribbon, 0, wx.EXPAND)
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
-
+    '''
     def _init_database(self):
         logger.debug("Loading Database...")
 
@@ -329,7 +331,7 @@ class frmODMToolsMain(wx.Frame):
                 ## Database connection is valid, therefore proceed through the rest of the program
                 self.createService()
                 break
-
+    '''
     def servicesValid(self, service, displayMsg=True):
         """
 

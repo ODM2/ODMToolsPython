@@ -69,6 +69,9 @@ class ServiceManager():
     def get_current_conn_dict(self):
         return self._current_conn_dict
 
+    def set_current_conn_dict(self, dict):
+        self._current_conn_dict = dict
+
     def add_connection(self, conn_dict):
         """conn_dict must be a dictionary with keys: engine, user, password, address, db"""
 
