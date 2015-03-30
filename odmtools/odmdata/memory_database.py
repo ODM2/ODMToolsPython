@@ -20,9 +20,6 @@ class MemoryDatabase(object):
         self.editLoaded = False
         self.df = None
 
-        # Initialize TaskServer.
-        # This class starts the processes before starting wxpython and is needed
-
         # TODO clean up closing of program
         #if taskserver is None:
             #numproc = cpu_count()
@@ -55,7 +52,7 @@ class MemoryDatabase(object):
         return self.df
 
     def getDataValues(self):
-        return self.mem_service.get_all_values_list()
+        return self.mem_service.get_all_values()
     
     def getEditRowCount(self):
         return len(self.df)
@@ -78,48 +75,15 @@ class MemoryDatabase(object):
         #self.updateDF()
 
     def update(self, updates):
-        '''
-        updates=[]
-        for id, val in zip(ids, values):
-            #updates.append({"id":id, "value":val})
-            updates.append((id, val))
-        '''
-        #        self.mem_service._edit_session.query(DataValue).filter(DataValue.id == bindparam("id")).update({DataValue.data_value: bindparam("value")}, False)
-
 
         stmt = (DataValue.__table__.update().
             where(DataValue.id == bindparam('id')).
             values(DataValue=bindparam('value'))
         )
 
-        #self.mem_service._session_factory.engine.connect().execute(stmt, updates)
         self.mem_service._edit_session.execute(stmt, updates)
-
-        '''
-
-        stmt=DataValue.__table__.update(False).where(DataValue.id == bindparam("id")).values(DataValue = bindparam("value"))
-        print stmt
-        print stmt.parameters
-        self.mem_service._edit_session.execute(stmt, updates)
-        '''
-
-        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id == bindparam("id")).update({DataValue.data_value: bindparam("value")}, False)
-
-        '''
-        self.mem_service._edit_session.execute(DataValue.__table__.update(), updates)
-
-        query = "UPDATE DataValues SET DataValue = ? WHERE ValueID = ?"
-        conn = self.mem_service._session_factory.engine.connect().connection
-        cursor = conn.cursor()
-        cursor.executemany(query, updates)
-        conn.commit()
-        '''
-
-
-        print "test"
 
         # self.updateDF()
-
 
 
     def updateValue(self, ids, operator, value):
@@ -141,24 +105,9 @@ class MemoryDatabase(object):
         self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids))\
             .update({DataValue.qualifier_id: value}, False)
 
-    def newSeries(self, var, qcl, method):
-
-        query = self.mem_service._edit_session.query(DataValue)
-        if var is not None:
-            logger.debug(var.id)
-            query.update({DataValue.variable_id: var.id})
-
-        if method is not None:
-            logger.debug(method.id)
-            query.update({DataValue.method_id: method.id})
-        # check that the code is not zero
-        # if qcl is not None and qcl.code != 0:
-        if qcl is not None:
-            query.update({DataValue.quality_control_level_id: qcl.id})
 
     def delete(self, ids):
         self.mem_service.delete_dvs(ids)
-        #self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(ids)).delete(False)
         #self.updateDF()
 
     def addPoints(self, points):
@@ -170,15 +119,6 @@ class MemoryDatabase(object):
                "MethodID":points[0][12], "SourceID":points[0][13], "QualityControlLevelID":points[0][14]}
         self.mem_service._edit_session.execute(stmt, vals)
 
-        # query = "INSERT INTO DataValues (DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, OffsetValue, OffsetTypeID, "
-        # query += "CensorCode, QualifierID, SampleID, SiteID, VariableID, MethodID, SourceID, QualityControlLevelID) "
-        # query += "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-        #
-        # conn = self.mem_service._session_factory.engine.connect().connection
-        # cursor = conn.cursor()
-        # cursor.executemany(query, points)
-        # conn.commit()
-
 
     def stopEdit(self):
         self.editLoaded = False
@@ -188,7 +128,7 @@ class MemoryDatabase(object):
     def setConnection(self, service):
         self.mem_service= service
 
-    #TODO Thread this function
+    #TODO multiprocess this function
     def updateDF(self):
         '''
         if self.taskserver:
@@ -223,6 +163,138 @@ class MemoryDatabase(object):
             self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
                            flavor='sqlite', index=False)#, chunksize=10000)
             logger.debug("done loading database")
+
+
+
+    def changeSeriesIDs(self, var=None, qcl=None, method=None):
+        """
+
+        :param var:
+        :param qcl:
+        :param method:
+        :return:
+        """
+
+        query = self.mem_service._edit_session.query(DataValue)
+        if var is not None:
+            logger.debug(var)
+            query.update({DataValue.variable_id: var})
+
+        if method is not None:
+            logger.debug(method)
+            query.update({DataValue.method_id: method})
+        # check that the code is not zero
+        # if qcl is not None and qcl.code != 0:
+        if qcl is not None:
+            logger.debug(qcl)
+            query.update({DataValue.quality_control_level_id: qcl})
+
+    '''
+    def updateSeries(self, var=None, method=None, qcl=None, is_new_series=False):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param is_new_series:
+        :return:
+        """
+        dvs = []
+
+        ''
+        if var is not None:
+            logger.debug(var.id)
+            self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
+
+        if method is not None:
+            logger.debug(method.id)
+            self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
+        # check that the code is not zero
+        # if qcl is not None and qcl.code != 0:
+        if qcl is not None:
+            self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
+        # else:
+        #    raise ValueError("Quality Control Level cannot be zero")
+
+
+        self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
+        results = self._cursor.fetchall()
+        ''
+
+        self.memDb.newSeries(var, method, qcl)
+        results = self.memDB.getDataValues
+
+        # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID,
+        # OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID
+        for row in results:
+            dv = self._build_dv_from_tuple(row)
+
+            if is_new_series:
+                dv.id = None
+            dvs.append(dv)
+
+        series = self._series_service.get_series_by_id(self._series_id)
+        logger.debug("original editing series id: %s" % str(series.id))
+        #        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
+        #                                                             , method if method else series.method_id, series.source_id
+        #                                                             , qcl if qcl else series.qcl_id)
+        #        print "test query series id:",testseries.id
+        #print a if b else 0
+        if (var or method or qcl ):
+            tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
+                                                                  var_id=var.id if var else int(series.variable_id),
+                                                                  method_id=method.id if method else int(
+                                                                      series.method_id),
+                                                                  source_id=series.source_id,
+                                                                  qcl_id=qcl.id if qcl else int(
+                                                                      series.quality_control_level_id))
+            if tseries:
+                logger.debug("Save existing series ID: %s" % str(series.id))
+                series = tseries
+            else:
+                print "Series doesn't exist (if you are not, you should be running SaveAs)"
+
+        if is_new_series:
+            series = series_module.copy_series(series)
+            if var:
+                series.variable_id = var.id
+                series.variable_code = var.code
+                series.variable_name = var.name
+                series.speciation = var.speciation
+                series.variable_units_id = var.variable_unit.id
+                series.variable_units_name = var.variable_unit.name
+                series.sample_medium = var.sample_medium
+                series.value_type = var.value_type
+                series.time_support = var.time_support
+                series.time_units_id = var.time_unit.id
+                series.time_units_name = var.time_unit.name
+                series.data_type = var.data_type
+                series.general_category = var.general_category
+            if method:
+                series.method_id = method.id
+                series.method_description = method.description
+            if qcl:
+                series.quality_control_level_id = qcl.id
+                series.quality_control_level_code = qcl.code
+
+        series.begin_date_time = dvs[0].local_date_time
+        series.end_date_time = dvs[-1].local_date_time
+        series.begin_date_time_utc = dvs[0].date_time_utc
+        series.end_date_time_utc = dvs[-1].date_time_utc
+        series.value_count = len(dvs)
+
+        ## Override previous save
+        if not is_new_series:
+            # delete old dvs
+            self._series_service.delete_values_by_series(series)
+
+        series.data_values = dvs
+        #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
+
+        return series
+    '''
+
+
 
 
 
