@@ -265,8 +265,6 @@ class wizSave(wx.wizard.Wizard):
         self.pgExisting.SetPrev(self.pgIntro)
         self.pgExisting.SetNext(self.pgSummary)
 
-
-
         self.GetPageAreaSizer().Add(self.pgIntro)
         self.RunWizard(self.pgIntro)
         self.Destroy()

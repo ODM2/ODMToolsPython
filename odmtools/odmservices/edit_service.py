@@ -288,13 +288,11 @@ class EditService():
         filtered_points = self.get_filtered_points()
 
         ids = filtered_points["ValueID"].astype(int).tolist()
-        self.memDB.updateValue(ids, operator, int(value))
+        self.memDB.updateValue(ids, operator, float(value))
         self._populate_series()
 
         ## update filtered_dataframe
         self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(ids)]
-
-
 
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
@@ -320,7 +318,6 @@ class EditService():
         In [77]: interp_s = ser.reindex(new_index).interpolate(method='pchip')
         '''
 
-
         tmp_filter_list =self.get_filtered_points()
         df = self._series_points_df
         issel = df.index.isin(tmp_filter_list.index)
@@ -339,7 +336,6 @@ class EditService():
         self._populate_series()
 
         self.filtered_dataframe = self._series_points_df[self._series_points_df['ValueID'].isin(ids)]
-
 
     def drift_correction(self, gap_width):
         if self.isOneGroup():
@@ -413,7 +409,7 @@ class EditService():
         :param is_new_series:
         :return:
         """
-        dvs = []
+        #dvs = []
 
         '''
         if var is not None:
@@ -434,18 +430,20 @@ class EditService():
         self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
         results = self._cursor.fetchall()
         '''
+        var_id = var.id if var is not None else None
+        method_id = method.id if method is not None else None
+        qcl_id = qcl.id if qcl is not None else None
+        self.memDB.changeSeriesIDs(var_id, method_id, qcl_id)
+        dvs = self.memDB.getDataValues()
+        self.memDB.mem_service._edit_session.expunge_all()
 
-        self.memDb.newSeries(var, method, qcl)
-        results = self.memDB.getDataValues
 
         # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID,
         # OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID
-        for row in results:
-            dv = self._build_dv_from_tuple(row)
 
-            if is_new_series:
+        if is_new_series:
+            for dv in dvs:
                 dv.id = None
-            dvs.append(dv)
 
         series = self._series_service.get_series_by_id(self._series_id)
         logger.debug("original editing series id: %s" % str(series.id))
@@ -456,11 +454,11 @@ class EditService():
         #print a if b else 0
         if (var or method or qcl ):
             tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
-                                                                  var_id=var.id if var else int(series.variable_id),
-                                                                  method_id=method.id if method else int(
+                                                                  var_id=var_id if var else int(series.variable_id),
+                                                                  method_id=method_id if method else int(
                                                                       series.method_id),
                                                                   source_id=series.source_id,
-                                                                  qcl_id=qcl.id if qcl else int(
+                                                                  qcl_id=qcl_id if qcl else int(
                                                                       series.quality_control_level_id))
             if tseries:
                 logger.debug("Save existing series ID: %s" % str(series.id))
@@ -469,26 +467,34 @@ class EditService():
                 print "Series doesn't exist (if you are not, you should be running SaveAs)"
 
         if is_new_series:
-            series = series_module.copy_series(series)
+
+
+            #series = series_module.copy_series(series)
+            series.data_values = []
+            self._series_service._edit_session.expunge(series)
+            series.id = None
+
             if var:
-                series.variable_id = var.id
+                series.variable_id = var_id
                 series.variable_code = var.code
                 series.variable_name = var.name
                 series.speciation = var.speciation
-                series.variable_units_id = var.variable_unit.id
+                series.variable_units_id = var.variable_unit_id
                 series.variable_units_name = var.variable_unit.name
                 series.sample_medium = var.sample_medium
                 series.value_type = var.value_type
                 series.time_support = var.time_support
-                series.time_units_id = var.time_unit.id
+                series.time_units_id = var.time_unit_id
                 series.time_units_name = var.time_unit.name
                 series.data_type = var.data_type
                 series.general_category = var.general_category
+
             if method:
-                series.method_id = method.id
+                series.method_id = method_id
                 series.method_description = method.description
+
             if qcl:
-                series.quality_control_level_id = qcl.id
+                series.quality_control_level_id = qcl_id
                 series.quality_control_level_code = qcl.code
 
         series.begin_date_time = dvs[0].local_date_time
@@ -500,12 +506,14 @@ class EditService():
         ## Override previous save
         if not is_new_series:
             # delete old dvs
+            pass
             self._series_service.delete_values_by_series(series)
 
-        series.data_values = dvs
+        #series.data_values = dvs
+
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
 
-        return series
+        return series, dvs
 
     def save(self):
         """ Save to an existing catalog
@@ -515,8 +523,8 @@ class EditService():
         :return:
         """
 
-        series = self.updateSeries(is_new_series=False)
-        if self._series_service.save_series(series):
+        series, dvs= self.updateSeries(is_new_series=False)
+        if self._series_service.save_series(series, dvs):
             logger.debug("series saved!")
             return True
         else:
@@ -530,8 +538,8 @@ class EditService():
         :param qcl:
         :return:
         """
-        series = self.updateSeries(var, method, qcl, is_new_series=True)
-        if self._series_service.save_new_series(series):
+        series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
+        if self._series_service.save_new_series(series,dvs):
             logger.debug("series saved!")
             return True
         else:
@@ -545,8 +553,8 @@ class EditService():
         :param qcl:
         :return:
         """
-        series = self.updateSeries(var, method, qcl, is_new_series=False)
-        if self._series_service.save_series(series):
+        series,dvs = self.updateSeries(var, method, qcl, is_new_series=False)
+        if self._series_service.save_series(series,dvs):
             logger.debug("series saved!")
             return True
         else:

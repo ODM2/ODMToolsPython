@@ -351,8 +351,10 @@ class SeriesService():
         :return:
         """
         result = self._edit_session.query(DataValue).all()
-
         return [x.list_repr() for x in result]
+
+    def get_all_values(self):
+        return self._edit_session.query(DataValue).all()
 
     def get_all_plot_values (self):
         """
@@ -438,7 +440,7 @@ class SeriesService():
 #Create functions
 #
 #####################
-    def save_series(self, series):
+    def save_series(self, series, dvs):
         """ Save to an Existing Series
         :param series:
         :param data_values:
@@ -447,7 +449,8 @@ class SeriesService():
 
         if self.series_exists(series):
             self._edit_session.add(series)
-            self._edit_session.add_all(series.data_values)
+            #self._edit_session.add_all(series.data_values)
+            self._edit_session.add_all(dvs)
             self._edit_session.commit()
             logger.debug("Existing File was overwritten with new information")
             return True
@@ -456,7 +459,7 @@ class SeriesService():
             # there wasn't an existing file to overwrite
             raise Exception("Series does not exist, unable to save. Please select 'Save As'")
 
-    def save_new_series(self, series):
+    def save_new_series(self, series, dvs):
         """ Create as a new catalog entry
         :param series:
         :param data_values:
@@ -469,9 +472,9 @@ class SeriesService():
             raise Exception(msg)
         else:
             self._edit_session.add(series)
-            self._edit_session.add_all(series.data_values)
+            self._edit_session.add_all(dvs)
             self._edit_session.commit()
-        logger.debug("A new series was added to the database")
+        logger.debug("A new series was added to the database, series id: "+str(series.id))
         return True
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
