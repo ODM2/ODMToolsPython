@@ -112,8 +112,8 @@ class MyCustomToolbar(NavigationToolbar):
             wx.EVT_TOOL(self, self.zoom_tool.Id, self.on_toggle_pan_zoom)
             wx.EVT_TOOL(self, self.pan_tool.Id, self.on_toggle_pan_zoom)
             self.lassoAction = None
-            #self.select_tool.Enable(False)
-            #self.zoom_to_data.Enable(False)
+            self.select_tool.Enable(False)
+            self.zoom_to_data.Enable(False)
 
         else:
             ZOOM_DATA_BTN_POSITION = 1
