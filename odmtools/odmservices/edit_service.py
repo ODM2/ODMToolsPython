@@ -223,7 +223,7 @@ class EditService():
 
 
     def reset_filter(self):
-        self.filtered_dataframe = None#self._series_points_df[0:0]
+        self.filtered_dataframe = None
 
     def filter_from_previous(self, value):
         self._filter_from_selection = value

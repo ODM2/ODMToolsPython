@@ -167,6 +167,8 @@ class EditTools():
         #print "Interpolate"
         self._edit_service.interpolate()
         self.refresh_edit()
+        self.refresh_selection()
+
         if self._record:
             self._script("edit_service.interpolate()\n", 'black')
             Publisher.sendMessage("scroll")

@@ -57,8 +57,9 @@ class pnlDataTable(wx.Panel):
 
         #self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
         #self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
-        Publisher.subscribe(self.onChangeSelection, ("changeTableSelection"))
-        Publisher.subscribe(self.onRefresh, ("refreshTable"))
+        Publisher.subscribe(self.onChangeSelection, "changeTableSelection")
+        Publisher.subscribe(self.onRefresh, "refreshTable")
+        Publisher.subscribe(self.onDeselectAll, "deselectAllDataTable")
 
         self.ascending = False
         self.enableSelectDataTable = False
@@ -235,6 +236,12 @@ class pnlDataTable(wx.Panel):
         if not self.enableSelectDataTable:
             self.myOlv.SetItemState(event.m_itemIndex, 0, wx.LIST_STATE_SELECTED)
 
+    def onDeselectAll(self):
+
+        selected_item = self.myOlv.GetFirstSelected()
+        while selected_item != -1:
+            self.myOlv.SetItemState(selected_item, 0, wx.LIST_STATE_SELECTED)
+            selected_item = self.myOlv.GetNextSelected(selected_item)
 
 
     def onChangeSelection(self,  datetime_list=[]):
@@ -255,6 +262,9 @@ class pnlDataTable(wx.Panel):
             except:
                 pass
 
+        # testing for case where user clears filter (issue #218)
+        elif not datetime_list:
+            self.onDeselectAll()
 
     def onKeyPress(self, evt):
         """Ignores Keypresses"""
