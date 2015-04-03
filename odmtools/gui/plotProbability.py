@@ -48,6 +48,8 @@ class plotProb(wx.Panel):
         self.toolbar = NavigationToolbar(self.canvas)
         self.toolbar.Realize()
 
+        self.axislist = {}
+
         left = 0.125  # the left side of the subplots of the figure
         right = 0.9  # the right side of the subplots of the figure
         bottom = 0.51  # the bottom of the subplots of the figure
@@ -88,10 +90,8 @@ class plotProb(wx.Panel):
         # print plt.setp(self.lines)
         # print(len(self.lines))
         self.format = ls + m
-        for line in self.plots.lines:
+        for _, line in self.axislist.iteritems():
             plt.setp(line, linestyle=ls, marker=m)
-            print ls, m
-            print line.properties()["linestyle"], line.properties()["marker"]
         if self.islegendvisible:
             self.onShowLegend(self.islegendvisible)
         self.canvas.draw()
@@ -116,7 +116,10 @@ class plotProb(wx.Panel):
     def updatePlot(self):
         self.clear()
         count = self.seriesPlotInfo.count()
-        #self.prob = []
+
+        # keep track of all of the axes
+        self.axislist = {}
+
         self.plots = self.figure.add_subplot(111)
         for oneSeries in self.seriesPlotInfo.getAllSeries():
 
@@ -129,12 +132,16 @@ class plotProb(wx.Panel):
                 self.plots.set_ylabel("\n".join(textwrap.wrap(oneSeries.axisTitle, 50)))
                 self.plots.set_title("\n".join(textwrap.wrap(oneSeries.siteName, 55)))
 
-            if len(oneSeries.dataTable) >0:
+            if len(oneSeries.dataTable) > 0:
                 #self.prob.append(
                 #prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
 
-                self.plots.plot(oneSeries.Probability.xAxis.values, oneSeries.Probability.yAxis.values, 'bs', color=oneSeries.color,
+                xValues = oneSeries.Probability.xAxis.order().values
+                yValues = oneSeries.Probability.yAxis.order().values
+
+                ax = self.plots.plot(xValues, yValues, 'bs', color=oneSeries.color,
                                    label=oneSeries.plotTitle)
+                self.axislist[oneSeries.axisTitle] = ax[0]
 
         self.setXaxis()
 

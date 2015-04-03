@@ -206,8 +206,9 @@ class plotTimeSeries(wx.Panel):
             m = 'o'
 
         self.format = ls + m
-        for line, i in zip(self.lines, range(len(self.lines))):
-            if not (i == self.curveindex):
+        for k, v in self.axislist.iteritems():
+            lines = v.get_lines()
+            for line in lines:
                 plt.setp(line, linestyle=ls, marker=m)
 
         if self.isShowLegendEnabled:
