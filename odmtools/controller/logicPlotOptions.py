@@ -391,6 +391,7 @@ class BoxWhisker(object):
         self.intervals = {}
         self.method = method
 
+
         interval_types = ["Overall", "Year", "Month", "Season"]
         intervals = ["Overall", "Year", "Month", "Season"]
 

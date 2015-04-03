@@ -88,8 +88,10 @@ class plotProb(wx.Panel):
         # print plt.setp(self.lines)
         # print(len(self.lines))
         self.format = ls + m
-        for line in self.plots:
+        for line in self.plots.lines:
             plt.setp(line, linestyle=ls, marker=m)
+            print ls, m
+            print line.properties()["linestyle"], line.properties()["marker"]
         if self.islegendvisible:
             self.onShowLegend(self.islegendvisible)
         self.canvas.draw()

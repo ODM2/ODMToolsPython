@@ -71,7 +71,7 @@ class MemoryDatabase(object):
 
     def rollback(self):
         self.mem_service._edit_session.rollback()
-        self.mem_service._session_factory.engine.connect().connection.rollback()
+        #self.mem_service._session_factory.engine.connect().connection.rollback()
         #self.updateDF()
 
     def update(self, updates):

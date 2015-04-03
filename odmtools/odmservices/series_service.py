@@ -356,7 +356,21 @@ class SeriesService():
     def get_all_values(self):
         return self._edit_session.query(DataValue).all()
 
-    def get_all_plot_values (self):
+    @staticmethod
+    def calcSeason(row):
+
+        month = int(row["Month"])
+
+        if month in [1, 2, 3]:
+            return 1
+        elif month in[4, 5, 6]:
+            return 2
+        elif month in [7, 8, 9]:
+            return 3
+        elif month in [10, 11, 12]:
+            return 4
+
+    def get_all_plot_values(self):
         """
 
         :return:
@@ -365,14 +379,15 @@ class SeriesService():
                                    DataValue.local_date_time.label('LocalDateTime'),
                                    DataValue.censor_code.label('CensorCode'),
                                    func.strftime('%m', DataValue.local_date_time).label('Month'),
-                                   func.strftime('%Y', DataValue.local_date_time).label('Year'),
+                                   func.strftime('%Y', DataValue.local_date_time).label('Year')
                                    #DataValue.local_date_time.strftime('%m'),
                                    #DataValue.local_date_time.strftime('%Y'))
-        ).order_by( DataValue.local_date_time)
-        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-        data= pd.read_sql_query(sql= query,
-                          con = self._session_factory.engine,
-                          params = query.params )
+        ).order_by(DataValue.local_date_time)
+        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql=query,
+                                 con=self._session_factory.engine,
+                                 params=query.params)
+        data["Season"] = data.apply(self.calcSeason, axis=1)
         return data.set_index(data['LocalDateTime'])
 
     def get_plot_values(self, seriesID, noDataValue, startDate = None, endDate = None ):
@@ -392,9 +407,12 @@ class SeriesService():
             for dv in series.data_values
             if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
         ]
-        data = pd.DataFrame(DataValues, columns = ["DataValue","LocalDateTime", "CensorCode", "Month", "Year" ])
+        data = pd.DataFrame(DataValues, columns=["DataValue", "LocalDateTime", "CensorCode", "Month", "Year"])
         data.set_index(data['LocalDateTime'], inplace=True)
+        data["Season"] = data.apply(self.calcSeason, axis=1)
         return data
+
+
 
     def get_data_value_by_id(self, id):
         """
