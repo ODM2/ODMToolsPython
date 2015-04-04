@@ -189,6 +189,9 @@ class SeriesPlotInfo(object):
 
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
+            self.getUpdatedData(key)
+
+    def getUpdatedData(self, key):
             results = self.taskserver.getCompletedTasks()
             self._seriesInfos[key].Probability = results['Probability']
             self._seriesInfos[key].Statistics = results['Summary']
@@ -295,8 +298,9 @@ class SeriesPlotInfo(object):
 
         logger.debug("Create Series Info")
         seriesInfo = self.createSeriesInfo(seriesID, oneSeriesInfo, series)
+        return self.buildPlotInfo(seriesInfo)
 
-
+    def buildPlotInfo(self, seriesInfo):
         #remove all of the nodatavalues from the pandas table
         filteredData = seriesInfo.dataTable[seriesInfo.dataTable["DataValue"] != seriesInfo.noDataValue]
         val = filteredData["Month"].map(calcSeason)
@@ -321,6 +325,8 @@ class SeriesPlotInfo(object):
             seriesInfo.color = self.colorList.pop(0)
         return seriesInfo
 
+
+
     def updateDateRange(self, startDate=None, endDate=None):
         self.currentStart = startDate
         self.currentEnd = endDate
@@ -341,7 +347,12 @@ class SeriesPlotInfo(object):
 
             seriesInfo.dataTable = data
             #Tests to see if any values were returned for the given daterange
-            self.build(seriesInfo)
+            seriesInfo=self.buildPlotInfo(seriesInfo)
+            self._seriesInfos[seriesInfo.seriesID]= seriesInfo
+
+            self.getUpdatedData(seriesInfo.seriesID)
+
+
 
 
 class Statistics(object):
@@ -384,6 +395,7 @@ class Statistics(object):
 
         elapsed = timeit.default_timer() - start_time
         logger.debug("Summary completed in: %s" % elapsed)
+
 
 class BoxWhisker(object):
     def __init__(self, data, method):
@@ -542,7 +554,6 @@ class Probability(object):
         PrbExc = ranks / (len(ranks) + 1) * 100
 
         self.xAxis = PrbExc
-
 
 
 def numToMonth(date):
