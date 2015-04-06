@@ -140,11 +140,13 @@ class frmFlagValues(wx.Dialog):
                 dlg.ShowModal()
                 return
 
+            '''
             q = Qualifier()
             q.code = code
             q.description = desc
+            '''
 
-            self.series_service.create_qualifier(q)
+            q=self.series_service.create_qualifier(code, desc)
             self.qid = q.id
             self.selectedValue = q.code + '-' + q.description
 

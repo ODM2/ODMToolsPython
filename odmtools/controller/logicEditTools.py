@@ -281,6 +281,7 @@ class EditTools():
 
         else:
             print "Save didn't work!"
+            #self._edit_service.restore()
         return result
 
 
