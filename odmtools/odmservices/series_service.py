@@ -660,7 +660,7 @@ class SeriesService():
         :param id_list: list of ids
         :return:
         """
-        q=self._edit_session.query(DataValue).filter(DataValue.id.in_(id_list)).delete(False)
+        self._edit_session.query(DataValue).filter(DataValue.id.in_(id_list)).delete(False)
 
         '''
         #TODO: what is this? why is there a progress bar in the service? -SR
