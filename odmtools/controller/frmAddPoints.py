@@ -110,7 +110,7 @@ class AddPoints(clsAddPoints.AddPoints):
 
         if not self.frame.IsShown():
             self.frame.CenterOnParent()
-            self.frame.Show()
+            self.frame.ShowModal()
             self.frame.SetFocus()
         else:
             self.frame.Hide()
