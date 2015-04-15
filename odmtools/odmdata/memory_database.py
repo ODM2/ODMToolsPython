@@ -1,5 +1,3 @@
-
-
 import timeit
 import logging
 from odmtools.common.logger import LoggerTool
@@ -11,19 +9,21 @@ from multiprocessing import cpu_count, freeze_support
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
+
 class MemoryDatabase(object):
-### this code should be changed to work with the database abstract layer so that sql queries are not in the code
+    ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
 
     # series_service is a SeriesService
-    def __init__(self, taskserver=None ):
+    def __init__(self, taskserver=None):
 
         self.editLoaded = False
         self.df = None
 
         # TODO clean up closing of program
-        #if taskserver is None:
-            #numproc = cpu_count()
-            #self.taskserver = TaskServerMP(numproc=numproc)
+        # if taskserver is None:
+        #numproc = cpu_count()
+        #self.taskserver = TaskServerMP(numproc=numproc)
         #else:
 
         self.taskserver = taskserver
@@ -47,18 +47,18 @@ class MemoryDatabase(object):
         #    self.updateDF()
         '''
         self.updateDF()
-        #pick up thread here before it is needed
+        # pick up thread here before it is needed
         logging.debug("done updating memory dataframe")
         return self.df
 
     def getDataValues(self):
         return self.mem_service.get_all_values()
-    
+
     def getEditRowCount(self):
         return len(self.df)
 
     def getEditColumns(self):
-        return [(x,i) for (i,x) in enumerate(self.df.columns)]
+        return [(x, i) for (i, x) in enumerate(self.df.columns)]
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
         return self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
@@ -71,14 +71,14 @@ class MemoryDatabase(object):
 
     def rollback(self):
         self.mem_service._edit_session.rollback()
-        #self.mem_service._session_factory.engine.connect().connection.rollback()
+        # self.mem_service._session_factory.engine.connect().connection.rollback()
         #self.updateDF()
 
     def update(self, updates):
 
         stmt = (DataValue.__table__.update().
-            where(DataValue.id == bindparam('id')).
-            values(DataValue=bindparam('value'))
+                where(DataValue.id == bindparam('id')).
+                values(DataValue=bindparam('value'))
         )
 
         self.mem_service._edit_session.execute(stmt, updates)
@@ -87,21 +87,23 @@ class MemoryDatabase(object):
 
 
     def updateValue(self, ids, operator, value):
-        #query = DataValue.data_value+value
+        # query = DataValue.data_value+value
         if operator == '+':
-            query = DataValue.data_value+value
+            query = DataValue.data_value + value
         elif operator == '-':
-            query = DataValue.data_value-value
+            query = DataValue.data_value - value
         elif operator == '*':
-            query = DataValue.data_value*value
+            query = DataValue.data_value * value
         elif operator == '=':
             query = value
+
 
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
         chunks=[ids[x:x+999] for x in xrange(0, len(ids), 999)]
         for c in chunks:
             q=self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(c))
             q.update({DataValue.data_value: query}, False)
+
         #self.updateDF()
 
 
@@ -121,14 +123,24 @@ class MemoryDatabase(object):
 
 
     def addPoints(self, points):
+        """
+        Takes in a list of points and loads each point into the database
+        """
         stmt = DataValue.__table__.insert()
 
-        vals= {"DataValue": points[0][0], "ValueAccuracy": points[0][1], "LocalDateTime": points[0][2],
-               "UTCOffset": points[0][3], "DateTimeUTC:": points[0][4], "OffsetValue": points[0][5],
-               "OffsetTypeID": points[0][6], "CensorCode": points[0][7], "QualifierID": points[0][8],
-               "SampleID": points[0][9], "SiteID": points[0][10], "VariableID": points[0][11],
-               "MethodID": points[0][12], "SourceID": points[0][13], "QualityControlLevelID": points[0][14]}
-        self.mem_service._edit_session.execute(stmt, vals)
+        if not isinstance(points, list):
+            points = [points]
+
+        for point in points:
+            vals = {"DataValue": point[0], "ValueAccuracy": point[1],
+                    "LocalDateTime": point[2], "UTCOffset": point[3],
+                    "DateTimeUTC:": point[4], "OffsetValue": point[5],
+                    "OffsetTypeID": point[6], "CensorCode": point[7],
+                    "QualifierID": point[8], "SampleID": point[9],
+                    "SiteID": point[10], "VariableID": point[11],
+                    "MethodID": point[12], "SourceID": point[13],
+                    "QualityControlLevelID": point[14]}
+            self.mem_service._edit_session.execute(stmt, vals)
 
 
     def stopEdit(self):
@@ -137,10 +149,10 @@ class MemoryDatabase(object):
 
 
     def setConnection(self, service):
-        self.mem_service= service
+        self.mem_service = service
 
 
-    #TODO multiprocess this function
+    # TODO multiprocess this function
     def updateDF(self):
         '''
         if self.taskserver:
@@ -170,12 +182,11 @@ class MemoryDatabase(object):
             # results = self.taskserver.getCompletedTasks()
             # self.conn = results["InitEditValues"]
             else:
-            '''#TODO: Thread this call
+            '''  #TODO: Thread this call
             logger.debug("Load series from db")
             self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
                            index=False)#,flavor='sqlite', chunksize=10000)
             logger.debug("done loading database")
-
 
 
     def changeSeriesIDs(self, var=None, qcl=None, method=None):

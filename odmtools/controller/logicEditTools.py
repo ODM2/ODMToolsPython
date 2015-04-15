@@ -59,10 +59,10 @@ class EditTools():
 
 
     def value_change_threshold(self, value, operator):
-        self._edit_service.value_change_threshold(value, operator)
+        self._edit_service.change_value_threshold(value, operator)
         self.refresh_selection()
         if self._record:
-            self._script("edit_service.value_change_threshold(%s,'%s')\n" % (value, operator), 'black')
+            self._script("edit_service.change_value_threshold(%s,'%s')\n" % (value, operator), 'black')
             Publisher.sendMessage("scroll")
 
     def filter_from_previous(self, value):
@@ -137,6 +137,9 @@ class EditTools():
     ###################
     # Editing
     ###################
+    def _create_dataframe(self, points):
+        return pd.DataFrame(points)
+
     def add_points(self, points):
         self._edit_service.add_points(points)
         self.refresh_edit()

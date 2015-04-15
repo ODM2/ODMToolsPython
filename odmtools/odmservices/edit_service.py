@@ -178,7 +178,7 @@ class EditService():
         del filtered_results
         del newdf
 
-    def value_change_threshold(self, value, operator):
+    def change_value_threshold(self, value, operator):
 
         df = self._test_filter_previous()
 

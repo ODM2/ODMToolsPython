@@ -152,7 +152,7 @@ class plotTimeSeries(wx.Panel):
 
         result = None
         if isinstance(filtered_datetime, pd.DataFrame):
-            result = filtered_datetime
+            result = filtered_datetime.sort_index()
 
         if isinstance(filtered_datetime, list):
             df = self.editCurve.dataTable
