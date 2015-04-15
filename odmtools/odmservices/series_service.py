@@ -285,8 +285,9 @@ class SeriesService():
         :return: Series
         """
         try:
-            return self._edit_session.query(Series).filter_by(id=series_id).order_by(Series.id).first()
-        except:
+            return self._edit_session.query(Series).filter_by(id=series_id).first()
+        except Exception as e:
+            print e
             return None
 
     def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
@@ -375,7 +376,7 @@ class SeriesService():
 
         :return:
         """
-        q=self._edit_session.query(DataValue.data_value.label('DataValue'),
+        q = self._edit_session.query(DataValue.data_value.label('DataValue'),
                                    DataValue.local_date_time.label('LocalDateTime'),
                                    DataValue.censor_code.label('CensorCode'),
                                    func.strftime('%m', DataValue.local_date_time).label('Month'),
@@ -399,7 +400,7 @@ class SeriesService():
         :param endDate:
         :return:
         """
-        series= self.get_series_by_id(seriesID)
+        series = self.get_series_by_id(seriesID)
 
         DataValues = [
             (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
@@ -466,16 +467,21 @@ class SeriesService():
         """
 
         if self.series_exists(series):
-            self._edit_session.add(series)
-            #self._edit_session.add_all(series.data_values)
-            self._edit_session.add_all(dvs)
-            self._edit_session.commit()
+
+            try:
+                self._edit_session.add(series)
+                self._edit_session.commit()
+                self.save_values(dvs)
+            except Exception as e:
+                self._edit_session.rollback()
+                raise e
             logger.debug("Existing File was overwritten with new information")
             return True
         else:
             logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
             # there wasn't an existing file to overwrite
             raise Exception("Series does not exist, unable to save. Please select 'Save As'")
+
 
     def save_new_series(self, series, dvs):
         """ Create as a new catalog entry
@@ -489,11 +495,27 @@ class SeriesService():
             logger.debug(msg)
             raise Exception(msg)
         else:
-            self._edit_session.add(series)
-            self._edit_session.add_all(dvs)
-            self._edit_session.commit()
+            try:
+                self._edit_session.add(series)
+                self._edit_session.commit()
+                self.save_values(dvs)
+                #self._edit_session.add_all(dvs)
+            except Exception as e:
+                self._edit_session.rollback()
+                raise e
+
+
         logger.debug("A new series was added to the database, series id: "+str(series.id))
         return True
+
+    def save_values(self, values):
+        """
+
+        :param values: pandas dataframe
+        :return:
+        """
+        values.to_sql(name="datavalues", if_exists='append', con=self._session_factory.engine, index=False)
+
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
         """
@@ -638,6 +660,7 @@ class SeriesService():
         delete_series = self._edit_session.merge(series)
         self._edit_session.delete(delete_series)
         self._edit_session.commit()
+
 
     def delete_values_by_series(self, series):
         """

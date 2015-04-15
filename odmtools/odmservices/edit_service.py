@@ -409,49 +409,32 @@ class EditService():
         :param is_new_series:
         :return:
         """
-        #dvs = []
 
-        '''
-        if var is not None:
-            logger.debug(var.id)
-            self._cursor.execute("UPDATE DataValues SET VariableID = %s" % (var.id))
-
-        if method is not None:
-            logger.debug(method.id)
-            self._cursor.execute("UPDATE DataValues SET MethodID = %s" % (method.id))
-        # check that the code is not zero
-        # if qcl is not None and qcl.code != 0:
-        if qcl is not None:
-            self._cursor.execute("UPDATE DataValues SET QualityControlLevelID = %s" % (qcl.id))
-        # else:
-        #    raise ValueError("Quality Control Level cannot be zero")
-
-
-        self._cursor.execute("SELECT * FROM DataValues ORDER BY LocalDateTime")
-        results = self._cursor.fetchall()
-        '''
         var_id = var.id if var is not None else None
         method_id = method.id if method is not None else None
         qcl_id = qcl.id if qcl is not None else None
-        self.memDB.changeSeriesIDs(var_id, method_id, qcl_id)
-        dvs = self.memDB.getDataValues()
-        self.memDB.mem_service._edit_session.expunge_all()
+        #self.memDB.changeSeriesIDs(var_id, method_id, qcl_id)
+        dvs = self.memDB.getDataValuesDF()
+        if var_id is not None:
+            dvs["VariableID"] = var_id
+        if method_id is not None:
+            dvs["MethodID"] = method_id
+        if qcl_id is not None:
+            dvs["QualityControlLevelID"] = qcl_id
 
 
-        # ValueID, DataValue, ValueAccuracy, LocalDateTime, UTCOffset, DateTimeUTC, SiteID, VariableID,
-        # OffsetValue, OffsetTypeID, CensorCode, QualifierID, MethodID, SourceID, SampleID, DerivedFromID, QualityControlLevelID
 
-        if is_new_series:
+        #if is new series remove valueids
+        #if is_new_series:
+        dvs["ValueID"] = None
+        '''
             for dv in dvs:
                 dv.id = None
+        '''
 
         series = self._series_service.get_series_by_id(self._series_id)
         logger.debug("original editing series id: %s" % str(series.id))
-        #        testseries = self._series_service.get_series_by_id_quint(series.site_id, var if var else series.var_id
-        #                                                             , method if method else series.method_id, series.source_id
-        #                                                             , qcl if qcl else series.qcl_id)
-        #        print "test query series id:",testseries.id
-        #print a if b else 0
+
         if (var or method or qcl ):
             tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
                                                                   var_id=var_id if var else int(series.variable_id),
@@ -469,10 +452,8 @@ class EditService():
         if is_new_series:
 
 
-            #series = series_module.copy_series(series)
-            series.data_values = []
-            self._series_service._edit_session.expunge(series)
-            series.id = None
+            series = series_module.copy_series(series)
+
 
             if var:
                 series.variable_id = var_id
@@ -496,20 +477,28 @@ class EditService():
             if qcl:
                 series.quality_control_level_id = qcl_id
                 series.quality_control_level_code = qcl.code
+        '''
+        dvs["LocalDateTime"] = pd.to_datetime(dvs["LocalDateTime"])
+        dvs["DateTimeUTC"] = pd.to_datetime(dvs["DateTimeUTC"])
+        '''
 
-        series.begin_date_time = dvs[0].local_date_time
-        series.end_date_time = dvs[-1].local_date_time
-        series.begin_date_time_utc = dvs[0].date_time_utc
-        series.end_date_time_utc = dvs[-1].date_time_utc
+
+
+
+
+        form = "%Y-%m-%d %H:%M:%S"
+        series.begin_date_time = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)#np.min(dvs["LocalDateTime"])#dvs[0].local_date_time
+        series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)#np.max(dvs["LocalDateTime"])#dvs[-1].local_date_time
+        series.begin_date_time_utc = datetime.datetime.strptime(str(np.min(dvs["DateTimeUTC"])), form) #dvs[0].date_time_utc
+        series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form) #dvs[-1].date_time_utc
         series.value_count = len(dvs)
 
         ## Override previous save
         if not is_new_series:
             # delete old dvs
-            pass
+            #pass
             self._series_service.delete_values_by_series(series)
 
-        #series.data_values = dvs
 
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
 
@@ -523,12 +512,12 @@ class EditService():
         :return:
         """
 
-        series, dvs= self.updateSeries(is_new_series=False)
+        series, dvs = self.updateSeries(is_new_series=False)
         if self._series_service.save_series(series, dvs):
             logger.debug("series saved!")
             return True
         else:
-            logger.debug("Crap happened")
+            logger.debug("The Save was unsuccessful")
             return False
 
     def save_as(self, var=None, method=None, qcl=None):
@@ -539,11 +528,11 @@ class EditService():
         :return:
         """
         series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
-        if self._series_service.save_new_series(series,dvs):
+        if self._series_service.save_new_series(series, dvs):
             logger.debug("series saved!")
             return True
         else:
-            logger.debug("Crap happened")
+            logger.debug("The Save As Function was Unsuccessful")
             return False
 
     def save_existing(self, var=None, method=None, qcl=None):
@@ -553,12 +542,12 @@ class EditService():
         :param qcl:
         :return:
         """
-        series,dvs = self.updateSeries(var, method, qcl, is_new_series=False)
-        if self._series_service.save_series(series,dvs):
+        series, dvs = self.updateSeries(var, method, qcl, is_new_series=False)
+        if self._series_service.save_series(series, dvs):
             logger.debug("series saved!")
             return True
         else:
-            logger.debug("The Save As Existing Function was Unsuccsesful")
+            logger.debug("The Save As Existing Function was Unsuccessful")
             return False
 
     def create_qcl(self, code, definition, explanation):
@@ -582,25 +571,4 @@ class EditService():
         # (i.e one series contains new field data of an edited series at a higher qcl)
         pass
 
-    def _build_dv_from_tuple(self, dv_tuple):
-        dv = DataValue()
 
-        dv.id_list = dv_tuple[0]
-        dv.data_value = dv_tuple[1]
-        dv.value_accuracy = dv_tuple[2]
-        dv.local_date_time = dv_tuple[3]
-        dv.utc_offset = dv_tuple[4]
-        dv.date_time_utc = dv_tuple[5]
-        dv.site_id = dv_tuple[6]
-        dv.variable_id = dv_tuple[7]
-        dv.offset_value = dv_tuple[8]
-        dv.offset_type_id = dv_tuple[9]
-        dv.censor_code = dv_tuple[10]
-        dv.qualifier_id = dv_tuple[11]
-        dv.method_id = dv_tuple[12]
-        dv.source_id = dv_tuple[13]
-        dv.sample_id = dv_tuple[14]
-        dv.derived_from_id = dv_tuple[15]
-        dv.quality_control_level_id = dv_tuple[16]
-
-        return dv

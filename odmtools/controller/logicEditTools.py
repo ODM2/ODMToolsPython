@@ -154,14 +154,12 @@ class EditTools():
             self._script("edit_service.delete_points()\n", 'black')
             Publisher.sendMessage("scroll")
 
-
     def change_value(self, operator, value):
         self._edit_service.change_value(operator, value)
         self.refresh_edit()
         if self._record:
             self._script("edit_service.change_value(%s, '%s')\n" % (operator, value), 'black')
             Publisher.sendMessage("scroll")
-
 
     def interpolate(self):
         #print "Interpolate"
@@ -196,7 +194,6 @@ class EditTools():
         if self._record:
             self._script("edit_service.flag(%s)\n" % qualifier_id, 'black')
             Publisher.sendMessage("scroll")
-
 
     def restore(self):
         self._edit_service.restore()
@@ -234,7 +231,7 @@ class EditTools():
         result = self._edit_service.save()
         if self._record:
             self._script(
-                "edit_service.save()\n" ,
+                "edit_service.save()\n",
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
@@ -357,6 +354,7 @@ class EditTools():
         if self._record:
             self._script('new_qual = series_service.get_qualifier_by_code(%s)\n' % (qual.code))
             Publisher.sendMessage("scroll")
+
         return qual
 
     def create_method(self, m):
