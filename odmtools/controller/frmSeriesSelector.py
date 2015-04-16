@@ -471,10 +471,12 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         if not self.tblSeries.IsChecked(object):
             Publisher.sendMessage("removePlot", seriesID=object.id)
+            Publisher.sendMessage("updateCursor", deselectedObject=object)
+
         else:
             logger.debug("Obtained object, entering addplot")
             self.pnlPlot.addPlot(self.memDB, object.id)
-            #Publisher.sendMessage("updateCursor", selectedObject=object)
+            Publisher.sendMessage("updateCursor", selectedObject=object)
 
         logger.debug("refreshing...")
         self.Refresh()
@@ -490,6 +492,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
+
+        logger.debug("Selecting object from Series Catalog")
 
         object = event.GetEventObject()
         editingObject = object.innerList[object.FocusedItem]
@@ -538,12 +542,14 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             ovl.editingObject = object
             ovl.RefreshObject(ovl.editingObject)
 
+
             return True, object.id#, self.memDB
         else:
             isSelected = False
             logger.debug("series was not checked")
             val_2 = wx.MessageBox("Visualization is limited to 6 series.", "Can't add plot",
                                   wx.OK | wx.ICON_INFORMATION)
+
 
         self.isEditing = False
         ovl.editingObject = None

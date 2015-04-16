@@ -502,15 +502,18 @@ class plotTimeSeries(wx.Panel):
 
         self.canvas.draw()
 
-    def updateCursor(self, selectedObject):
+    def updateCursor(self, selectedObject=None, deselectedObject=None):
         """
         :param selectedObject:
         """
 
         try:
             if selectedObject:
+                """
+                Activate Cursor. Happens when a plot is selected
+                """
                 if self.seriesPlotInfo:
-                    seriesInfo = self.seriesPlotInfo.getSelectedSeries(selectedObject.id)
+                    seriesInfo = self.seriesPlotInfo.getSeries(selectedObject.id)
 
                     if seriesInfo:
                         currentAxis = None
@@ -520,20 +523,37 @@ class plotTimeSeries(wx.Panel):
                         # If nothing is in the axislist, we don't care about it
                         elif len(self.axislist) < 1:
                             currentAxis = None
-                        self.configureCursor(currentAxis)
+                        self.configureCursor(currentAxis=currentAxis)
+            elif deselectedObject:
+                """
+                Deactivate Cursor. This happens when the plot is deselected
+                """
+                self.deactivateCursor(deselectedObject)
 
         except AttributeError as e:
             print "Ignoring Attribute Error", e
+
+    def deactivateCursor(self, deselectedObject=None):
+        # Remove an object if supplied
+        if deselectedObject:
+            for i in self.cursors:
+                if i.selected == deselectedObject:
+                    i.disable()
+                    break
+
+        # Disable existing Cursors
+        elif self.cursors:
+            for i in self.cursors:
+                i.disable()
 
 
     def configureCursor(self, currentAxis=None):
         """Creates the cursors for each axes in order to provide data hovering"""
 
-        # Disable existing Cursors
-        if self.cursors:
-            for i in self.cursors:
-                i.disable()
+        self.deactivateCursor()
+
         self.cursors = []
+
 
         # initialize cursors for axes from currently selected axes
         for k, v in self.axislist.iteritems():

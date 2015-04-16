@@ -445,19 +445,24 @@ class frmODMToolsMain(wx.Frame):
             logger.debug("Initializing DataTable")
             self.dataTable.init(self.memDB, self.record_service)
 
-
             # set record service for console
             Publisher.sendMessage("setEdit", isEdit=True)
             logger.debug("Enabling Edit")
             self.record_service.toggle_record(True)
 
-
+            # set the cursor for matplotlib
+            selectedObject = self.record_service.get_series()
+            Publisher.sendMessage("updateCursor", selectedObject=selectedObject)
 
         else:
             logger.debug("disabling Edit")
             Publisher.sendMessage("setEdit", isEdit=False)
 
             self.record_service.toggle_record(False)
+
+            # disable cursor for matplotlib
+            selectedObject = self.record_service.get_series()
+            Publisher.sendMessage("updateCursor", deselectedObject=selectedObject)
 
 
         # self._mgr.Update()

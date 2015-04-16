@@ -1,6 +1,6 @@
 import wx
 import numpy as np
-from ..test_util import build_db, add_series
+from ..test_util import build_db, add_series, add_bulk_data_values
 from odmtools.odmdata import MemoryDatabase
 from odmtools.odmservices import SeriesService
 from odmtools.gui import plotProbability
@@ -31,7 +31,10 @@ class TestPlotProbability:
 
         self.memory_db.set_series_service(self.series_service)
         self.series = add_series(self.session)
+        print "Series: ", self.series
         self.memory_db.initEditValues(self.series.id)
+        # add_bulk_data_values(self.session, self.series)
+
 
     def test_onPlotType(self):
         assert self.app

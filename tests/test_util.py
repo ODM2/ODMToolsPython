@@ -1,5 +1,5 @@
 import datetime
-
+import pandas as pd
 from odmtools.odmdata import *
 
 
@@ -8,6 +8,34 @@ def build_db(engine):
 
 
 # Create DB objects #
+
+def add_bulk_data_values(session, series):
+    """
+    Load up exampleData.csv into a series' datavalues field
+    """
+
+    df = pd.read_csv("./exampleData.csv")
+    dvs = []
+    for record in df.to_dict('records')[0:2]:
+        dv = DataValue()
+        dv.data_value = record['DataValue']
+        dv.local_date_time = record['LocalDateTime']
+        dv.utc_offset = record['UTCOffset']
+        dv.date_time_utc = record['DateTimeUTC']
+        dv.site_id = series.site_id
+        dv.variable_id = series.variable_id
+        dv.censor_code = record['CensorCode']
+        dv.method_id = series.method_id
+        dv.source_id = series.source_id
+        dv.quality_control_level_id = series.quality_control_level_id
+        dvs.append(dv)
+    series.data_values = dvs
+    session.add_all(dvs)
+    session.commit()
+    return dvs
+    
+
+
 
 # Create Series objects
 def add_series(session):
