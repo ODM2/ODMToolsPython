@@ -304,7 +304,7 @@ class EditService():
     def delete_points(self):
         filtered_points = self.get_filtered_points()
         if not filtered_points.empty:
-            values = filtered_points['ValueID'].tolist()
+            values = filtered_points['ValueID'].astype(np.int32).tolist()
 
             self.memDB.delete(values)
             self._populate_series()
