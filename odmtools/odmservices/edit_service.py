@@ -187,6 +187,7 @@ class EditService():
         copy_df['values'] = df['DataValue']
         # copy_df['valueprev'] = copy_df['values'].shift()
         copy_df['diff'] = copy_df['values'].shift()
+        copy_df["diff_date"]= copy_df['LocalDateTime'].shift()
         copy_df['change_threshold'] = abs(df['values'] - df['diff'])
 
 
@@ -203,8 +204,9 @@ class EditService():
             copy_df['matches'] = df['change_threshold'] <= copy_df['threshold']
 
         filtered_df = copy_df[copy_df['matches']]
-        newdf = pd.concat([filtered_df['values'], filtered_df['diff']], join='inner')
-        self.filtered_dataframe = newdf
+        # newdf = pd.concat([filtered_df['values'], filtered_df['diff']], join='inner')
+        tmplist =filtered_df['diff_date'].tolist() + filtered_df.index.tolist()
+        self.filtered_dataframe = df[df.index.isin(tmplist)]
 
         # if operator == ">":
         #     copy_df['diff'] = copy_df['values'].diff() >= value
