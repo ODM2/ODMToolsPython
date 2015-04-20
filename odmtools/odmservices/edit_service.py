@@ -185,11 +185,9 @@ class EditService():
         # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
         copy_df = df
         copy_df['values'] = df['DataValue']
-        # copy_df['valueprev'] = copy_df['values'].shift()
         copy_df['diff'] = copy_df['values'].shift()
-        copy_df["diff_date"]= copy_df['LocalDateTime'].shift()
+        copy_df["diff_date"] = copy_df['LocalDateTime'].shift()
         copy_df['change_threshold'] = abs(df['values'] - df['diff'])
-
 
         if not isinstance(value, float):
             logger.error("Need to have a float")
@@ -204,19 +202,9 @@ class EditService():
             copy_df['matches'] = df['change_threshold'] <= copy_df['threshold']
 
         filtered_df = copy_df[copy_df['matches']]
-        # newdf = pd.concat([filtered_df['values'], filtered_df['diff']], join='inner')
-        tmplist =filtered_df['diff_date'].tolist() + filtered_df.index.tolist()
+        tmplist = filtered_df['diff_date'].tolist() + filtered_df.index.tolist()
+        del copy_df
         self.filtered_dataframe = df[df.index.isin(tmplist)]
-
-        # if operator == ">":
-        #     copy_df['diff'] = copy_df['values'].diff() >= value
-        #
-        # if operator == "<":
-        #     copy_df['diff'] = copy_df['values'].diff() <= value
-        #
-        # filtered_df = copy_df[copy_df['diff']]
-        # newdf = pd.concat([filtered_df['values'], filtered_df['valueprev']], join='inner')
-        # self.filtered_dataframe = df[df['DataValue'].isin(newdf.drop_duplicates().dropna())]
 
 
     def select_points_tf(self, tf_list):
