@@ -134,7 +134,7 @@ class MemoryDatabase(object):
         for point in points:
             vals = {"DataValue": point[0], "ValueAccuracy": point[1],
                     "LocalDateTime": point[2], "UTCOffset": point[3],
-                    "DateTimeUTC:": point[4], "OffsetValue": point[5],
+                    "DateTimeUTC": point[4], "OffsetValue": point[5],
                     "OffsetTypeID": point[6], "CensorCode": point[7],
                     "QualifierID": point[8], "SampleID": point[9],
                     "SiteID": point[10], "VariableID": point[11],
