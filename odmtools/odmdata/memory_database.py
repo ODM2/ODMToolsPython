@@ -19,7 +19,7 @@ class MemoryDatabase(object):
 
         self.editLoaded = False
         self.df = None
-
+        self.mem_service = SeriesService("sqlite:///:memory:")
         # TODO clean up closing of program
         # if taskserver is None:
         #numproc = cpu_count()
@@ -28,9 +28,12 @@ class MemoryDatabase(object):
 
         self.taskserver = taskserver
 
+    def reset_edit(self):
+        self.mem_service = SeriesService("sqlite:///:memory:")
+
     def set_series_service(self, service):
         self.series_service = service
-        self.mem_service = SeriesService("sqlite:///:memory:")
+
 
     ##############
     # DB Queries
