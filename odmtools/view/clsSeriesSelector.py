@@ -20,7 +20,7 @@ class ClsSeriesSelector(wx.Panel):
         wx.Panel.__init__(self, name=u'pnlSeriesSelector', parent=parent,
                           size=wx.Size(935, 270), style=wx.TAB_TRAVERSAL)
         self._init_ctrls()
-        self.dbservice = dbservice
+        self.series_service = dbservice
         self.initTableSeries()
         self.initSVBoxes()
         # Subscribe functions

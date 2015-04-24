@@ -34,10 +34,10 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         #Publisher.subscribe(self.onEditButton, ("selectEdit"))
         Publisher.subscribe(self.refreshSeries, "refreshSeries")
 
-    def resetDB(self, dbservice):
+    def resetDB(self, series_service):
         """
 
-        :param dbservice:
+        :param series_service:
         :return:
         """
 
@@ -47,7 +47,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.rbAll.SetValue(True)
 
         #####INIT DB Connection
-        self.dbservice = dbservice
+        self.series_service = series_service
         #self.refreshSeries()
         self.cbVariables.Clear()
         self.cbSites.Clear()
@@ -65,9 +65,9 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         try:
-            self.memDB.set_series_service(self.dbservice)
+            self.memDB.set_series_service(self.series_service)
 
-            object = self.dbservice.get_all_series()
+            object = self.series_service.get_all_series()
 
             if object:
                 self.tblSeries.SetObjects(object)
@@ -85,7 +85,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         self.memDB.set_series_service(db)
-        object = self.dbservice.get_all_series()
+        object = self.series_service.get_all_series()
         #checkedObjs = self.tblSeries.GetCheckedObjects()
         idList = [x.id for x in self.tblSeries.modelObjects]
 
@@ -101,10 +101,10 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
-        self.dbservice = None
-        self.dbservice = self.parent.Parent.createService()
+        self.series_service = None
+        self.series_service = self.parent.Parent.createService()
         #self.refreshTableSeries(self.dbservice)
-        self.resetDB(self.dbservice)
+        self.resetDB(self.series_service)
         logger.debug("Refresh Occurred")
 
     def initSVBoxes(self):
@@ -118,13 +118,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         #####INIT drop down boxes for Simple Filter
         try:
-            self.siteList = self.dbservice.get_used_sites()
+            self.siteList = self.series_service.get_used_sites()
             for site in self.siteList:
                 self.cbSites.Append(site.code + '-' + site.name)
             self.cbSites.SetSelection(0)
             self.site_code = self.siteList[0].code
 
-            self.varList = self.dbservice.get_used_variables()
+            self.varList = self.series_service.get_used_variables()
             for var in self.varList:
                 self.cbVariables.Append(var.code + '-' + var.name)
             self.cbVariables.SetSelection(0)
@@ -321,7 +321,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         if self.checkSite.GetValue():
             self.site_code = self.siteList[event.GetSelection()].code
-            self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
+            self.varList = self.series_service.get_variables_by_site_code(self.site_code)
 
             self.cbVariables.Clear()
             for var in self.varList:
@@ -356,7 +356,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.site_code = self.siteList[self.cbSites.Selection].code
 
         self.cbVariables.Clear()
-        self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
+        self.varList = self.series_service.get_variables_by_site_code(self.site_code)
         for var in self.varList:
             self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)
@@ -388,7 +388,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
         self.site_code = None
         self.cbVariables.Clear()
-        self.varList = self.dbservice.get_used_variables()
+        self.varList = self.series_service.get_used_variables()
         for var in self.varList:
             self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)

@@ -50,13 +50,17 @@ class frmODMToolsMain(wx.Frame):
         wx.Frame.__init__(self, **kwargs)
 
 
-        self._init_database()
-        self._init_ctrls()
-        self._init_aui_manager()
-        self._init_sizers()
-        self._ribbon.Realize()
-        self.Refresh()
-        logger.debug("System starting ...")
+        series_service = self._init_database()
+        if series_service:
+            self._init_ctrls(series_service)
+            self._init_aui_manager()
+            self._init_sizers()
+            self._ribbon.Realize()
+            self.Refresh()
+            logger.debug("System starting ...")
+        else:
+            logger.debug("System shutting down... ")
+            sys.exit(0)
 
 
     def _obtainScreenResolution(self):
@@ -113,16 +117,17 @@ class frmODMToolsMain(wx.Frame):
 
         self.service_manager = ServiceManager()
         self.record_service = None
+        series_service = None
+
         while True:
-            ## Database connection is valid, threfore proceed through the rest of the program
+            ## Database connection is valid, therefore proceed through the rest of the program
             if self.service_manager.is_valid_connection():
-                service = None
                 conn_dict = None
 
-                service = self.createService()
+                series_service = self.createService()
                 conn_dict = self.service_manager.get_current_conn_dict()
 
-                if self.servicesValid(service):
+                if self.servicesValid(series_service):
                     self.service_manager.add_connection(conn_dict)
                     break
 
@@ -132,7 +137,7 @@ class frmODMToolsMain(wx.Frame):
                 logger.fatal("ODMTools is now closing because there is no database connection.")
                 sys.exit(0)
             elif not quit_if_cancel:
-                return False
+                return series_service
 
             newConnection = db_config.panel.getFieldValues()
             self.service_manager.set_current_conn_dict(newConnection)
@@ -144,7 +149,7 @@ class frmODMToolsMain(wx.Frame):
         )
         logger.debug("...Connected to '%s'" % msg)
 
-        return True
+        return series_service
 
 
     def servicesValid(self, service, displayMsg=True):
@@ -183,7 +188,7 @@ class frmODMToolsMain(wx.Frame):
 
     ###################### Frame ################
 
-    def _init_ctrls(self):
+    def _init_ctrls(self, series_service):
         # generated method, don't edit
         logger.debug("Loading frame...")
 
@@ -221,7 +226,7 @@ class frmODMToolsMain(wx.Frame):
         logger.debug("Loading Series Selector ...")
 
 
-        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, self.sc, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memDB)
+        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, series_service, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memDB)
 
 
         ####################grid Table View##################
@@ -305,33 +310,7 @@ class frmODMToolsMain(wx.Frame):
         # generated method, don't edit
         parent.AddWindow(self._ribbon, 0, wx.EXPAND)
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
-    '''
-    def _init_database(self):
-        logger.debug("Loading Database...")
 
-        self.service_manager = ServiceManager()
-        self.record_service = None
-
-        while True:
-            ## If the database connection isn't valid, prompt user
-            if not self.service_manager.is_valid_connection():
-                db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
-                value = db_config.ShowModal()
-                if value == wx.ID_CANCEL:
-                    logger.fatal("ODMTools is now closing because there is no database connection.")
-                    sys.exit(0)
-
-                conn_dict = db_config.panel.getFieldValues()
-                service = self.createService(conn_dict)
-                if self.servicesValid(service):
-                    self.service_manager.add_connection(conn_dict)
-                    db_config.Destroy()
-                    break
-            else:
-                ## Database connection is valid, therefore proceed through the rest of the program
-                self.createService()
-                break
-    '''
     def servicesValid(self, service, displayMsg=True):
         """
 
@@ -366,8 +345,6 @@ class frmODMToolsMain(wx.Frame):
             self.GetTopWindow().Raise()
         except:
             pass
-
-
 
     def refreshConnectionInfo(self):
         """Updates the Series Selector Connection Information for the user"""
@@ -499,18 +476,18 @@ class frmODMToolsMain(wx.Frame):
             return
 
         newConnection = db_config.panel.getFieldValues()
-        self.service_manager.set_current_conn_dict(newConnection)
         db_config.Destroy()
 
         if self._init_database(quit_if_cancel=False):
+            # if editing, stop editing...
             if self._ribbon.getEditStatus():
                 self.stopEdit(event=None)
 
 
         if value == wx.ID_OK:
-            # self.createService()
 
-            self.pnlSelector.resetDB(self.sc)
+            series_service = self.createService(newConnection)
+            self.pnlSelector.resetDB(series_service)
             self.refreshConnectionInfo()
             self.pnlPlot.clear()
             self.dataTable.clear()
@@ -524,8 +501,8 @@ class frmODMToolsMain(wx.Frame):
         :return:
         """
 
-        self.sc = self.service_manager.get_series_service(conn_dict=conn_dict)
-        return self.sc
+        series_service = self.service_manager.get_series_service(conn_dict=conn_dict)
+        return series_service
 
     def getServiceManager(self):
         return self.service_manager
