@@ -1,7 +1,7 @@
 Example ODM Databases
 =====================
 
-This folder contains two example databases for use in testing ODM Tools Python. Each database contains a subset of continuous sensor data collected in the Little Bear River of northern Utah, USA. If you need help connecting to one of these example databases, refer to the appropriate [documentationn](https://github.com/UCHIC/ODMToolsPython/blob/master/doc/MarkdownFiles/DatabaseConnections.md).
+This folder contains two example databases for use in testing ODM Tools Python. Each database contains a subset of continuous sensor data collected in the Little Bear River of northern Utah, USA. If you need help connecting to one of these example databases, refer to the appropriate [documentationn](https://github.com/ODM2/ODMToolsPython/blob/master/doc/MarkdownFiles/DatabaseConnections.md).
 
 ### LittleBear_ODM_1.1.1_MSSQL.zip ###
 This zip file contains a Microsoft SQL Server database. It was created in Microsoft SQL Server 2005, but should be compatible with SQL Server 2008 and 2012. To use it, do the following:
