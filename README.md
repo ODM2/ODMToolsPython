@@ -59,7 +59,7 @@ This project is receiving or has received support from a number of agencies and 
 
 ![iUTAH](/doc/images/iutah_eu_horz_sm.png)    ![CUAHSI](/doc/images/cuahsi_logo_sm.gif)    ![NSF](/doc/images/nsf.gif)
 
-This material is based on work supported by the National Science Foundation Grant EPS 1208732 awarded to Utah State University.  Additional support was previously provided by National Science Foundation grant EAR 0622374.  Any opinions, findings, and conclusions or recommendations expressed are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+This material is based on work supported by the National Science Foundation Grants [IIA-1208732](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1208732) and [EAR-1224638](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1224638).  Additional support was previously provided by National Science Foundation grant [EAR-0622374](http://www.nsf.gov/awardsearch/showAward?AWD_ID=0622374).  Any opinions, findings, and conclusions or recommendations expressed are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
 
 Copying and License
 ----------------------------
