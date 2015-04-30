@@ -41,5 +41,9 @@ class LoggerTool():
         l.addHandler(fileHandler)
         l.addHandler(streamHandler)
 
+        # solves issues where logging would duplicate its logging message to the root logger
+        # https://stackoverflow.com/questions/21127360/python-2-7-log-displayed-twice-when-logging-module-is-used-in-two-python-scri
+        l.propagate = False
+
         return l
 

@@ -48,6 +48,7 @@ class pnlDataTable(wx.Panel):
         #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onItemSelected)
+        self.myOlv.Bind(wx.EVT_LIST_COL_CLICK, self.onColSelected)
         # for wxMSW
         self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self.OnRightClick)
 
@@ -65,6 +66,9 @@ class pnlDataTable(wx.Panel):
         self.enableSelectDataTable = False
 
         self.Layout()
+
+    def onColSelected(self, evt):
+        logger.debug("SELECTED COLUMN %s %s" % (evt.m_col, dir(evt)))
 
     def toggleBindings(self):
         """ Activates/Deactivates Datatable specific bindings
