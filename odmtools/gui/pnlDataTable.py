@@ -4,7 +4,7 @@ import logging
 import itertools as iter
 
 import pandas as pd
-from odmtools.lib.ObjectListView import ColumnDefn, FastObjectListView, VirtualObjectListView
+from odmtools.lib.ObjectListView import ColumnDefn, VirtualObjectListView
 from wx.lib.pubsub import pub as Publisher
 import numpy as np
 import timeit
@@ -113,6 +113,7 @@ class pnlDataTable(wx.Panel):
         self.myOlv.SetColumns(columns)
 
         self.myOlvDataFrame = self.memDB.getDataValuesDF()
+        self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[3], inplace=True)
         self.dataObjects = self.myOlvDataFrame.values.tolist()
 
         self.myOlv.SetObjectGetter(self.objectGetter)
