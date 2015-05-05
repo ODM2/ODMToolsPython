@@ -506,7 +506,7 @@ class EditService():
 
 
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
-
+        dvs.drop('ValueID', axis=1, inplace=True)
         return series, dvs
 
     def save(self):
@@ -533,6 +533,7 @@ class EditService():
         :return:
         """
         series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
+
         if self._series_service.save_new_series(series, dvs):
             logger.debug("series saved!")
             return True
