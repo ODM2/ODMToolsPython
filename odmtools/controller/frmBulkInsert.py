@@ -32,7 +32,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         return filepath
 
     def readDataFromCSV(self, filepath):
-        try:    
+        try:
             data = pd.read_csv(filepath, skiprows=[1], engine='c')
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
@@ -77,6 +77,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                 return False
 
         dlg.Destroy()
+        return pointList
     def onUpload(self, event):
         """Reads csv into pandas object
 
@@ -87,17 +88,19 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         """
 
         filepath = self.obtainFilePath()
-        
+
         if not filepath:
             return False
 
         data = self.readDataFromCSV(filepath)
-        
-        if not data:
+
+        if data.empty:
             return False
 
-        self.loadIntoDataFrame(data)
+        pointList = self.loadIntoDataFrame(data)
 
+        if not pointList:
+            return False
 
         self.parent.olv.AddObjects(pointList)
         del pointList
