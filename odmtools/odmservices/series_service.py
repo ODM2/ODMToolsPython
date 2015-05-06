@@ -339,7 +339,7 @@ class SeriesService():
 
         :return: Pandas DataFrame object
         """
-        q = self._edit_session.query(DataValue)
+        q = self._edit_session.query(DataValue).order_by(DataValue.local_date_time)
         query=q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql= query,
                           con = self._session_factory.engine,
@@ -351,11 +351,11 @@ class SeriesService():
 
         :return:
         """
-        result = self._edit_session.query(DataValue).all()
+        result = self._edit_session.query(DataValue).order_by(DataValue.local_date_time).all()
         return [x.list_repr() for x in result]
 
     def get_all_values(self):
-        return self._edit_session.query(DataValue).all()
+        return self._edit_session.query(DataValue).order_by(DataValue.local_date_time).all()
 
     @staticmethod
     def calcSeason(row):

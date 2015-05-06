@@ -303,6 +303,7 @@ class EditService():
         # todo: add the ability to send in multiple datetimes to a single 'point'
 
         self.memDB.addPoints(points)
+
         self._populate_series()
         self.reset_filter()
 
