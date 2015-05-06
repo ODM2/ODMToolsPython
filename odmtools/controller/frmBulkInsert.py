@@ -18,26 +18,21 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         self.col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue',
                'OffSetType', 'QualifierCode', 'LabSampleCode']
 
-    def onUpload(self, event):
-        """Reads csv into pandas object
-
-        Parameters
-        ----------
-        filepath : string
-            path to csv file
-        """
-
+    def obtainFilePath(self):
         ## Obtain CSV filepath
+
         openFileDialog = wx.FileDialog(self, "Open CSV file", "", "", "CSV files (*.csv)|*.csv",
-                                       wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+                                   wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         value = openFileDialog.ShowModal()
 
         if value == wx.ID_CANCEL:
-            return
-
+            return None
         filepath = openFileDialog.GetPath()
 
-        try:
+        return filepath
+
+    def readDataFromCSV(self, filepath):
+        try:    
             data = pd.read_csv(filepath, skiprows=[1], engine='c')
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
@@ -46,21 +41,23 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                          "doesn't work: %s" % e, 'Issue with csv', wx.OK | wx.ICON_WARNING |
                                    wx.OK_DEFAULT)
             value = msg.ShowModal()
-            return
+            return False
 
         ## Change 'nan' to 'NULL' for consistency
         data.fillna("NULL", inplace=True)
 
-        pointList = []
         for i in data.columns[3:]:
             data[i] = data[i].astype(str)
+        return data
 
-        dlg = wx.ProgressDialog("Upload Progress", "Uploading %s values" % len(data), maximum=len(data),
-                                parent=self,
-                                style=0 | wx.PD_APP_MODAL | wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME |
-                                      wx.PD_ESTIMATED_TIME | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE)
-
+    def loadIntoDataFrame(self, data):
+        pointList = []
         keepGoing = True
+        dlg = wx.ProgressDialog("Upload Progress", "Uploading %s values" % len(data), maximum=len(data),
+                    parent=self,
+                    style=0 | wx.PD_APP_MODAL | wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME |
+                          wx.PD_ESTIMATED_TIME | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE)
+
         for count, row in data.iterrows():
             if not keepGoing:
                 break
@@ -77,15 +74,37 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                              " the program expects",
                                        'Issue with csv', wx.OK | wx.ICON_WARNING | wx.OK_DEFAULT)
                 value = msg.ShowModal()
-                return
+                return False
 
         dlg.Destroy()
+    def onUpload(self, event):
+        """Reads csv into pandas object
+
+        Parameters
+        ----------
+        filepath : string
+            path to csv file
+        """
+
+        filepath = self.obtainFilePath()
+        
+        if not filepath:
+            return False
+
+        data = self.readDataFromCSV(filepath)
+        
+        if not data:
+            return False
+
+        self.loadIntoDataFrame(data)
+
+
         self.parent.olv.AddObjects(pointList)
         del pointList
         self.Hide()
         self.parent.Raise()
-
         event.Skip()
+
     def onTemplate(self, event):
         """
                 DataValues: Floats or -9999 (No data value)
