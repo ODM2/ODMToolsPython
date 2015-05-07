@@ -33,9 +33,26 @@ def add_bulk_data_values(session, series):
     session.add_all(dvs)
     session.commit()
     return dvs
-    
 
+def add_series_bulk_data(session):
+    site = add_site(session)
+    var = add_variable(session)
+    qcl = add_qcl(session)
+    method = add_method(session)
+    source = add_source(session)
 
+    series = Series()
+    series.site = site
+    series.site_code = site.code
+    series.variable = var
+    series.variable_code = var.code
+    series.method = method
+    series.source = source
+    series.quality_control_level_id = qcl.id
+
+    dvs = add_bulk_data_values(session, series)
+    ## Sort DVS by local_date_time
+    # series.begin_date_time =
 
 # Create Series objects
 def add_series(session):
