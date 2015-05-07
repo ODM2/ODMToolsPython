@@ -24,6 +24,7 @@ class TestBulkInsert:
         else:
             assert result
         assert len(result) == 1
+
     def test_loadIntoDataFrame(self):
         assert self.BulkInsert
         assert self.CSVPath

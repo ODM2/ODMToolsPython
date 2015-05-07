@@ -1,6 +1,8 @@
 import datetime
 import pandas as pd
 from odmtools.odmdata import *
+import os
+import sys
 
 
 def build_db(engine):
@@ -13,10 +15,12 @@ def add_bulk_data_values(session, series):
     """
     Load up exampleData.csv into a series' datavalues field
     """
-
-    df = pd.read_csv("./exampleData.csv")
+    filepath = os.path.join('.', 'test_odmdata', 'example', 'exampleData.csv')
+    df = pd.read_csv(filepath)
+    df['LocalDateTime'] = pd.to_datetime(df['LocalDateTime']).astype(datetime.datetime)
+    df['DateTimeUTC'] = pd.to_datetime(df['DateTimeUTC']).astype(datetime.datetime)
     dvs = []
-    for record in df.to_dict('records')[0:2]:
+    for record in df.to_dict('records')[:700]:
         dv = DataValue()
         dv.data_value = record['DataValue']
         dv.local_date_time = record['LocalDateTime']
@@ -32,7 +36,7 @@ def add_bulk_data_values(session, series):
     series.data_values = dvs
     session.add_all(dvs)
     session.commit()
-    return dvs
+    return df
 
 def add_series_bulk_data(session):
     site = add_site(session)
@@ -50,9 +54,22 @@ def add_series_bulk_data(session):
     series.source = source
     series.quality_control_level_id = qcl.id
 
-    dvs = add_bulk_data_values(session, series)
-    ## Sort DVS by local_date_time
-    # series.begin_date_time =
+    df = add_bulk_data_values(session, series)
+    sorted_df = sorted(df['LocalDateTime'])
+    series.begin_date_time = sorted_df[0]
+    assert isinstance(series.begin_date_time, datetime.datetime)
+    series.end_date_time = sorted_df[-1]
+    assert isinstance(series.end_date_time, datetime.datetime)
+
+    sorted_df = sorted(df['DateTimeUTC'])
+    series.begin_date_time_utc = sorted_df[0]
+    assert isinstance(series.begin_date_time_utc, datetime.datetime)
+    series.end_date_time_utc = sorted_df[-1]
+    assert isinstance(series.end_date_time_utc, datetime.datetime)
+
+    session.add(series)
+    session.commit()
+    return series
 
 # Create Series objects
 def add_series(session):
