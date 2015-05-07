@@ -68,7 +68,8 @@ class pnlDataTable(wx.Panel):
         self.Layout()
 
     def onColSelected(self, evt):
-        logger.debug("SELECTED COLUMN %s %s" % (evt.m_col, dir(evt)))
+        logger.debug("SELECTED COLUMN %s" % evt.m_col)
+        self.sortColumn(evt.m_col)
 
     def toggleBindings(self):
         """ Activates/Deactivates Datatable specific bindings
@@ -131,8 +132,12 @@ class pnlDataTable(wx.Panel):
         """
         Allow users to sort based off of column
         """
+        selected_column = self.GetOLVColClicked(event=None)
+        self.sortColumn(selected_column)
+
+    def sortColumn(self, selected_column):
+
         try:
-            selected_column = self.GetOLVColClicked(event=None)
             if self.ascending:
                 self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[selected_column], inplace=True)
                 self.ascending = False
