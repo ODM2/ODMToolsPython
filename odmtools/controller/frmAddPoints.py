@@ -11,6 +11,7 @@ except ImportError:
 # Implementing AddPoints
 class AddPoints(clsAddPoints.AddPoints):
     def __init__(self, parent, **kwargs):
+        print "ding"
         if 'recordService' in kwargs:
             self.recordService = kwargs['recordService']
         clsAddPoints.AddPoints.__init__(self, parent, **kwargs)
@@ -107,7 +108,6 @@ class AddPoints(clsAddPoints.AddPoints):
         :return:
         """
         self.checkIfEditing()
-
         if not self.frame.IsShown():
             self.frame.CenterOnParent()
             self.frame.ShowModal()

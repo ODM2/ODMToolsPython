@@ -91,9 +91,9 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
         if not filepath:
             return False
-
+        
         data = self.readDataFromCSV(filepath)
-
+        
         if data.empty:
             return False
 
@@ -104,7 +104,8 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
         self.parent.olv.AddObjects(pointList)
         del pointList
-        self.Hide()
+        self.EndModal(0) # Denver
+        #self.Hide()
         self.parent.Raise()
         event.Skip()
 
@@ -136,11 +137,13 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         df.loc[1] = ['-9999', '2005-06-29', '14:20:15', '-7', 'nc', "1.2", "1", "NULL", "NULL", "NULL"]
         df.to_csv(filepath, index=False)
 
-        self.Hide()
+        self.EndModal(0) # Denver
+        #self.Hide()
         self.parent.Raise()
 
     def onClose(self, event):
-        self.Hide()
+        self.EndModal(0) # Denver
+        #self.Hide()
         self.parent.Raise()
 
 if __name__ == '__main__':
