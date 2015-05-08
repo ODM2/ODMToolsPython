@@ -97,7 +97,6 @@ class pnlDataTable(wx.Panel):
 
     def init(self, memDB):
         self.memDB = memDB
-        # self.record_service = record_service
 
         columns = [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=-1,
                               stringConverter='%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
@@ -229,12 +228,10 @@ class pnlDataTable(wx.Panel):
     def onRefresh(self, e):
         self.myOlvDataFrame = self.memDB.getDataValuesDF()
         self.dataObjects = self.myOlvDataFrame.values.tolist()
-
         self.myOlv.Refresh()
 
     def clear(self):
         self.memDB = None
-        self.record_service = None
         self.myOlv.DeleteAllItems()
         self.myOlvDataFrame = None
 

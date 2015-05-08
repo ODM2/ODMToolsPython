@@ -22,9 +22,10 @@ class TestPandasMemoryDB:
         test_util.build_db(engine)
 
     def test_build_series(self):
-        self.series = test_util.add_series_bulk_data(self.session)
+        dvs = 100
+        self.series = test_util.add_series_bulk_data(self.session, dvs_size=dvs)
         assert self.series
-        assert len(self.series.data_values) == 100
+        assert len(self.series.data_values) == dvs
 
 
 

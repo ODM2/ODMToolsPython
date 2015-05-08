@@ -11,16 +11,17 @@ def build_db(engine):
 
 # Create DB objects #
 
-def add_bulk_data_values(session, series):
+def add_bulk_data_values(session, series, dvs_size):
     """
     Load up exampleData.csv into a series' datavalues field
     """
-    filepath = os.path.join('.', 'test_odmdata', 'example', 'exampleData.csv')
+    assert 10000 >= dvs_size > 0
+    filepath = os.path.join('.', 'example_files', 'exampleData.csv')
     df = pd.read_csv(filepath)
     df['LocalDateTime'] = pd.to_datetime(df['LocalDateTime']).astype(datetime.datetime)
     df['DateTimeUTC'] = pd.to_datetime(df['DateTimeUTC']).astype(datetime.datetime)
     dvs = []
-    for record in df.to_dict('records')[:100]:
+    for record in df.to_dict('records')[:dvs_size]:
         dv = DataValue()
         dv.data_value = record['DataValue']
         dv.local_date_time = record['LocalDateTime']
@@ -38,7 +39,7 @@ def add_bulk_data_values(session, series):
     session.commit()
     return df
 
-def add_series_bulk_data(session):
+def add_series_bulk_data(session, dvs_size=50):
     site = add_site(session)
     var = add_variable(session)
     qcl = add_qcl(session)
@@ -54,7 +55,7 @@ def add_series_bulk_data(session):
     series.source = source
     series.quality_control_level_id = qcl.id
 
-    df = add_bulk_data_values(session, series)
+    df = add_bulk_data_values(session, series, dvs_size)
     sorted_df = sorted(df['LocalDateTime'])
     series.begin_date_time = sorted_df[0]
     assert isinstance(series.begin_date_time, datetime.datetime)
