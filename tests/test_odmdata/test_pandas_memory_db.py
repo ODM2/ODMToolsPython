@@ -24,7 +24,7 @@ class TestPandasMemoryDB:
     def test_build_series(self):
         self.series = test_util.add_series_bulk_data(self.session)
         assert self.series
-        assert len(self.series.data_values) == 700
+        assert len(self.series.data_values) == 100
 
 
 

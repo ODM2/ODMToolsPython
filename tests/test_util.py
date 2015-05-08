@@ -20,7 +20,7 @@ def add_bulk_data_values(session, series):
     df['LocalDateTime'] = pd.to_datetime(df['LocalDateTime']).astype(datetime.datetime)
     df['DateTimeUTC'] = pd.to_datetime(df['DateTimeUTC']).astype(datetime.datetime)
     dvs = []
-    for record in df.to_dict('records')[:700]:
+    for record in df.to_dict('records')[:100]:
         dv = DataValue()
         dv.data_value = record['DataValue']
         dv.local_date_time = record['LocalDateTime']
