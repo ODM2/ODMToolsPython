@@ -33,7 +33,7 @@ class pnlDataTable(wx.Panel):
         wx.Panel.__init__(self, id=wxID_PNLDATATABLE, name=u'pnlDataTable',
                           parent=self.parent, size=wx.Size(677, 449),
                           style=wx.TAB_TRAVERSAL)
-        self.record_service = self.parent.Parent.getRecordService()
+        # self.record_service = self.parent.Parent.getRecordService()
         # self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
         ## Trying out virtualObjectListView
         self.myOlv = VirtualObjectListView(self, -1, style=wx.LC_REPORT)
@@ -95,9 +95,9 @@ class pnlDataTable(wx.Panel):
             except:
                 pass
 
-    def init(self, memDB, record_service):
+    def init(self, memDB):
         self.memDB = memDB
-        self.record_service = record_service
+        # self.record_service = record_service
 
         columns = [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=-1,
                               stringConverter='%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')

@@ -186,7 +186,6 @@ class MemoryDatabase(object):
             # self.conn = results["InitEditValues"]
             else:
             '''  #TODO: Thread this call
-            logger.debug("Load series from db")
             self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
                            index=False)#,flavor='sqlite', chunksize=10000)
             logger.debug("done loading database")

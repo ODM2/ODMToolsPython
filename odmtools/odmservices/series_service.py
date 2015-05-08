@@ -30,7 +30,6 @@ class SeriesService():
         self._edit_session = self._session_factory.get_session()
         self._debug = debug
 
-
     def reset_session(self):
         self._edit_session = self._session_factory.get_session()  # Reset the session in order to prevent memory leaks
 
@@ -340,10 +339,9 @@ class SeriesService():
         :return: Pandas DataFrame object
         """
         q = self._edit_session.query(DataValue).order_by(DataValue.local_date_time)
-        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-        data = pd.read_sql_query(sql= query,
-                          con = self._session_factory.engine,
-                          params = query.params )
+        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
+                          params=query.params)
         return data.set_index(data['LocalDateTime'])
 
     def get_all_values_list(self):
@@ -684,25 +682,6 @@ class SeriesService():
         :return:
         """
         self._edit_session.query(DataValue).filter(DataValue.id.in_(id_list)).delete(False)
-
-        '''
-        #TODO: what is this? why is there a progress bar in the service? -SR
-        import wx
-        dlg = wx.ProgressDialog("Delete Progress", "Deleting %s values" % len(dv_list), maximum=len(dv_list),
-                                parent=None,
-                                style=0 | wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME |
-                                      wx.PD_ESTIMATED_TIME | wx.PD_REMAINING_TIME | wx.PD_AUTO_HIDE)
-        length = len(dv_list)
-        for i, dv in enumerate(dv_list):
-            dlg.Update(i, "%s/%s Objects Deleted" % (i, length))
-            merged_dv = self._edit_session.merge(dv)
-            self._edit_session.delete(merged_dv)
-        dlg.Update(length, "Commiting to database")
-        self._edit_session.commit()
-        dlg.Destroy()
-        '''
-
-
 
 #####################
 #

@@ -29,6 +29,7 @@ class TestBulkInsert:
         assert self.BulkInsert
         assert self.CSVPath
         result = self.BulkInsert.readDataFromCSV(self.CSVPath)
+        assert not result.empty
 
     def test_onUpload(self):
         assert self.BulkInsert

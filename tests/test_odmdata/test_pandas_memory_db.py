@@ -9,6 +9,9 @@ Sample ODM Database connection and data insertion for unittesting against
 """
 
 class TestPandasMemoryDB:
+    """
+    Test to Load up a series from a dataframe and load it into an in memory database
+    """
     def setup(self):
         self.connection_string = "sqlite:///:memory:"
         self.session_factory = SessionFactory(self.connection_string, echo=False)
@@ -19,8 +22,10 @@ class TestPandasMemoryDB:
         test_util.build_db(engine)
 
     def test_build_series(self):
-        series = test_util.add_series_bulk_data(self.session)
-        assert series
+        self.series = test_util.add_series_bulk_data(self.session)
+        assert self.series
+        assert len(self.series.data_values) == 700
+
 
 
 

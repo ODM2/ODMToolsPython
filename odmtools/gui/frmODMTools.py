@@ -420,7 +420,7 @@ class frmODMToolsMain(wx.Frame):
             self.pnlPlot.addEditPlot(self.memDB, seriesID, self.record_service)
 
             logger.debug("Initializing DataTable")
-            self.dataTable.init(self.memDB, self.record_service)
+            self.dataTable.init(self.memDB)
 
             # set record service for console
             Publisher.sendMessage("setEdit", isEdit=True)
