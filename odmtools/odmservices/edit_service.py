@@ -35,23 +35,25 @@ class EditService():
 
         if connection_string is  "" and connection is not None:
             self.memDB= connection
-            self._series_service = self.memDB.series_service#SeriesService(connection_string, debug)
+            #self._series_service = self.memDB.series_service#SeriesService(connection_string, debug)
 
         elif connection_string is not "" and connection is None:
-            series_service = SeriesService(connection_string, False)
             from odmtools.odmdata import MemoryDatabase
-            self.memDB= MemoryDatabase(series_service)
-            self.memDB.initEditValues(series_id)
+            self.memDB= MemoryDatabase()#(series_service)
+            self.memDB.set_series_service(SeriesService(connection_string, False))
+
 
         else:
             logger.error("must send in either a remote db connection string or a memory database object")
 
-
+        logger.debug("Initializing Memory Database")
+        self.memDB.initEditValues(series_id)
+        logger.debug("Finished Initializing Memory Database")
         self._populate_series()
         self.reset_filter()
 
     def get_series_service(self):
-        return self._series_service
+        return self.memDB.series_service
 
     def _populate_series(self):
         # [(ID, value, datetime), ...]
@@ -241,7 +243,7 @@ class EditService():
     # Gets
     ###################
     def get_series(self):
-        return self._series_service.get_series_by_id(self._series_id)
+        return self.memDB.series_service.get_series_by_id(self._series_id)
 
     def get_series_points(self):
         # all point in the series
@@ -275,14 +277,14 @@ class EditService():
         return self._filter_list
 
     def get_qcl(self, qcl_id):
-        return self._series_service.get_qcl_by_id(qcl_id)
+        return self.memDB.series_service.get_qcl_by_id(qcl_id)
 
     def get_method(self, method_id):
-        return self._series_service.get_method_by_id(method_id)
+        return self.memDB.series_service.get_method_by_id(method_id)
 
     def get_variable(self, variable_id):
         logger.debug(variable_id)
-        return self._series_service.get_variable_by_id(variable_id)
+        return self.memDB.series_service.get_variable_by_id(variable_id)
 
 
     #################
@@ -438,11 +440,11 @@ class EditService():
                 dv.id = None
         '''
 
-        series = self._series_service.get_series_by_id(self._series_id)
+        series = self.memDB.series_service.get_series_by_id(self._series_id)
         logger.debug("original editing series id: %s" % str(series.id))
 
         if (var or method or qcl ):
-            tseries = self._series_service.get_series_by_id_quint(site_id=int(series.site_id),
+            tseries = self.memDB.series_service.get_series_by_id_quint(site_id=int(series.site_id),
                                                                   var_id=var_id if var else int(series.variable_id),
                                                                   method_id=method_id if method else int(
                                                                       series.method_id),
@@ -503,7 +505,7 @@ class EditService():
         if not is_new_series:
             # delete old dvs
             #pass
-            self._series_service.delete_values_by_series(series)
+            self.memDB.series_service.delete_values_by_series(series)
 
 
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
@@ -519,7 +521,7 @@ class EditService():
         """
 
         series, dvs = self.updateSeries(is_new_series=False)
-        if self._series_service.save_series(series, dvs):
+        if self.memDB.series_service.save_series(series, dvs):
             logger.debug("series saved!")
             return True
         else:
@@ -535,7 +537,7 @@ class EditService():
         """
         series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
 
-        if self._series_service.save_new_series(series, dvs):
+        if self.memDB.series_service.save_new_series(series, dvs):
             logger.debug("series saved!")
             return True
         else:
@@ -550,7 +552,7 @@ class EditService():
         :return:
         """
         series, dvs = self.updateSeries(var, method, qcl, is_new_series=False)
-        if self._series_service.save_series(series, dvs):
+        if self.memDB.series_service.save_series(series, dvs):
             logger.debug("series saved!")
             return True
         else:
@@ -558,18 +560,18 @@ class EditService():
             return False
 
     def create_qcl(self, code, definition, explanation):
-        return self._series_service.create_qcl(code, definition, explanation)
+        return self.memDB.series_service.create_qcl(code, definition, explanation)
 
     def create_method(self, description, link):
-        return self._series_service.create_method(description, link)
+        return self.memDB.series_service.create_method(description, link)
 
     def create_qualifier(self, code, definition):
-        return self._series_service.create_qualifier(code, definition)
+        return self.memDB.series_service.create_qualifier(code, definition)
 
     def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
                         value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
 
-        return self._series_service.create_variable(code, name, speciation, variable_unit_id, sample_medium,
+        return self.memDB.series_service.create_variable(code, name, speciation, variable_unit_id, sample_medium,
                                                     value_type, is_regular, time_support, time_unit_id, data_type,
                                                     general_category, no_data_value)
 

@@ -319,19 +319,22 @@ class SeriesService():
         :return: pandas dataframe
         '''
         series= self.get_series_by_id(series_id)
-        q = self._edit_session.query(DataValue).filter_by(
-                site_id=series.site_id,
-                variable_id=series.variable_id,
-                method_id=series.method_id,
-                source_id=series.source_id,
-                quality_control_level_id=series.quality_control_level_id)
+        if series:
+            q = self._edit_session.query(DataValue).filter_by(
+                    site_id=series.site_id,
+                    variable_id=series.variable_id,
+                    method_id=series.method_id,
+                    source_id=series.source_id,
+                    quality_control_level_id=series.quality_control_level_id)
 
-        query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-        data= pd.read_sql_query(sql= query,
-                          con = self._session_factory.engine,
-                          params = query.params )
-        #return data.set_index(data['LocalDateTime'])
-        return data
+            query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+            data= pd.read_sql_query(sql= query,
+                              con = self._session_factory.engine,
+                              params = query.params )
+            #return data.set_index(data['LocalDateTime'])
+            return data
+        else:
+            return None
 
     def get_all_values_df(self):
         """

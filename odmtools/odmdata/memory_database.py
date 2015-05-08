@@ -189,10 +189,12 @@ class MemoryDatabase(object):
             # self.conn = results["InitEditValues"]
             else:
             '''  #TODO: Thread this call
-            self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
-                           index=False)#,flavor='sqlite', chunksize=10000)
-            logger.debug("done loading database")
-
+            if len(self.df)>0:
+                self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
+                               index=False)#,flavor='sqlite', chunksize=10000)
+                logger.debug("done loading database")
+            else:
+                logger.debug("no data in series")
 
     def changeSeriesIDs(self, var=None, qcl=None, method=None):
         """

@@ -528,9 +528,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             if object not in ovl.GetCheckedObjects():
                 ovl.ToggleCheck(object)
 
-            logger.debug("Initializing Memory Database")
-            self.memDB.initEditValues(object.id)
-            logger.debug("Finished Initializing Memory Database")
+
 
             # logger.debug("Initializing DataTable")
             #

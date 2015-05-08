@@ -49,13 +49,12 @@ class TestMemoryDB:
     def test_update_flag(self):
         self.memory_db.updateFlag([5], '50')
         dvs=self.memory_db.getDataValuesDF()
-        # assert dvs["QualifierID"][5-1] == '50'
+        assert dvs["QualifierID"][5-1] == '50'
 
-    def test_save(self):
-        pass
 
     def test_delete_points(self):
         stlen= len(self.memory_db.getDataValuesDF())
         self.memory_db.delete([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         dvs = self.memory_db.getDataValuesDF()
         assert len(dvs) == stlen-10
+
