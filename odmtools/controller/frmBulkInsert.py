@@ -33,7 +33,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
     def readDataFromCSV(self, filepath):
         try:
-            data = pd.read_csv(filepath, skiprows=[1], engine='c')
+            data = pd.read_csv(filepath, skiprows=[1], engine='c', lineterminator='\n')
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
                                          "Please compare your csv with the template version as the file"
