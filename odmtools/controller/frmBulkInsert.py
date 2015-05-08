@@ -32,8 +32,37 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         return filepath
 
     def readDataFromCSV(self, filepath):
+        
+        import csv
+        import StringIO
+        csv_data = StringIO.StringIO()
         try:
-            data = pd.read_csv(filepath, skiprows=[1], engine='c', lineterminator='\n')
+            with open(filepath, 'rb') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    print str(row).strip('[]')
+                    csv_data.write(str(row).strip('[]').replace("'", "") + '\n')
+        except csv.Error as e:
+            print "-_-_TRYING UNIVERSAL READ MODE-_-_"
+            with open (filepath, 'rU') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    print str(row).strip('[]')
+                    csv_data.write(str(row).strip('[]').replace("'", "") + '\n')
+        csv_data.seek(0)
+        print csv_data.getvalue()
+        try:
+            #data = pd.read_csv(filepath, skiprows=[1], engine='c', lineterminator='\n')
+            data = pd.read_csv(csv_data, skiprows=[1], engine='c', converters={0: str.strip,
+                                1: str.strip,
+                                2: str.strip,
+                                3: str.strip,
+                                4: str.strip,
+                                5: str.strip,
+                                6: str.strip,
+                                7: str.strip,
+                                8: str.strip,
+                                9: str.strip})
         except CParserError as e:
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
                                          "Please compare your csv with the template version as the file"
@@ -42,11 +71,12 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                    wx.OK_DEFAULT)
             value = msg.ShowModal()
             return False
-
+        print data.dtypes
         ## Change 'nan' to 'NULL' for consistency
         data.fillna("NULL", inplace=True)
 
         for i in data.columns[3:]:
+            print "'" + data[i].astype(str) + "'"
             data[i] = data[i].astype(str)
         return data
 
