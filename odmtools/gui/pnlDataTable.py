@@ -258,6 +258,8 @@ class pnlDataTable(wx.Panel):
         """
         Select values within
         """
+        self.onDeselectAll()
+
         if isinstance(datetime_list, pd.DataFrame):
             try:
                 self.enableSelectDataTable = True
@@ -273,8 +275,8 @@ class pnlDataTable(wx.Panel):
                 pass
 
         # testing for case where user clears filter (issue #218)
-        elif not datetime_list:
-            self.onDeselectAll()
+        # elif not datetime_list:
+        #     self.onDeselectAll()
 
     def onKeyPress(self, evt):
         """Ignores Keypresses"""

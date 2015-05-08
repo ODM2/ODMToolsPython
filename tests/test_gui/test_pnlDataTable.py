@@ -21,7 +21,6 @@ class TestPnlDataTable:
         self.session_factory = self.memory_database.mem_service._session_factory
         engine = self.session_factory.engine
         self.session = self.session_factory.get_session()
-        # self.memory_database.initEditValues(self.series.id)
 
         test_util.build_db(engine)
 
@@ -34,11 +33,14 @@ class TestPnlDataTable:
         assert self.series
         assert len(self.series.data_values) == 700
 
+        self.memory_database.initEditValues(self.series.id)
+
         dvs = self.session.query(DataValue).all()
         assert len(dvs) == 700
 
         dvs = self.memory_database.mem_service._edit_session.query(DataValue).all()
         assert len(dvs) == 700
+
 
     def test_get_data_values_data_frame(self):
         df = self.memory_database.getDataValuesDF()
