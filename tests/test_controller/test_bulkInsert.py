@@ -6,7 +6,7 @@ class TestBulkInsert:
     def setup(self):
         self.app = wx.App()
         self.BulkInsert = BulkInsert(None)
-        self.CSVPath = os.path.join('test_controller', 'testFiles', 'test.csv')
+        self.CSVPath = os.path.join('.', 'example_files', 'exampleBulkInsert.csv')
 
     def teardown(self):
         pass
