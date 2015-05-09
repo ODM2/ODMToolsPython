@@ -234,6 +234,7 @@ class pnlDataTable(wx.Panel):
         self.memDB = None
         self.myOlv.DeleteAllItems()
         self.myOlvDataFrame = None
+        self.dataObjects = None
 
     def onItemSelected(self, event):
         """
@@ -281,12 +282,6 @@ class pnlDataTable(wx.Panel):
 
     def stopEdit(self):
         self.clear()
-
-    def getSelectedIDs(self, selobjects):
-        idlist = [False] * self.memDB.getEditRowCount()
-        for sel in selobjects:
-            idlist[self.myOlv.GetIndexOf(sel)] = True
-        return idlist
 
     def _rowFormatter(self, listItem, object):
         """Handles the formatting of rows for object list view

@@ -54,6 +54,7 @@ class TestPnlDataTable:
         myOlv = self.dataTable.myOlv
 
         count = 0
+
         selected_item = myOlv.GetFirstSelected()
         assert selected_item != -1
 
@@ -63,6 +64,15 @@ class TestPnlDataTable:
             count += 1
 
         assert count == self.dvs_size
+    def test_deselecting_all(self):
+        self.dataTable.init(self.memory_database)
+        assert self.dataTable.myOlv.GetItemCount() == self.dvs_size
+        values = self.dataTable.myOlvDataFrame
+
+        self.dataTable.onChangeSelection(values)
+        self.dataTable.onDeselectAll()
+        selected_item = self.dataTable.myOlv.GetFirstSelected()
+        assert selected_item == -1
 
     def test_clear_data_table(self):
         self.dataTable.init(self.memory_database)

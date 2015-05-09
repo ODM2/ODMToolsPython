@@ -7,7 +7,9 @@ class TestBulkInsert:
         self.app = wx.App()
         self.BulkInsert = BulkInsert(None)
         self.CSVPath = os.path.join('.', 'example_files', 'exampleBulkInsert.csv')
-
+        self.CSVPath2 =os.path.join('.', 'example_files', 'exampleBulkInsert_win.csv')
+        self.CSVPath3 =os.path.join('.', 'example_files', 'CSVUploadTemplate_Mac.csv')
+        self.template_paths = [self.CSVPath, self.CSVPath2, self.CSVPath3]
     def teardown(self):
         pass
 
@@ -18,12 +20,15 @@ class TestBulkInsert:
     def test_readDataFromCSV(self):
         assert self.BulkInsert
         assert self.CSVPath
-        result = self.BulkInsert.readDataFromCSV(self.CSVPath)
-        if not isinstance(result, bool):
-            assert not result.empty
-        else:
-            assert result
-        assert len(result) == 1
+        for i in self.template_paths:
+            example = self.BulkInsert.readDataFromCSV(i)
+            if not isinstance(example, bool):
+                assert not example.empty
+            else:
+                assert example
+            # assert len(example) == 1
+
+        # test reading 
 
     def test_loadIntoDataFrame(self):
         assert self.BulkInsert

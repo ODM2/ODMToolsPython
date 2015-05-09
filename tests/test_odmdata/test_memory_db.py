@@ -44,7 +44,7 @@ class TestMemoryDB:
         dvs = self.memory_db.getDataValuesDF()
 
         assert len(dvs) == 11
-        # assert dvs["DataValue"][-1] == -9999
+        assert dvs["DataValue"][-1] == -9999
 
     def test_update_flag(self):
         self.memory_db.updateFlag([5], '50')
