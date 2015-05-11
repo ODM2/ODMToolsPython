@@ -68,8 +68,9 @@ class pnlDataTable(wx.Panel):
         self.Layout()
 
     def onColSelected(self, evt):
-        logger.debug("SELECTED COLUMN %s" % evt.m_col)
         self.sortColumn(evt.m_col)
+        self.myOlv.RefreshItems()
+        self.onRefresh(None)
 
     def toggleBindings(self):
         """ Activates/Deactivates Datatable specific bindings
@@ -98,7 +99,7 @@ class pnlDataTable(wx.Panel):
     def init(self, memDB):
         self.memDB = memDB
 
-        columns = [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=-1,
+        columns = [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
                               stringConverter='%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
                    for x, i in self.memDB.getEditColumns()]
 
@@ -133,6 +134,7 @@ class pnlDataTable(wx.Panel):
         """
         selected_column = self.GetOLVColClicked(event=None)
         self.sortColumn(selected_column)
+        self.onRefresh(None)
 
     def sortColumn(self, selected_column):
 
@@ -228,7 +230,7 @@ class pnlDataTable(wx.Panel):
     def onRefresh(self, e):
         self.myOlvDataFrame = self.memDB.getDataValuesDF()
         self.dataObjects = self.myOlvDataFrame.values.tolist()
-        self.myOlv.Refresh()
+        self.myOlv.RefreshItems()
 
     def clear(self):
         self.memDB = None
