@@ -401,59 +401,60 @@ class frmODMToolsMain(wx.Frame):
 
     def addEdit(self, event):
 
-        busy = wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self)
-        logger.debug("Beginning editing")
-        isSelected, seriesID = self.pnlSelector.onReadyToEdit()
+        with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self):
+            logger.debug("Beginning editing")
+            isSelected, seriesID = self.pnlSelector.onReadyToEdit()
 
-        # logger.debug("Initializing DataTable")
-        # # tasks = [("dataTable", (memDB.conn, self.dataTable.myOlv))]
-        # tasks = [("dataTable", (self.dataTable.myOlv))]
-        # self.taskserver.setTasks(tasks)
-        # self.taskserver.processTasks()
+            # logger.debug("Initializing DataTable")
+            # # tasks = [("dataTable", (memDB.conn, self.dataTable.myOlv))]
+            # tasks = [("dataTable", (self.dataTable.myOlv))]
+            # self.taskserver.setTasks(tasks)
+            # self.taskserver.processTasks()
 
-        if isSelected:
-            self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
-                                                                          connection=self.memDB)
-            self._ribbon.toggleEditButtons(True)
+            if isSelected:
+                self.record_service = self.service_manager.get_record_service(self.txtPythonScript, seriesID,
+                                                                              connection=self.memDB)
+                self._ribbon.toggleEditButtons(True)
 
-            logger.debug("Initializing Plot")
-            self.pnlPlot.addEditPlot(self.memDB, seriesID, self.record_service)
+                logger.debug("Initializing Plot")
+                self.pnlPlot.addEditPlot(self.memDB, seriesID, self.record_service)
 
-            logger.debug("Initializing DataTable")
-            self.dataTable.init(self.memDB)
+                logger.debug("Initializing DataTable")
+                self.dataTable.init(self.memDB)
 
-            # set record service for console
-            Publisher.sendMessage("setEdit", isEdit=True)
-            logger.debug("Enabling Edit")
-            self.record_service.toggle_record(True)
+                # set record service for console
+                Publisher.sendMessage("setEdit", isEdit=True)
+                logger.debug("Enabling Edit")
+                self.record_service.toggle_record(True)
 
-            # set the cursor for matplotlib
-            selectedObject = self.record_service.get_series()
-            Publisher.sendMessage("updateCursor", selectedObject=selectedObject)
+                # set the cursor for matplotlib
+                selectedObject = self.record_service.get_series()
+                Publisher.sendMessage("updateCursor", selectedObject=selectedObject)
 
-        else:
-            logger.debug("disabling Edit")
-            Publisher.sendMessage("setEdit", isEdit=False)
+            else:
+                logger.debug("disabling Edit")
+                Publisher.sendMessage("setEdit", isEdit=False)
 
-            self.record_service.toggle_record(False)
+                self.record_service.toggle_record(False)
 
-            # disable cursor for matplotlib
-            selectedObject = self.record_service.get_series()
-            Publisher.sendMessage("updateCursor", deselectedObject=selectedObject)
-
-
-        # self._mgr.Update()
-
-        logger.debug("Recording? %s" % self.record_service._record)
+                # disable cursor for matplotlib
+                selectedObject = self.record_service.get_series()
+                Publisher.sendMessage("updateCursor", deselectedObject=selectedObject)
 
 
-        #self.record_service = None
-        self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
-        self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False,
-                                        verbose=False)
+            # self._mgr.Update()
 
-        #from meliae import scanner
-        #scanner.dump_all_objects("edit_plotting.dat")
+            logger.debug("Recording? %s" % self.record_service._record)
+
+
+            #self.record_service = None
+            self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
+            self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False,
+                                            verbose=False)
+
+            #from meliae import scanner
+            #scanner.dump_all_objects("edit_plotting.dat")
+            logger.info("Finished Setting up Editing Series: %s " % seriesID)
 
 
     def stopEdit(self, event):
