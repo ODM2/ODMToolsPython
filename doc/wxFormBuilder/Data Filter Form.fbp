@@ -17,7 +17,7 @@
         <property name="internationalize">0</property>
         <property name="name">frmDataFilter</property>
         <property name="namespace"></property>
-        <property name="path">D:\DEV\ODMTools\ODMToolsPython\odmtools\view</property>
+        <property name="path">/home/denver/Desktop</property>
         <property name="precompiled_header"></property>
         <property name="relative_path">1</property>
         <property name="skip_lua_events">1</property>
@@ -838,7 +838,7 @@
                                                         <property name="pos"></property>
                                                         <property name="resize">Resizable</property>
                                                         <property name="show">1</property>
-                                                        <property name="size">230,-1</property>
+                                                        <property name="size">220,-1</property>
                                                         <property name="style"></property>
                                                         <property name="subclass"></property>
                                                         <property name="toolbar_pane">0</property>
@@ -1013,7 +1013,7 @@
                                                         <property name="resize">Resizable</property>
                                                         <property name="selection">-1</property>
                                                         <property name="show">1</property>
-                                                        <property name="size">230,-1</property>
+                                                        <property name="size">220,-1</property>
                                                         <property name="style">wxCB_READONLY</property>
                                                         <property name="subclass"></property>
                                                         <property name="toolbar_pane">0</property>
