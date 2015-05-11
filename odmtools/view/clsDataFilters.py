@@ -20,7 +20,7 @@ class clsDataFilters(wx.Dialog):
 
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=u"Data Filter", pos=wx.Point(599, 384),
-                           size=wx.Size(382, 462), style=wx.DEFAULT_DIALOG_STYLE)
+                           size=wx.Size(382, 500), style=wx.DEFAULT_DIALOG_STYLE)
 
         self.SetSizeHintsSz(wx.Size(358, 452), wx.DefaultSize)
 
@@ -174,7 +174,7 @@ class clsDataFilters(wx.Dialog):
 
         self.chkToggleFilterSelection = wx.CheckBox(self, wx.ID_ANY, u"Filter from previous filter", wx.DefaultPosition,
                                                     wx.DefaultSize, 0)
-        bSizer3.Add(self.chkToggleFilterSelection, 0, wx.ALL | wx.EXPAND, 5)
+        bSizer3.Add(self.chkToggleFilterSelection, 1, wx.ALL | wx.EXPAND, 5)
 
         bsButtons = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -190,9 +190,9 @@ class clsDataFilters(wx.Dialog):
         self.btnClear = wx.Button(self, wx.ID_ANY, u"Clear Filter", wx.DefaultPosition, wx.Size(64, 23), 0)
         bsButtons.Add(self.btnClear, 1, wx.ALL | wx.EXPAND, 5)
 
-        bSizer3.Add(bsButtons, 0, wx.EXPAND, 0)
+        bSizer3.Add(bsButtons, 1, wx.EXPAND, 0)
 
-        bSizer1.Add(bSizer3, 0, 0, 5)
+        bSizer1.Add(bSizer3, 1, wx.EXPAND, 5)
 
         self.SetSizer(bSizer1)
         self.Layout()
