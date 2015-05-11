@@ -27,16 +27,14 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
         self.Center()
 
-        self.chkToggleFilterSelection.SetValue(self.recordService.get_toggle())
-        self.setDates()
+        # self.chkToggleFilterSelection.SetValue(self.recordService.get_toggle())
+        # self.setDates()
 
 
     def onCheckBox(self, event):
         self.recordService.filter_from_previous(self.chkToggleFilterSelection.GetValue())
 
     def onSetFocus(self, event):
-        logger.debug("event id : %s" % repr(event.Id))
-
         # DateRange
         if event.Id in (self.dpAfter.Id, self.dpBefore.Id, self.tpBefore.Id, self.tpAfter.Id, self.sbAfter.Id, self.sbBefore.Id):
             self.rbDate.SetValue(True)
@@ -49,7 +47,6 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         #value change threshold
         elif event.Id in (self.txtVChangeLT.Id, self.txtVChangeGT.Id):
             self.rbVChangeThresh.SetValue(True)
-
         event.Skip()
 
 
@@ -158,3 +155,9 @@ def _wxdate2pydate(date, time):
     else:
         return None
 
+
+if __name__ == "__main__":
+    app = wx.App()
+    dialog = frmDataFilter(None, None)
+    dialog.ShowModal()
+    app.MainLoop()
