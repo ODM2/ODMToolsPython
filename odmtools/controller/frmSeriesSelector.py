@@ -105,7 +105,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.series_service = self.parent.Parent.createService()
         #self.refreshTableSeries(self.dbservice)
         self.resetDB(self.series_service)
-        logger.debug("Refresh Occurred")
+        logger.debug("Repopulate Series Selector")
 
     def initSVBoxes(self):
         """
