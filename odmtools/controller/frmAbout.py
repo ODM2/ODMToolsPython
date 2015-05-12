@@ -9,8 +9,8 @@ class frmAbout(wx.Dialog):
         self.parent = parent
         info = AboutDialogInfo()
         info.Name = "ODMTools"
-        info.Version = "1.0.4"
-        info.Copyright = "Copyright (c) 2013, Utah State University. All rights reserved."
+        info.Version = "1.2.0 Beta"
+        info.Copyright = "Copyright (c) 2013 - 2015, Utah State University. All rights reserved."
         info.Description = wordwrap(
             "ODMTools is a python application for managing observational data using the Observations Data Model. "
             "ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database."
@@ -33,7 +33,7 @@ class frmAbout(wx.Dialog):
 
 
 
-licenseText = "This material is copyright (c) 2013 Utah State University." \
+licenseText = "This material is copyright (c) 2013 - 2015 Utah State University." \
               "\nIt is open and licensed under the New Berkeley Software Distribution (BSD) License. Full text of the license follows." \
               "\nCopyright (c) 2013, Utah State University. All rights reserved." \
               "\nRedistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:" \

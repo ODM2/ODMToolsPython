@@ -69,7 +69,6 @@ class pnlDataTable(wx.Panel):
 
     def onColSelected(self, evt):
         self.sortColumn(evt.m_col)
-        self.myOlv.RefreshItems()
         self.onRefresh(None)
 
     def toggleBindings(self):
@@ -230,7 +229,7 @@ class pnlDataTable(wx.Panel):
     def onRefresh(self, e):
         self.myOlvDataFrame = self.memDB.getDataValuesDF()
         self.dataObjects = self.myOlvDataFrame.values.tolist()
-        self.myOlv.RefreshItems()
+        # self.myOlv.RefreshItems()
 
     def clear(self):
         self.memDB = None
