@@ -64,7 +64,17 @@ class MemoryDatabase(object):
         return len(self.df)
 
     def getEditColumns(self):
-        return [(x, i) for (i, x) in enumerate(self.df.columns)]
+        columns = []
+        tmp_columns = self.df.columns.tolist()
+        tmp_columns.remove('DataValue')
+        tmp_columns.remove('LocalDateTime')
+        tmp_columns.remove('QualifierID')
+        columns.append('DataValue')
+        columns.append('LocalDateTime')
+        columns.append('QualifierID')
+        columns.extend(tmp_columns)
+        return [(x, i) for (i, x) in enumerate(columns)]
+        # return [(x, i) for (i, x) in enumerate(self.df.columns)]
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
         return self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
