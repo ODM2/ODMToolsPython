@@ -388,7 +388,7 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection info to wizard
         # get site, Variable and Source from current dataset
 
-        wiz = wizSave.wizSave(self, self.parent.getServiceManager(), self.parent.getRecordService())
+        wiz = wizSave.wizSave(self.parent, self.parent.getServiceManager(), self.parent.getRecordService())
         wiz.Close()
         event.Skip()
 
