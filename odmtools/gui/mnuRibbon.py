@@ -353,7 +353,7 @@ class mnuRibbon(RB.RibbonBar):
                                     'Linear Drift Correction', wx.OK | wx.ICON_WARNING)
             return
 
-        lin_drift = frmLinearDrift(self, self.parent.getRecordService())
+        lin_drift = frmLinearDrift(self.parent, self.parent.getRecordService())
         lin_drift.CenterOnParent()
         lin_drift.ShowModal()
         lin_drift.Destroy()
@@ -388,7 +388,7 @@ class mnuRibbon(RB.RibbonBar):
         # send  db connection info to wizard
         # get site, Variable and Source from current dataset
 
-        wiz = wizSave.wizSave(self, self.parent.getServiceManager(), self.parent.getRecordService())
+        wiz = wizSave.wizSave(self.parent, self.parent.getServiceManager(), self.parent.getRecordService())
         wiz.Close()
         event.Skip()
 
@@ -397,7 +397,7 @@ class mnuRibbon(RB.RibbonBar):
     # ###################################
 
     def onEditFilter(self, event):
-        data_filter = frmDataFilter(self, self.parent.getRecordService())
+        data_filter = frmDataFilter(self.parent, self.parent.getRecordService())
         data_filter.ShowModal()
         data_filter.Destroy()
         event.Skip()
@@ -407,7 +407,7 @@ class mnuRibbon(RB.RibbonBar):
     # ###################################
 
     def onEditChangeValue(self, event):
-        change_value = frmChangeValue(self, self.parent.getRecordService())
+        change_value = frmChangeValue(self.parent, self.parent.getRecordService())
         change_value.CenterOnParent()
         change_value.ShowModal()
         change_value.Destroy()
@@ -424,11 +424,11 @@ class mnuRibbon(RB.RibbonBar):
             self.isEmptySelection(dataframe)
         except EmptySelection:
             val = wx.MessageBox("You have no points selected, Please select points before interpolating.",
-                                    'Interpolation', wx.OK | wx.ICON_EXCLAMATION)
+                                    'Interpolation', wx.OK | wx.ICON_EXCLAMATION, parent=self.parent)
             return
 
         val = wx.MessageBox("You have chosen to interpolate the %s selected points.\nDo you want to continue?" % len(dataframe),
-                                            'Interpolation', wx.YES_NO | wx.ICON_QUESTION | wx.CENTRE)
+                                            'Interpolation', wx.YES_NO | wx.ICON_QUESTION | wx.CENTRE, parent=self.parent)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().interpolate()
 
@@ -442,7 +442,7 @@ class mnuRibbon(RB.RibbonBar):
         series_service = serviceManager.get_series_service()
         qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in series_service.get_all_qualifiers()
                                        if x.code and x.description)
-        add_flag = frmFlagValues(self, series_service, qualifierChoices)
+        add_flag = frmFlagValues(self.parent, series_service, qualifierChoices)
         val = add_flag.ShowModal()
 
         if val == wx.ID_OK:
@@ -458,7 +458,7 @@ class mnuRibbon(RB.RibbonBar):
         recordService = self.parent.getRecordService()
         serviceManager = self.parent.getServiceManager()
 
-        addPoint = AddPoints(self, serviceManager=serviceManager, recordService=recordService)
+        addPoint = AddPoints(self.parent, serviceManager=serviceManager, recordService=recordService)
         addPoint.Center()
         addPoint.ShowModal()
 
@@ -473,11 +473,11 @@ class mnuRibbon(RB.RibbonBar):
             self.isEmptySelection(dataframe)
         except EmptySelection:
             wx.MessageBox("There are no points to delete",
-                        'Delete Points', wx.OK | wx.ICON_WARNING)
+                        'Delete Points', wx.OK | wx.ICON_WARNING, parent=self.parent)
             return
 
         val = wx.MessageBox("You have chosen to delete the %s selected points.\nDo you want to continue?" % len(dataframe),
-                            'Deleting Points', wx.YES_NO | wx.ICON_QUESTION)
+                            'Deleting Points', wx.YES_NO | wx.ICON_QUESTION, parent=self.parent)
         if val == 2:  #wx.ID_YES:
             self.parent.getRecordService().delete_points()
         event.Skip()

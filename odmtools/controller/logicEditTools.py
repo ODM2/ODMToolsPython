@@ -26,7 +26,7 @@ class EditTools():
         #self._record_service = record_service
 
     def get_series_service(self):
-        return self._edit_service._series_service
+        return self._edit_service.memDB.series_service
 
 
     # ##################

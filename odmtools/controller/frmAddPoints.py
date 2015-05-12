@@ -11,7 +11,6 @@ except ImportError:
 # Implementing AddPoints
 class AddPoints(clsAddPoints.AddPoints):
     def __init__(self, parent, **kwargs):
-        print "ding"
         if 'recordService' in kwargs:
             self.recordService = kwargs['recordService']
         clsAddPoints.AddPoints.__init__(self, parent, **kwargs)

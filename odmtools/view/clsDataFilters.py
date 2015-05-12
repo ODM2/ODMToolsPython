@@ -19,7 +19,8 @@ class clsDataFilters(wx.Dialog):
 
 
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=u"Data Filter", pos=wx.Point(599, 384),
+
+        wx.Dialog._init__(self, parent, id=wx.ID_ANY, title=u"Data Filter", pos=wx.Point(599, 384),
                            size=wx.Size(382, 500), style=wx.DEFAULT_DIALOG_STYLE)
 
         self.SetSizeHintsSz(wx.Size(358, 452), wx.DefaultSize)
