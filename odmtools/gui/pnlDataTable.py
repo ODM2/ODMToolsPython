@@ -113,7 +113,8 @@ class pnlDataTable(wx.Panel):
         self.myOlv.SetColumns(columns)
 
         self.myOlvDataFrame = self.memDB.getDataValuesDF()
-        self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[3], inplace=True)
+        sort_by_index = list(self.myOlvDataFrame.columns).index("LocalDateTime")
+        self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[sort_by_index], inplace=True)
         self.dataObjects = self.myOlvDataFrame.values.tolist()
 
         self.myOlv.SetObjectGetter(self.objectGetter)

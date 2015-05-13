@@ -1,33 +1,63 @@
 import os, sys, shutil, zipfile
-
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-# Location of Windows files
-WIN_DIR = os.path.join(BASE_DIR, 'setup', "Windows")
+WIN_DIR = os.path.join(BASE_DIR, "Windows")
+WORK_DIR = os.path.join(WIN_DIR, "Temp")
 
-# Location of Innosetup Installer
-INSTALLER_DIR = os.path.join(BASE_DIR, "setup", "Output")
+ICON_DIR = os.path.join("..", 'odmtools', 'common', "icons")
+ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
 EXE_DIR = os.path.join(WIN_DIR, "ODMTools")
 
-INNO_SCRIPT = os.path.join("setup", "odmtools_setup_build_updated.iss")
+# Location of Windows files
+APP_FILE = os.path.join("..", "ODMTools.py")
+VERSION_FILE = os.path.join(BASE_DIR, "version.txt")
+
+# Location of Innosetup Installer
+INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_setup.iss")
 INNO_EXECUTABLE = '"C:\\Program Files (x86)\\Inno Setup 5\\ISCC.exe"'
 print (BASE_DIR)
 
+def check_if_dirs_exist():
+    try:
+        print "Trying to open WIN_DIR: ", 
+        assert os.path.exists(WIN_DIR)
+        print "Success"
+
+        print "Trying to open WORK_DIR: ", 
+        assert os.path.exists(WORK_DIR)
+        print "Success"
+
+        print "Trying to open ICON_DIR: ", 
+        assert os.path.exists(ICON_DIR)
+        print "Success"
+
+        print "Trying to open EXE_DIR: ", 
+        assert os.path.exists(EXE_DIR)
+        print "Success"
+
+    except Exception as e:
+        print e
 
 def delete_old_out_dir():
-   if os.path.exists(EXE_DIR):
-     shutil.rmtree(EXE_DIR)
+    if os.path.exists(EXE_DIR):
+        shutil.rmtree(EXE_DIR)
+
+    if os.path.exists(WORK_DIR):
+        shutil.rmtree(WORK_DIR)
 
 def run_pyinstaller():
     try:
         os.system('pyinstaller '
             '--clean '
-            '--distpath="setup\Windows" '
-            '--workpath="setup\Windows\work" '
-            '--hidden-import="pyodbc" '
-            '--upx-dir="setup\Windows" '
-            '--noconfirm '
-            'ODMTools.py')
+            '--distpath=%s ' % WIN_DIR + 
+            '--workpath=%s ' % WORK_DIR + 
+            '--specpath=%s ' % WIN_DIR +
+            '--upx-dir=%s ' % BASE_DIR + 
+            '--icon=%s ' % ICON_FILE +
+            '--version-file=%s ' % VERSION_FILE +
+            # '--windowed '
+            '--noconfirm ' + APP_FILE)
+
         return True
     except Exception as e:
         print (e)
@@ -38,6 +68,8 @@ def run_inno():
     os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
     
 def main():
+    check_if_dirs_exist()
+
     delete_old_out_dir()
 
     if (run_pyinstaller()):
