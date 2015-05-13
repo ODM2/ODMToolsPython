@@ -2,10 +2,12 @@ import os, sys, shutil, zipfile
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 WIN_DIR = os.path.join(BASE_DIR, "Windows")
+MAC_DIR = os.path.join(BASE_DIR, "Mac")
 WORK_DIR = os.path.join(WIN_DIR, "Temp")
 
 ICON_DIR = os.path.join("..", 'odmtools', 'common', "icons")
-ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
+WIN_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
+MAC_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.icns")
 EXE_DIR = os.path.join(WIN_DIR, "ODMTools")
 
 # Location of Windows files
@@ -15,23 +17,32 @@ VERSION_FILE = os.path.join(BASE_DIR, "version.txt")
 # Location of Innosetup Installer
 INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_setup.iss")
 INNO_EXECUTABLE = '"C:\\Program Files (x86)\\Inno Setup 5\\ISCC.exe"'
+ICE_SCRIPT = os.path.join(MAC_DIR, "ODMTools.packproj")
+ICE_EXECUTABLE =''
+
 print (BASE_DIR)
 
 def check_if_dirs_exist():
     try:
-        print "Trying to open WIN_DIR: ",
-        assert os.path.exists(WIN_DIR)
-        print "Success"
 
-        print "Trying to open WORK_DIR: ",
+        if sys.platform == 'win32':
+            print "Trying to open WIN_DIR: ",
+            assert os.path.exists(WIN_DIR)
+            print "Success"
+        elif sys.platform =="darwin":
+            print "Trying to open MAC_DIR: "
+            assert os.path.exists(MAC_DIR)
+            print "Success"
+
+        print "Trying to open WORK_DIR: ", 
         assert os.path.exists(WORK_DIR)
         print "Success"
 
-        print "Trying to open ICON_DIR: ",
+        print "Trying to open ICON_DIR: ", 
         assert os.path.exists(ICON_DIR)
         print "Success"
 
-        print "Trying to open EXE_DIR: ",
+        print "Trying to open EXE_DIR: ", 
         assert os.path.exists(EXE_DIR)
         print "Success"
 
@@ -53,9 +64,27 @@ def run_pyinstaller():
             '--workpath=%s ' % WORK_DIR +
             '--specpath=%s ' % WIN_DIR +
             '--upx-dir=%s ' % BASE_DIR +
-            '--icon=%s ' % ICON_FILE +
+            '--icon=%s ' % WIN_ICON_FILE +
             '--version-file=%s ' % VERSION_FILE +
-            '--windowed '
+            # '--windowed '
+            '--noconfirm ' + APP_FILE)
+
+        return True
+    except Exception as e:
+        print (e)
+        return False
+
+def mac_pyinstaller():
+    try:
+        os.system('pyinstaller '
+            '--clean '
+            '--distpath=%s ' % MAC_DIR +
+            '--workpath=%s ' % WORK_DIR +
+            '--specpath=%s ' % WIN_DIR +
+            '--upx-dir=%s ' % BASE_DIR +
+            '--icon_file=%s ' % MAC_ICON_FILE +
+            '--version-file=%s ' % VERSION_FILE +
+            # '--windowed '
             '--noconfirm ' + APP_FILE)
 
         return True
@@ -67,13 +96,23 @@ def run_pyinstaller():
 def run_inno():
     os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
 
+def run_iceberg():
+    pass
+    
 def main():
+    delete_old_out_dir()
     check_if_dirs_exist()
 
-    delete_old_out_dir()
+    if sys.platform == 'win32':
 
-    if (run_pyinstaller()):
-        run_inno()
+
+        if (run_pyinstaller()):
+            run_inno()
+
+
+    if sys.platform =='darwin':
+        if(mac_pyinstaller()):
+            run_iceberg()
 
 if __name__ == '__main__':
     main()
