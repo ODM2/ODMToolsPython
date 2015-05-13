@@ -55,7 +55,7 @@ def run_pyinstaller():
             '--upx-dir=%s ' % BASE_DIR + 
             '--icon=%s ' % ICON_FILE +
             '--version-file=%s ' % VERSION_FILE +
-            # '--windowed '
+            '--windowed '
             '--noconfirm ' + APP_FILE)
 
         return True

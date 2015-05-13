@@ -115,24 +115,26 @@ class MemoryDatabase(object):
 
 
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
-        chunks=[ids[x:x+999] for x in xrange(0, len(ids), 999)]
+        chunks=self.chunking(ids)
         for c in chunks:
             q=self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(c))
             q.update({DataValue.data_value: query}, False)
 
         #self.updateDF()
 
-
+    def chunking(self, data):
+        return [data[x:x+998] for x in xrange(0, len(data), 998)]
+        
     #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
     def updateFlag(self, ids, value):
-        chunks=[ids[x:x+998] for x in xrange(0, len(ids), 998)]
+        chunks=self.chunking(ids)
         for c in chunks:
             self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(c))\
                 .update({DataValue.qualifier_id: value}, False)
 
 
     def delete(self, ids):
-        chunks=[ids[x:x+998] for x in xrange(0, len(ids), 998)]
+        chunks=self.chunking(ids)
         for c in chunks:
             self.mem_service.delete_dvs(c)
         #self.updateDF()
