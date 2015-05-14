@@ -94,7 +94,8 @@ class Series(Base):
 
     # TODO add all to repr
     def __repr__(self):
-        return "<Series('%s')>" % (self.id)
+        return "<Series('%s', '%s', '%s', '%s')>" % (self.id, self.site_name, self.variable_code, self.variable_name)
+
 
     def get_table_columns(self):
         return self.__table__.columns.keys()

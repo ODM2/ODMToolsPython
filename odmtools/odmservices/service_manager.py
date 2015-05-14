@@ -1,5 +1,8 @@
 import logging
 import os
+import sys
+
+import urllib
 
 from sqlalchemy.exc import SQLAlchemyError#OperationalError, DBAPIError
 
@@ -184,18 +187,24 @@ class ServiceManager():
 
     def _build_connection_string(self, conn_dict):
         driver = ""
-        if conn_dict['engine'] == 'mssql':
+        if conn_dict['engine'] == 'mssql' and sys.platform is not 'win32':
             driver = "pyodbc"
-        elif conn_dict['engine'] == 'mysql':
-            driver = "pymysql"
-        elif conn_dict['engine'] == 'postgresql':
-            driver = "psycopg2"
+            quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
+            conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
+        
         else:
-            driver = "None"
+            if conn_dict['engine'] == 'mssql':
+                driver = "pyodbc"
+            elif conn_dict['engine'] == 'mysql':
+                driver = "pymysql"
+            elif conn_dict['engine'] == 'postgresql':
+                driver = "psycopg2"
+            else:
+                driver = "None"
 
-        conn_string = self._connection_format % (
-            conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
-            conn_dict['db'])
+            conn_string = self._connection_format % (
+                conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
+                conn_dict['db'])
         return conn_string
 
     def _save_connections(self):

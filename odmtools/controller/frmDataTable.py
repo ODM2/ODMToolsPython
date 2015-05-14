@@ -49,6 +49,12 @@ class FrmDataTable(DataTable):
             except:
                 pass
 
+    def clear(self):
+        self.memDB = None
+        self.olvDataTable.DeleteAllItems()
+        self.olvDataTable.dataframe = None
+        self.dataObjects = None
+
 if __name__ == "__main__":
     app = wx.App()
     frame = wx.Frame(None)
