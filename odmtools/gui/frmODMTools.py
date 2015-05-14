@@ -9,6 +9,7 @@ sys.path.insert(0, directory)
 import wx
 import sys
 import os
+from controller.frmDataTable import FrmDataTable
 import mnuRibbon
 import pnlPlot
 import pnlDataTable
@@ -231,8 +232,9 @@ class frmODMToolsMain(wx.Frame):
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
-        self.dataTable = pnlDataTable.pnlDataTable(self.pnlDocking)
-        self.dataTable.toggleBindings()
+        self.dataTable = FrmDataTable(self.pnlDocking)
+        # self.dataTable = pnlDataTable.pnlDataTable(self.pnlDocking)
+        # self.dataTable.toggleBindings()
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
         self.txtPythonConsole = ODMToolsConsole(parent=self.pnlDocking, size=wx.Size(200, 200))
@@ -300,52 +302,6 @@ class frmODMToolsMain(wx.Frame):
         self.refreshConnectionInfo()
         self._mgr.Update()
 
-    def _init_sizers(self):
-        # generated method, don't edit
-        self.s = wx.BoxSizer(wx.VERTICAL)
-        self._init_s_Items(self.s)
-        self.SetSizer(self.s)
-
-    def _init_s_Items(self, parent):
-        # generated method, don't edit
-        parent.AddWindow(self._ribbon, 0, wx.EXPAND)
-        parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
-
-    def servicesValid(self, service, displayMsg=True):
-        """
-
-        :param displayMsg:
-            Option to display a message box if there is an issue with a service. Default: True
-        :return:
-        """
-        valid = True
-
-        ## Test if Series Catalog is empty
-        if not service.get_used_sites():
-            if displayMsg:
-                msg = wx.MessageDialog(None,
-                                       'Series Catalog cannot be empty. Please enter in a new database connection',
-                                       'Series Catalog is empty', wx.OK | wx.ICON_ERROR)
-                msg.ShowModal()
-            valid = False
-
-        # @TODO If Jeff runs into other issues with services not being available, we can simply test different services here
-        # if not service.get_all_variables():
-        #    valid = False
-
-        return valid
-
-    def on_about_request(self, event):
-        frmAbout(self)
-
-    def MacReopenApp(self):
-        """Called when the doc icon is clicked, and ???"""
-
-        try:  # it's possible for this event to come when the frame is closed
-            self.GetTopWindow().Raise()
-        except:
-            pass
-
     def refreshConnectionInfo(self):
         """Updates the Series Selector Connection Information for the user"""
 
@@ -363,7 +319,7 @@ class frmODMToolsMain(wx.Frame):
 
         if value == "Table":
             paneDetails = self._mgr.GetPane(self.dataTable)
-            self.dataTable.toggleBindings()
+            # self.dataTable.toggleBindings()
 
         elif value == "Selector":
             paneDetails = self._mgr.GetPane(self.pnlSelector)

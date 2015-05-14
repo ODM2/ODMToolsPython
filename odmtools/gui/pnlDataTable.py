@@ -12,7 +12,6 @@ import timeit
 
 from odmtools.common.logger import LoggerTool
 
-
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
@@ -34,7 +33,7 @@ class pnlDataTable(wx.Panel):
                           parent=self.parent, size=wx.Size(677, 449),
                           style=wx.TAB_TRAVERSAL)
         # self.record_service = self.parent.Parent.getRecordService()
-        self.myOlv = VirtualObjectListView(self, -1, style=wx.LC_REPORT)
+        self.myOlv = VirtualObjectListView(self, style=wx.LC_REPORT)
 
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
         self.currentItem = None
@@ -59,29 +58,29 @@ class pnlDataTable(wx.Panel):
 
 
 
-    def toggleBindings(self):
-        """ Activates/Deactivates Datatable specific bindings
-
-        :param activate:
-        :return:
-        """
-
-        if self.toggle():
-            #logger.info("binding activated...")
-            try:
-                self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
-                self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
-                self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
-            except:
-                pass
-        else:
-            #logger.info("binding deactivated...")
-            try:
-                self.myOlv.Unbind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
-                self.myOlv.Unbind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
-                self.myOlv.Unbind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
-            except:
-                pass
+    # def toggleBindings(self):
+    #     """ Activates/Deactivates Datatable specific bindings
+    #
+    #     :param activate:
+    #     :return:
+    #     """
+    #
+    #     if self.toggle():
+    #         #logger.info("binding activated...")
+    #         try:
+    #             self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+    #             self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
+    #             self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
+    #         except:
+    #             pass
+    #     else:
+    #         #logger.info("binding deactivated...")
+    #         try:
+    #             self.myOlv.Unbind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected, id=self.myOlv.GetId())
+    #             self.myOlv.Unbind(wx.EVT_CHAR, self.onKeyPress, id=self.myOlv.GetId())
+    #             self.myOlv.Unbind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress, id=self.myOlv.GetId())
+    #         except:
+    #             pass
 
     def init(self, memDB):
         self.memDB = memDB
@@ -206,28 +205,6 @@ class pnlDataTable(wx.Panel):
     def stopEdit(self):
         self.clear()
 
-    def _rowFormatter(self, listItem, object):
-        """Handles the formatting of rows for object list view
-        :param: wx.ListCtrl listitem
-        :param: ModelObject object
-
-        :rtype: None
-        """
-        objects = self.myOlv.GetSelectedObjects()
-
-        #if self.currentItem and object in self.currentItem:
-        if objects and object in objects:
-
-            # font type: wx.DEFAULT, wx.DECORATIVE, wx.ROMAN, wx.SCRIPT, wx.SWISS, wx.MODERN
-            # slant: wx.NORMAL, wx.SLANT or wx.ITALIC
-            # weight: wx.NORMAL, wx.LIGHT or wx.BOLD
-            #font1 = wx.Font(10, wx.SWISS, wx.ITALIC, wx.NORMAL)
-            # use additional fonts this way ...
-            #font1 = wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Comic Sans MS')
-            listItem.SetFont(
-                wx.Font(9, wx.DECORATIVE, wx.ITALIC, wx.BOLD))
-        else:
-            listItem.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
 
 
 
