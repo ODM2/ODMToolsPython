@@ -1,5 +1,5 @@
 from wx.lib.pubsub import pub as Publisher
-from view.clsDataTable import DataTable
+from odmtools.view.clsDataTable import DataTable
 import pandas as pd
 import numpy as np
 

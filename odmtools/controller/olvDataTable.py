@@ -1,7 +1,7 @@
 import wx
 import logging
 from odmtools.common.logger import LoggerTool
-from lib.ObjectListView import VirtualObjectListView, ObjectListView, ColumnDefn
+from odmtools.lib.ObjectListView import VirtualObjectListView, ObjectListView, ColumnDefn
 import pandas as pd
 
 tool = LoggerTool()

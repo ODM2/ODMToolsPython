@@ -1,4 +1,4 @@
-from controller.olvDataTable import OLVDataTable
+from odmtools.controller.olvDataTable import OLVDataTable
 
 __author__ = 'jmeline'
 

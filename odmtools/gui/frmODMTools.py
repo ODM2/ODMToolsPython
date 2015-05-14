@@ -9,7 +9,7 @@ sys.path.insert(0, directory)
 import wx
 import sys
 import os
-from controller.frmDataTable import FrmDataTable
+from odmtools.controller.frmDataTable import FrmDataTable
 import mnuRibbon
 import pnlPlot
 import pnlDataTable
