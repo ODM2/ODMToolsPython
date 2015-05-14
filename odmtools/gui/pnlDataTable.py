@@ -4,7 +4,7 @@ import logging
 import itertools as iter
 
 import pandas as pd
-from odmtools.lib.ObjectListView import ColumnDefn, VirtualObjectListView
+from odmtools.lib.ObjectListView import ColumnDefn, VirtualObjectListView, ObjectListView
 from wx.lib.pubsub import pub as Publisher
 import numpy as np
 import timeit
@@ -34,8 +34,6 @@ class pnlDataTable(wx.Panel):
                           parent=self.parent, size=wx.Size(677, 449),
                           style=wx.TAB_TRAVERSAL)
         # self.record_service = self.parent.Parent.getRecordService()
-        # self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
-        ## Trying out virtualObjectListView
         self.myOlv = VirtualObjectListView(self, -1, style=wx.LC_REPORT)
 
         self.myOlv.SetEmptyListMsg("No Series Selected for Editing")
@@ -45,19 +43,11 @@ class pnlDataTable(wx.Panel):
         sizer_2.Add(self.myOlv, 1, wx.ALL | wx.EXPAND, 4)
         self.SetSizer(sizer_2)
 
-        #self.myOlv.Bind(wx.EVT_LIST_ITEM_FOCUSED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onItemSelected)
         self.myOlv.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.onItemSelected)
-        self.myOlv.Bind(wx.EVT_LIST_COL_CLICK, self.onColSelected)
-        # for wxMSW
-        self.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self.OnRightClick)
 
-        # for wxGTK
-        self.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
-        self.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self.OnRightClick)
+        self.EnableSorting()
 
-        #self.myOlv.Bind(wx.EVT_CHAR, self.onKeyPress)
-        #self.myOlv.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
         Publisher.subscribe(self.onChangeSelection, "changeTableSelection")
         Publisher.subscribe(self.onRefresh, "refreshTable")
         Publisher.subscribe(self.onDeselectAll, "deselectAllDataTable")
@@ -67,9 +57,7 @@ class pnlDataTable(wx.Panel):
 
         self.Layout()
 
-    def onColSelected(self, evt):
-        self.sortColumn(evt.m_col)
-        self.onRefresh(None)
+
 
     def toggleBindings(self):
         """ Activates/Deactivates Datatable specific bindings
@@ -120,6 +108,15 @@ class pnlDataTable(wx.Panel):
         self.myOlv.SetObjectGetter(self.objectGetter)
         self.myOlv.SetItemCount(len(self.myOlvDataFrame))
 
+    def EnableSorting(self):
+        self.myOlv.Bind(wx.EVT_LIST_COL_CLICK, self.onColSelected)
+        self.sortedColumnIndex = -1
+
+        if not self.myOlv.smallImageList:
+            self.myOlv.SetImageLists()
+        if (not self.myOlv.smallImageList.HasName(ObjectListView.NAME_DOWN_IMAGE) and
+                    self.myOlv.smallImageList.GetSize(0) == (16, 16)):
+            self.myOlv.RegisterSortIndicators()
 
     def objectGetter(self, index):
         """
@@ -128,104 +125,32 @@ class pnlDataTable(wx.Panel):
         """
         return self.dataObjects[index % len(self.dataObjects)]
 
-    def OnRightClick(self, event):
+    def onColSelected(self, evt):
         """
-        Allow users to sort based off of column
+        Allows users to sort by clicking on columns
         """
-        selected_column = self.GetOLVColClicked(event=None)
-        self.sortColumn(selected_column)
-        self.onRefresh(None)
+        logger.debug("Column: %s" % evt.m_col)
+        self.sortColumn(evt.m_col)
 
     def sortColumn(self, selected_column):
+        oldSortColumnIndex = self.sortedColumnIndex
+        self.sortedColumnIndex = selected_column
+        ascending = self.myOlv.sortAscending
+        if ascending:
+            self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[selected_column], inplace=True)
+            self.myOlv.sortAscending = False
+        elif not ascending:
+            self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[selected_column], ascending=False, inplace=True)
+            self.myOlv.sortAscending = True
 
-        try:
-            if self.ascending:
-                self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[selected_column], inplace=True)
-                self.ascending = False
-            elif not self.ascending:
-                self.myOlvDataFrame.sort(self.myOlvDataFrame.columns[selected_column], ascending=False, inplace=True)
-                self.ascending = True
-            self.dataObjects = self.myOlvDataFrame.values.tolist()
-            if self.myOlv.GetItemCount:
-                itemFrom = self.myOlv.GetTopItem()
-                itemTo   = self.myOlv.GetTopItem()+1 + self.myOlv.GetCountPerPage()
-                itemTo   = min(itemTo, self.myOlv.GetItemCount()-1)
-                self.myOlv.RefreshItems(itemFrom, itemTo)
-        except Exception as e:
-            print e
+        self.myOlv._UpdateColumnSortIndicators(selected_column, oldSortColumnIndex)
 
-    def GetOLVColClicked(self, event):
-
-        # DevPlayer@gmail.com  2011-01 Jan-13
-        # For use with a 3rd party module named ObjectListView
-        # used with wxPython.
-
-        """
-        GetColClicked( event ) -> int Column number of mouse click.
-
-        Get ObjectListView() column the user single-left-clicked the mouse in.
-
-        You can use the column number to set the modelObject's attributes
-        without removing, re-adding, resorting the items in the OVL.
-
-        This event handler is often bound to the event handler of the
-        wx.EVT_LIST_ITEM_SELECTED event. Other events may be needed for
-        the column's labels - the labels visually naming a column.
-
-        This assumes the OLV.LayoutDirection() is LTR.
-        """
-
-        # ----------------------------------------------------------
-        # Get the mouse position. Determine which column the user
-        # clicked in.
-        # This could probably all be done in some list hit test event.
-        # Not all OS platforms set all events m_...atributes. This is a
-        # work around.
-
-        # Get point user clicked, here in screen coordinates.
-        # Then convert the point to OVL control coordinates.
-
-        spt = wx.GetMousePosition()
-        fpt = self.myOlv.ScreenToClient(spt)  # USE THIS ONE
-        x, y = fpt
-
-        # Get all column widths, individually, of the OLV control .
-        # Then compare if the mouse clicked in that column.
-
-        # Make this a per-click calculation as column widths can
-        # change often by the user and dynamically by different
-        # lengths of data strings in rows.
-
-        last_col = 0
-        col_selected = None
-        for col in range(self.myOlv.GetColumnCount()):
-
-            # Get this OLV column's width in pixels.
-
-            col_width = self.myOlv.GetColumnWidth(col)
-
-            # Calculate the left and right vertical pixel positions
-            # of this current column.
-
-            left_pxl_col = last_col
-            right_pxl_col = last_col + col_width - 1
-
-            # Compare mouse click point in control coordinates,
-            # (verse screen coordinates) to left and right coordinate of
-            # each column consecutively until found.
-
-            if left_pxl_col <= x <= right_pxl_col:
-                # Mouse was clicked in the current column "col"; done
-
-                col_selected = col
-                break
-
-            col_selected = None
-            # prep for next calculation of next column
-
-            last_col = last_col + col_width
-
-        return col_selected
+        self.dataObjects = self.myOlvDataFrame.values.tolist()
+        if self.myOlv.GetItemCount:
+            itemFrom = self.myOlv.GetTopItem()
+            itemTo   = self.myOlv.GetTopItem()+1 + self.myOlv.GetCountPerPage()
+            itemTo   = min(itemTo, self.myOlv.GetItemCount()-1)
+            self.myOlv.RefreshItems(itemFrom, itemTo)
 
     def onRefresh(self, e):
         self.myOlvDataFrame = self.memDB.getDataValuesDF()
@@ -273,10 +198,6 @@ class pnlDataTable(wx.Panel):
                 self.enableSelectDataTable = False
             except:
                 pass
-
-        # testing for case where user clears filter (issue #218)
-        # elif not datetime_list:
-        #     self.onDeselectAll()
 
     def onKeyPress(self, evt):
         """Ignores Keypresses"""
