@@ -28,7 +28,7 @@
 						<key>Mode</key>
 						<integer>1</integer>
 						<key>Path</key>
-						<string>/Volumes/stephanie/Releases/License.txt</string>
+						<string>/Users/stephanie/DEV/ODMToolsPython/LICENSE.txt</string>
 						<key>Path Type</key>
 						<integer>1</integer>
 					</dict>
@@ -52,7 +52,7 @@
 						<key>Mode</key>
 						<integer>1</integer>
 						<key>Path</key>
-						<string>/Volumes/stephanie/Releases/Welcome.rtf</string>
+						<string>/Users/stephanie/DEV/ODMToolsPython/LICENSE.txt</string>
 						<key>Path Type</key>
 						<integer>1</integer>
 					</dict>
@@ -61,7 +61,7 @@
 			<key>Files</key>
 			<dict>
 				<key>Compress</key>
-				<false/>
+				<true/>
 				<key>Hierarchy</key>
 				<dict>
 					<key>Children</key>
@@ -69,6 +69,22 @@
 						<dict>
 							<key>Children</key>
 							<array>
+								<dict>
+									<key>Children</key>
+									<array/>
+									<key>GID</key>
+									<integer>80</integer>
+									<key>Path</key>
+									<string>/Users/stephanie/DEV/ODMToolsPython/setup/Mac/ODMTools.app</string>
+									<key>Path Type</key>
+									<integer>1</integer>
+									<key>Privileges</key>
+									<integer>493</integer>
+									<key>Type</key>
+									<integer>3</integer>
+									<key>UID</key>
+									<integer>0</integer>
+								</dict>
 								<dict>
 									<key>Children</key>
 									<array/>
@@ -550,9 +566,9 @@
 						<key>IFPkgDescriptionDescription</key>
 						<string></string>
 						<key>IFPkgDescriptionTitle</key>
-						<string>ODMTools_v1.3.0-beta_setup</string>
+						<string>ODMTools_v1.2.0-beta_setup</string>
 						<key>IFPkgDescriptionVersion</key>
-						<string>1.3.0 Beta</string>
+						<string>1.2.0 Beta</string>
 					</dict>
 				</dict>
 				<key>Display Information</key>
@@ -568,14 +584,14 @@
 					<key>CFBundleName</key>
 					<string>ODMTools</string>
 					<key>CFBundleShortVersionString</key>
-					<string>1.3.0</string>
+					<string>1.4.0</string>
 				</dict>
 				<key>Options</key>
 				<dict>
 					<key>IFPkgFlagAllowBackRev</key>
 					<false/>
 					<key>IFPkgFlagAuthorizationAction</key>
-					<integer>1</integer>
+					<integer>0</integer>
 					<key>IFPkgFlagFollowLinks</key>
 					<false/>
 					<key>IFPkgFlagIsRequired</key>
@@ -596,7 +612,7 @@
 					<key>IFMajorVersion</key>
 					<integer>1</integer>
 					<key>IFMinorVersion</key>
-					<integer>3</integer>
+					<integer>4</integer>
 				</dict>
 			</dict>
 		</dict>

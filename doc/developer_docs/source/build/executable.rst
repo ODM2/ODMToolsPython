@@ -39,6 +39,7 @@ Installing using pyinstaller
         git clone https://github.com/pyinstaller/pyinstaller.git
 
 
+
     Install pywin32 if you are using Python 2.6+
 
         Install pywin32 from `here <http://sourceforge.net/projects/pywin32/>`_

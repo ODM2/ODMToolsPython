@@ -3,13 +3,16 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 WIN_DIR = os.path.join(BASE_DIR, "Windows")
 MAC_DIR = os.path.join(BASE_DIR, "Mac")
+
+MAC_WORK_DIR = os.path.join(MAC_DIR, "Temp")
 WORK_DIR = os.path.join(WIN_DIR, "Temp")
 
 ICON_DIR = os.path.join("..", 'odmtools', 'common', "icons")
 WIN_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
 MAC_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.icns")
-EXE_DIR = os.path.join(WIN_DIR, "ODMTools")
 
+EXE_DIR = os.path.join(WIN_DIR, "ODMTools")
+APP_DIR = os.path.join(MAC_DIR, "ODMTools.app")
 # Location of Windows files
 APP_FILE = os.path.join("..", "ODMTools.py")
 VERSION_FILE = os.path.join(BASE_DIR, "version.txt")
@@ -18,7 +21,7 @@ VERSION_FILE = os.path.join(BASE_DIR, "version.txt")
 INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_setup.iss")
 INNO_EXECUTABLE = '"C:\\Program Files (x86)\\Inno Setup 5\\ISCC.exe"'
 ICE_SCRIPT = os.path.join(MAC_DIR, "ODMTools.packproj")
-ICE_EXECUTABLE =''
+ICE_EXECUTABLE ='freeze'
 
 print (BASE_DIR)
 
@@ -79,14 +82,19 @@ def mac_pyinstaller():
         os.system('pyinstaller '
             '--clean '
             '--distpath=%s ' % MAC_DIR +
-            '--workpath=%s ' % WORK_DIR +
-            '--specpath=%s ' % WIN_DIR +
+            '--workpath=%s ' % MAC_WORK_DIR +
+            '--specpath=%s ' % MAC_DIR +
             '--upx-dir=%s ' % BASE_DIR +
-            '--icon_file=%s ' % MAC_ICON_FILE +
+            '--icon=%s ' % MAC_ICON_FILE +
             '--version-file=%s ' % VERSION_FILE +
-            # '--windowed '
+            '--windowed '
+            #'--onefile '
+            #'--hidden-import="libwx_osx_cocoau-3.0.0.0.0.dylib" '
             '--noconfirm ' + APP_FILE)
 
+
+        os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
+        #copy "libwx_osx_cocoau-3.0.0.0.0.dylib"
         return True
     except Exception as e:
         print (e)
@@ -97,7 +105,8 @@ def run_inno():
     os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
 
 def run_iceberg():
-    pass
+    os.system(ICE_EXECUTABLE + " "+ ICE_SCRIPT)
+
     
 def main():
     delete_old_out_dir()
