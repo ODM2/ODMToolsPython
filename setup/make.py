@@ -104,6 +104,10 @@ def mac_pyinstaller():
 def run_inno():
     os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
 
+def run_no_installer():
+    pass
+    # zf = zipfile.ZipFile('')
+
 def run_iceberg():
     os.system(ICE_EXECUTABLE + " "+ ICE_SCRIPT)
 
@@ -113,8 +117,7 @@ def main():
     check_if_dirs_exist()
 
     if sys.platform == 'win32':
-
-
+        print "Creating Windows Executable..."
         if (run_pyinstaller()):
             run_inno()
 

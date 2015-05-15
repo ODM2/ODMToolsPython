@@ -61,6 +61,7 @@ class ServiceManager():
     def is_valid_connection(self):
         if self._current_conn_dict:
             conn_string = self._build_connection_string(self._current_conn_dict)
+            logger.debug("Conn_string: %s" % conn_string)
             try:
                 if self.testEngine(conn_string):
                     return self.get_current_conn_dict()
@@ -187,7 +188,7 @@ class ServiceManager():
 
     def _build_connection_string(self, conn_dict):
         driver = ""
-        if conn_dict['engine'] == 'mssql' and sys.platform is not 'win32':
+        if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
             driver = "pyodbc"
             quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
             conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
