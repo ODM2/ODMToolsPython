@@ -1,3 +1,4 @@
+from odmtools.controller.frmDataTable import FrmDataTable
 from odmtools.odmdata import MemoryDatabase, DataValue
 from odmtools.gui.pnlDataTable import pnlDataTable
 from odmtools.odmdata import SessionFactory
@@ -28,7 +29,7 @@ class TestPnlDataTable:
 
         self.app = wx.App()
         self.frame = wx.Frame(None)
-        self.dataTable = pnlDataTable(self.frame)
+        self.dataTable = FrmDataTable(self.frame)
 
     def test_build_series(self):
         dvs = self.session.query(DataValue).all()
@@ -47,11 +48,11 @@ class TestPnlDataTable:
 
     def test_selecting_points(self):
         self.dataTable.init(self.memory_database)
-        values = self.dataTable.myOlvDataFrame
+        values = self.dataTable.olvDataTable.dataframe
         assert not values.empty
 
         self.dataTable.onChangeSelection(values)
-        myOlv = self.dataTable.myOlv
+        myOlv = self.dataTable.olvDataTable
 
         count = 0
 
@@ -66,20 +67,20 @@ class TestPnlDataTable:
         assert count == self.dvs_size
     def test_deselecting_all(self):
         self.dataTable.init(self.memory_database)
-        assert self.dataTable.myOlv.GetItemCount() == self.dvs_size
-        values = self.dataTable.myOlvDataFrame
+        assert self.dataTable.olvDataTable.GetItemCount() == self.dvs_size
+        values = self.dataTable.olvDataTable.dataframe
 
         self.dataTable.onChangeSelection(values)
-        self.dataTable.onDeselectAll()
-        selected_item = self.dataTable.myOlv.GetFirstSelected()
+        self.dataTable.olvDataTable.onDeselectAll()
+        selected_item = self.dataTable.olvDataTable.GetFirstSelected()
         assert selected_item == -1
 
     def test_clear_data_table(self):
         self.dataTable.init(self.memory_database)
-        assert self.dataTable.myOlv.GetItemCount() == self.dvs_size
+        assert self.dataTable.olvDataTable.GetItemCount() == self.dvs_size
         self.dataTable.clear()
-        assert not self.dataTable.myOlvDataFrame
-        assert self.dataTable.myOlv.GetItemCount() == 0
+        assert not self.dataTable.olvDataTable.dataframe
+        assert self.dataTable.olvDataTable.GetItemCount() == 0
 
 
 

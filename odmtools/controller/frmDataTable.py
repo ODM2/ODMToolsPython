@@ -48,6 +48,14 @@ class FrmDataTable(DataTable):
                 self.enableSelectDataTable = False
             except:
                 pass
+    def clear(self):
+        self.memDB = None
+        self.olvDataTable.DeleteAllItems()
+        self.olvDataTable.dataframe = None
+        self.dataObjects = None
+
+    def stopEdit(self):
+        self.clear()
 
     def clear(self):
         self.memDB = None
