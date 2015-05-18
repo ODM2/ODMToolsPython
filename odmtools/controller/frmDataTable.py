@@ -57,11 +57,6 @@ class FrmDataTable(DataTable):
     def stopEdit(self):
         self.clear()
 
-    def clear(self):
-        self.memDB = None
-        self.olvDataTable.DeleteAllItems()
-        self.olvDataTable.dataframe = None
-        self.dataObjects = None
 
 if __name__ == "__main__":
     app = wx.App()
