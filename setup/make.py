@@ -1,6 +1,25 @@
+from __future__ import with_statement
 import os, sys, shutil, zipfile
-BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+from contextlib import closing
+from zipfile import ZipFile, ZIP_DEFLATED
+import os
 
+def zipdir(basedir, archivename):
+    assert os.path.isdir(basedir)
+    with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
+        for root, dirs, files in os.walk(basedir):
+            #NOTE: ignore empty directories
+            for fn in files:
+                absfn = os.path.join(root, fn)
+                zfn = absfn[len(basedir)+len(os.sep):]
+                z.write(absfn, zfn)
+## Update this for each new release ##
+
+
+
+
+##
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 WIN_DIR = os.path.join(BASE_DIR, "Windows")
 MAC_DIR = os.path.join(BASE_DIR, "Mac")
 
@@ -37,15 +56,15 @@ def check_if_dirs_exist():
             assert os.path.exists(MAC_DIR)
             print "Success"
 
-        print "Trying to open WORK_DIR: ", 
+        print "Trying to open WORK_DIR: ",
         assert os.path.exists(WORK_DIR)
         print "Success"
 
-        print "Trying to open ICON_DIR: ", 
+        print "Trying to open ICON_DIR: ",
         assert os.path.exists(ICON_DIR)
         print "Success"
 
-        print "Trying to open EXE_DIR: ", 
+        print "Trying to open EXE_DIR: ",
         assert os.path.exists(EXE_DIR)
         print "Success"
 
@@ -105,26 +124,30 @@ def run_inno():
     os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
 
 def run_no_installer():
-    pass
+    # pass
+    zipdir(os.path.join('..', 'odmtools'), "Windows_Test_zip.zip")
+
     # zf = zipfile.ZipFile('')
 
 def run_iceberg():
     os.system(ICE_EXECUTABLE + " "+ ICE_SCRIPT)
 
-    
+
 def main():
-    delete_old_out_dir()
-    check_if_dirs_exist()
+    # delete_old_out_dir()
+    # check_if_dirs_exist()
 
     if sys.platform == 'win32':
         print "Creating Windows Executable..."
         if (run_pyinstaller()):
             run_inno()
 
-
     if sys.platform =='darwin':
         if(mac_pyinstaller()):
             run_iceberg()
+    else:
+        run_no_installer()
+
 
 if __name__ == '__main__':
     main()

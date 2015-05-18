@@ -2,28 +2,20 @@ __author__ = 'Stephanie'
 import wx
 from wx import AboutBox, AboutDialogInfo, ClientDC
 from wx.lib.wordwrap import wordwrap
-
+from odmtools.meta import data
 
 class frmAbout(wx.Dialog):
     def __init__(self, parent):
         self.parent = parent
         info = AboutDialogInfo()
-        info.Name = "ODMTools"
-        info.Version = "1.2.0 Beta"
-        info.Copyright = "Copyright (c) 2013 - 2015, Utah State University. All rights reserved."
-        info.Description = wordwrap(
-            "ODMTools is a python application for managing observational data using the Observations Data Model. "
-            "ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database."
-            " ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.",
-            350, ClientDC(parent))
-        info.WebSite = ("http://uchic.github.io/ODMToolsPython/", "ODMTools home page")
-        info.Developers = ["Jeffery S. Horsburgh",
-                           "Amber Spackman Jones",
-                           "Stephanie L. Reeder",
-                           "Jacob Meline",
-                           "James Patton"]
+        info.Name = data.app_name
+        info.Version = data.version
+        info.Copyright = data.copyright
+        info.Description = wordwrap(data.description, 350, ClientDC(parent))
+        info.WebSite = data.website
+        info.Developers = data.developers
 
-        info.License = wordwrap(licenseText, 500, ClientDC(parent))
+        info.License = wordwrap(data.license, 500, ClientDC(parent))
 
         # Then we call wx.AboutBox giving it that info object
         AboutBox(info)
