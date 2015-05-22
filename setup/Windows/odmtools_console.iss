@@ -5,14 +5,14 @@
 #define MyAppVersion "1.2.0_Beta"
 #define MyAppPublisher "ODM2"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
-#define MyAppExeName "ODMTools.exe"
+#define MyAppExeName "ODMTools_1.2.0_Beta_win32_x86_64_console.exe"
 #define MyAppDir "C:\Users\jmeline_\Documents\GitHub\ODMToolsPython"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{2ABE254B-39DB-4EE2-AD7D-6BFBC7AA9182}
+AppId={{4E5EC22A-DDE2-40A1-BCF5-5595BE768847}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -23,7 +23,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile={#MyAppDir}\LICENSE.txt
-OutputBaseFilename={#MyAppName}_{#MyAppVersion}_Installer
+OutputBaseFilename={#MyAppName}_{#MyAppVersion}_Console_Installer
 SetupIconFile={#MyAppDir}\odmtools\common\icons\ODMTools.ico
 Compression=lzma
 SolidCompression=yes
@@ -37,8 +37,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#MyAppDir}\setup\Windows\ODMTools\ODMTools.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\setup\Windows\ODMTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#MyAppDir}\setup\Dist\ODMTools_1.2.0_Beta_win32_x86_64_console\ODMTools_1.2.0_Beta_win32_x86_64_console.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppDir}\setup\Dist\ODMTools_1.2.0_Beta_win32_x86_64_console\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
