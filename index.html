@@ -1,113 +1,139 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <title>Odmtoolspython by UCHIC</title>
+    <meta name="description" content="Odmtoolspython : ODMTools is a python application for managing observational data using the Observations Data Model.  ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database.ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.  ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Odmtoolspython</title>
   </head>
 
   <body>
-    <div id="container">
-      <div class="inner">
 
-        <header>
-          <h1>Odmtoolspython</h1>
-          <h2>ODMTools is a python application for managing observational data using the Observations Data Model.  ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database.ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.  </h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/ODM2/ODMToolsPython">View on GitHub</a>
+
+          <h1 id="project_title">Odmtoolspython</h1>
+          <h2 id="project_tagline">ODMTools is a python application for managing observational data using the Observations Data Model.  ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database.ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.  </h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/ODM2/ODMToolsPython/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/ODM2/ODMToolsPython/tarball/master">Download this project as a tar.gz file</a>
+            </section>
         </header>
+    </div>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/UCHIC/ODMToolsPython/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/UCHIC/ODMToolsPython/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/UCHIC/ODMToolsPython" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="odmtoolspython" class="anchor" href="#odmtoolspython" aria-hidden="true"><span class="octicon octicon-link"></span></a>ODMToolsPython</h1>
 
-        <hr>
+<p>Get started by visiting the <a href="https://github.com/ODM2/ODMToolsPython/wiki/ODMTools-Python-Documentation">ODM Tools Documentation</a> page.</p>
 
-        <section id="main_content">
-          <h1>
-<a name="welcome-to-odm-tools-python" class="anchor" href="#welcome-to-odm-tools-python"><span class="octicon octicon-link"></span></a>Welcome to ODM Tools Python.</h1>
+<p>ODMTools is a python application for managing observational data using the Observations Data Model. ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database. ODMTools was originally developed as part of the CUAHSI Hydrologic Information System.</p>
 
-<p><img src="https://raw.github.com/UCHIC/ODMToolsPython/master/doc/images/ODMToolsScreenShot.PNG" alt="ODM Tools Python"></p>
+<p align="center"><img src="https://github.com/ODM2/ODMToolsPython/raw/master/doc/images/ODMToolsScreenShot.jpg"></p>
 
-<p>The ODM Tools application was created to allow administrators and users of ODM to visualize, manage, manipulate, edit, and export data that have been imported to their local instance of the ODM. The ODM Tools application is organized into three general areas: 1) query and export; 2) visualize; and 3) edit. The Query and export functionality allows users to find the data that they are interested in and export it to a simple format that can be used with a variety of analysis software. The Visualize functionality allows users to quickly plot and summarize data using a variety of plot types and descriptive statistics. The Edit capability of ODM Tools was designed to provide users with a simple set of tools that they can use to edit existing data series and to create new data series from existing data series.</p>
-
-<p>The ODM Tools application has several advantages. First, ODM Tools protects the security and consistency of a work group HIS ODM database because it provides users with a set of automated tools for performing many of the most common database transactions. Second, ODM Tools allows users to export data from their ODM instance with an accompanying metadata file. This allows users to work with local copies of data series exported from their ODM database while preserving the provenance of the data via the metadata file. ODM Tools also provides a mechanism by which users can interact with the ODM database without having to learn the complexities of its relational structure. Last, for more advanced users, the source code of the ODM Tools application provides an example of how applications can be built on top of the CUAHIS HIS ODM.</p>
+<p>If you want to try ODM Tools, we have created a couple of <a href="https://github.com/ODM2/ODMToolsPython/tree/master/examples">testing databases</a> that you can use.</p>
 
 <h2>
-<a name="developmental-releases" class="anchor" href="#developmental-releases"><span class="octicon octicon-link"></span></a>Developmental Releases</h2>
+<a id="releases" class="anchor" href="#releases" aria-hidden="true"><span class="octicon octicon-link"></span></a>Releases</h2>
+
+<p>To make running ODMTools easier we have included installers. Please select the one that is appropriate for your operating system</p>
+
+<h4>
+<a id="windows" class="anchor" href="#windows" aria-hidden="true"><span class="octicon octicon-link"></span></a>Windows</h4>
+
+<p>Recommended Release:</p>
 
 <ul>
-<li>  <a href="https://github.com/UCHIC/ODMToolsPython/releases/tag/win_v0.1_exp">Windows Installer</a>
+<li>  <a href="https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.0-Win/ODMTools_1.2.0_Beta_Win_Installer.exe">Window v1.2.0-beta</a>
 </li>
-</ul><h2>
-<a name="sponsors" class="anchor" href="#sponsors"><span class="octicon octicon-link"></span></a>Sponsors</h2>
+</ul>
+
+<h4>
+<a id="mac" class="anchor" href="#mac" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mac</h4>
+
+<ul>
+<li>  <a href="https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.0-Win/ODMTools_1.2.0_Beta_Mac_Installer.pkg.zip">Mac v1.2.0-beta</a>
+</li>
+</ul>
+
+<h4>
+<a id="linux" class="anchor" href="#linux" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux</h4>
+
+<ul>
+<li>  <em>Please run from source</em>
+</li>
+</ul>
+
+<h2>
+<a id="running-from-source" class="anchor" href="#running-from-source" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running From Source</h2>
+
+<ul>
+<li>  <a href="https://github.com/matplotlib/matplotlib/releases/tag/v1.4.3">Matplotlib-1.4.3</a>
+</li>
+<li>  <a href="https://github.com/pydata/pandas/releases">Pandas-0.16.0</a>
+</li>
+<li>  <a href="http://docs.python-guide.org/en/latest/starting/install/win.html">Pip</a>
+</li>
+<li>  <a href="https://github.com/petehunt/PyMySQL/">PyMySQL</a>
+</li>
+<li>  <a href="https://code.google.com/p/pyodbc/downloads/detail?name=pyodbc-3.0.7.win-amd64-py2.7.exe">Pyodbc-3.0.7</a>
+</li>
+<li>  <a href="http://www.python.org/download/releases/2.7.9/">Python-2.7.9 x64/x32</a> (Python 3 version isn't available)</li>
+<li>  <a href="http://initd.org/psycopg/docs/install.html">Psycopg2-2.4.6</a>
+</li>
+<li>  <a href="http://pypi.python.org/pypi/SQLAlchemy/1.0.0">Sqlalchemy-1.0.0</a>
+</li>
+<li>  <a href="http://www.wxpython.org/download.php">wxpython-3.0.0</a>
+</li>
+</ul>
+
+<p>Install the following software/libraries.
+It is recommended to create an environment using 'Conda'.
+'Conda' comes prepackaged in the Python Scientific Package Suite <a href="http://continuum.io/downloads">Anaconda</a> (Available for Windows, OSX, Linux)</p>
+
+<p>Example environment creation:</p>
+
+<ul>
+<li><p>conda create -n odmtools python=2.7.8 wxpython matplotlib pandas pyodbc sqlalchemy pip psycopg2</p></li>
+<li><p>pip install pymysql</p></li>
+</ul>
+
+<p>if psycopg2 isn't found, download it manually and follow these <a href="https://stackoverflow.com/questions/5420789/how-to-install-psycopg2-with-pip-on-python">directions</a></p>
+
+<p>Once you have downloaded the source code and all the dependencies installed, run the main application:</p>
+
+<pre><code>python ODMTools.py
+</code></pre>
+
+<h2>
+<a id="sponsors" class="anchor" href="#sponsors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sponsors</h2>
 
 <p>This project is receiving or has received support from a number of agencies and complementary efforts including:</p>
 
-<p><img src="https://raw.github.com/UCHIC/ODMToolsPython/master/doc/images/iutah_eu_horz_sm.png" alt="iUTAH"><img src="https://raw.github.com/UCHIC/ODMToolsPython/master/doc/images/cuahsi_logo_sm.gif" alt="CUAHSI"><img src="https://raw.github.com/UCHIC/ODMToolsPython/master/doc/images/nsf.gif" alt="NSF"></p>
+<p><img src="/doc/images/iutah_eu_horz_sm.png" alt="iUTAH">    <img src="/doc/images/cuahsi_logo_sm.gif" alt="CUAHSI">    <img src="/doc/images/nsf.gif" alt="NSF"></p>
 
-<p>This material is based on work supported by the National Science Foundation Grant EPS 1208732 awarded to Utah State University.  Additional support was previously provided by National Science Foundation grant EAR 0622374.  Any opinions, findings, and conclusions or recommendations expressed are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.</p>
-
-<h2>
-<a name="running-from-source-on-windows" class="anchor" href="#running-from-source-on-windows"><span class="octicon octicon-link"></span></a>Running From Source on Windows</h2>
-
-<p>Install the following software/libraries. Unfortunately this is currently a manual process. </p>
-
-<ul>
-<li>  <a href="http://www.python.org/download/releases/2.7.3/">Python-2.7 32 bit</a>
-</li>
-<li>  <a href="http://www.wxpython.org/download.php">Wxpython-2.9.4</a>
-</li>
-<li>  <a href="http://pypi.python.org/pypi/SQLAlchemy/0.7.9">Sqlalchemy-7.9</a>
-</li>
-<li>  <a href="http://code.google.com/p/pyodbc/downloads/list">Pyodbc-3.0.6</a> </li>
-<li>  <a href="https://github.com/petehunt/PyMySQL/">PyMySQL</a>
-</li>
-<li>  <a href="https://github.com/matplotlib/matplotlib/downloads">Matplotlib-1.1.1</a>
-</li>
-<li>  <a href="http://www.scipy.org/Download">Numpy-1.6.2</a>
-</li>
-<li>  <a href="http://sourceforge.net/projects/objectlistview/files/objectlistview-python/">Object List Viewer-1.2</a>
-</li>
-</ul><p>Once you have all the dependencies installed, run the main application by executing the following command in the command prompt:  </p>
-
-<pre><code>python src/Gui/frmODMToolsMain.py
-</code></pre>
-
-<p>Please let us know if you have any problems!</p>
-
-<h2>
-<a name="copying-and-license" class="anchor" href="#copying-and-license"><span class="octicon octicon-link"></span></a>Copying and License</h2>
-
-<p>This material is copyright (c) 2013 Utah State University.</p>
-
-<p>It is open and licensed under the New Berkeley Software Distribution (BSD) License.  Full text of the license follows.</p>
-
-<p>Copyright (c) 2013, Utah State University. All rights reserved.</p>
-
-<p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
-
-<ul>
-<li> Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.</li>
-<li> Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</li>
-<li> Neither the name of Utah State University nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.</li>
-</ul><p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. </p>
-        </section>
-
-        <footer>
-          Odmtoolspython is maintained by <a href="https://github.com/UCHIC">UCHIC</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
-
-        
-      </div>
+<p>This material is based on work supported by the National Science Foundation Grants <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1208732">IIA-1208732</a>, <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1339834">ACI-1339834</a>, and <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1224638">EAR-1224638</a>.  Additional support was previously provided by National Science Foundation grant <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=0622374">EAR-0622374</a>.  Any opinions, findings, and conclusions or recommendations expressed are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.</p>
+      </section>
     </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Odmtoolspython maintained by <a href="https://github.com/ODM2">ODM2</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
   </body>
 </html>
