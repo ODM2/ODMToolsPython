@@ -27,7 +27,7 @@ OutputBaseFilename={#MyAppName}_{#MyAppVersion}_Installer
 SetupIconFile={#MyAppDir}\odmtools\common\icons\ODMTools.ico
 Compression=lzma
 SolidCompression=yes
-OutputDir={#MyAppDir}\setup\Windows
+OutputDir={#MyAppDir}\setup\Dist
 UsePreviousAppDir=no
 
 [Languages]

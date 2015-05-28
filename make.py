@@ -24,7 +24,7 @@ APP_DIR = os.path.join(MAC_DIR, "ODMTools.app")
 # Location of Windows files
 APP_FILE = os.path.join(BASE_DIR, "ODMTools.py")
 MAKE_FILE = os.path.realpath(__file__)
-VERSION_FILE = os.path.join(BASE_DIR, "version.txt")
+VERSION_FILE = os.path.join(SETUP_DIR, "version.txt")
 
 # Location of Innosetup Installer
 INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_setup.iss")
@@ -111,6 +111,14 @@ def printInfo():
 
     check_if_dirs_exist()
 
+def obtain_exe_filename(console=False):
+    if console:
+        return "{app}_{version}_{os}_{arch}_{type}".format(app=data.app_name,
+        version=data.version, os=sys.platform, arch='x86_64', type= "console")
+    else:
+        return "{app}_{version}_{os}_{arch}".format(app=data.app_name,
+        version=data.version, os=sys.platform, arch='x86_64')
+
 def delete_old_out_dir():
     loc_exists = os.path.exists(DIST_DIR)
     isFile = os.path.isfile(DIST_DIR)
@@ -125,16 +133,34 @@ def delete_old_out_dir():
         print "Nothing to remove"
 
 def run_pyinstaller():
+    """
+    Create a non-console version and a console version
+    """
+
     try:
+        ## No console
         os.system('pyinstaller '
             '--clean '
-            '--distpath=%s ' % WIN_DIR +
+            '-n %s ' % obtain_exe_filename() + 
+            '--distpath=%s ' % DIST_DIR +
             '--workpath=%s ' % WORK_DIR +
             '--specpath=%s ' % WIN_DIR +
             '--upx-dir=%s ' % BASE_DIR +
             '--icon=%s ' % WIN_ICON_FILE +
             '--version-file=%s ' % VERSION_FILE +
-            # '--windowed '
+            '--windowed '
+            '--noconfirm ' + APP_FILE)
+
+        ## Console
+        os.system('pyinstaller '
+            '--clean '
+            '-n %s ' % obtain_exe_filename(console=True) +
+            '--distpath=%s ' % DIST_DIR +
+            '--workpath=%s ' % WORK_DIR +
+            '--specpath=%s ' % WIN_DIR +
+            '--upx-dir=%s ' % BASE_DIR +
+            '--icon=%s ' % WIN_ICON_FILE +
+            '--version-file=%s ' % VERSION_FILE +
             '--noconfirm ' + APP_FILE)
 
         return True
@@ -146,7 +172,7 @@ def mac_pyinstaller():
     try:
         os.system('pyinstaller '
             '--clean '
-            '--distpath=%s ' % MAC_DIR +
+            '--distpath=%s ' % DIST_DIR +
             '--workpath=%s ' % MAC_WORK_DIR +
             '--specpath=%s ' % MAC_DIR +
             '--upx-dir=%s ' % BASE_DIR +
@@ -183,9 +209,9 @@ def run_inno():
     os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
 
 def run_no_installer():
-    # pass
-    filename = "{app}_{version}_{os}_{arch}_{type}.zip".format(app=data.app_name,
-        version=data.version, os=sys.platform, arch='x86_64', type="No_Install")
+    # Need to finish, Not functional
+    raise ("Not functional yet")
+    filename = obtain_exe_filename()
 
     zipdir(os.path.join('odmtools'), filename)
     move_to_dist(filename)
