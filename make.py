@@ -209,7 +209,7 @@ def run_no_installer():
     raise ("Not functional yet")
     filename = obtain_exe_filename()
 
-    zipdir(os.path.join('odmtools'), filename)
+    zipdir(BASE_DIR, filename)
     move_to_dist(filename)
 
 
@@ -230,13 +230,20 @@ def main():
         if run_pyinstaller(console=True):
             run_inno()
 
+        print "Create No Installer "
+
+        ## Create Shortcut
+        ## Create File
+        ## Zip Executable
+
+
     elif sys.platform =='darwin':
         if(mac_pyinstaller()):
             run_iceberg()
 
-    elif sys.platform == 'linux2':
-        ## Testing, not officially supported
-        run_no_installer()
+    # elif sys.platform == 'linux2':
+    #     ## Testing, not officially supported
+    #     run_no_installer()
 
 
 if __name__ == '__main__':
