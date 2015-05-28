@@ -9,7 +9,7 @@ from odmtools.meta import data
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
-DIST_DIR = os.path.join(SETUP_DIR, 'Dist/')
+DIST_DIR = os.path.join(SETUP_DIR, 'Dist')
 WIN_DIR = os.path.join(SETUP_DIR, "Windows")
 MAC_DIR = os.path.join(SETUP_DIR, "Mac")
 
