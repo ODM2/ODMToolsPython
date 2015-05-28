@@ -124,18 +124,31 @@ def delete_old_out_dir():
     else:
         print "Nothing to remove"
 
-def run_pyinstaller():
+def run_pyinstaller(console=False):
     try:
-        os.system('pyinstaller '
-            '--clean '
-            '--distpath=%s ' % WIN_DIR +
-            '--workpath=%s ' % WORK_DIR +
-            '--specpath=%s ' % WIN_DIR +
-            '--upx-dir=%s ' % BASE_DIR +
-            '--icon=%s ' % WIN_ICON_FILE +
-            '--version-file=%s ' % VERSION_FILE +
-            # '--windowed '
-            '--noconfirm ' + APP_FILE)
+        if console:
+            ## Console Version
+            os.system('pyinstaller '
+                '--clean '
+                '--distpath=%s ' % WIN_DIR +
+                '--workpath=%s ' % WORK_DIR +
+                '--specpath=%s ' % WIN_DIR +
+                '--upx-dir=%s ' % BASE_DIR +
+                '--icon=%s ' % WIN_ICON_FILE +
+                '--version-file=%s ' % VERSION_FILE +
+                '--noconfirm ' + APP_FILE)
+        else:
+            ## Non Console Version
+            os.system('pyinstaller '
+                '--clean '
+                '--distpath=%s ' % WIN_DIR +
+                '--workpath=%s ' % WORK_DIR +
+                '--specpath=%s ' % WIN_DIR +
+                '--upx-dir=%s ' % BASE_DIR +
+                '--icon=%s ' % WIN_ICON_FILE +
+                '--version-file=%s ' % VERSION_FILE +
+                '--noconsole '
+                '--noconfirm ' + APP_FILE)
 
         return True
     except Exception as e:
@@ -199,8 +212,13 @@ def main():
     printInfo()
 
     if sys.platform == 'win32':
+
         print "Creating Windows Executable..."
-        if (run_pyinstaller()):
+        if run_pyinstaller():
+            run_inno()
+
+        print "Creating Windows Executable Console..."
+        if run_pyinstaller(console=True):
             run_inno()
 
     elif sys.platform =='darwin':
