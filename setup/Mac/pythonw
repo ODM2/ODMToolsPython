@@ -1,0 +1,32 @@
+#!/bin/bash
+#export PYTHONEXECUTABLE=/Users/stephanie/miniconda/envs/python_odmtools2/bin/python
+
+echo "********************************************************"
+echo "			ODMTools Python			      "
+echo "********************************************************"
+
+#echo "Args: $0 $1 $2 $3"
+
+# save home path before executing script
+DIRHOME=$(dirname '$0')
+
+DIR=$(cd "$( dirname "$0" )" && cd .. && pwd)
+
+export PYTHONEXECUTABLE="$DIR/bin/python"
+
+#echo "My pwd is $DIR"
+
+PYPATH="$DIR/python.app/Contents/MacOS/python" #&& echo "PyPath: $PYPATH"
+
+unset CDPATH
+
+# return back to home path
+cd $DIRHOME
+
+EXEC="$PYPATH $@" # && echo "SET EXECUTABLE: $EXEC"
+
+$EXEC
+
+# echo "My current directory is $(pwd)"
+#/Users/stephanie/miniconda/envs/python_odmtools2/python.app/Contents/MacOS/python "$@"
+

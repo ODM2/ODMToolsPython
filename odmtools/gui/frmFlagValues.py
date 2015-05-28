@@ -93,22 +93,26 @@ class frmFlagValues(wx.Dialog):
 
         self._init_sizers()
 
-    def __init__(self, parent, cv_service, choices, isNew=False):
-        self.cv_service = cv_service
+    def __init__(self, parent, series_service, choices, isNew=False):
+        self.series_service = series_service
 
         self.qualchoices = choices
         if isNew:
             self.selectedValue = NEW
             wx.CallAfter(self.showNewFields)
         else:
-            self.selectedValue = ''
+            self.selectedValue=choices.keys()[0]
+
 
         self._init_ctrls(parent)
 
     def GetValue(self):
-        if self.qid:
-            return self.qid
-        else:
+        try:
+            if self.qid:
+                return self.qid
+            else:
+                return None
+        except AttributeError:
             return None
 
     def OnCbQualifCombobox(self, event):
@@ -136,26 +140,32 @@ class frmFlagValues(wx.Dialog):
                 dlg.ShowModal()
                 return
 
+            '''
             q = Qualifier()
             q.code = code
             q.description = desc
+            '''
 
-            self.cv_service.create_qualifier(q)
+            q=self.series_service.create_qualifier(code, desc)
             self.qid = q.id
             self.selectedValue = q.code + '-' + q.description
+
             self.EndModal(wx.ID_OK)
 
+
         else:
-            self.qid = self.qualchoices[self.cbQualif.GetValue()]
-            self.selectedValue = self.cbQualif.GetValue()
-            self.EndModal(wx.ID_CANCEL)
+            value = self.cbQualif.GetValue()
+            if value:
+                self.qid = self.qualchoices[value]
+                self.selectedValue = self.cbQualif.GetValue()
+                self.EndModal(wx.ID_OK)
 
         event.Skip()
-        #self.Close()
+
 
     def OnBtnCancelButton(self, event):
         self.EndModal(wx.ID_CANCEL)
         event.Skip()
-        #self.Close()
+        self.EndModal(wx.ID_CANCEL)
 
 

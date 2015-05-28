@@ -1333,7 +1333,7 @@ class ObjectListView(wx.ListCtrl):
             left = right
             right += self.GetColumnWidth(i)
             if scrolledX < right:
-                if (scrolledX - left) < self.smallImageList.GetSize(0)[0]:
+                if self.smallImageList and (scrolledX - left) < self.smallImageList.GetSize(0)[0]:
                     flag = wx.LIST_HITTEST_ONITEMICON
                 else:
                     flag = wx.LIST_HITTEST_ONITEMLABEL
@@ -1624,7 +1624,6 @@ class ObjectListView(wx.ListCtrl):
         Handle a left down on the ListView
         """
         evt.Skip()
-
         # Test for a mouse down on the image of the check box column
         if self.InReportView():
             (row, flags, subitem) = self.HitTestSubItem(evt.GetPosition())
@@ -2277,7 +2276,8 @@ class AbstractVirtualObjectListView(ObjectListView):
         """
         # We can only refresh everything
         self.lastGetObjectIndex = -1
-        self.RefreshItems(0, max(0, self.GetItemCount()-1))
+        if self.GetItemCount() > 1:
+            self.RefreshItems(0, max(0, self.GetItemCount()-1))
         #self.Refresh()
 
 
@@ -2365,8 +2365,9 @@ class AbstractVirtualObjectListView(ObjectListView):
 
         # For reasons of performance, it may even be worthwhile removing this test and
         # ensure/assume that objectGetter is never None
-        if self.objectGetter is None:
-            return None
+
+        #if self.objectGetter is None:
+        #    return None
 
         #if index == self.lastGetObjectIndex:
         #    self.cacheHit += 1

@@ -16,17 +16,28 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 __author__ = 'Jacob'
 
 class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
+    """
+
+    """
     def __init__(self, *args, **kwargs):
+        """
+
+        """
+
+        self.taskserver = kwargs.pop("taskserver")
+        self.memDB = kwargs.pop("memdb")
+        self.pnlPlot = kwargs.pop("plot")
+
         clsSeriesSelector.ClsSeriesSelector.__init__(self, *args, **kwargs)
 
     def initPubSub(self):
         #Publisher.subscribe(self.onEditButton, ("selectEdit"))
         Publisher.subscribe(self.refreshSeries, "refreshSeries")
 
-    def resetDB(self, dbservice):
+    def resetDB(self, series_service):
         """
 
-        :param dbservice:
+        :param series_service:
         :return:
         """
 
@@ -36,7 +47,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.rbAll.SetValue(True)
 
         #####INIT DB Connection
-        self.dbservice = dbservice
+        self.series_service = series_service
         #self.refreshSeries()
         self.cbVariables.Clear()
         self.cbSites.Clear()
@@ -54,9 +65,9 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         try:
-            #self.dbservice = self.parent.Parent.createService()
-            self.memDB = MemoryDatabase(self.dbservice)
-            object = self.dbservice.get_all_series()
+            self.memDB.set_series_service(self.series_service)
+
+            object = self.series_service.get_all_series()
 
             if object:
                 self.tblSeries.SetObjects(object)
@@ -73,8 +84,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
-        self.memDB = MemoryDatabase(db)
-        object = self.dbservice.get_all_series()
+        self.memDB.set_series_service(db)
+        object = self.series_service.get_all_series()
         #checkedObjs = self.tblSeries.GetCheckedObjects()
         idList = [x.id for x in self.tblSeries.modelObjects]
 
@@ -90,11 +101,11 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
-        self.dbservice = None
-        self.dbservice = self.parent.Parent.createService()
+        self.series_service = None
+        self.series_service = self.parent.Parent.createService()
         #self.refreshTableSeries(self.dbservice)
-        self.resetDB(self.dbservice)
-        logger.debug("Refresh Occurred")
+        self.resetDB(self.series_service)
+        logger.debug("Repopulate Series Selector")
 
     def initSVBoxes(self):
         """
@@ -107,13 +118,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         #####INIT drop down boxes for Simple Filter
         try:
-            self.siteList = self.dbservice.get_all_used_sites()
+            self.siteList = self.series_service.get_used_sites()
             for site in self.siteList:
                 self.cbSites.Append(site.code + '-' + site.name)
             self.cbSites.SetSelection(0)
             self.site_code = self.siteList[0].code
 
-            self.varList = self.dbservice.get_all_used_variables()
+            self.varList = self.series_service.get_used_variables()
             for var in self.varList:
                 self.cbVariables.Append(var.code + '-' + var.name)
             self.cbVariables.SetSelection(0)
@@ -310,7 +321,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         if self.checkSite.GetValue():
             self.site_code = self.siteList[event.GetSelection()].code
-            self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
+            self.varList = self.series_service.get_variables_by_site_code(self.site_code)
 
             self.cbVariables.Clear()
             for var in self.varList:
@@ -345,7 +356,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.site_code = self.siteList[self.cbSites.Selection].code
 
         self.cbVariables.Clear()
-        self.varList = self.dbservice.get_variables_by_site_code(self.site_code)
+        self.varList = self.series_service.get_variables_by_site_code(self.site_code)
         for var in self.varList:
             self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)
@@ -377,7 +388,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
         self.site_code = None
         self.cbVariables.Clear()
-        self.varList = self.dbservice.get_all_used_variables()
+        self.varList = self.series_service.get_used_variables()
         for var in self.varList:
             self.cbVariables.Append(var.code + '-' + var.name)
         self.cbVariables.SetSelection(0)
@@ -446,10 +457,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :param event: EVT_OVL_CHECK_EVENT type
         """
+        logger.debug("Starting to Plot")
 
         checkedCount = len(self.tblSeries.GetCheckedObjects())
+
         Publisher.sendMessage("EnablePlotButtons", plot=0, isActive=(checkedCount > 0))
 
+        logger.debug("Obtain object")
         try:
             object = event.object
         except:
@@ -457,18 +471,29 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         if not self.tblSeries.IsChecked(object):
             Publisher.sendMessage("removePlot", seriesID=object.id)
+            Publisher.sendMessage("updateCursor", deselectedObject=object)
+
         else:
-            #logger.debug("%d" % (len(self.tblSeries.GetCheckedObjects())))
-            self.parent.Parent.addPlot(self.memDB, object.id)
+            logger.debug("Obtained object, entering addplot")
+            self.pnlPlot.addPlot(self.memDB, object.id)
             Publisher.sendMessage("updateCursor", selectedObject=object)
 
+        logger.debug("refreshing...")
         self.Refresh()
+
+        logger.debug("Finish Plotting")
+
+
+        #from meliae import scanner
+        #scanner.dump_all_objects("plot_plotting.dat")
 
     def getSelectedObject(self, event):
         """Capture the currently selected Object to be used for editing
 
         :param event: wx.EVT_LIST_ITEM_FOCUSED type
         """
+
+        logger.debug("Selecting object from Series Catalog")
 
         object = event.GetEventObject()
         editingObject = object.innerList[object.FocusedItem]
@@ -499,24 +524,34 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             object = ovl.modelObjects[0]
 
         if len(ovl.GetCheckedObjects()) <= ovl.allowedLimit:
+
             if object not in ovl.GetCheckedObjects():
                 ovl.ToggleCheck(object)
 
-            self.memDB.initEditValues(object.id)
+
+
+            # logger.debug("Initializing DataTable")
+            #
+            # tasks = [("dataTable", self.memDB.conn)]
+            # self.taskserver.setTasks(tasks)
+            # self.taskserver.processTasks()
+
             self.isEditing = True
             ovl.editingObject = object
             ovl.RefreshObject(ovl.editingObject)
 
-            return True, object.id, self.memDB
+
+            return True, object.id#, self.memDB
         else:
             isSelected = False
             logger.debug("series was not checked")
             val_2 = wx.MessageBox("Visualization is limited to 6 series.", "Can't add plot",
                                   wx.OK | wx.ICON_INFORMATION)
 
+
         self.isEditing = False
         ovl.editingObject = None
-        return False, object.id, self.memDB
+        return False, object.id#, self.memDB
 
     def stopEdit(self):
         """When edit button is untoggled, the editing feature closes

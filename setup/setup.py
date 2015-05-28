@@ -24,21 +24,22 @@ ez_setup.use_setuptools()
 
 
 NAME = 'ODMTools'
-APP = ['C:\Users\Jacob\Documents\ODMToolsPython\ODMTools.py']
-extra_options = None
 
+extra_options = None
+sys.setrecursionlimit(2000)
 if sys.platform == 'darwin':
     sys.argv.append('py2app')
     from setuptools import setup
     APP = ['/Users/stephanie/DEV/ODMToolsPython/ODMTools.py']
     LIBS = ['/usr/X11/lib/libfreetype.6.dylib', '/usr/X11/lib/libstdc++.6.dylib', '/usr/X11/lib/libpng15.15.dylib']
     OPTIONS = {'iconfile': '/Users/stephanie/DEV/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
-               'includes': ['pymysql', 'appdirs', 'matplotlib', 'sqlalchemy', 'dateutil'], 'frameworks': LIBS}
+               'includes': ['pymysql', 'sqlalchemy', 'dateutil'], 'frameworks': LIBS}
     extra_options = dict(app=APP, setup_requires=['py2app'], options={'py2app': OPTIONS})
 
 elif sys.platform == 'win32':
     sys.argv.append('py2exe')
     from distutils.core import setup
+    APP = ['C:\Users\Jacob\Documents\ODMToolsPython\ODMTools.py']
     import numpy
     import py2exe
     from glob import glob

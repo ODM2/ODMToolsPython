@@ -124,10 +124,10 @@ class MyCustomToolbar(NavigationToolbar):
 
         self.SetToolBitmapSize(wx.Size(16, 16))
 
-        msg = wx.StaticText(self, -1, '|')
-        msg.SetForegroundColour((108, 123, 139))
+        #msg = wx.StaticText(self, -1, '|')
+        #msg.SetForegroundColour((108, 123, 139))
 
-        self.AddControl(msg)
+        #self.AddControl(msg)
         self.AddSeparator()
 
         self.msg = wx.StaticText(self, -1, "")
@@ -154,7 +154,7 @@ class MyCustomToolbar(NavigationToolbar):
         self.zoom_to_data.Enable(False)
         self.Realize()
         #untoggle lasso button
-        self.ToggleTool(self.select_tool.Id, False)
+        #self.ToggleTool(self.select_tool.Id, False)
 
 
     # pan the graph to the left    
@@ -189,19 +189,12 @@ class MyCustomToolbar(NavigationToolbar):
         p = path.Path(verts)
         ind = p.contains_points(self.xys)
 
-        seldatetimes = []
-        #seldatavalues = []
-        for i in range(len(ind)):
-            if ind[i]:
-                seldatetimes.append(self.editCurve.dataTable[i][1])
-                #seldatavalues.append(self.editCurve.dataTable[i][0])
-                # print seldatetimes
-
-
-        self._parent.changeSelection(datetime_list=seldatetimes)
-
+        df = self.editCurve.dataTable
+        #selected_datetime_list = df[ind].LocalDateTime.tolist()
+        filtered_datetime_dataframe = df[ind]
+        self._parent.lassoChangeSelection(filtered_datetime=filtered_datetime_dataframe)
+        #self._parent.lassoChangeSelection(datetime_list=selected_datetime_list)
         self.canvas.draw_idle()
-        #self.canvas.widgetlock.release(self.lasso)
         del self.lasso
 
 
@@ -243,12 +236,13 @@ class MyCustomToolbar(NavigationToolbar):
     def on_toggle_zoom_data_tool(self, event):
         if self._views.empty():
             self.push_current()
-        dvs = [x[0] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
-        date= [x[1] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
+        nodvvals= self.editCurve.dataTable[self.editCurve.dataTable["DataValue"] != self.editCurve.noDataValue]
+        #dvs = [x["DataValue"] for x in  if x[0] != self.editCurve.noDataValue]
+        #date= [x[1] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
 
         axes = self.canvas.figure.axes[0]
-        axes.set_ylim(min(dvs), max(dvs))
-        axes.set_xlim(dates.date2num([min(date), max(date)]))
+        axes.set_ylim(min(nodvvals["DataValue"]), max(nodvvals["DataValue"]))
+        axes.set_xlim(dates.date2num([min(nodvvals.index), max(nodvvals.index)]))
 
         self.push_current()
         self.canvas.draw()

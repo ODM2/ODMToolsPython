@@ -1,6 +1,8 @@
 import datetime
-
+import pandas as pd
 from odmtools.odmdata import *
+import os
+import sys
 
 
 def build_db(engine):
@@ -8,6 +10,67 @@ def build_db(engine):
 
 
 # Create DB objects #
+
+def add_bulk_data_values(session, series, dvs_size):
+    """
+    Load up exampleData.csv into a series' datavalues field
+    """
+    assert 10000 >= dvs_size > 0
+    filepath = os.path.join('.', 'example_files', 'exampleData.csv')
+    df = pd.read_csv(filepath)
+    df['LocalDateTime'] = pd.to_datetime(df['LocalDateTime']).astype(datetime.datetime)
+    df['DateTimeUTC'] = pd.to_datetime(df['DateTimeUTC']).astype(datetime.datetime)
+    dvs = []
+    for record in df.to_dict('records')[:dvs_size]:
+        dv = DataValue()
+        dv.data_value = record['DataValue']
+        dv.local_date_time = record['LocalDateTime']
+        dv.utc_offset = record['UTCOffset']
+        dv.date_time_utc = record['DateTimeUTC']
+        dv.site_id = series.site_id
+        dv.variable_id = series.variable_id
+        dv.censor_code = record['CensorCode']
+        dv.method_id = series.method_id
+        dv.source_id = series.source_id
+        dv.quality_control_level_id = series.quality_control_level_id
+        dvs.append(dv)
+    series.data_values = dvs
+    session.add_all(dvs)
+    session.commit()
+    return df
+
+def add_series_bulk_data(session, dvs_size=50):
+    site = add_site(session)
+    var = add_variable(session)
+    qcl = add_qcl(session)
+    method = add_method(session)
+    source = add_source(session)
+
+    series = Series()
+    series.site = site
+    series.site_code = site.code
+    series.variable = var
+    series.variable_code = var.code
+    series.method = method
+    series.source = source
+    series.quality_control_level_id = qcl.id
+
+    df = add_bulk_data_values(session, series, dvs_size)
+    sorted_df = sorted(df['LocalDateTime'])
+    series.begin_date_time = sorted_df[0]
+    assert isinstance(series.begin_date_time, datetime.datetime)
+    series.end_date_time = sorted_df[-1]
+    assert isinstance(series.end_date_time, datetime.datetime)
+
+    sorted_df = sorted(df['DateTimeUTC'])
+    series.begin_date_time_utc = sorted_df[0]
+    assert isinstance(series.begin_date_time_utc, datetime.datetime)
+    series.end_date_time_utc = sorted_df[-1]
+    assert isinstance(series.end_date_time_utc, datetime.datetime)
+
+    session.add(series)
+    session.commit()
+    return series
 
 # Create Series objects
 def add_series(session):

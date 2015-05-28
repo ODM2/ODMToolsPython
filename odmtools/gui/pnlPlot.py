@@ -30,7 +30,8 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class pnlPlot(fnb.FlatNotebook):
-    def __init__(self, parent, id, size, style, name, pos=None):
+    def __init__(self, parent, taskserver):
+        self.taskserver = taskserver
         self._init_ctrls(parent)
         self.initPubSub()
         self.parent = parent
@@ -95,11 +96,6 @@ class pnlPlot(fnb.FlatNotebook):
     def onDateChanged(self, startDate, endDate):
         self._seriesPlotInfo.updateDateRange(startDate, endDate)
         self.redrawPlots()
-        # self.pltTS.onDateChanged(startDate, endDate)
-
-
-        #   def onDateChanged(self, startDate, endDate):
-        #       self.pltTS.onDateChanged(startDate, endDate)
 
     def onDateFull(self):
         self._seriesPlotInfo.updateDateRange()
@@ -126,8 +122,10 @@ class pnlPlot(fnb.FlatNotebook):
 
     def addEditPlot(self, memDB, seriesID, record_service):
         self.record_service = record_service
-        if not self._seriesPlotInfo  or self._seriesPlotInfo.memDB != memDB:
-            self._seriesPlotInfo = SeriesPlotInfo(memDB)
+
+        if not self._seriesPlotInfo:
+            self._seriesPlotInfo = SeriesPlotInfo(memDB, self.taskserver)
+
 
         self.editID = seriesID
         self._seriesPlotInfo.setEditSeries(self.editID)
@@ -135,34 +133,49 @@ class pnlPlot(fnb.FlatNotebook):
         self.redrawPlots()
 
     def addPlot(self, memDB, seriesID):
-        if not self._seriesPlotInfo or self._seriesPlotInfo.memDB != memDB:
-            self._seriesPlotInfo = SeriesPlotInfo(memDB)
+
+        """
+        Creates the plot
+        """
+        logger.debug("Adding plot")
+
+        Publisher.sendMessage("EnablePlotButton", plot=self.getActivePlotID(), isActive=True)
+
+        if not self._seriesPlotInfo:
+            self._seriesPlotInfo = SeriesPlotInfo(memDB, self.taskserver)
+
         self._seriesPlotInfo.update(seriesID, True)
 
+        logger.debug("Redrawing plots")
         self.redrawPlots()
 
     def onRemovePlot(self, seriesID):
-
-        # self.selectedSerieslist.remove(seriesID)
-        #tempseries= self._seriesPlotInfo.getSeries(seriesID)
         self._seriesPlotInfo.update(seriesID, False)
         self.redrawPlots()
-        #self.clear()
 
     def redrawPlots(self):
+
+        logger.debug("Plot Summary")
         self.pltSum.Plot(self._seriesPlotInfo)
+
+        logger.debug("Plot Probability")
         self.pltProb.Plot(self._seriesPlotInfo)
+
+        logger.debug("Plot Boxwhisker")
         self.pltBox.Plot(self._seriesPlotInfo)
+
+        logger.debug("Plot Histogram")
         self.pltHist.Plot(self._seriesPlotInfo)
+
+        logger.debug("Plot Timeseries")
         self.pltTS.Plot(self._seriesPlotInfo)
 
         self.onShowLegend(event=None, isVisible=self.legendVisible)
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
         Publisher.sendMessage("resetdate", startDate=maxStart, endDate=maxEnd, currStart=currStart, currEnd=currEnd)
 
-    #     self.PlotGraph()
+
     def selectPlot(self, value):
-        #select the corresponding page of the notebook
         self.SetSelection(value)
 
     def getActivePlotID(self):

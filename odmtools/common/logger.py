@@ -11,6 +11,7 @@ import os
 from odmtools.lib.Appdirs.appdirs import user_log_dir
 
 
+
 class LoggerTool():
     def __init__(self):
         self.formatString = '%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s'
@@ -36,8 +37,13 @@ class LoggerTool():
         streamHandler.setFormatter(formatter)
 
         l.setLevel(level)
+        #l.setLevel(20) #Set logger to 20 to hide debug statements
         l.addHandler(fileHandler)
         l.addHandler(streamHandler)
+
+        # solves issues where logging would duplicate its logging message to the root logger
+        # https://stackoverflow.com/questions/21127360/python-2-7-log-displayed-twice-when-logging-module-is-used-in-two-python-scri
+        l.propagate = False
 
         return l
 

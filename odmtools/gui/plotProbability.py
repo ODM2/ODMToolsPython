@@ -25,7 +25,7 @@ class plotProb(wx.Panel):
 
 
     def clear(self):
-        self.plots.clear()
+        self.figure.clear()
 
     def close(self):
         #self.plot.clf()
@@ -36,10 +36,10 @@ class plotProb(wx.Panel):
         wx.Panel.__init__(self, prnt, -1)
 
         self.figure = Figure()
-        self.plots = self.figure.add_subplot(111)
-        self.plots.axis([0, 1, 0, 1])  #
-        self.plots.plot([], [])
-        self.plots.set_title("No Data To Plot")
+        ax = self.figure.add_subplot(111)
+        ax.axis([0, 1, 0, 1])  #
+        ax.plot([], [])
+        ax.set_title("No Data To Plot")
         self.islegendvisible = False
 
 
@@ -47,6 +47,8 @@ class plotProb(wx.Panel):
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas)
         self.toolbar.Realize()
+
+        self.axislist = {}
 
         left = 0.125  # the left side of the subplots of the figure
         right = 0.9  # the right side of the subplots of the figure
@@ -88,7 +90,7 @@ class plotProb(wx.Panel):
         # print plt.setp(self.lines)
         # print(len(self.lines))
         self.format = ls + m
-        for line in self.prob:
+        for _, line in self.axislist.iteritems():
             plt.setp(line, linestyle=ls, marker=m)
         if self.islegendvisible:
             self.onShowLegend(self.islegendvisible)
@@ -114,7 +116,10 @@ class plotProb(wx.Panel):
     def updatePlot(self):
         self.clear()
         count = self.seriesPlotInfo.count()
-        self.prob = []
+
+        # keep track of all of the axes
+        self.axislist = {}
+
         self.plots = self.figure.add_subplot(111)
         for oneSeries in self.seriesPlotInfo.getAllSeries():
 
@@ -127,10 +132,16 @@ class plotProb(wx.Panel):
                 self.plots.set_ylabel("\n".join(textwrap.wrap(oneSeries.axisTitle, 50)))
                 self.plots.set_title("\n".join(textwrap.wrap(oneSeries.siteName, 55)))
 
-            if len(oneSeries.dataTable) >0:
-                self.prob.append(
-                    self.plots.plot(oneSeries.Probability.Xaxis, oneSeries.Probability.Yaxis, 'bs', color=oneSeries.color,
-                                   label=oneSeries.plotTitle))
+            if len(oneSeries.dataTable) > 0:
+                #self.prob.append(
+                #prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
+
+                xValues = oneSeries.Probability.xAxis.order().values
+                yValues = oneSeries.Probability.yAxis.order().values
+
+                ax = self.plots.plot(xValues, yValues, 'bs', color=oneSeries.color,
+                                   label=oneSeries.plotTitle)
+                self.axislist[oneSeries.axisTitle] = ax[0]
 
         self.setXaxis()
 
@@ -141,18 +152,10 @@ class plotProb(wx.Panel):
             plt.subplots_adjust(bottom=.1)
             self.plot.legend_ = None'''
 
-        left = 0.125  # the left side of the subplots of the figure
-        right = 0.9  # the right side of the subplots of the figure
-        bottom = 0.51  # the bottom of the subplots of the figure
-        top = 1.2  # the top of the subplots of the figure
-        wspace = .8  # the amount of width reserved for blank space between subplots
-        hspace = .8  # the amount of height reserved for white space between subplots
-        self.figure.subplots_adjust(
-            left=left, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
-        )
 
-        if len(self.prob)>0:
-            self.figure.tight_layout()
+
+        #if len(self.plots)>0:
+        self.figure.tight_layout()
 
         self.canvas.draw()
 
@@ -189,13 +192,7 @@ class plotProb(wx.Panel):
 
     def setXaxis(self):
 
-        self.plots.set_xticklabels(
-            ["0.01", "0.02", "0.02", "1", "2", "5", "10", "20", "30", "40", "50", "60", "70", "80", "90", "95", "98",
-             "99", "99.9", "99.98", "99.99"])
-        self.plots.set_xticks(
-            [-3.892, -3.5, -3.095, -2.323, -2.055, -1.645, -1.282, -0.842, -0.542, -0.254, 0, 0.254, 0.542, 0.842,
-             1.282, 1.645, 2.055, 2.323, 3.095, 3.5, 3.892])
-        self.plots.set_xbound(-4, 4)
+        self.plots.set_xbound(1, 100)
 
 
     def setColor(self, color):
@@ -204,19 +201,7 @@ class plotProb(wx.Panel):
         self.figure.set_edgecolor(color)
         self.canvas.SetBackgroundColour(color)
 
-    def calculateProbabilityXPosition(self, freq):
-        try:
-            return round(4.91 * ((freq ** .14) - (1.00 - freq) ** .14), 3)
-        except:
-            print "An error occurred while calculating the X-Position for a point in the prob plot"
-            pass
 
-    def calcualteProbabilityFreq(self, rank, numRows):
-        try:
-            return round((rank - .0375) / (numRows + 1 - (2 * 0.375)), 3)
-        except:
-            print "An error occured while calculating the frequency for a point in the prob plot"
-            pass
 
 
     def __init__(self, parent, id, pos, size, style, name):

@@ -1,0 +1,3 @@
+DataValue,Date,Time,UTCOffSet,CensorCode,ValueAccuracy,OffSetValue,OffSetType,QualifierCode,LabSampleCode
+FLOAT|INT,YYYY-MM-DD,HH:MM:SS,INT,gt|nc|lt|nd|pnq,FLOAT,FLOAT,String,String,String
+-9999,2005-06-29,14:20:15,-7,nc,1.2,1,NULL,NULL,NULL

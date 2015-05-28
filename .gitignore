@@ -19,6 +19,9 @@ develop-eggs
 .installed.cfg
 lib64
 
+# Ipython files
+*.ipynb
+
 # Installer logs
 pip-log.txt
 

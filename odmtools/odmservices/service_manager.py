@@ -1,5 +1,8 @@
 import logging
 import os
+import sys
+
+import urllib
 
 from sqlalchemy.exc import SQLAlchemyError#OperationalError, DBAPIError
 
@@ -20,12 +23,10 @@ logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 class ServiceManager():
     def __init__(self, debug=False):
         self.debug = debug
+        f = self._get_file('r')
         self._conn_dicts = []
         self.version = 0
         self._connection_format = "%s+%s://%s:%s@%s/%s"
-
-    def extractConnectionInfo(self):
-        f = self._get_file('r')
 
         # Read all lines (connections) in the connection.cfg file
         while True:
@@ -60,6 +61,7 @@ class ServiceManager():
     def is_valid_connection(self):
         if self._current_conn_dict:
             conn_string = self._build_connection_string(self._current_conn_dict)
+            logger.debug("Conn_string: %s" % conn_string)
             try:
                 if self.testEngine(conn_string):
                     return self.get_current_conn_dict()
@@ -125,19 +127,22 @@ class ServiceManager():
         self.get_db_version(conn_string)
 
     def get_db_version(self, conn_string):
+        if isinstance(conn_string, dict):
+            conn_string = self._build_connection_string(conn_string)
         service = SeriesService(conn_string)
-        if not self.version:
-            try:
-                self.version = service.get_db_version()
-            except Exception as e:
-                logger.error("Exception: %s" % e.message)
-                return None
+        #if not self.version:
+        try:
+            self.version = service.get_db_version()
+        except Exception as e:
+            logger.error("Exception: %s" % e.message)
+            return None
         return self.version
 
     def get_series_service(self, conn_dict=""):
         conn_string = ""
         if conn_dict:
             conn_string = self._build_connection_string(conn_dict)
+            self._current_conn_dict = conn_dict
         else:
             conn_string = self._build_connection_string(self._current_conn_dict)
         return SeriesService(conn_string, self.debug)
@@ -147,8 +152,8 @@ class ServiceManager():
         return CVService(conn_string, self.debug)
 
     def get_edit_service(self, series_id, connection):
-        conn_string = self._build_connection_string(self._current_conn_dict)
-        return EditService(series_id, connection=connection, connection_string=conn_string, debug=self.debug)
+        
+        return EditService(series_id, connection=connection,  debug=self.debug)
 
     def get_record_service(self, script, series_id, connection):
         return EditTools(self, script, self.get_edit_service(series_id, connection),
@@ -183,18 +188,24 @@ class ServiceManager():
 
     def _build_connection_string(self, conn_dict):
         driver = ""
-        if conn_dict['engine'] == 'mssql':
+        if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
             driver = "pyodbc"
-        elif conn_dict['engine'] == 'mysql':
-            driver = "pymysql"
-        elif conn_dict['engine'] == 'postgresql':
-            driver = "psycopg2"
+            quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
+            conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
+        
         else:
-            driver = "None"
+            if conn_dict['engine'] == 'mssql':
+                driver = "pyodbc"
+            elif conn_dict['engine'] == 'mysql':
+                driver = "pymysql"
+            elif conn_dict['engine'] == 'postgresql':
+                driver = "psycopg2"
+            else:
+                driver = "None"
 
-        conn_string = self._connection_format % (
-            conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
-            conn_dict['db'])
+            conn_string = self._connection_format % (
+                conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
+                conn_dict['db'])
         return conn_string
 
     def _save_connections(self):

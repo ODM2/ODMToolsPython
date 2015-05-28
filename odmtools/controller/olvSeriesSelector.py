@@ -37,6 +37,11 @@ class clsSeriesTable(FastObjectListView):
             listItem.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
 
         self.rowFormatter = rowFormatter
+        self.Bind(wx.EVT_LIST_KEY_DOWN, self.onKeyPress)
+
+    def onKeyPress(self, evt):
+        """Ignores Keypresses"""
+        pass
 
     def _buildColumns(self):
         seriesColumns = [
@@ -45,44 +50,6 @@ class clsSeriesTable(FastObjectListView):
                        stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
             for key, value in series.returnDict().iteritems()]
         self.SetColumns(seriesColumns)
-
-
-    """User can select using the space bar """
-
-    def SetCheckState(self, modelObject, state):
-        """
-        This is the same code as the original SetCheckState in ObjectListView but
-        has been enhanced to check against an allowed limit
-        """
-        #print "SetCheckState called!"
-
-        if self.checkStateColumn is None:
-            return None
-        else:
-            checkedlen = len(self.GetCheckedObjects())
-            if self.GetCheckState(modelObject) is False:
-                if checkedlen < self.allowedLimit:
-                    r = self.checkStateColumn.SetCheckState(modelObject, state)
-
-                    # Just added the event here ===================================
-                    e = OvlCheckEvent(object=modelObject, value=state)
-                    wx.PostEvent(self, e)
-                    # =============================================================
-
-                    return r
-                else:
-                    wx.MessageBox("Visualization is limited to {0} series.".format(self.allowedLimit), "Can't add plot",
-                                  wx.OK | wx.ICON_INFORMATION)
-            else:
-                if checkedlen > 0:
-                    r = self.checkStateColumn.SetCheckState(modelObject, state)
-
-                    # Just added the event here ===================================
-                    e = OvlCheckEvent(object=modelObject, value=state)
-                    wx.PostEvent(self, e)
-                    # =============================================================
-
-                    return r
 
     """User can select series using the mouse to click on check boxes """
 

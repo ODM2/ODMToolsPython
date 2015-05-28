@@ -7,18 +7,18 @@ ODMTools is a python application for managing observational data using the Obser
 
 <p align="center"><img src="https://github.com/ODM2/ODMToolsPython/raw/master/doc/images/ODMToolsScreenShot.jpg"></p>
 
-If you want to try ODM Tools, we have created a couple of [testing databases](https://github.com/ODM2/ODMToolsPython/tree/master/examples) that you can use. 
+If you want to try ODM Tools, we have created a couple of [testing databases](https://github.com/ODM2/ODMToolsPython/tree/master/examples) that you can use.
 
 ##Releases
 
 To make running ODMTools easier we have included installers. Please select the one that is appropriate for your operating system
 
 ####Windows
-Recommended Release: 
-+   [Window v1.1.0-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.1.0-beta/ODMTools_v1.1.0-beta_setup.exe)
+Recommended Release:
++   [Window v1.2.0-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.0-Win/ODMTools_1.2.0_Beta_Installer.exe)
 
 ####Mac
-+   [Mac v1.1.0-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.1.0-beta/ODMTools_v1.1.0_Mac_Installer.pkg.zip)
++   [Mac v1.2.0-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.1.0-beta/ODMTools_v1.2.0_Mac_Installer.pkg.zip)
 
 ####Linux
 +   *Please run from source*
@@ -36,8 +36,8 @@ Running From Source
 +	[Sqlalchemy-0.9.7](http://pypi.python.org/pypi/SQLAlchemy/0.9.7)
 +	[wxpython-3.0.0](http://www.wxpython.org/download.php)
 
-Install the following software/libraries. 
-It is recommended to create an environment using 'Conda'. 
+Install the following software/libraries.
+It is recommended to create an environment using 'Conda'.
 'Conda' comes prepackaged in the Python Scientific Package Suite [Anaconda](http://continuum.io/downloads) (Available for Windows, OSX, Linux)
 
 Example environment creation:
@@ -50,7 +50,7 @@ Example environment creation:
 if psycopg2 isn't found, download it manually and follow these [directions](https://stackoverflow.com/questions/5420789/how-to-install-psycopg2-with-pip-on-python)
 
 Once you have downloaded the source code and all the dependencies installed, run the main application:
-    
+
     python odmtools/ODMToolsPython.py
 
 Sponsors
