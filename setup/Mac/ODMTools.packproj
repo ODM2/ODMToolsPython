@@ -52,7 +52,7 @@
 						<key>Mode</key>
 						<integer>1</integer>
 						<key>Path</key>
-						<string>/Users/stephanie/DEV/ODMToolsPython/LICENSE.txt</string>
+						<string>/Users/stephanie/DEV/ODMToolsPython/setup/Mac/Welcome.rtf</string>
 						<key>Path Type</key>
 						<integer>1</integer>
 					</dict>
@@ -584,7 +584,7 @@
 					<key>CFBundleName</key>
 					<string>ODMTools</string>
 					<key>CFBundleShortVersionString</key>
-					<string>1.4.0</string>
+					<string>1.2.0</string>
 				</dict>
 				<key>Options</key>
 				<dict>

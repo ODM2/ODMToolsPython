@@ -60,3 +60,9 @@ setup/Output/setup.exe
 .ipynb_checkpoints
 *.ipynb
 
+#folders
+Temp
+*.app
+*.spec
+
+
