@@ -1,9 +1,0 @@
-('/Users/stephanie/DEV/ODMToolsPython/setup/Mac/Temp/ODMTools/ODMTools',
- False,
- False,
- '../odmtools/common/icons/ODMTools.icns',
- '/Users/stephanie/DEV/ODMToolsPython/setup/version.txt',
- [],
- None,
- False,
- 1432162075)

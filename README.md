@@ -24,14 +24,14 @@ Recommended Release:
 Running From Source
 -------------------
 
-+	[Matplotlib-1.3.1](https://github.com/matplotlib/matplotlib/releases/tag/v1.3.1)
-+	[Pandas-0.15.0](https://github.com/pydata/pandas/releases)
++	[Matplotlib-1.4.3](https://github.com/matplotlib/matplotlib/releases/tag/v1.4.3)
++	[Pandas-0.16.0](https://github.com/pydata/pandas/releases)
 +	[Pip](http://docs.python-guide.org/en/latest/starting/install/win.html)
 +	[PyMySQL] (https://github.com/petehunt/PyMySQL/)
 +	[Pyodbc-3.0.7](https://code.google.com/p/pyodbc/downloads/detail?name=pyodbc-3.0.7.win-amd64-py2.7.exe)
-+	[Python-2.7.8 x64/x32](http://www.python.org/download/releases/2.7.3/) (Python 3 version isn't available)
++	[Python-2.7.9 x64/x32](http://www.python.org/download/releases/2.7.9/) (Python 3 version isn't available)
 +	[Psycopg2-2.4.6](http://initd.org/psycopg/docs/install.html)
-+	[Sqlalchemy-0.9.7] (http://pypi.python.org/pypi/SQLAlchemy/0.9.7)
++	[Sqlalchemy-1.0.0] (http://pypi.python.org/pypi/SQLAlchemy/1.0.0)
 +	[wxpython-3.0.0](http://www.wxpython.org/download.php)
 
 Install the following software/libraries. 
@@ -49,7 +49,7 @@ if psycopg2 isn't found, download it manually and follow these [directions](http
 
 Once you have downloaded the source code and all the dependencies installed, run the main application:
     
-    python odmtools/ODMToolsPython.py
+    python ODMTools.py
 
 Sponsors
 ---------
