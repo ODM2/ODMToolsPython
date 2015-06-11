@@ -9,6 +9,10 @@ ODMTools is a python application for managing observational data using the Obser
 
 If you want to try ODM Tools, we have created a couple of [testing databases](https://github.com/ODM2/ODMToolsPython/tree/master/examples) that you can use.
 
+##ODM Compatibility
+
+ODM Tools Python is currenlty fully compatible with ODM Version 1.1.1. We are working on ODM2 compatibility, and should have it worked out this summer.
+
 ##Releases
 
 To make running ODMTools easier we have included installers. Please select the one that is appropriate for your operating system
