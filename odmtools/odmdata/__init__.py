@@ -1,3 +1,4 @@
+'''
 from base import Base
 from censor_code_cv import CensorCodeCV
 from data_type_cv import DataTypeCV
@@ -26,7 +27,6 @@ from value_type_cv import ValueTypeCV
 from variable import Variable
 from variable_name_cv import VariableNameCV
 from vertical_datum_cv import VerticalDatumCV
-from memory_database import MemoryDatabase
 
 from series import copy_series
 from data_value import copy_data_value
@@ -64,11 +64,9 @@ __all__ = [
     'copy_series',
     'copy_data_value'
 ]
+'''
 
-# pyinstaller needs pymysql, psycopg2, and pyodbc (If on windows)
 import sys
-if sys.platform is not 'darwin':
-    import pymysql
-    import psycopg2
-    import pyodbc
-    
+sys.path.append('/Users/stephanie/DEV/ODM2PythonAPI/')
+import src.api as api
+from src.api.ODMconnection import SessionFactory
