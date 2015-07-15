@@ -70,3 +70,10 @@ import sys
 sys.path.append('/Users/stephanie/DEV/ODM2PythonAPI/')
 import src.api as api
 from src.api.ODMconnection import SessionFactory
+
+
+
+__all__=['MemoryDatabase',
+         'SessionFactory',
+         'api',
+         ]
