@@ -158,7 +158,6 @@ class TestSeriesService:
 
         assert self.series_service.series_exists_quint(site_id, var_id, method_id, source_id, qcl_id) == True
 
-    ## TODO Unittest save_series, save_as, save_as_existing
     '''
     def test_save_series(self):
         series = Series()

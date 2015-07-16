@@ -91,9 +91,12 @@ class MemoryDatabase(object):
         #self.updateDF()
 
     def update(self, updates):
+        '''
+        updates : list of dictionary that contains 2 items, id and value
+        '''
 
         stmt = (DataValue.__table__.update().
-                where(DataValue.id == bindparam('id')).
+                where(DataValue.local_date_time == bindparam('id')).
                 values(DataValue=bindparam('value'))
         )
 
@@ -117,7 +120,7 @@ class MemoryDatabase(object):
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
         chunks=self.chunking(ids)
         for c in chunks:
-            q=self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(c))
+            q=self.mem_service._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(c))
             q.update({DataValue.data_value: query}, False)
 
         #self.updateDF()
@@ -125,11 +128,11 @@ class MemoryDatabase(object):
     def chunking(self, data):
         return [data[x:x+998] for x in xrange(0, len(data), 998)]
         
-    #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
+    #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)
         for c in chunks:
-            self.mem_service._edit_session.query(DataValue).filter(DataValue.id.in_(c))\
+            self.mem_service._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(c))\
                 .update({DataValue.qualifier_id: value}, False)
 
 

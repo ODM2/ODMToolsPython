@@ -134,7 +134,7 @@ class AddPoints(wx.Dialog):
         #print "Editing Cell!", event.subItemIndex
 
         ## Ignore editing on first cell
-        ## TODO this is needed for the windows version
+        ##  this is needed for the windows version
         #if event.subItemIndex == 0:
         #    event.Veto()
         #pass

@@ -48,6 +48,9 @@ Installing using pyinstaller
 
             easy_install pywin32-219.win-amd64-py2.7.exe
 
+    Install Microsoft C++ Redistributable either 2008 or 2010 x86/x64 from https://www.microsoft.com/en-us/download/details.aspx?id=29
+        Install it to your system
+
     See the `Example <https://mborgerson.com/creating-an-executable-from-a-python-script/>`_ to see how a simple wxpython application can be built with pyinstaller
 
     .. Note::
@@ -55,6 +58,9 @@ Installing using pyinstaller
 
     .. Warning::
             Prepare to do a lot of googling as there are a lot of features that aren't clear
+
+    .. Warning::
+            Make sure that you close command prompt and reopen it if you installed any of these packages/software
 
     Here is an example of building a program. There isn't a messy setup.py needed unlike py2exe. These are automatically generated when a user runs the command
 

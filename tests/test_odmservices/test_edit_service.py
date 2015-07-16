@@ -23,7 +23,6 @@ class TestSeriesService:
         self.edit_service =EditService(1, connection= self.memory_database)
 
 
-    ## TODO Unittest save_series, save_as, save_as_existing
 
     def test_save_series(self):
         assert self.edit_service.save()

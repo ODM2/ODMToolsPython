@@ -65,10 +65,4 @@ __all__ = [
     'copy_data_value'
 ]
 
-# pyinstaller needs pymysql, psycopg2, and pyodbc (If on windows)
-import sys
-if sys.platform is not 'darwin':
-    import pymysql
-    import psycopg2
-    import pyodbc
-    
+

@@ -92,7 +92,7 @@ class Series(Base):
     source = relationship(Source)
     quality_control_level = relationship(QualityControlLevel)
 
-    # TODO add all to repr
+
     def __repr__(self):
         return "<Series('%s', '%s', '%s', '%s')>" % (self.id, self.site_name, self.variable_code, self.variable_name)
 
