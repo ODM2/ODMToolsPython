@@ -28,9 +28,9 @@
 						<key>Mode</key>
 						<integer>1</integer>
 						<key>Path</key>
-						<string>/Users/stephanie/DEV/ODMToolsPython/LICENSE.txt</string>
+						<string>../../LICENSE.txt</string>
 						<key>Path Type</key>
-						<integer>1</integer>
+						<integer>2</integer>
 					</dict>
 				</dict>
 				<key>ReadMe</key>
@@ -52,9 +52,9 @@
 						<key>Mode</key>
 						<integer>1</integer>
 						<key>Path</key>
-						<string>/Users/stephanie/DEV/ODMToolsPython/setup/Mac/Welcome.rtf</string>
+						<string>Welcome.rtf</string>
 						<key>Path Type</key>
-						<integer>1</integer>
+						<integer>2</integer>
 					</dict>
 				</dict>
 			</dict>
@@ -75,9 +75,9 @@
 									<key>GID</key>
 									<integer>80</integer>
 									<key>Path</key>
-									<string>/Users/stephanie/DEV/ODMToolsPython/setup/Mac/ODMTools.app</string>
+									<string>Dist/ODMTools.app</string>
 									<key>Path Type</key>
-									<integer>1</integer>
+									<integer>2</integer>
 									<key>Privileges</key>
 									<integer>493</integer>
 									<key>Type</key>
@@ -566,9 +566,9 @@
 						<key>IFPkgDescriptionDescription</key>
 						<string></string>
 						<key>IFPkgDescriptionTitle</key>
-						<string>ODMTools_v1.2.0-beta_setup</string>
+						<string>ODMTools_v1.2.1</string>
 						<key>IFPkgDescriptionVersion</key>
-						<string>1.2.0 Beta</string>
+						<string>1.2.1 Beta</string>
 					</dict>
 				</dict>
 				<key>Display Information</key>
@@ -584,7 +584,7 @@
 					<key>CFBundleName</key>
 					<string>ODMTools</string>
 					<key>CFBundleShortVersionString</key>
-					<string>1.2.0</string>
+					<string>1.2.1</string>
 				</dict>
 				<key>Options</key>
 				<dict>
@@ -619,7 +619,7 @@
 		<key>IFPkgFlagPackageSelection</key>
 		<integer>0</integer>
 		<key>Name</key>
-		<string>ODMTools</string>
+		<string>ODMTools_v1.2.1-beta_Mac_installer</string>
 		<key>Status</key>
 		<integer>1</integer>
 		<key>Type</key>
