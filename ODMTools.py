@@ -18,9 +18,9 @@ from odmtools.common.logger import LoggerTool
 from multiprocessing import cpu_count, freeze_support
 from odmtools.odmdata import MemoryDatabase
 
-# import pyodbc
-# import pymysql
-# import psycopg2
+import pyodbc
+import pymysql
+import psycopg2
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

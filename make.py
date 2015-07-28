@@ -4,6 +4,15 @@ import os, sys, shutil, zipfile, platform
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 
+#need Windows installer
+#windows installer with console
+#windows no install( include console)
+#mac installer
+#mac no installer
+
+
+
+
 ## Update odmtools.meta.data whenever creating a release
 from odmtools.meta import data
 
@@ -148,7 +157,7 @@ def run_pyinstaller(console=False):
                 '--noconfirm ' + APP_FILE)
         else:
             ## Non Console Version
-            os.system('pyinstaller '
+            val = os.system('pyinstaller '
                 '--clean '
                 '--distpath=%s ' % WIN_DIR +
                 '--workpath=%s ' % WORK_DIR +
