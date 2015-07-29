@@ -691,7 +691,7 @@ class SeriesService():
         :param id_list: list of ids
         :return:
         """
-        self._edit_session.query(DataValue).filter(DataValue.id.in_(id_list)).delete(False)
+        self._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(id_list)).delete(False)
 
 #####################
 #
