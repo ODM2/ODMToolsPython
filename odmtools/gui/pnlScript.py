@@ -161,7 +161,7 @@ class pnlScript(wx.Panel):
             dlg.Destroy()
             return False
     def runCommand(self, text):
-        #TODO Stop recording
+
         # get ahold of record service and turn it off do i need a publisher command?
 
         self.parent.record_service.toggle_record(False)

@@ -66,6 +66,7 @@ __all__ = [
 ]
 '''
 
+<<<<<<< HEAD
 import sys
 sys.path.append('/Users/stephanie/DEV/ODM2PythonAPI/')
 import src.api as api
@@ -77,3 +78,6 @@ __all__=['MemoryDatabase',
          'SessionFactory',
          'api',
          ]
+=======
+
+>>>>>>> 60dccccf7d52506b8bdb8cfd063f73ce2dad2b4b

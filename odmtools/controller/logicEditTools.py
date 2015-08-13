@@ -221,7 +221,7 @@ class EditTools():
         #values['override'] = override
         return values['var'], values['method'], values['qcl']#, values['isSave']
 
-    # TODO Create save_as & save_existing
+
     def save(self, var=None, method=None, qcl=None):
         """
 

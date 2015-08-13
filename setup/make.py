@@ -4,14 +4,26 @@ import os, sys, shutil, zipfile, platform
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 
+#need Windows installer
+#windows installer with console
+#windows no install( include console)
+#mac installer
+#mac no installer
+
+
+
+
 ## Update odmtools.meta.data whenever creating a release
 from odmtools.meta import data
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
-DIST_DIR = os.path.join(SETUP_DIR, 'Dist')
 WIN_DIR = os.path.join(SETUP_DIR, "Windows")
 MAC_DIR = os.path.join(SETUP_DIR, "Mac")
+
+MAC_DIST_DIR = os.path.join(MAC_DIR, "Dist")
+DIST_DIR = os.path.join(WIN_DIR, 'Dist')
+
 
 MAC_WORK_DIR = os.path.join(MAC_DIR, "Temp")
 WORK_DIR = os.path.join(WIN_DIR, "Temp")
@@ -20,7 +32,7 @@ ICON_DIR = os.path.join('odmtools', 'common', "icons")
 WIN_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
 MAC_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.icns")
 
-APP_DIR = os.path.join(MAC_DIR, "ODMTools.app")
+APP_DIR = os.path.join(MAC_DIR, 'Dist', "ODMTools.app")
 # Location of Windows files
 APP_FILE = os.path.join(BASE_DIR, "ODMTools.py")
 MAKE_FILE = os.path.realpath(__file__)
@@ -148,7 +160,7 @@ def run_pyinstaller(console=False):
                 '--noconfirm ' + APP_FILE)
         else:
             ## Non Console Version
-            os.system('pyinstaller '
+            val = os.system('pyinstaller '
                 '--clean '
                 '--distpath=%s ' % WIN_DIR +
                 '--workpath=%s ' % WORK_DIR +
@@ -168,7 +180,7 @@ def mac_pyinstaller():
     try:
         os.system('pyinstaller '
             '--clean '
-            '--distpath=%s ' % DIST_DIR +
+            '--distpath=%s ' % MAC_DIST_DIR +
             '--workpath=%s ' % MAC_WORK_DIR +
             '--specpath=%s ' % MAC_DIR +
             '--upx-dir=%s ' % BASE_DIR +
@@ -181,6 +193,7 @@ def mac_pyinstaller():
 
 
         os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
+        # os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
         #copy "libwx_osx_cocoau-3.0.0.0.0.dylib"
         return True
     except Exception as e:
