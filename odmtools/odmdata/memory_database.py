@@ -1,11 +1,10 @@
-import timeit
 import logging
+
+from sqlalchemy import bindparam
+
 from odmtools.common.logger import LoggerTool
 from odmtools.odmservices import SeriesService
 from odmtools.odmdata import DataValue
-from sqlalchemy import update, bindparam
-from odmtools.common.taskServer import TaskServerMP
-from multiprocessing import cpu_count, freeze_support
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

@@ -66,18 +66,48 @@ __all__ = [
 ]
 '''
 
-<<<<<<< HEAD
+
 import sys
-sys.path.append('/Users/stephanie/DEV/ODM2PythonAPI/')
-import src.api as api
+from odmtools.odmdata import memory_database
+
+
 from src.api.ODMconnection import SessionFactory
+from src.api.versionSwitcher.ODM import DataTypeCV, DataValue, GeneralCategoryCV, ISOMetadata, LabMethod, Method, \
+    OffsetType,Qualifier,QualityControlLevel,Sample,SampleMediumCV,SampleTypeCV, Series, Site,SiteTypeCV,Source, \
+    SpatialReference,SpeciationCV,TopicCategoryCV,Unit,ValueTypeCV,Variable,VerticalDatumCV
 
 
 
-__all__=['MemoryDatabase',
-         'SessionFactory',
-         'api',
+__all__=[
+        'SessionFactory',
+        'CensorCodeCV',
+        'DataTypeCV',
+        'DataValue',
+        'GeneralCategoryCV',
+        'ISOMetadata',
+        'LabMethod',
+        'Method',
+        'ODMVersion',
+        'OffsetType',
+        'Qualifier',
+        'QualityControlLevel',
+        'Sample',
+        'SampleMediumCV',
+        'SampleTypeCV',
+        'Series',
+        'SessionFactory',
+        'Site',
+        'SiteTypeCV',
+        'Source',
+        'SpatialReference',
+        'SpeciationCV',
+        'TopicCategoryCV',
+        'Unit',
+        'ValueTypeCV',
+        'Variable',
+        'VariableNameCV',
+        'VerticalDatumCV',
+
+        'MemoryDatabase',
+
          ]
-=======
-
->>>>>>> 60dccccf7d52506b8bdb8cfd063f73ce2dad2b4b

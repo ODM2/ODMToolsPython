@@ -6,7 +6,7 @@ import wx.lib.newevent
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
 from odmtools.common.logger import LoggerTool
-from odmtools.odmdata import series
+from odmtools.odmdata import Series
 
 
 tool = LoggerTool()
