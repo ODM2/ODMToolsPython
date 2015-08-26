@@ -2,7 +2,7 @@
 
 import wx
 from odmtools.view import clsExisting
-from odmtools.odmdata import series
+from odmtools.odmdata import Series
 import wx.wizard as wiz
 import datetime
 

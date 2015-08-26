@@ -4,6 +4,7 @@ from sqlalchemy import bindparam
 
 from odmtools.common.logger import LoggerTool
 from odmtools.odmservices import SeriesService
+from odmtools.odmservices import ServiceManager
 from odmtools.odmdata import DataValue
 
 tool = LoggerTool()
@@ -21,7 +22,8 @@ class MemoryDatabase(object):
         # Series_Service handles remote database
         self.series_service = None
         # Memory_service handles in memory database
-        self.mem_service = SeriesService("sqlite:///:memory:")
+        sm = ServiceManager()
+        self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
         # TODO clean up closing of program
         # if taskserver is None:
         #numproc = cpu_count()
@@ -31,7 +33,8 @@ class MemoryDatabase(object):
         self.taskserver = taskserver
 
     def reset_edit(self):
-        self.mem_service = SeriesService("sqlite:///:memory:")
+        sm = ServiceManager()
+        self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
 
     def set_series_service(self, service):
         self.series_service = service

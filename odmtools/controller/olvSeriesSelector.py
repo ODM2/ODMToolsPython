@@ -48,7 +48,7 @@ class clsSeriesTable(FastObjectListView):
             ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,
                        # stringConverter = '%s')
                        stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
-            for key, value in series.returnDict().iteritems()]
+            for key, value in Series.returnDict().iteritems()]
         self.SetColumns(seriesColumns)
 
     """User can select series using the mouse to click on check boxes """

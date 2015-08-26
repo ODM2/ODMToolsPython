@@ -8,9 +8,8 @@
 # import pymysql
 # import pyodbc
 # #import psycopg2
-import sys
-sys.path.append('/Users/stephanie/DEV/ODM2PythonAPI/')
-from src.api.ODM1_1_1.services import SeriesService, EditService, CVService, ExportService
+
+from api.ODM1_1_1.services import SeriesService, EditService, CVService, ExportService
 from service_manager import ServiceManager
 
 __all__ = [

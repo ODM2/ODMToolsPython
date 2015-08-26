@@ -8,8 +8,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from odmtools.odmservices import SeriesService, CVService, EditService, ExportService
 from odmtools.controller import EditTools
 from odmtools.lib.Appdirs.appdirs import user_config_dir
-from odmtools.odmdata import SessionFactory
+from odmtools.odmdata import SessionFactory, Variable
 
+from odmtools.common.logger import LoggerTool
+tool = LoggerTool()
+logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 
 class ServiceManager():
@@ -88,13 +91,9 @@ class ServiceManager():
     @classmethod
     def testEngine(self, connection_string):
         s = SessionFactory(connection_string, echo=False)
-        if 'mssql' in connection_string:
-            s.ms_test_Session().execute("Select top 1 VariableCode From Variables")
-        elif 'mysql' in connection_string:
-            s.my_test_Session().execute('Select "VariableCode" From Variables Limit 1')
-        elif 'postgresql' in connection_string:
-            #s.psql_test_Session().execute('Select "VariableCode" From "ODM2"."Variables" Limit 1')
-            s.psql_test_Session().execute('Select "VariableCode" From "Variables" Limit 1')
+
+        s.test_Session().query(Variable.code).limit(1).first()
+
         return True
 
     def test_connection(self, conn_dict):
@@ -130,22 +129,22 @@ class ServiceManager():
             return None
         return self.version
 
-    def get_series_service(self, conn_dict=""):
-        conn_string = ""
+    def get_series_service(self, conn_dict="", conn_string = ""):
+
         if conn_dict:
             conn_string = self._build_connection_string(conn_dict)
             self._current_conn_dict = conn_dict
-        else:
+        elif not conn_string:
             conn_string = self._build_connection_string(self._current_conn_dict)
-        return SeriesService(conn_string, self.debug)
+        return SeriesService(SessionFactory(conn_string, self.debug))
 
     def get_cv_service(self):
         conn_string = self._build_connection_string(self._current_conn_dict)
-        return CVService(conn_string, self.debug)
+        return CVService(SessionFactory(conn_string, self.debug))
 
     def get_edit_service(self, series_id, connection):
         
-        return EditService(series_id, connection=connection,  debug=self.debug)
+        return EditService(series_id, connection,  debug=self.debug)
 
     def get_record_service(self, script, series_id, connection):
         return EditTools(self, script, self.get_edit_service(series_id, connection),

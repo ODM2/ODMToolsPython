@@ -1,35 +1,4 @@
 '''
-from base import Base
-from censor_code_cv import CensorCodeCV
-from data_type_cv import DataTypeCV
-from data_value import DataValue
-from general_category_cv import GeneralCategoryCV
-from iso_metadata import ISOMetadata
-from lab_method import LabMethod
-from method import Method
-from odm_version import ODMVersion
-from offset_type import OffsetType
-from qualifier import Qualifier
-from quality_control_level import QualityControlLevel
-from sample import Sample
-from sample_medium_cv import SampleMediumCV
-from sample_type_cv import SampleTypeCV
-from series import Series
-from session_factory import SessionFactory
-from site import Site
-from site_type_cv import SiteTypeCV
-from source import Source
-from spatial_reference import SpatialReference
-from speciation_cv import SpeciationCV
-from topic_category_cv import TopicCategoryCV
-from unit import Unit
-from value_type_cv import ValueTypeCV
-from variable import Variable
-from variable_name_cv import VariableNameCV
-from vertical_datum_cv import VerticalDatumCV
-
-from series import copy_series
-from data_value import copy_data_value
 
 __all__ = [
     'Base',
@@ -61,22 +30,40 @@ __all__ = [
     'VariableNameCV',
     'VerticalDatumCV',
     'MemoryDatabase',
-    'copy_series',
-    'copy_data_value'
+
 ]
 '''
 
 
-import sys
-from odmtools.odmdata import memory_database
 
 
-from src.api.ODMconnection import SessionFactory
-from src.api.versionSwitcher.ODM import DataTypeCV, DataValue, GeneralCategoryCV, ISOMetadata, LabMethod, Method, \
-    OffsetType,Qualifier,QualityControlLevel,Sample,SampleMediumCV,SampleTypeCV, Series, Site,SiteTypeCV,Source, \
-    SpatialReference,SpeciationCV,TopicCategoryCV,Unit,ValueTypeCV,Variable,VerticalDatumCV
+from api.ODMconnection import SessionFactory
+from api.versionSwitcher import ODM
+DataTypeCV=ODM.DataTypeCV
+DataValue=ODM.DataValue
+# GeneralCategoryCV=ODM.GeneralCategoryCV
+ISOMetadata=ODM.ISOMetadata
+LabMethod=ODM.LabMethod
+Method=ODM.Method
+OffsetType=ODM.OffsetType
+Qualifier=ODM.Qualifier
+QualityControlLevel=ODM.QualityControlLevel
+Sample =ODM.Sample
+SampledMediumCV= ODM.SampleMediumCV
+# SampleTypeCV=ODM.SampleTypeCV
+Series=ODM.Series
+Site= ODM.Site
+SiteType=ODM.SiteTypeCV
+Source =ODM.Source
+SpatialReferences=ODM.SpatialReference
+SpeciationCV=ODM.SpeciationCV
+# TopicCategoryCV=ODM.TopicCategoryCV
+Unit= ODM.Unit
+# ValueTypeCV=ODM.ValueTypeCV
+Variable = ODM.Variable
+VerticalDatumCV=ODM.VerticalDatumCV
 
-
+from odmtools.odmdata.memory_database import MemoryDatabase
 
 __all__=[
         'SessionFactory',
