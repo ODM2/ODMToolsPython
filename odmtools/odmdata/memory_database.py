@@ -85,10 +85,10 @@ class MemoryDatabase(object):
         return self.mem_service.get_all_plot_values()
 
     def commit(self):
-        self.mem_service._edit_session.commit()
+        self.mem_service._session.commit()
 
     def rollback(self):
-        self.mem_service._edit_session.rollback()
+        self.mem_service._session.rollback()
         # self.mem_service._session_factory.engine.connect().connection.rollback()
         #self.updateDF()
 
@@ -102,7 +102,7 @@ class MemoryDatabase(object):
                 values(DataValue=bindparam('value'))
         )
 
-        self.mem_service._edit_session.execute(stmt, updates)
+        self.mem_service._session.execute(stmt, updates)
 
         # self.updateDF()
 
@@ -122,7 +122,7 @@ class MemoryDatabase(object):
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
         chunks=self.chunking(ids)
         for c in chunks:
-            q=self.mem_service._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(c))
+            q=self.mem_service._session.query(DataValue).filter(DataValue.local_date_time.in_(c))
             q.update({DataValue.data_value: query}, False)
 
         #self.updateDF()
@@ -134,7 +134,7 @@ class MemoryDatabase(object):
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)
         for c in chunks:
-            self.mem_service._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(c))\
+            self.mem_service._session.query(DataValue).filter(DataValue.local_date_time.in_(c))\
                 .update({DataValue.qualifier_id: value}, False)
 
 
@@ -163,7 +163,7 @@ class MemoryDatabase(object):
                     "SiteID": point[10], "VariableID": point[11],
                     "MethodID": point[12], "SourceID": point[13],
                     "QualityControlLevelID": point[14]}
-            self.mem_service._edit_session.execute(stmt, vals)
+            self.mem_service._session.execute(stmt, vals)
 
 
     def stopEdit(self):
@@ -222,7 +222,7 @@ class MemoryDatabase(object):
         :return:
         """
 
-        query = self.mem_service._edit_session.query(DataValue)
+        query = self.mem_service._session.query(DataValue)
         if var is not None:
             logger.debug(var)
             query.update({DataValue.variable_id: var})

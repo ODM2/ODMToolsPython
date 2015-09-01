@@ -6,7 +6,7 @@ import wx.lib.newevent
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
 from odmtools.common.logger import LoggerTool
-from odmtools.odmdata import Series
+from odmtools.odmdata import ODM
 
 
 tool = LoggerTool()
@@ -48,7 +48,7 @@ class clsSeriesTable(FastObjectListView):
             ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,
                        # stringConverter = '%s')
                        stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
-            for key, value in Series.returnDict().iteritems()]
+            for key, value in ODM.returnDict().iteritems()]
         self.SetColumns(seriesColumns)
 
     """User can select series using the mouse to click on check boxes """

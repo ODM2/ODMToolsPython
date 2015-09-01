@@ -38,7 +38,8 @@ __all__ = [
 
 
 from api.ODMconnection import SessionFactory
-from api.versionSwitcher import ODM
+from api.versionSwitcher import ODM, refreshDB
+from api.ODM2.models import change_schema
 DataTypeCV=ODM.DataTypeCV
 DataValue=ODM.DataValue
 # GeneralCategoryCV=ODM.GeneralCategoryCV
@@ -94,6 +95,8 @@ __all__=[
         'Variable',
         'VariableNameCV',
         'VerticalDatumCV',
+        'refreshDB',
+        'change_schema',
 
         'MemoryDatabase',
 
