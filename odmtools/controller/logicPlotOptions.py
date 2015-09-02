@@ -220,7 +220,6 @@ class SeriesPlotInfo(object):
             self.memDB.series_service.reset_session()
             return series
         except Exception as e:
-            print e
             return None
 
     def getSelectedSeries(self, seriesID):

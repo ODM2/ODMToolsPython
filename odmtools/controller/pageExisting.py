@@ -2,7 +2,7 @@
 
 import wx
 from odmtools.view import clsExisting
-from odmtools.odmdata import Series
+from odmtools.odmdata import returnDict
 import wx.wizard as wiz
 import datetime
 
@@ -44,8 +44,6 @@ class pageExisting(wiz.WizardPageSimple):
 
 
 
-
-
     # Handlers for pnlExisting events.
     def OnOLVItemSelected(self, event):
         # TODO: Implement OnOLVItemSelected
@@ -62,7 +60,7 @@ class pageExisting(wiz.WizardPageSimple):
         seriesColumns = [clsExisting.ColumnDefn(key, align="left",
                                                 minimumWidth=-1, valueGetter=value,
                                                 stringConverter= '%Y-%m-%d %H:%M:%S' if 'date' in key.lower() else '%s')
-                         for key, value in series.returnDict().iteritems()]
+                         for key, value in returnDict().iteritems()]
 
         self.panel.olvSeriesList.SetColumns(seriesColumns)
         objects = dbservice.get_series_by_site(site_id= site_id)

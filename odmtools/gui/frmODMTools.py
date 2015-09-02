@@ -113,7 +113,7 @@ class frmODMToolsMain(wx.Frame):
         parent.AddWindow(self._ribbon, 0, wx.EXPAND)
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
-    def _init_database(self, quit_if_cancel=True):
+    def _init_database(self, quit_if_cancel=True, newConnection= ''):
         logger.debug("Loading Database...")
 
         self.service_manager = ServiceManager()
@@ -122,7 +122,10 @@ class frmODMToolsMain(wx.Frame):
 
         while True:
             ## Database connection is valid, therefore proceed through the rest of the program
-            conn_dict = self.service_manager.is_valid_connection()
+            if newConnection:
+                conn_dict= newConnection
+            else:
+                conn_dict = self.service_manager.is_valid_connection()
             if conn_dict:
                 #conn_dict = None
 
@@ -436,7 +439,7 @@ class frmODMToolsMain(wx.Frame):
         newConnection = db_config.panel.getFieldValues()
         db_config.Destroy()
 
-        if self._init_database(quit_if_cancel=False):
+        if self._init_database(quit_if_cancel=False, newConnection=newConnection):
             # if editing, stop editing...
             if self._ribbon.getEditStatus():
                 self.stopEdit(event=None)

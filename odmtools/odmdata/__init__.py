@@ -63,6 +63,7 @@ Unit= ODM.Unit
 # ValueTypeCV=ODM.ValueTypeCV
 Variable = ODM.Variable
 VerticalDatumCV=ODM.VerticalDatumCV
+returnDict = ODM.returnDict
 
 from odmtools.odmdata.memory_database import MemoryDatabase
 
@@ -97,6 +98,7 @@ __all__=[
         'VerticalDatumCV',
         'refreshDB',
         'change_schema',
+        'returnDict',
 
         'MemoryDatabase',
 

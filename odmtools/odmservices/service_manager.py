@@ -41,7 +41,7 @@ class ServiceManager():
                     line_dict['password'] = line[2]
                     line_dict['address'] = line[3]
                     line_dict['db'] = line[4]
-                    line_dict['version']=1.1
+                    line_dict['version']='1.1' if len(line) == 5 else line[5]
                     self._conn_dicts.append(line_dict)
 
         if len(self._conn_dicts) is not 0:
@@ -55,39 +55,12 @@ class ServiceManager():
     def get_all_conn_dicts(self):
         return self._conn_dicts
 
-    # def is_valid_connection(self):
-    #     if self._current_conn_dict:
-    #         conn_string = self._build_connection_string(self._current_conn_dict)
-    #         logger.debug("Conn_string: %s" % conn_string)
-    #         try:
-    #             if self.testEngine(conn_string):
-    #                return self._current_conn_dict
-    #
-    #     return None
-
-    def is_valid_connection(self):
-        if self._current_conn_dict:
-            conn_string = self._build_connection_string(self._current_conn_dict)
-            logger.debug("Conn_string: %s" % conn_string)
-            dbtype = self._current_conn_dict['version']
-            #dbtype =1.1
-            refreshDB(dbtype)
-
-            try:
-                if self.testEngine(conn_string):
-                    return self._current_conn_dict
-            except Exception as e:
-                logger.fatal("The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
-                return None
-
-
-
 
     def get_current_conn_dict(self):
         return self._current_conn_dict
 
-    # def set_current_conn_dict(self, dict):
-    #     self._current_conn_dict = dict
+    def set_current_conn_dict(self, dict):
+        self._current_conn_dict = dict
 
     def add_connection(self, conn_dict):
         """conn_dict must be a dictionary with keys: engine, user, password, address, db"""
@@ -139,10 +112,37 @@ class ServiceManager():
             print "Connection was unsuccessful ", e.message
             return False
         return True
+    # def is_valid_connection(self):
+    #     if self._current_conn_dict:
+    #         conn_string = self._build_connection_string(self._current_conn_dict)
+    #         logger.debug("Conn_string: %s" % conn_string)
+    #         try:
+    #             if self.testEngine(conn_string):
+    #                return self._current_conn_dict
+    #
+    #     return None
+
+    def is_valid_connection(self):
+        if self._current_conn_dict:
+            conn_string = self._build_connection_string(self._current_conn_dict)
+            logger.debug("Conn_string: %s" % conn_string)
+            dbtype = float(self._current_conn_dict['version'])
+            #dbtype =1.1
+            refreshDB(dbtype)
+
+            try:
+                if self.testEngine(conn_string):
+                    return self._current_conn_dict
+            except Exception as e:
+                logger.fatal("The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
+                return None
 
     def test_connection(self, conn_dict):
         try:
             conn_string = self._build_connection_string(conn_dict)
+            dbtype = float(conn_dict['version'])
+            #dbtype =1.1
+            refreshDB(dbtype)
             if self.testEngine(conn_string):# and self.get_db_version(conn_string) == '1.1.1':
                 return True
         except SQLAlchemyError as e:
@@ -248,6 +248,6 @@ class ServiceManager():
     def _save_connections(self):
         f = self._get_file('w')
         for conn in self._conn_dicts:
-            f.write("%s %s %s %s %s\n" % (conn['engine'], conn['user'], conn['password'], conn['address'], conn['db']))
+            f.write("%s %s %s %s %s %s\n" % (conn['engine'], conn['user'], conn['password'], conn['address'], conn['db'], conn['version']))
         f.close()
 
