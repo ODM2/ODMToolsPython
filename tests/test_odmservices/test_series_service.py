@@ -12,10 +12,10 @@ class TestSeriesService:
         engine = self.series_service._session_factory.engine
         test_util.build_db(engine)
 
-    def test_get_db_version(self):
-        version = test_util.add_version(self.session)
-        db_version = self.series_service.get_db_version()
-        assert version.version_number == db_version
+    # def test_get_db_version(self):
+    #     version = test_util.add_version(self.session)
+    #     db_version = self.series_service.get_db_version()
+    #     assert version.version_number == db_version
 
     def test_get_all_sites_empty(self):
         sites = self.series_service.get_used_sites()

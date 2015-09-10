@@ -87,11 +87,9 @@ class ServiceManager():
             logger.error("Unable to save connection due to invalid connection to database")
             return False
 
-
     @classmethod
     def testEngine(self, connection_string):
         s = SessionFactory(connection_string, echo=False)
-
         s.test_Session().query(Variable.code).limit(1).first()
 
         return True
@@ -99,7 +97,7 @@ class ServiceManager():
     def test_connection(self, conn_dict):
         try:
             conn_string = self._build_connection_string(conn_dict)
-            if self.testEngine(conn_string) and self.get_db_version(conn_string) == '1.1.1':
+            if self.testEngine(conn_string): #and self.get_db_version(conn_string) == '1.1.1':
                 return True
         except SQLAlchemyError as e:
             logger.error("SQLAlchemy Error: %s" % e.message)
@@ -113,21 +111,21 @@ class ServiceManager():
         self._conn_dicts[:] = [x for x in self._conn_dicts if x != conn_dict]
 
     # Create and return services based on the currently active connection
-    def get_db_version_dict(self, conn_dict):
-        conn_string = self._build_connection_string(conn_dict)
-        self.get_db_version(conn_string)
+    # def get_db_version_dict(self, conn_dict):
+    #     conn_string = self._build_connection_string(conn_dict)
+    #     self.get_db_version(conn_string)
 
-    def get_db_version(self, conn_string):
-        if isinstance(conn_string, dict):
-            conn_string = self._build_connection_string(conn_string)
-        service = SeriesService(conn_string)
-        #if not self.version:
-        try:
-            self.version = service.get_db_version()
-        except Exception as e:
-            logger.error("Exception: %s" % e.message)
-            return None
-        return self.version
+    # def get_db_version(self, conn_string):
+    #     if isinstance(conn_string, dict):
+    #         conn_string = self._build_connection_string(conn_string)
+    #     service = SeriesService(conn_string)
+    #     #if not self.version:
+    #     try:
+    #         self.version = service.get_db_version()
+    #     except Exception as e:
+    #         logger.error("Exception: %s" % e.message)
+    #         return None
+    #     return self.version
 
     def get_series_service(self, conn_dict="", conn_string = ""):
 

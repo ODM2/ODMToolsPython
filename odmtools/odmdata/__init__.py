@@ -38,7 +38,9 @@ __all__ = [
 
 
 from api.ODMconnection import SessionFactory
-from api.versionSwitcher import ODM
+from api.versionSwitcher import ODM, refreshDB
+from api.ODM2.models import change_schema
+
 DataTypeCV=ODM.DataTypeCV
 DataValue=ODM.DataValue
 # GeneralCategoryCV=ODM.GeneralCategoryCV
@@ -62,6 +64,7 @@ Unit= ODM.Unit
 # ValueTypeCV=ODM.ValueTypeCV
 Variable = ODM.Variable
 VerticalDatumCV=ODM.VerticalDatumCV
+returnDict = ODM.returnDict
 
 from odmtools.odmdata.memory_database import MemoryDatabase
 
@@ -74,7 +77,7 @@ __all__=[
         'ISOMetadata',
         'LabMethod',
         'Method',
-        'ODMVersion',
+        #'ODMVersion',
         'OffsetType',
         'Qualifier',
         'QualityControlLevel',
@@ -94,7 +97,9 @@ __all__=[
         'Variable',
         'VariableNameCV',
         'VerticalDatumCV',
+        'refreshDB',
+        'change_schema',
+        'returnDict',
 
         'MemoryDatabase',
-
          ]
