@@ -8,7 +8,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from odmtools.odmservices import SeriesService, CVService, EditService, ExportService
 from odmtools.controller import EditTools
 from odmtools.lib.Appdirs.appdirs import user_config_dir
-from odmtools.odmdata import SessionFactory, Variable
+from odmtools.odmdata import SessionFactory, Variable, refreshDB, change_schema
+
 
 from odmtools.common.logger import LoggerTool
 tool = LoggerTool()
@@ -40,6 +41,7 @@ class ServiceManager():
                     line_dict['password'] = line[2]
                     line_dict['address'] = line[3]
                     line_dict['db'] = line[4]
+                    line_dict['version']='1.1' if len(line) == 5 else line[5]
                     self._conn_dicts.append(line_dict)
 
         if len(self._conn_dicts) is not 0:
@@ -53,17 +55,6 @@ class ServiceManager():
     def get_all_conn_dicts(self):
         return self._conn_dicts
 
-    def is_valid_connection(self):
-        if self._current_conn_dict:
-            conn_string = self._build_connection_string(self._current_conn_dict)
-            logger.debug("Conn_string: %s" % conn_string)
-            try:
-                if self.testEngine(conn_string):
-                    return self.get_current_conn_dict()
-            except Exception as e:
-                logger.fatal("The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
-                return None
-        return None
 
     def get_current_conn_dict(self):
         return self._current_conn_dict
@@ -77,27 +68,84 @@ class ServiceManager():
         # remove earlier connections that are identical to this one
         self.delete_connection(conn_dict)
 
-        if self.test_connection(conn_dict):
-            # write changes to connection file
-            self._conn_dicts.append(conn_dict)
-            self._current_conn_dict = self._conn_dicts[-1]
-            self._save_connections()
-            return True
+        #assume connection has already been tested
+        # if self.test_connection(conn_dict):
+        # write changes to connection file
+        self._conn_dicts.append(conn_dict)
+        self._current_conn_dict = self._conn_dicts[-1]
+        self._save_connections()
+        return True
+        # else:
+        #     logger.error("Unable to save connection due to invalid connection to database")
+        #     return False
+
+
+    @staticmethod
+    def _getSchema(engine):
+        from sqlalchemy.engine import reflection
+
+        insp=reflection.Inspector.from_engine(engine)
+
+        for name in insp.get_schema_names():
+            if 'odm2'== name.lower():
+                return name
         else:
-            logger.error("Unable to save connection due to invalid connection to database")
-            return False
+            return insp.default_schema_name
+
+    @classmethod
+    def _setSchema(self, engine):
+
+        s = self._getSchema(engine)
+        change_schema(s)
+
 
     @classmethod
     def testEngine(self, connection_string):
-        s = SessionFactory(connection_string, echo=False)
-        s.test_Session().query(Variable.code).limit(1).first()
 
+        s = SessionFactory(connection_string, echo=False)
+        try:
+            # s.ms_test_Session().query(Variable1).limit(1).first()
+            s.test_Session().query(Variable.code).limit(1).first()
+
+
+        except Exception as e:
+            print "Connection was unsuccessful ", e.message
+            return False
         return True
+    # def is_valid_connection(self):
+    #     if self._current_conn_dict:
+    #         conn_string = self._build_connection_string(self._current_conn_dict)
+    #         logger.debug("Conn_string: %s" % conn_string)
+    #         try:
+    #             if self.testEngine(conn_string):
+    #                return self._current_conn_dict
+    #
+    #     return None
+
+    def is_valid_connection(self):
+        if self._current_conn_dict:
+            conn_string = self._build_connection_string(self._current_conn_dict)
+            logger.debug("Conn_string: %s" % conn_string)
+            dbtype = float(self._current_conn_dict['version'])
+            #dbtype =1.1
+            refreshDB(dbtype)
+
+            try:
+                if self.testEngine(conn_string):
+                    return self._current_conn_dict
+            except Exception as e:
+                logger.fatal("The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
+                return None
 
     def test_connection(self, conn_dict):
         try:
             conn_string = self._build_connection_string(conn_dict)
-            if self.testEngine(conn_string): #and self.get_db_version(conn_string) == '1.1.1':
+
+            dbtype = float(conn_dict['version'])
+            #dbtype =1.1
+            refreshDB(dbtype)
+            if self.testEngine(conn_string):# and self.get_db_version(conn_string) == '1.1.1':
+
                 return True
         except SQLAlchemyError as e:
             logger.error("SQLAlchemy Error: %s" % e.message)
@@ -131,10 +179,12 @@ class ServiceManager():
 
         if conn_dict:
             conn_string = self._build_connection_string(conn_dict)
-            self._current_conn_dict = conn_dict
-        elif not conn_string:
+            #self._current_conn_dict = conn_dict
+        elif not conn_dict and not conn_string:
             conn_string = self._build_connection_string(self._current_conn_dict)
-        return SeriesService(SessionFactory(conn_string, self.debug))
+        sf = SessionFactory(conn_string, self.debug)
+        ss= SeriesService(sf)
+        return ss
 
     def get_cv_service(self):
         conn_string = self._build_connection_string(self._current_conn_dict)
@@ -171,7 +221,7 @@ class ServiceManager():
         except:
             open(fn, 'w').close()
             config_file = open(fn, mode)
-            
+
 
         return config_file
 
@@ -200,6 +250,6 @@ class ServiceManager():
     def _save_connections(self):
         f = self._get_file('w')
         for conn in self._conn_dicts:
-            f.write("%s %s %s %s %s\n" % (conn['engine'], conn['user'], conn['password'], conn['address'], conn['db']))
+            f.write("%s %s %s %s %s %s\n" % (conn['engine'], conn['user'], conn['password'], conn['address'], conn['db'], conn['version']))
         f.close()
 

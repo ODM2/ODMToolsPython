@@ -92,10 +92,10 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
                 wx.MessageBox(message, 'Test Connection', wx.OK)
             else:
                 #TODO add error message if user cannont connect to the database ( not using VPN) but the db is still 1.1.1)
-                if not (self.service_manager.get_db_version(conn_dict)):
-                    message = "Cannot connect to the database"
-                # else:
-                #     message = "This connection is not a 1.1.1 Database"
+
+
+                message = "Cannot connect to the database"
+
 
                 wx.MessageBox(message, 'Error Occurred', wx.OK | wx.ICON_ERROR)
                 return False
@@ -108,8 +108,6 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
         return True
 
 
-
-
     # Returns a dictionary of the database values entered in the form
     def getFieldValues(self):
         conn_dict = {}
@@ -119,6 +117,7 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
         conn_dict['password'] = self.txtPass.GetValue()
         conn_dict['address'] = self.txtServer.GetValue()
         conn_dict['db'] = self.txtDBName.GetValue()
+        conn_dict['version']= self.cbVersion.GetValue()
 
         return conn_dict
 
@@ -128,6 +127,7 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
             self.txtServer.SetValue(conn['address'])
             self.txtDBName.SetValue(conn['db'])
             self.txtUser.SetValue(conn['user'])
+            self.cbVersion.SetValue(conn['version'])
 
             for k, v in self.choices.iteritems():
                 if v == conn['engine']:
