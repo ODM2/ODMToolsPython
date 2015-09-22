@@ -2,7 +2,7 @@
 
 import wx
 from odmtools.controller.frmCreateVariable import frmCreateVariable
-from odmtools.odmdata import Variable
+# from odmtools.odmdata import Variable
 
 [wxID_PNLVARIABLE, wxID_PNLVARIABLELSTVARIABLE, wxID_PNLVARIABLERBCREATE,
  wxID_PNLVARIABLERBCURRENT, wxID_PNLVARIABLERBSELECT,wxID_PNLVARIABLETXTNEWVAR,
@@ -138,7 +138,7 @@ class pnlVariable(wx.Panel):
 
     def getVariable(self):
 
-        v =  Variable()
+        v =  None
         if self.rbCurrent.Value:
             v= self.prev_val
         elif self.rbSelect.Value:

@@ -1,7 +1,7 @@
 #Boa:FramePanel:pnlQCL
 
 import wx
-from odmtools.odmdata import QualityControlLevel
+
 
 [wxID_PNLQCL, wxID_PNLQCLLBLCODE, wxID_PNLQCLLBLDEFINITION,
  wxID_PNLQCLLBLEXPLANATION, wxID_PNLQCLLSTQCL, wxID_PNLQCLRBCREATE,
@@ -110,8 +110,9 @@ class pnlQCL(wx.Panel):
         return self.lstQCL.GetFirstSelected()
 
     def getQCL(self):
-        q = QualityControlLevel()
+        q = None
         if self.rbCreate.Value:
+            q= self.series_service.create_qcl(self.txtCode.Value, self.txtDefinition.Value, self.txtExplanation.Value)
             q.code = self.txtCode.Value
             q.definition= self.txtDefinition.Value
             q.explanation = self.txtExplanation.Value

@@ -5,7 +5,7 @@ from sqlalchemy import bindparam
 from odmtools.common.logger import LoggerTool
 from odmtools.odmservices import SeriesService
 from odmtools.odmservices import ServiceManager
-from odmtools.odmdata import DataValue
+from odmtools.odmdata import ODM
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
@@ -97,8 +97,8 @@ class MemoryDatabase(object):
         updates : list of dictionary that contains 2 items, id and value
         '''
 
-        stmt = (DataValue.__table__.update().
-                where(DataValue.local_date_time == bindparam('id')).
+        stmt = (ODM.DataValue.__table__.update().
+                where(ODM.DataValue.local_date_time == bindparam('id')).
                 values(DataValue=bindparam('value'))
         )
 
@@ -110,11 +110,11 @@ class MemoryDatabase(object):
     def updateValue(self, ids, operator, value):
         # query = DataValue.data_value+value
         if operator == '+':
-            query = DataValue.data_value + value
+            query = ODM.DataValue.data_value + value
         elif operator == '-':
-            query = DataValue.data_value - value
+            query = ODM.DataValue.data_value - value
         elif operator == '*':
-            query = DataValue.data_value * value
+            query = ODM.DataValue.data_value * value
         elif operator == '=':
             query = value
 
@@ -122,8 +122,8 @@ class MemoryDatabase(object):
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
         chunks=self.chunking(ids)
         for c in chunks:
-            q=self.mem_service._session.query(DataValue).filter(DataValue.local_date_time.in_(c))
-            q.update({DataValue.data_value: query}, False)
+            q=self.mem_service._session.query(ODM.DataValue).filter(ODM.DataValue.local_date_time.in_(c))
+            q.update({ODM.DataValue.data_value: query}, False)
 
         #self.updateDF()
 
@@ -134,8 +134,8 @@ class MemoryDatabase(object):
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)
         for c in chunks:
-            self.mem_service._session.query(DataValue).filter(DataValue.local_date_time.in_(c))\
-                .update({DataValue.qualifier_id: value}, False)
+            self.mem_service._session.query(ODM.DataValue).filter(ODM.DataValue.local_date_time.in_(c))\
+                .update({ODM.DataValue.qualifier_id: value}, False)
 
 
     def delete(self, ids):
@@ -149,7 +149,7 @@ class MemoryDatabase(object):
         """
         Takes in a list of points and loads each point into the database
         """
-        stmt = DataValue.__table__.insert()
+        stmt = ODM.DataValue.__table__.insert()
 
         if not isinstance(points, list):
             points = [points]
@@ -222,17 +222,17 @@ class MemoryDatabase(object):
         :return:
         """
 
-        query = self.mem_service._session.query(DataValue)
+        query = self.mem_service._session.query(ODM.DataValue)
         if var is not None:
             logger.debug(var)
-            query.update({DataValue.variable_id: var})
+            query.update({ODM.DataValue.variable_id: var})
 
         if method is not None:
             logger.debug(method)
-            query.update({DataValue.method_id: method})
+            query.update({ODM.DataValue.method_id: method})
         # check that the code is not zero
         # if qcl is not None and qcl.code != 0:
         if qcl is not None:
             logger.debug(qcl)
-            query.update({DataValue.quality_control_level_id: qcl})
+            query.update({ODM.DataValue.quality_control_level_id: qcl})
 

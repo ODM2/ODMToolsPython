@@ -4,16 +4,29 @@ import wx
 import wx.lib.newevent
 # from ObjectListView.ObjectListView import FastObjectListView, ColumnDefn
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
-
+# from odmtools.odmdata import returnDict
 from odmtools.common.logger import LoggerTool
-from odmtools.odmdata import ODM
-
 
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
 OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
-
+from collections import OrderedDict
+def returnDict():
+    keys = ['SeriesID', 'SiteID', 'SiteCode', 'SiteName', 'VariableID', 'VariableCode', 'VariableName', 'Speciation',
+            'VariableUnitsID', 'VariableUnitsName', 'SampleMedium', 'ValueType', 'TimeSupport', 'TimeUnitsID',
+            'TimeUnitsName', 'DataType', 'GeneralCategory', 'MethodID', 'MethodDescription', 'SourceID',
+            'SourceDescription', 'Organization', 'Citation', 'QualityControlLevelID', 'QualityControlLevelCode',
+            'BeginDateTime', 'EndDateTime', 'BeginDateTimeUTC', 'EndDateTimeUTC', 'ValueCount'
+            ]
+    values = ['id', 'site_id', 'site_code', 'site_name', 'variable_id', 'variable_code', 'variable_name', 'speciation',
+              'variable_units_id', 'variable_units_name', 'sample_medium', 'value_type', 'time_support',
+              'time_units_id', 'time_units_name', 'data_type', 'general_category', 'method_id', 'method_description',
+              'source_id', 'source_description', 'organization', 'citation', 'quality_control_level_id',
+              'quality_control_level_code', 'begin_date_time', 'end_date_time', 'begin_date_time_utc',
+              'end_date_time_utc', 'value_count'
+              ]
+    return OrderedDict(zip(keys, values))
 
 class clsSeriesTable(FastObjectListView):
     def __init__(self, *args, **kwargs):
@@ -48,7 +61,7 @@ class clsSeriesTable(FastObjectListView):
             ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,
                        # stringConverter = '%s')
                        stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
-            for key, value in ODM.returnDict().iteritems()]
+            for key, value in returnDict().iteritems()]
         self.SetColumns(seriesColumns)
 
     """User can select series using the mouse to click on check boxes """

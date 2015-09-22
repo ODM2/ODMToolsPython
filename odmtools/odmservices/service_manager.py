@@ -5,10 +5,10 @@ import sys
 import urllib
 
 from sqlalchemy.exc import SQLAlchemyError
-from odmtools.odmservices import SeriesService, CVService, EditService, ExportService
+from odmtools.odmservices import SeriesService, EditService, ExportService
 from odmtools.controller import EditTools
 from odmtools.lib.Appdirs.appdirs import user_config_dir
-from odmtools.odmdata import SessionFactory, Variable, refreshDB, change_schema
+from odmtools.odmdata import SessionFactory, change_schema, refreshDB, ODM
 
 
 from odmtools.common.logger import LoggerTool
@@ -105,7 +105,7 @@ class ServiceManager():
         s = SessionFactory(connection_string, echo=False)
         try:
             # s.ms_test_Session().query(Variable1).limit(1).first()
-            s.test_Session().query(Variable.code).limit(1).first()
+            s.test_Session().query(ODM.Variable.code).limit(1).first()
 
 
         except Exception as e:
@@ -186,9 +186,9 @@ class ServiceManager():
         ss= SeriesService(sf)
         return ss
 
-    def get_cv_service(self):
-        conn_string = self._build_connection_string(self._current_conn_dict)
-        return CVService(SessionFactory(conn_string, self.debug))
+    # def get_cv_service(self):
+    #     conn_string = self._build_connection_string(self._current_conn_dict)
+    #     return CVService(SessionFactory(conn_string, self.debug))
 
     def get_edit_service(self, series_id, connection):
         

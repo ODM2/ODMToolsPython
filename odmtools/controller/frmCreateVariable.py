@@ -2,7 +2,7 @@
 
 import wx
 from  odmtools.view.clsCreateVariable import clsCreateVariable
-from odmtools.odmdata import Variable
+# from odmtools.odmdata import Variable
 
 # Implementing clsCreateVariable
 class frmCreateVariable(clsCreateVariable):
@@ -87,26 +87,30 @@ class frmCreateVariable(clsCreateVariable):
 
 
     def createVariable(self):
-        v = Variable()
 
-        v.code = self.txtVarCode.GetValue() if self.txtVarCode.GetValue() <> u'' else None
-        v.name = self.cbVarName.GetValue() if self.cbVarName.GetValue() <> u'' else None
-        v.speciation = self.cbSpeciation.GetValue() if self.cbSpeciation.GetValue() <> u'' else None
 
-        v.variable_unit = self.series_service.get_unit_by_name( self.cbVarUnits.GetValue())
-        v.variable_unit_id = v.variable_unit.id
+        code = self.txtVarCode.GetValue() if self.txtVarCode.GetValue() <> u'' else None
+        name = self.cbVarName.GetValue() if self.cbVarName.GetValue() <> u'' else None
+        speciation = self.cbSpeciation.GetValue() if self.cbSpeciation.GetValue() <> u'' else None
 
-        v.sample_medium = self.cbSampleMedium.GetValue() if self.cbSampleMedium.GetValue() <> u'' else None
-        v.value_type = self.cbValueType.GetValue() if self.cbValueType.GetValue() <> u'' else None
-        v.is_regular = self.cbIsRegular.GetValue() if self.cbIsRegular.GetValue() <> u'' else None
-        v.time_support = self.txtTSValue.GetValue() if self.txtTSValue.GetValue() <> u'' else None
+        variable_unit = self.series_service.get_unit_by_name( self.cbVarUnits.GetValue())
+        variable_unit_id = variable_unit.id
 
-        v.time_unit = self.series_service.get_unit_by_name(self.cbTSUnits.GetValue())
-        v.time_unit_id = v.time_unit.id
+        sample_medium = self.cbSampleMedium.GetValue() if self.cbSampleMedium.GetValue() <> u'' else None
+        value_type = self.cbValueType.GetValue() if self.cbValueType.GetValue() <> u'' else None
+        is_regular = self.cbIsRegular.GetValue() if self.cbIsRegular.GetValue() <> u'' else None
+        time_support = self.txtTSValue.GetValue() if self.txtTSValue.GetValue() <> u'' else None
 
-        v.data_type = self.cbDataType.GetValue() if self.cbDataType.GetValue() <> u'' else None
-        v.general_category = self.cbGenCat.GetValue() if self.cbGenCat.GetValue() <> u'' else None
-        v.no_data_value = self.txtNoDV.GetValue() if self.txtNoDV.GetValue() <> u'' else None
+        time_unit = self.series_service.get_unit_by_name(self.cbTSUnits.GetValue())
+        time_unit_id = time_unit.id
+
+        data_type = self.cbDataType.GetValue() if self.cbDataType.GetValue() <> u'' else None
+        general_category = self.cbGenCat.GetValue() if self.cbGenCat.GetValue() <> u'' else None
+        no_data_value = self.txtNoDV.GetValue() if self.txtNoDV.GetValue() <> u'' else None
+        v = self.series_service.create_variable(
+            code, name, speciation, variable_unit_id, sample_medium,
+            value_type, is_regular, time_support, time_unit_id, data_type,
+            general_category, no_data_value)
         return v
 
     def OnBtnCancelButton(self, event):

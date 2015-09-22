@@ -2,7 +2,7 @@
 
 import wx
 
-from odmtools.odmdata import Qualifier
+
 
 
 def create(parent):

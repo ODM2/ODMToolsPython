@@ -3,7 +3,7 @@
 import wx
 import wx.grid
 import wx.richtext
-from odmtools.odmdata import Method
+
 
 [wxID_PNLMETHOD, wxID_PNLMETHODSLISTCTRL1, wxID_PNLMETHODSRBCREATENEW,
  wxID_PNLMETHODSRBGENERATE, wxID_PNLMETHODSRBSELECT,
@@ -105,14 +105,15 @@ class pnlMethod(wx.Panel):
 
     def getMethod(self):
 
-        m =  Method()
+        m = None
         if self.rbGenerate.Value:
             genmethod = "Values derived from ODM Tools Python"
 
             try:
                 m= self.series_service.get_method_by_description(genmethod)
             except:
-                m.description = genmethod
+                m =self.series_service(genmethod)
+
 
         elif self.rbSelect.Value:
             index = self.lstMethods.GetFirstSelected()
@@ -124,5 +125,5 @@ class pnlMethod(wx.Panel):
 
 
         elif self.rbCreateNew.Value:
-            m.description = self.txtMethodDescrip.GetValue()
+            m =self.series_service( self.txtMethodDescrip.GetValue())
         return m
