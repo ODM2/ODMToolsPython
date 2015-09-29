@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from odmtools.odmservices import SeriesService, EditService, ExportService
 from odmtools.controller import EditTools
 from odmtools.lib.Appdirs.appdirs import user_config_dir
-from odmtools.odmdata import SessionFactory, change_schema, refreshDB, ODM
+from odmtools.odmdata import SessionFactory, change_schema, ODM#, refreshDB
 
 
 from odmtools.common.logger import LoggerTool
@@ -21,7 +21,7 @@ class ServiceManager():
         self.debug = debug
         f = self._get_file('r')
         self._conn_dicts = []
-        self.version = 0
+        #self.version = 0
         self._connection_format = "%s+%s://%s:%s@%s/%s"
 
         # Read all lines (connections) in the connection.cfg file
@@ -41,8 +41,9 @@ class ServiceManager():
                     line_dict['password'] = line[2]
                     line_dict['address'] = line[3]
                     line_dict['db'] = line[4]
-                    line_dict['version']='1.1' if len(line) == 5 else line[5]
+                    line_dict['version']=1.1 if len(line) == 5 else line[5]
                     self._conn_dicts.append(line_dict)
+
 
         if len(self._conn_dicts) is not 0:
             # The current connection defaults to the most recent (i.e. the last written to the file)
@@ -54,7 +55,6 @@ class ServiceManager():
 
     def get_all_conn_dicts(self):
         return self._conn_dicts
-
 
     def get_current_conn_dict(self):
         return self._current_conn_dict
@@ -78,7 +78,6 @@ class ServiceManager():
         # else:
         #     logger.error("Unable to save connection due to invalid connection to database")
         #     return False
-
 
     @staticmethod
     def _getSchema(engine):
@@ -128,7 +127,7 @@ class ServiceManager():
             logger.debug("Conn_string: %s" % conn_string)
             dbtype = float(self._current_conn_dict['version'])
             #dbtype =1.1
-            refreshDB(dbtype)
+            #refreshDB(dbtype)
 
             try:
                 if self.testEngine(conn_string):
@@ -143,7 +142,7 @@ class ServiceManager():
 
             dbtype = float(conn_dict['version'])
             #dbtype =1.1
-            refreshDB(dbtype)
+            #refreshDB(dbtype)
             if self.testEngine(conn_string):# and self.get_db_version(conn_string) == '1.1.1':
 
                 return True
@@ -175,15 +174,20 @@ class ServiceManager():
     #         return None
     #     return self.version
 
-    def get_series_service(self, conn_dict="", conn_string = ""):
-
+    def get_series_service(self, conn_dict=None, conn_string=""):
+        version = 1.1
         if conn_dict:
             conn_string = self._build_connection_string(conn_dict)
             #self._current_conn_dict = conn_dict
+
+            version = float(conn_dict['version'])
         elif not conn_dict and not conn_string:
             conn_string = self._build_connection_string(self._current_conn_dict)
-        sf = SessionFactory(conn_string, self.debug)
+            version = float(self._current_conn_dict['version'])
+
+        sf = SessionFactory(conn_string, self.debug, version = version)
         ss= SeriesService(sf)
+        ss.refreshDB(sf.version)
         return ss
 
     # def get_cv_service(self):

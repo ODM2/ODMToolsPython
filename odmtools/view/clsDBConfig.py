@@ -174,7 +174,7 @@ class clsDBConfiguration(wx.Panel):
 
         version_choices = [ u"1.1", u"2.0"]
         self.cbVersion = wx.ComboBox(self, wx.ID_ANY, u"1.1", wx.DefaultPosition, wx.DefaultSize,
-                                           version_choices, wx.CB_READONLY | wx.CB_SORT)
+                                           version_choices, wx.CB_READONLY )#| wx.CB_SORT)
         self.cbVersion.SetSelection(0)
         connectionSizer.Add(self.cbVersion, 1, wx.ALL | wx.EXPAND, 5)
 
@@ -185,7 +185,7 @@ class clsDBConfiguration(wx.Panel):
 
         cbDatabaseTypeChoices = []
         self.cbDatabaseType = wx.ComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                          cbDatabaseTypeChoices, wx.CB_READONLY | wx.CB_SORT)
+                                          cbDatabaseTypeChoices, wx.CB_READONLY )#| wx.CB_SORT)
         connectionSizer.Add(self.cbDatabaseType, 1, wx.ALL | wx.EXPAND, 5)
 
         self.stServer = wx.StaticText(self, wx.ID_ANY, u"Server:", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT)

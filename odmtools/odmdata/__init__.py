@@ -31,7 +31,7 @@
 # Variable = ODM.Variable
 # VerticalDatumCV=ODM.VerticalDatumCV
 # returnDict = ODM.returnDict
-from api.ODM1_1_1.services.series_service import ODM, refreshDB
+from api.ODM1_1_1.services.series_service import ODM#, refreshDB
 from api.ODMconnection import SessionFactory
 from api.ODM2.models import change_schema
 from odmtools.odmdata.memory_database import MemoryDatabase

@@ -24,6 +24,7 @@ class MemoryDatabase(object):
         # Memory_service handles in memory database
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+        self.mem_service.refreshDB(1.1)
         # TODO clean up closing of program
         # if taskserver is None:
         #numproc = cpu_count()
@@ -35,6 +36,7 @@ class MemoryDatabase(object):
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+        self.mem_service.refreshDB(1.1)
 
     def set_series_service(self, service):
         self.series_service = service
@@ -186,6 +188,8 @@ class MemoryDatabase(object):
         else:
         '''
         self.df = self.mem_service.get_all_values_df()
+        print self.mem_service._version
+
 
     def initEditValues(self, seriesID):
         """
@@ -206,12 +210,13 @@ class MemoryDatabase(object):
             # self.conn = results["InitEditValues"]
             else:
             '''  #TODO: Thread this call
-            if len(self.df)>0:
+            if self.df is not None and len(self.df)<=0:
+                logger.debug("no data in series")
+            else:
+
                 self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
-            else:
-                logger.debug("no data in series")
 
     def changeSeriesIDs(self, var=None, qcl=None, method=None):
         """

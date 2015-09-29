@@ -83,7 +83,6 @@ class SeriesPlotInfo(object):
         self.currentEnd = self.endDate
         self.isSubsetted = False
 
-
     def getDates(self):
         return self.startDate, self.endDate, self.currentStart, self.currentEnd
 
@@ -111,7 +110,6 @@ class SeriesPlotInfo(object):
         if not self.isSubsetted:
             self.currentStart = self.startDate
             self.currentEnd = self.endDate
-
 
     def isPlotted(self, sid):
         if int(sid) in self._seriesInfos:
@@ -144,14 +142,12 @@ class SeriesPlotInfo(object):
             self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
             self._seriesInfos[self.editID].color = "Black"
 
-
     def updateEditSeries(self):
         #update values
         if self.editID in self._seriesInfos:
             # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
             data =self.memDB.getEditDataValuesforGraph()
             self._seriesInfos[self.editID].dataTable = data
-
 
     def stopEditSeries(self):
         if self.editID in self._seriesInfos:
@@ -186,7 +182,6 @@ class SeriesPlotInfo(object):
         else:
             #results = self.taskserver.getCompletedTasks()
             #self.memDB.setConnection(results["InitEditValues"])
-
 
             self._seriesInfos[key] = self.getSeriesInfo(key)
             self.getUpdatedData(key)
@@ -244,6 +239,12 @@ class SeriesPlotInfo(object):
         unitsName = series.variable_units_name
         siteName = series.site_name
         dataType = series.data_type
+        print type(series)
+        print dir(series)
+        print type(series.variable)
+        print dir(series.variable)
+        for x in series.variable:
+            print x
         noDataValue = series.variable.no_data_value
         if self.editID == seriesID:
             #d= DataFrame(pandas.read_sql())
@@ -251,12 +252,10 @@ class SeriesPlotInfo(object):
             data = self.memDB.getEditDataValuesforGraph()
             logger.debug("Finished editing -- getting datavalues for graph")
 
-
         else:
             logger.debug("plotting -- getting datavalues for graph")
             data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
             logger.debug("Finished plotting -- getting datavalues for graph")
-
 
         logger.debug("assigning variables...")
         seriesInfo.seriesID = seriesID
@@ -273,12 +272,10 @@ class SeriesPlotInfo(object):
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
 
-
         if len(data) > 0:
             seriesInfo.yrange = np.max(data['DataValue']) - np.min(data['DataValue'])
         else:
             seriesInfo.yrange = 0
-
 
         logger.debug("Finished creating SeriesInfo")
         return seriesInfo
@@ -324,8 +321,6 @@ class SeriesPlotInfo(object):
         else:
             seriesInfo.color = self.colorList.pop(0)
         return seriesInfo
-
-
 
     def updateDateRange(self, startDate=None, endDate=None):
         self.currentStart = startDate
@@ -375,7 +370,6 @@ class Statistics(object):
 
             time = timeit.default_timer()
 
-
             self.NumberofObservations = count
             self.ArithemticMean = round(np.mean(dvs), 5)
             self.Maximum = round(np.max(dvs), 5)
@@ -402,7 +396,6 @@ class BoxWhisker(object):
 
         self.intervals = {}
         self.method = method
-
 
         interval_types = ["Overall", "Year", "Month", "Season"]
         intervals = ["Overall", "Year", "Month", "Season"]
@@ -449,7 +442,6 @@ class BoxWhisker(object):
             self.intervals[interval_type] = BoxWhiskerPlotInfo(
                 interval_type, interval_type, results["names"],
                 [results["median"], results["conflimit"], results["mean"], results["confint"]])
-
 
     def calculateIntervalsOnGroups(self, interval):
 
