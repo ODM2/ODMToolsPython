@@ -463,6 +463,7 @@ class frmODMToolsMain(wx.Frame):
         """
 
         series_service= self.service_manager.get_series_service(conn_dict=conn_dict)#=connection)
+        series_service.refreshDB(conn_dict['version'])
         return series_service
 
     def getServiceManager(self):

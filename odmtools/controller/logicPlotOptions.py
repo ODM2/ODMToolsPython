@@ -239,13 +239,9 @@ class SeriesPlotInfo(object):
         unitsName = series.variable_units_name
         siteName = series.site_name
         dataType = series.data_type
-        print type(series)
-        print dir(series)
-        print type(series.variable)
-        print dir(series.variable)
-        for x in series.variable:
-            print x
-        noDataValue = series.variable.no_data_value
+        variable = self.memDB.series_service.get_variable_by_id(series.variable_id)
+
+        noDataValue = variable.no_data_value
         if self.editID == seriesID:
             #d= DataFrame(pandas.read_sql())
             logger.debug("editing -- getting datavalues for graph")

@@ -160,16 +160,17 @@ def run_pyinstaller(console=False):
                 '--noconfirm ' + APP_FILE)
         else:
             ## Non Console Version
-            val = os.system('pyinstaller '
-                '--clean '
-                '--distpath=%s ' % WIN_DIR +
-                '--workpath=%s ' % WORK_DIR +
-                '--specpath=%s ' % WIN_DIR +
-                '--upx-dir=%s ' % BASE_DIR +
-                '--icon=%s ' % WIN_ICON_FILE +
-                '--version-file=%s ' % VERSION_FILE +
-                '--noconsole '
-                '--noconfirm ' + APP_FILE)
+            cmd = 'pyinstaller '+\
+                '--clean '+\
+                '--distpath=%s ' % WIN_DIR +\
+                '--workpath=%s ' % WORK_DIR +\
+                '--specpath=%s ' % WIN_DIR +\
+                '--upx-dir=%s ' % BASE_DIR +\
+                '--icon=%s ' % WIN_ICON_FILE +\
+                '--version-file=%s ' % VERSION_FILE +\
+                '--noconsole '+\
+                '--noconfirm ' + APP_FILE
+            val = os.system(cmd)
 
         return True
     except Exception as e:
@@ -237,10 +238,12 @@ def main():
 
         print "Creating Windows Executable..."
         if run_pyinstaller():
+            INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_no_console.iss")
             run_inno()
 
         print "Creating Windows Executable Console..."
         if run_pyinstaller(console=True):
+            INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_console.iss")
             run_inno()
 
         print "Create No Installer "
