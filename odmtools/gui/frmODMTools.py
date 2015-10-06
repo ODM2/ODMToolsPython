@@ -31,6 +31,7 @@ from odmtools.common.logger import LoggerTool
 tool = LoggerTool()
 logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 
+
 class frmODMToolsMain(wx.Frame):
     """
 
@@ -50,7 +51,6 @@ class frmODMToolsMain(wx.Frame):
 
         wx.Frame.__init__(self, **kwargs)
 
-
         series_service = self._init_database()
         if series_service:
             self._init_ctrls(series_service)
@@ -62,7 +62,6 @@ class frmODMToolsMain(wx.Frame):
         else:
             logger.debug("System shutting down... ")
             sys.exit(0)
-
 
     def _obtainScreenResolution(self):
         """ Calculates the size of ODMTools. Prevents ODMTools being larger than the available screen size
@@ -99,7 +98,6 @@ class frmODMToolsMain(wx.Frame):
         logger.debug("ODMTools Window Size: %s" % newSize)
         return newSize
 
-
     #############Entire Form Sizers##########
 
     def _init_sizers(self):
@@ -113,7 +111,7 @@ class frmODMToolsMain(wx.Frame):
         parent.AddWindow(self._ribbon, 0, wx.EXPAND)
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
-    def _init_database(self, quit_if_cancel=True, newConnection= ''):
+    def _init_database(self, quit_if_cancel=True, newConnection=''):
         logger.debug("Loading Database...")
 
         self.service_manager = ServiceManager()
@@ -123,14 +121,14 @@ class frmODMToolsMain(wx.Frame):
         while True:
             ## Database connection is valid, therefore proceed through the rest of the program
             if newConnection:
-                conn_dict= newConnection
+                conn_dict = newConnection
             else:
                 conn_dict = self.service_manager.is_valid_connection()
             if conn_dict:
-                #conn_dict = None
+                # conn_dict = None
 
                 series_service = self.createService(conn_dict)
-                #conn_dict = self.service_manager.get_current_conn_dict()
+                # conn_dict = self.service_manager.get_current_conn_dict()
 
                 if self.servicesValid(series_service):
                     self.service_manager.add_connection(conn_dict)
@@ -156,7 +154,6 @@ class frmODMToolsMain(wx.Frame):
 
         return series_service
 
-
     def servicesValid(self, service, displayMsg=True):
         """
 
@@ -169,13 +166,14 @@ class frmODMToolsMain(wx.Frame):
         ## Test if Series Catalog is empty
         if not service.get_used_sites():
             if displayMsg:
-                msg = wx.MessageDialog(None, 'Series Catalog cannot be empty. Please enter in a new database connection',
-                                           'Series Catalog is empty', wx.OK | wx.ICON_ERROR )
+                msg = wx.MessageDialog(None,
+                                       'Series Catalog cannot be empty. Please enter in a new database connection',
+                                       'Series Catalog is empty', wx.OK | wx.ICON_ERROR)
                 msg.ShowModal()
             valid = False
 
         # @TODO If Jeff runs into other issues with services not being available, we can simply test different services here
-        #if not service.get_all_variables():
+        # if not service.get_all_variables():
         #    valid = False
 
         return valid
@@ -186,7 +184,7 @@ class frmODMToolsMain(wx.Frame):
     def MacReopenApp(self):
         """Called when the doc icon is clicked, and ???"""
 
-        try: # it's possible for this event to come when the frame is closed
+        try:  # it's possible for this event to come when the frame is closed
             self.GetTopWindow().Raise()
         except:
             pass
@@ -230,9 +228,8 @@ class frmODMToolsMain(wx.Frame):
         ################ Series Selection Panel ##################
         logger.debug("Loading Series Selector ...")
 
-
-        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, series_service, plot=self.pnlPlot, taskserver=self.taskserver, memdb = self.memDB)
-
+        self.pnlSelector = FrmSeriesSelector(self.pnlDocking, series_service, plot=self.pnlPlot,
+                                             taskserver=self.taskserver, memdb=self.memDB)
 
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
@@ -244,21 +241,18 @@ class frmODMToolsMain(wx.Frame):
         self.txtPythonConsole = ODMToolsConsole(parent=self.pnlDocking, size=wx.Size(200, 200))
         wx.CallAfter(self._postStartup)
 
-
-
         logger.debug("Loading Python Script ...")
         self.txtPythonScript = pnlScript(name=u'txtPython', parent=self,
-                                     size=wx.Size(200, 200))
+                                         size=wx.Size(200, 200))
 
         self.Bind(wx.EVT_CLOSE, self.onClose)
-
 
         Publisher.subscribe(self.onDocking, ("adjust.Docking"))
         Publisher.subscribe(self.onPlotSelection, ("select.Plot"))
         Publisher.subscribe(self.onExecuteScript, ("execute.script"))
         Publisher.subscribe(self.onChangeDBConn, ("change.dbConfig"))
         Publisher.subscribe(self.onSetScriptTitle, ("script.title"))
-        #.subscribe(self.onSetScriptTitle, ("script.title"))
+        # .subscribe(self.onSetScriptTitle, ("script.title"))
         Publisher.subscribe(self.onClose, ("onClose"))
         Publisher.subscribe(self.addEdit, ("selectEdit"))
         Publisher.subscribe(self.stopEdit, ("stopEdit"))
@@ -273,31 +267,31 @@ class frmODMToolsMain(wx.Frame):
         self._mgr.AddPane(self.pnlPlot, aui.AuiPaneInfo().CenterPane()
                           .Name("Plot").Caption("Plot").MaximizeButton(True).DestroyOnClose(False)
 
-        )
+                          )
 
         self._mgr.AddPane(self.dataTable, aui.AuiPaneInfo().Right().Name("Table").
                           Show(show=False).Caption('Table View').MinSize(wx.Size(200, 200)).Floatable().Movable().
                           Position(1).MinimizeButton(True).MaximizeButton(True).DestroyOnClose(False)
 
-        )
+                          )
 
         self._mgr.AddPane(self.pnlSelector, aui.AuiPaneInfo().Bottom().Name("Selector").MinSize(wx.Size(50, 200)).
                           Movable().Floatable().Position(0).MinimizeButton(True).MaximizeButton(True).CloseButton(True)
                           .DestroyOnClose(False)
-        )
+                          )
 
         self._mgr.AddPane(self.txtPythonScript, aui.AuiPaneInfo().Caption('Script').
                           Name("Script").Movable().Floatable().Right()
                           .MinimizeButton(True).MaximizeButton(True).FloatingSize(size=(400, 400))
                           .CloseButton(True).Float().FloatingPosition(pos=(self.Position))
                           .Hide().CloseButton(True).DestroyOnClose(False)
-        )
+                          )
 
         self._mgr.AddPane(self.txtPythonConsole, aui.AuiPaneInfo().Caption('Python Console').
                           Name("Console").FloatingSize(size=(300, 400)).MinimizeButton(
             True).Movable().Floatable().MaximizeButton(True).CloseButton(True).Float()
                           .FloatingPosition(pos=(self.Position)).Show(show=False).DestroyOnClose(False)
-        )
+                          )
 
 
         ## TODO Fix loadingDockingSettings as it doesn't load it correctly.
@@ -351,7 +345,6 @@ class frmODMToolsMain(wx.Frame):
     def onPlotSelection(self, value):
         self.pnlPlot.selectPlot(value)
 
-
     def onSetScriptTitle(self, title):
         scriptPane = self._mgr.GetPane(self.txtPythonScript)
         scriptPane.Caption(title)
@@ -361,7 +354,8 @@ class frmODMToolsMain(wx.Frame):
 
     def addEdit(self, event):
 
-        with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self):
+        with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database",
+                         parent=self):
             logger.debug("Beginning editing")
             isSelected, seriesID = self.pnlSelector.onReadyToEdit()
 
@@ -407,15 +401,14 @@ class frmODMToolsMain(wx.Frame):
             logger.debug("Recording? %s" % self.record_service._record)
 
 
-            #self.record_service = None
+            # self.record_service = None
             self.txtPythonConsole.shell.run("edit_service = app.TopWindow.record_service", prompt=False, verbose=False)
             self.txtPythonConsole.shell.run("series_service = edit_service.get_series_service()", prompt=False,
                                             verbose=False)
 
-            #from meliae import scanner
-            #scanner.dump_all_objects("edit_plotting.dat")
+            # from meliae import scanner
+            # scanner.dump_all_objects("edit_plotting.dat")
             logger.info("Finished Setting up Editing Series: %s " % seriesID)
-
 
     def stopEdit(self, event):
 
@@ -425,7 +418,6 @@ class frmODMToolsMain(wx.Frame):
         Publisher.sendMessage("toggleEdit", checked=False)
         self.record_service = None
         self._ribbon.toggleEditButtons(False)
-
 
     def getRecordService(self):
         return self.record_service
@@ -444,9 +436,7 @@ class frmODMToolsMain(wx.Frame):
             if self._ribbon.getEditStatus():
                 self.stopEdit(event=None)
 
-
         if value == wx.ID_OK:
-
             series_service = self.createService(newConnection)
             self.pnlSelector.resetDB(series_service)
             self.refreshConnectionInfo()
@@ -462,8 +452,10 @@ class frmODMToolsMain(wx.Frame):
         :return:
         """
 
+
         series_service= self.service_manager.get_series_service(conn_dict=conn_dict)#=connection)
         series_service.refreshDB(conn_dict['version'])
+
         return series_service
 
     def getServiceManager(self):
@@ -503,7 +495,7 @@ class frmODMToolsMain(wx.Frame):
             print "error saving docking data"
         self._mgr.UnInit()
 
-        
+
         # Shut down processes running in background
         if self.taskserver.numprocesses > 0 and self.taskserver.anyAlive:
             busy = wx.BusyInfo("Closing ODMTools ...", parent=self)
