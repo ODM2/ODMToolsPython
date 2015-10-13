@@ -396,7 +396,7 @@ class EditService():
         #self._cursor.executemany(query, [(str(x[0]),) for x in filtered_points])
         self._cursor.executemany(query, [(str(x),) for x in filtered_points["ValueID"].astype(int).tolist()])
         '''
-        self.memDB.updateFlag(filtered_points.index.astype(int).tolist(), qualifier_id)
+        self.memDB.updateFlag(filtered_points.index.tolist(), qualifier_id)
 
     ###################
     # Save/Restore
