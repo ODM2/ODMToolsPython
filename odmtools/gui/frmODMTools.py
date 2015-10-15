@@ -50,6 +50,8 @@ class frmODMToolsMain(wx.Frame):
 
         wx.Frame.__init__(self, **kwargs)
 
+        self.service_manager = ServiceManager()
+        self.record_service = None
 
         series_service = self._init_database()
         if series_service:
@@ -116,9 +118,7 @@ class frmODMToolsMain(wx.Frame):
     def _init_database(self, quit_if_cancel=True):
         logger.debug("Loading Database...")
 
-        self.service_manager = ServiceManager()
-        self.record_service = None
-        series_service = None
+
 
         while True:
             ## Database connection is valid, therefore proceed through the rest of the program
@@ -151,6 +151,29 @@ class frmODMToolsMain(wx.Frame):
         logger.debug("...Connected to '%s'" % msg)
 
         return series_service
+
+    def onChangeDBConn(self, event):
+        db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
+        value = db_config.ShowModal()
+        if value == wx.ID_CANCEL:
+            return
+
+        newConnection = db_config.panel.getFieldValues()
+        self.service_manager.set_current_conn_dict(newConnection)
+        db_config.Destroy()
+
+        if self._init_database(quit_if_cancel=False):
+            # if editing, stop editing...
+            if self._ribbon.getEditStatus():
+                self.stopEdit(event=None)
+
+        if value == wx.ID_OK:
+
+            series_service = self.createService(newConnection)
+            self.pnlSelector.resetDB(series_service)
+            self.refreshConnectionInfo()
+            self.pnlPlot.clear()
+            self.dataTable.clear()
 
 
     def servicesValid(self, service, displayMsg=True):
@@ -426,28 +449,7 @@ class frmODMToolsMain(wx.Frame):
     def getRecordService(self):
         return self.record_service
 
-    def onChangeDBConn(self, event):
-        db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
-        value = db_config.ShowModal()
-        if value == wx.ID_CANCEL:
-            return
 
-        newConnection = db_config.panel.getFieldValues()
-        db_config.Destroy()
-
-        if self._init_database(quit_if_cancel=False):
-            # if editing, stop editing...
-            if self._ribbon.getEditStatus():
-                self.stopEdit(event=None)
-
-
-        if value == wx.ID_OK:
-
-            series_service = self.createService(newConnection)
-            self.pnlSelector.resetDB(series_service)
-            self.refreshConnectionInfo()
-            self.pnlPlot.clear()
-            self.dataTable.clear()
 
     def createService(self, conn_dict=""):
         """

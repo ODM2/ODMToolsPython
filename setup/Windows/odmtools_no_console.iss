@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODMTools"
-#define MyAppVersion "1.2.1_Beta"
+#define MyAppVersion "1.2.2_Beta"
 #define MyAppPublisher "ODM2"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
-#define MyAppExeName "ODMTools_1.2.1_Beta_win32_x86_64.exe"
+#define MyAppExeName "{#MyAppName}_{#MyAppVersion}_win32_x86_64.exe"
 #define MyAppDir "D:\DEV\ODMToolsPython"
 
 [Setup]
@@ -37,8 +37,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#MyAppDir}\setup\Dist\ODMTools_1.2.1_Beta_win32_x86_64\ODMTools_1.2.1_Beta_win32_x86_64.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\setup\Dist\ODMTools_1.2.1_Beta_win32_x86_64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#MyAppDir}\setup\Dist\{#MyAppName}_{#MyAppVersion}_win32_x86_64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppDir}\setup\Dist\{#MyAppName}_{#MyAppVersion}_win32_x86_64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
