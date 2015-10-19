@@ -57,6 +57,21 @@ Once you have downloaded the source code and all the dependencies installed, run
 
     python ODMTools.py
 
+if installing pyodbc onto a Mac machine please follow these instructions:
+
+pyodbc Configuration
+Download the source code ​[here](https://code.google.com/p/pyodbc/downloads/detail?name=pyodbc-3.0.7.zip&can=2&q=)​.
+Unzip the directory where ever you want.
+Edit ​setup.py​ within the pyodbc directory.
+Look for the line that says “OS/X now ships with iODBC.” Right underneath that, remove the letter i from the statement:
+    settings[‘libraries’].append(‘iodbc’)
+
+so that it reads:
+    settings[‘libraries’].append(‘odbc’)
+￼￼
+Now that the setup.py file is configured correctly, pyodbc is ready to be installed. From your virtual environment, do a pip install of pyodbc and use the modified package.
+    pip install -e PATH_TO_PYODBC
+
 
 Sponsors
 ---------
