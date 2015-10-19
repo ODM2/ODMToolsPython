@@ -214,8 +214,11 @@ def move_to_dist(filename):
         print (e)
 
 
-def run_inno():
-    os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
+def run_inno(script = None):
+    if script is not None:
+        os.system(INNO_EXECUTABLE + " " + script)
+    else:
+        os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
 
 def run_no_installer():
     # Need to finish, Not functional
@@ -237,11 +240,13 @@ def main():
 
         print "Creating Windows Executable..."
         if run_pyinstaller():
-            run_inno()
+            scriptpath = os.path.join(WIN_DIR, "odmtools_no_console.iss")
+            run_inno(script= scriptpath)
 
         print "Creating Windows Executable Console..."
         if run_pyinstaller(console=True):
-            run_inno()
+            scriptpath = os.path.join(WIN_DIR, "odmtools_console.iss")
+            run_inno(scriptpath)
 
         print "Create No Installer "
 
