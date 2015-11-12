@@ -127,8 +127,9 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
             self.txtServer.SetValue(conn['address'])
             self.txtDBName.SetValue(conn['db'])
             self.txtUser.SetValue(conn['user'])
-            self.cbVersion.SetValue(conn['version'])
+            self.cbVersion.SetValue(str(conn['version']))
 
             for k, v in self.choices.iteritems():
                 if v == conn['engine']:
                     self.cbDatabaseType.SetValue(k)
+
