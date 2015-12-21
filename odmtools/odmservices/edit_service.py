@@ -408,7 +408,7 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
-    def updateSeries(self, var=None, method=None, qcl=None, is_new_series=False):
+    def updateSeries(self, var=None, method=None, qcl=None, is_new_series=False, overwrite = True, append = False):
         """
 
         :param var:
@@ -452,17 +452,13 @@ class EditService():
                                                                   qcl_id=qcl_id if qcl else int(
                                                                       series.quality_control_level_id))
             if tseries:
-                logger.debug("Save existing series ID: %s" % str(series.id))
+                logger.debug("Save existing series ID: %s" % str(tseries.id))
                 series = tseries
             else:
                 print "Series doesn't exist (if you are not, you should be running SaveAs)"
 
         if is_new_series:
-
-
             series = series_module.copy_series(series)
-
-
             if var:
                 series.variable_id = var_id
                 series.variable_code = var.code
@@ -490,22 +486,58 @@ class EditService():
         dvs["DateTimeUTC"] = pd.to_datetime(dvs["DateTimeUTC"])
         '''
 
-
-
-
-
         form = "%Y-%m-%d %H:%M:%S"
-        series.begin_date_time = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)#np.min(dvs["LocalDateTime"])#dvs[0].local_date_time
-        series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)#np.max(dvs["LocalDateTime"])#dvs[-1].local_date_time
-        series.begin_date_time_utc = datetime.datetime.strptime(str(np.min(dvs["DateTimeUTC"])), form) #dvs[0].date_time_utc
-        series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form) #dvs[-1].date_time_utc
-        series.value_count = len(dvs)
 
-        ## Override previous save
-        if not is_new_series:
-            # delete old dvs
-            #pass
-            self.memDB.series_service.delete_values_by_series(series)
+        if not append:
+
+            series.begin_date_time = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)#np.min(dvs["LocalDateTime"])#dvs[c0].local_date_time
+            series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)#np.max(dvs["LocalDateTime"])#dvs[-1].local_date_time
+            series.begin_date_time_utc = datetime.datetime.strptime(str(np.min(dvs["DateTimeUTC"])), form) #dvs[0].date_time_utc
+            series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form) #dvs[-1].date_time_utc
+            series.value_count = len(dvs)
+
+            ## Override previous save
+            if not is_new_series:
+                # delete old dvs
+                #pass
+                self.memDB.series_service.delete_values_by_series(series)
+        elif append:
+            #if series end date is after  dvs startdate
+            dbend = series.end_date_time
+            dfstart = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)
+            overlap = dbend> dfstart
+            #leave series start dates to those previously set
+            series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
+            series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)
+            #TODO figure out how to calculate the new value count
+            series.value_count = series.value_count+len(dvs)
+
+            # if overwrite:
+            #     if dbend >dfstart:
+            #         overlap = True
+            #     else:
+            #         overlap = False
+            #     if overlap:
+            #         self.memDB.series_service.delete_values_by_series(series, startdate=dfstart)
+            # else:
+            #     #remove values from df
+            #     if dbend<dfstart:
+            #         overlap = True
+            #     else:
+            #         overlap = False
+            #     overlap =False
+            #     if overlap:
+            #         dvs = dvs[dvs["LocalDateTime"] >= dbend]
+
+
+            if overlap:
+                if overwrite:
+                    #remove values from the database
+                    self.memDB.series_service.delete_values_by_series(series, startdate=dfstart)
+                else:
+                    #remove values from df
+                    dvs = dvs[dvs["LocalDateTime"] >= dbend]
+
 
 
         #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
@@ -542,6 +574,16 @@ class EditService():
             return True
         else:
             logger.debug("The Save As Function was Unsuccessful")
+            return False
+
+    def save_appending(self, var= None, method = None, qcl=None, overwrite=False):
+        series, dvs = self.updateSeries(var, method, qcl, is_new_series=False, append= True, overwrite=overwrite)
+
+        if self.memDB.series_service.save_series(series, dvs):
+            logger.debug("series saved!")
+            return True
+        else:
+            logger.debug("The Append Existing Function was Unsuccessful")
             return False
 
     def save_existing(self, var=None, method=None, qcl=None):
