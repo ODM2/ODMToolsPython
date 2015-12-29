@@ -387,8 +387,6 @@ class wizSave(wx.wizard.Wizard):
                         elif new:
                             result = self.record_service.save_appending(Variable, Method, QCL, overwrite = True)
 
-
-
                 Publisher.sendMessage("refreshSeries")
 
                     #self.page1.pnlIntroduction.rb
