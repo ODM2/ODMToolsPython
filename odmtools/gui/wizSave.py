@@ -298,10 +298,18 @@ class wizSave(wx.wizard.Wizard):
         closeSuccessful = False
 
         rbSave = self.pgIntro.pnlIntroduction.rbSave.GetValue()
-        rbSaveAs = self.pgIntro.pnlIntroduction.rbSaveAs.GetValue()
-        rbSaveExisting = self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue()
+        rbSaveAsNew = self.pgIntro.pnlIntroduction.rbSaveAs.GetValue()
+        rbSaveAsExisting = self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue()
+        if rbSaveAsExisting:
+            append = self.pgExisting.pnlExisting.rbAppend.GetValue()
+            overwrite = self.pgExisting.pnlExisting.rbOverwrite.GetValue()
+            if append:
+                original = self.pgExisting.pnlExisting.rbOriginal.GetValue()
+                new = self.pgExisting.pnlExisting.rbNew.GetValue()
 
-        if QCL.id == 0 and not rbSaveAs:
+
+
+        if QCL.id == 0 and not rbSaveAsNew:
             """
             If we're looking at a QCL with Control level 0 and the following cases:
                 Save
@@ -319,7 +327,7 @@ class wizSave(wx.wizard.Wizard):
                 if val_2 == 2:
                     closeSuccessful = True
 
-        elif rbSaveExisting:
+        elif rbSaveAsExisting:
             cont = wx.MessageBox("You are about to overwrite an existing series,\nthis action cannot be undone.\nWould you like to continue?\n",
                                       'Are you  sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
@@ -366,10 +374,20 @@ class wizSave(wx.wizard.Wizard):
             try:
                 if rbSave:
                     result = self.record_service.save()
-                elif rbSaveAs:
+                elif rbSaveAsNew:
                     result = self.record_service.save_as(Variable, Method, QCL)
-                else:
-                    result = self.record_service.save_existing(Variable, Method, QCL)
+                elif rbSaveAsExisting:
+                    if overwrite:
+                        result = self.record_service.save_existing(Variable, Method, QCL)
+                    elif append:
+                        #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
+                        #TODO if i require that original or new is selected I can call once with overwrite = original
+                        if original:
+                            result = self.record_service.save_appending(Variable, Method, QCL, overwrite = False)
+                        elif new:
+                            result = self.record_service.save_appending(Variable, Method, QCL, overwrite = True)
+
+
 
                 Publisher.sendMessage("refreshSeries")
 
