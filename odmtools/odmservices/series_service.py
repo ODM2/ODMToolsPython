@@ -522,7 +522,7 @@ class SeriesService():
         :param values: pandas dataframe
         :return:
         """
-        values.to_sql(name="datavalues", if_exists='append', con=self._session_factory.engine, index=False)
+        values.to_sql(name="DataValues", if_exists='append', con=self._session_factory.engine, index=False)  ## FAP 160127
 
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
