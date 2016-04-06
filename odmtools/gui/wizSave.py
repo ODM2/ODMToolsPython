@@ -328,7 +328,11 @@ class wizSave(wx.wizard.Wizard):
                     closeSuccessful = True
 
         elif rbSaveAsExisting:
-            cont = wx.MessageBox("You are about to overwrite an existing series,\nthis action cannot be undone.\nWould you like to continue?\n",
+            message = "You are about to overwrite an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
+
+            if self.pgExisting.pnlExisting.rbAppend:
+                message = "You are about to append to an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
+            cont = wx.MessageBox(message,
                                       'Are you  sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
             if cont == 2:
