@@ -161,9 +161,9 @@ class pnlIntro(wx.Panel):
         self.m_panel4 = wx.Panel(self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
         bSizer4.Add(self.m_panel4, 10, wx.EXPAND | wx.ALL, 5)
 
-        self.rbSaveAsOption = wx.RadioButton(self.m_panel2, wx.ID_ANY, u"Save As.. ", wx.DefaultPosition,
+        self.rbSaveAsOption = wx.StaticText(self.m_panel2, wx.ID_ANY, u"Save As.. ", wx.DefaultPosition,
                                              wx.DefaultSize, 0)
-        self.rbSaveAsOption.Enable(False)
+        # self.rbSaveAsOption.Enable(False)
 
         bSizer4.Add(self.rbSaveAsOption, 90, wx.ALL, 5)
 
