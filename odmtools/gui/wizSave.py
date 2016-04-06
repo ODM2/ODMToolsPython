@@ -307,8 +307,6 @@ class wizSave(wx.wizard.Wizard):
                 original = self.pgExisting.pnlExisting.rbOriginal.GetValue()
                 new = self.pgExisting.pnlExisting.rbNew.GetValue()
 
-
-
         if QCL.id == 0 and not rbSaveAsNew:
             """
             If we're looking at a QCL with Control level 0 and the following cases:
@@ -328,10 +326,12 @@ class wizSave(wx.wizard.Wizard):
                     closeSuccessful = True
 
         elif rbSaveAsExisting:
-            message = "You are about to overwrite an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
+            keyword = "overwrite"
 
             if self.pgExisting.pnlExisting.rbAppend:
-                message = "You are about to append to an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
+                keyword = "append to"
+
+            message = "You are about to "+keyword+" an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
             cont = wx.MessageBox(message,
                                       'Are you  sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
