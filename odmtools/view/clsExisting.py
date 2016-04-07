@@ -102,17 +102,14 @@ class pnlExisting(wx.Panel):
 
     # Virtual event handlers, overide them in your derived class
     def OnOLVItemSelected(self, event):
-        print "in parent class"
         event.Skip()
 
 
     def onOverwrite(self, event):
-        print "in parent class"
         event.Skip()
 
 
     def onAppend(self, event):
-        print "in parent class"
         event.Skip()
 
 
