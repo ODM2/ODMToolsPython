@@ -328,13 +328,11 @@ class wizSave(wx.wizard.Wizard):
         elif rbSaveAsExisting:
             keyword = "overwrite"
 
-            if self.pgExisting.pnlExisting.rbAppend:
+            if self.pgExisting.pnlExisting.rbAppend.GetValue():
                 keyword = "append to"
 
-            message = "You are about to "+keyword+" an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
-            cont = wx.MessageBox(message,
-                                      'Are you  sure?',
-                                      wx.YES_NO | wx.ICON_QUESTION)
+            message = "You are about to " + keyword + " an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
+            cont = wx.MessageBox(message, 'Are you sure?', wx.YES_NO | wx.ICON_QUESTION)
             if cont == 2:
                 closeSuccessful = True
             else:

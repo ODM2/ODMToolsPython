@@ -274,7 +274,7 @@ class EditTools():
             if self._record:
 
                 self._script(
-                    "edit_service.save_appending(%s, %s, %s, %s)\n" % (self.saveFactory(var, method, qcl)+ [overwrite]),
+                    "edit_service.save_appending(%s, %s, %s, " % self.saveFactory(var, method, qcl)+str(overwrite )+")\n",
                     'black')
                 #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
                 Publisher.sendMessage("scroll")
