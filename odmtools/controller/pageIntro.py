@@ -29,8 +29,6 @@ class pageIntro(wiz.PyWizardPage):
                                                   #style=wx.TAB_TRAVERSAL)
         self.sizer.Add(self.pnlIntroduction, 85, wx.ALL, 5)
 
-
-
         self.pnlIntroduction.rbSave.Bind(wx.EVT_RADIOBUTTON, self.OnBtnSaveRadiobutton)
         self.pnlIntroduction.rbSaveAs.Bind(wx.EVT_RADIOBUTTON, self.OnBtnSaveAsRadiobutton)
         self.pnlIntroduction.rbSaveExisting.Bind(wx.EVT_RADIOBUTTON, self.OnBtnSaveExistingRadiobuton)
@@ -43,24 +41,19 @@ class pageIntro(wiz.PyWizardPage):
 
     def GetNext(self):
        return self.next
+
     def GetPrev(self):
         return self.prev
 
-
     # Handlers for pnlIntro events.
     def OnBtnSaveRadiobutton(self, event):
-
-        print "in saveRadioButton"
         Publisher.sendMessage("wizChangeSave", event = event)
         #event.Skip()
 
     def OnBtnSaveAsRadiobutton(self, event):
-        print "in saveAsRadioButton"
         Publisher.sendMessage("wizChangeSave", event = event)        #event.Skip()
 
     def OnBtnSaveExistingRadiobuton(self, event):
         Publisher.sendMessage("wizChangeSave", event = event)
-        print "in saveExistingRadioButton"
         #event.Skip()
-	
-	
+
