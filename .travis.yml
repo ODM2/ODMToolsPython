@@ -1,0 +1,65 @@
+language: python
+sudo: required
+# if the https://travis-ci.org/ODM2/ODM2PythonAPI/requests ever says: missing config
+# validate at: http://lint.travis-ci.org/
+python:
+#  - "2.6"
+  - "2.7"
+#  - "3.2"
+#  - "3.3"
+#  - "3.4"
+#  - "3.5"
+#  - "3.5-dev" # 3.5 development branch
+#  - "nightly" # currently points to 3.6-dev
+# command to install dependencies
+cache:
+  directories:
+    - $HOME/.cache/pip/wheels
+    - $HOME/virtualenv/python2.7.9
+services:
+  - mysql
+  - postgresql
+addons:
+  apt:
+    packages:
+      - cmake
+      - unixodbc
+      - unixodbc-dev
+      - odbcinst1debian2
+      - odbcinst
+      - freetds-dev
+      - freetds-bin
+      - tdsodbc
+      - libc6
+      - e2fsprogs
+      - mysql-client
+      - libproj-dev
+      - libgeos-dev
+      - libspatialite-dev
+#  mariadb: '10.1'
+before_script:
+  - ./scripts/mysql_setup.sh
+  - ./scripts/postgres_setup.sh
+  - ./scripts/freetds.sh
+
+before_install:
+# python -m pip makes the install go into the virtualenv
+  - python -m pip install pandas
+  - export PYMSSQL_BUILD_WITH_BUNDLED_FREETDS=1;python -m  pip install pymssql
+#  - python -m  pip install mysql-python
+install: # now just our code
+  - pip install geoalchemy2
+  - pip install   .
+  - pip install  -r requirements_tests.txt  --allow-external pyodbc --allow-unverified pyodbc
+    # pysqlite
+#  - pip install pysqlite
+  - pip list
+
+# don't forget to open up the azure mssql server to these addreses
+# https://docs.travis-ci.com/user/ip-addresses/
+
+# command to run tests
+script:
+
+  - py.test
+
