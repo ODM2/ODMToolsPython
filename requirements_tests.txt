@@ -1,0 +1,15 @@
+-r requirements.txt
+pytest
+pytest-cov
+mock
+pyodbc
+pymysql
+numpy
+scipy
+#psycopg2
+sqlalchemy
+matplotlib
+pandas
+geoalchemy2
+wxpython
+#mysql-python

@@ -49,7 +49,6 @@ before_install:
 #  - python -m  pip install mysql-python
 install: # now just our code
   - pip install geoalchemy2
-  - pip install   .
   - pip install  -r requirements_tests.txt  --allow-external pyodbc --allow-unverified pyodbc
   - pip list
 
