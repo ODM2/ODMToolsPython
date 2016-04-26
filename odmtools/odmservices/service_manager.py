@@ -182,12 +182,12 @@ class ServiceManager():
         except:
             open(fn, 'w').close()
             config_file = open(fn, mode)
-            
 
         return config_file
 
     def _build_connection_string(self, conn_dict):
         driver = ""
+        connformat= self._connection_format
         if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
             driver = "pyodbc"
             quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
@@ -196,6 +196,7 @@ class ServiceManager():
         else:
             if conn_dict['engine'] == 'mssql':
                 driver = "pyodbc"
+                connformat=self._connection_format = "%s+%s://%s:%s@%s/%s?driver=SQL+Server+Native+Client+10.0"
             elif conn_dict['engine'] == 'mysql':
                 driver = "pymysql"
             elif conn_dict['engine'] == 'postgresql':
@@ -203,7 +204,7 @@ class ServiceManager():
             else:
                 driver = "None"
 
-            conn_string = self._connection_format % (
+            conn_string = connformat % (
                 conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
                 conn_dict['db'])
         return conn_string
