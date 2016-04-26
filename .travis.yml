@@ -1,6 +1,6 @@
 language: python
 sudo: required
-# if the https://travis-ci.org/ODM2/ODM2PythonAPI/requests ever says: missing config
+# if the https://travis-ci.org/ODM2/ODMToolsPython/requests ever says: missing config
 # validate at: http://lint.travis-ci.org/
 python:
 #  - "2.6"
@@ -38,9 +38,9 @@ addons:
       - libspatialite-dev
 #  mariadb: '10.1'
 before_script:
-  - ./scripts/mysql_setup.sh
-  - ./scripts/postgres_setup.sh
-  - ./scripts/freetds.sh
+  - ./scripts/tests/mysql_setup.sh
+  - ./scripts/tests/postgres_setup.sh
+  - ./scripts/tests/freetds.sh
 
 before_install:
 # python -m pip makes the install go into the virtualenv
@@ -51,8 +51,6 @@ install: # now just our code
   - pip install geoalchemy2
   - pip install   .
   - pip install  -r requirements_tests.txt  --allow-external pyodbc --allow-unverified pyodbc
-    # pysqlite
-#  - pip install pysqlite
   - pip list
 
 # don't forget to open up the azure mssql server to these addreses
