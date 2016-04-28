@@ -38,7 +38,6 @@ class frmODMToolsMain(wx.Frame):
 
     def __init__(self, **kwargs):
         """
-
         """
 
         self.taskserver = kwargs.pop('taskServer')
@@ -438,12 +437,16 @@ class frmODMToolsMain(wx.Frame):
 
     def stopEdit(self, event):
 
-        self.pnlSelector.stopEdit()
-        self.dataTable.stopEdit()
-        self.pnlPlot.stopEdit()
-        Publisher.sendMessage("toggleEdit", checked=False)
-        self.record_service = None
-        self._ribbon.toggleEditButtons(False)
+        val = wx.MessageBox( "Are you sure you want to stop editing",
+                            'Stop Editing?', wx.YES_NO | wx.ICON_QUESTION, parent=self)
+        if val == 2:  #_YES
+
+            self.pnlSelector.stopEdit()
+            self.dataTable.stopEdit()
+            self.pnlPlot.stopEdit()
+            Publisher.sendMessage("toggleEdit", checked=False)
+            self.record_service = None
+            self._ribbon.toggleEditButtons(False)
 
 
     def getRecordService(self):

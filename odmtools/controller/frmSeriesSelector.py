@@ -558,9 +558,14 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
+
         self.isEditing = False
+        if self.tblSeries.editingObject in self.tblSeries.GetCheckedObjects():
+            ischecked =True
         self.tblSeries.RefreshObject(self.tblSeries.editingObject)
-        self.tblSeries.editingObject = None
+        if ischecked and self.tblSeries.editingObject not in self.tblSeries.GetCheckedObjects():
+            self.tblSeries.ToggleCheck(self.tblSeries.editingObject)
+
         self.memDB.stopEdit()
 
     def isEditing(self):
