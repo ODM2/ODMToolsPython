@@ -11,6 +11,46 @@ class TestSeriesService:
         self.session = self.series_service._session_factory.get_session()
         engine = self.series_service._session_factory.engine
         test_util.build_db(engine)
+        """
+        @pytest.fixture(scope="class", autouse=True)
+    def build_db(self):
+        """
+        #Builds an empty sqlite (in-memory) database for testing
+        #:return: None
+        """
+        # path to the ddl script for building the database
+        ddlpath= abspath(join(dirname(__file__), 'data/empty.sql'))
+
+        # create and empty sqlite database for testing
+        db = dbconnection.createConnection('sqlite', ':memory:')
+
+        # read the ddl script and remove the first (BEGIN TRANSACTION) and last (COMMIT) lines
+        ddl = open(ddlpath, 'r').read()
+        ddl = ddl.replace('BEGIN TRANSACTION;','')
+        ddl = ddl.replace('COMMIT;','')
+
+        # execute each statement to build the odm2 database
+        for line in ddl.split(');')[:-1]:
+            try:
+                db.engine.execute(line + ');')
+            except Exception as e:
+                print e
+
+        self.write = CreateODM2(db)
+        self.engine= db.engine
+
+        globals['write'] = self.write
+        globals['engine'] = self.engine
+        globals['db'] = db
+        # return self.write, self.engine
+
+    def setup(self):
+
+        self.writer = globals['write']
+        self.engine = globals['engine']
+        self.db = globals['db']
+        """
+
 
     def test_get_db_version(self):
         version = test_util.add_version(self.session)
