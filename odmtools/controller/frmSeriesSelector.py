@@ -562,6 +562,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.isEditing = False
         if self.tblSeries.editingObject in self.tblSeries.GetCheckedObjects():
             ischecked =True
+        else:
+            ischecked = False
         self.tblSeries.RefreshObject(self.tblSeries.editingObject)
         if ischecked and self.tblSeries.editingObject not in self.tblSeries.GetCheckedObjects():
             self.tblSeries.ToggleCheck(self.tblSeries.editingObject)
