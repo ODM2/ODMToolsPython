@@ -442,9 +442,11 @@ class frmODMToolsMain(wx.Frame):
         if val == 2:  #_YES
 
             self.pnlSelector.stopEdit()
+
             self.dataTable.stopEdit()
             self.pnlPlot.stopEdit()
             Publisher.sendMessage("toggleEdit", checked=False)
+            self.memDB.reset_edit()
             self.record_service = None
             self._ribbon.toggleEditButtons(False)
 
