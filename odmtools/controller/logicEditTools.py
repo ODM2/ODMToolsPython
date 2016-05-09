@@ -258,6 +258,33 @@ class EditTools():
             Publisher.sendMessage("scroll")
         return result
 
+    def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param override:
+        :return:
+        """
+        result = self._edit_service.save_appending(var=var, method=method, qcl=qcl, overwrite= overwrite)
+        if result:
+            print "Save worked!"
+
+            if self._record:
+
+                self._script(
+                    "edit_service.save_appending(%s, %s, %s, " % self.saveFactory(var, method, qcl)+str(overwrite )+")\n",
+                    'black')
+                #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
+                Publisher.sendMessage("scroll")
+
+        else:
+            print "Save didn't work!"
+            #self._edit_service.restore()
+        return result
+
+
     def save_existing(self, var=None, method=None, qcl=None):
         """
 
