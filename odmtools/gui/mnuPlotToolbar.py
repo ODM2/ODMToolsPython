@@ -149,8 +149,11 @@ class MyCustomToolbar(NavigationToolbar):
         self.xys = None
         self.editCurve = None
         self.lassoAction = None
+        # untoggle select button
+        self.ToggleTool(self.select_tool.Id, False)
         # disable select button
         self.select_tool.Enable(False)
+
         self.zoom_to_data.Enable(False)
         self.Realize()
         #untoggle lasso button
