@@ -26,7 +26,7 @@ class ServiceManager():
         f = self._get_file('r')
         self._conn_dicts = []
         self.version = 0
-        self._connection_format = "%s+%s://%s:%s@%s/%s"
+
 
         # Read all lines (connections) in the connection.cfg file
         while True:
@@ -182,20 +182,50 @@ class ServiceManager():
         except:
             open(fn, 'w').close()
             config_file = open(fn, mode)
-            
 
         return config_file
 
+    # def _build_connection_string(self, conn_dict):
+    #     driver = ""
+    #     connformat= self._connection_format
+    #     if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
+    #         driver = "pyodbc"
+    #         quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
+    #         conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
+    #
+    #     else:
+    #         if conn_dict['engine'] == 'mssql':
+    #             driver = "pyodbc"
+    #             connformat=self._connection_format = "%s+%s://%s:%s@%s/%s?driver=SQL+Server+Native+Client+10.0"
+    #         elif conn_dict['engine'] == 'mysql':
+    #             driver = "pymysql"
+    #         elif conn_dict['engine'] == 'postgresql':
+    #             driver = "psycopg2"
+    #         else:
+    #             driver = "None"
+    #
+    #         conn_string = connformat % (
+    #             conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
+    #             conn_dict['db'])
+    #     return conn_string
     def _build_connection_string(self, conn_dict):
-        driver = ""
+        # driver = ""
+        # print "****", conn_dict
+
         if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
             driver = "pyodbc"
+            #'DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password'])
             quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
             conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
-        
         else:
+            self._connection_format = "%s+%s://%s:%s@%s/%s"
             if conn_dict['engine'] == 'mssql':
                 driver = "pyodbc"
+                #self._connection_format = "%s+%s://%s:%s@%s/%s?driver=SQL+Server+Native+Client+10.0"
+                conn = "%s+%s://%s:%s@%s/%s?driver=SQL+Server"
+                if "sqlncli11.dll" in os.listdir("C:\\Windows\\System32"):
+                    conn = "%s+%s://%s:%s@%s/%s?driver=SQL+Server+Native+Client+11.0"
+                self._connection_format = conn
             elif conn_dict['engine'] == 'mysql':
                 driver = "pymysql"
             elif conn_dict['engine'] == 'postgresql':
@@ -206,7 +236,10 @@ class ServiceManager():
             conn_string = self._connection_format % (
                 conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
                 conn_dict['db'])
+
+        # print "******", conn_string
         return conn_string
+
 
     def _save_connections(self):
         f = self._get_file('w')
