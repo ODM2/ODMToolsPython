@@ -6,9 +6,10 @@ class TestBulkInsert:
     def setup(self):
         self.app = wx.App()
         self.BulkInsert = BulkInsert(None)
-        self.CSVPath = os.path.join('.', 'example_files', 'exampleBulkInsert.csv')
-        self.CSVPath2 =os.path.join('.', 'example_files', 'exampleBulkInsert_win.csv')
-        self.CSVPath3 =os.path.join('.', 'example_files', 'CSVUploadTemplate_Mac.csv')
+        path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+        self.CSVPath = os.path.join(path, 'example_files', 'exampleBulkInsert.csv')
+        self.CSVPath2 =os.path.join(path, 'example_files', 'exampleBulkInsert_win.csv')
+        self.CSVPath3 =os.path.join(path, 'example_files', 'CSVUploadTemplate_Mac.csv')
         self.template_paths = [self.CSVPath, self.CSVPath2, self.CSVPath3]
     def teardown(self):
         pass

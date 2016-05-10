@@ -16,7 +16,8 @@ def add_bulk_data_values(session, series, dvs_size):
     Load up exampleData.csv into a series' datavalues field
     """
     assert 10000 >= dvs_size > 0
-    filepath = os.path.join('.', 'example_files', 'exampleData.csv')
+    path = os.path.dirname(os.path.realpath(__file__))
+    filepath = os.path.join(path, 'example_files', 'exampleData.csv')
     df = pd.read_csv(filepath)
     df['LocalDateTime'] = pd.to_datetime(df['LocalDateTime']).astype(datetime.datetime)
     df['DateTimeUTC'] = pd.to_datetime(df['DateTimeUTC']).astype(datetime.datetime)

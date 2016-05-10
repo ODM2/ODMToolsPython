@@ -1,6 +1,6 @@
 import wx
 import numpy as np
-from ..test_util import build_db, add_series, add_bulk_data_values
+from tests.test_util import build_db, add_series, add_bulk_data_values
 from odmtools.odmdata import MemoryDatabase
 from odmtools.odmservices import SeriesService
 from odmtools.gui import plotProbability
