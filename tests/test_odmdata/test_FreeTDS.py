@@ -34,6 +34,6 @@ class TestFreeTDS:
             print i
         assert q
         print engine
-
-    def test_connection(self):
-        pass
+    #todo: does this work on mac?
+    #def test_connection(self):
+        #pass

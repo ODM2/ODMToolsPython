@@ -47,25 +47,26 @@ class TestMemoryDB:
 
     def test_add_points(self):
         #with pytest.raises(NotImplementedError):
-        assert len(self.memory_db.df)==10
+        assert len(self.memory_db.getDataValuesDF().index)==10
         point = [('-9999', None, datetime.datetime(2011, 3, 25, 0, 0), '-7', datetime.datetime(2015, 3, 25, 7, 0), None,
                   None, u'nc', None, None, self.series.site_id, self.series.variable_id, self.series.method_id,
                   self.series.source_id, self.series.quality_control_level_id)]
         self.memory_db.addPoints(point)
         dvs = self.memory_db.getDataValuesDF()
 
-        assert len(dvs) == 11
-        assert dvs["DataValue"][-1] == -9999
+        assert len(dvs.index) == 11
+        assert dvs["DataValue"][0] == -9999
 
     def test_update_flag(self):
-        self.memory_db.updateFlag(self.sdate, '50')
+        self.memory_db.updateFlag([self.sdate], '50')
         dvs=self.memory_db.getDataValuesDF()
         assert dvs["QualifierID"][0] == '50'
 
 
     def test_delete_points(self):
-        stlen= len(self.memory_db.getDataValuesDF())
-        self.memory_db.delete([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        stlen= len(self.memory_db.df.index)
+
+        self.memory_db.delete(self.memory_db.df["LocalDateTime"].tolist()[0:10])
         dvs = self.memory_db.getDataValuesDF()
-        assert len(dvs) == stlen-10
+        assert len(dvs.index) == stlen-10
 

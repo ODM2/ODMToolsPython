@@ -34,6 +34,12 @@ addons:
       - e2fsprogs
       - mysql-client
       - libproj-dev
+      - python-wxgtk2.8
+      - python-wxtools
+      - wx2.8-doc
+      - wx2.8-examples
+      - wx2.8-headers
+      - wx2.8-i18n
 
 #  mariadb: '10.1'
 before_script:

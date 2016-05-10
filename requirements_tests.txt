@@ -2,5 +2,4 @@
 pytest
 pytest-cov
 mock
-
 #mysql-python
