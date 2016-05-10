@@ -4,7 +4,7 @@ from odmtools.controller.frmBulkInsert import BulkInsert
 
 class TestBulkInsert:
     def setup(self):
-        self.app = wx.App()
+        # self.app = wx.App()
         self.BulkInsert = BulkInsert(None)
         path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         self.CSVPath = os.path.join(path, 'example_files', 'exampleBulkInsert.csv')

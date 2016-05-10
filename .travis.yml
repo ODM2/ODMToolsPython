@@ -34,6 +34,7 @@ addons:
       - e2fsprogs
       - mysql-client
       - libproj-dev
+
 #  mariadb: '10.1'
 before_script:
   - ./scripts/tests/mysql_setup.sh
@@ -55,5 +56,6 @@ install: # now just our code
 
 # command to run tests
 script:
+
   - py.test
 

@@ -8,6 +8,7 @@ sqlalchemy
 matplotlib
 #pandas
 #geoalchemy2
+
 addons:
   apt:
     packages:
@@ -18,3 +19,4 @@ addons:
       - wx2.8-examples
       - wx2.8-headers
       - wx2.8-i18n
+
