@@ -2,7 +2,7 @@
 
 pyodbc
 pymysql
-numpy
+-I numpy
 scipy
 sqlalchemy
 matplotlib
