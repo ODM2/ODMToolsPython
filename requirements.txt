@@ -2,9 +2,9 @@ pyodbc
 pymysql
 numpy
 scipy
-#psycopg2
 sqlalchemy
 matplotlib
+#psycopg2
 #pandas
 #geoalchemy2
 

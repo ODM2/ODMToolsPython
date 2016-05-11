@@ -1,4 +1,17 @@
--r requirements.txt
+#-r requirements.txt
+
+pyodbc
+pymysql
+numpy
+scipy
+sqlalchemy
+matplotlib
+#psycopg2
+#pandas
+#geoalchemy2
+
+
+
 pytest
 pytest-cov
 mock
