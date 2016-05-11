@@ -5,7 +5,7 @@ pymysql
 -I numpy
 scipy
 sqlalchemy
-matplotlib
+#matplotlib
 #psycopg2
 #pandas
 #geoalchemy2
