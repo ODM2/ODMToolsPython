@@ -2,10 +2,10 @@
 
 pyodbc
 pymysql
-numpy
+numpy==1.9.2
 scipy
 sqlalchemy
-#matplotlib
+matplotlib==1.4.3
 #psycopg2
 #pandas
 #geoalchemy2
