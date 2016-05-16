@@ -172,10 +172,15 @@ class pnlScript(wx.Panel):
         #restart recording
 
     def OnExecute(self, e):
-        self.runCommand(self.control.GetText())
+        # self.runCommand(self.control.GetText())
+        for l in self.control.GetText().split('\n'):
+            self.runCommand(l)
+
 
     def OnExecuteSelection(self, e):
-        self.runCommand(self.control.GetSelectedTextRaw())
+        # self.runCommand(self.control.GetSelectedTextRaw())
+        for l in self.control.GetText().split('\n'):
+            self.runCommand(l)
 
     def OnExecuteLine(self, e):
         text = self.control.GetSelectedTextRaw()
