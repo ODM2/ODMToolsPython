@@ -179,7 +179,7 @@ class pnlScript(wx.Panel):
 
     def OnExecuteSelection(self, e):
         # self.runCommand(self.control.GetSelectedTextRaw())
-        for l in self.control.GetText().split('\n'):
+        for l in self.control.GetSelectedTextRaw().split('\n'):
             self.runCommand(l)
 
     def OnExecuteLine(self, e):
