@@ -97,6 +97,8 @@ class frmFlagValues(wx.Dialog):
         self.series_service = series_service
 
         self.qualchoices = choices
+        if len(choices)==0 :
+            isNew =True
         if isNew:
             self.selectedValue = NEW
             wx.CallAfter(self.showNewFields)
