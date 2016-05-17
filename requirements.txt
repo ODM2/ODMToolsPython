@@ -1,7 +1,7 @@
 pyodbc
 pymysql
 numpy
-scipy
+#scipy
 sqlalchemy
 #matplotlib
 #psycopg2

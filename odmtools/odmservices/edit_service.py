@@ -510,7 +510,7 @@ class EditService():
             series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
             series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)
             #TODO figure out how to calculate the new value count
-            series.value_count = series.value_count+len(dvs)
+            series.value_count = len(dvs)
 
             if overlap:
                 if overwrite:

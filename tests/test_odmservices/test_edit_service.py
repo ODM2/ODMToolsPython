@@ -82,25 +82,26 @@ class TestSeriesService:
         var = test_util.add_variable(self.session)
         assert self.edit_service.save_existing(var = var)
 
-    # def test_save_append(self):
-    #     #TODO add custon test
-    #     var = test_util.add_variable(self.session)
-    #     meth = test_util.add_method(self.session)
-    #
-    #     print var
-    #     print meth
-    #
-    #     print self.series.value_count
-    #     print len(self.series.data_values)
-    #     # keep data from original series if overlap:
-    #     result = self.edit_service.save_appending(var=var, overwrite = False)
-    #     assert result
-    #
-    #     print self.series.value_count
-    #     print len(self.series.data_values)
-    #     # keep new:
-    #     result = self.edit_service.save_appending(var=var, overwrite = True)
-    #     assert result
+    def test_save_append(self):
+        #TODO add custon test
+
+        len1= len(self.series.data_values)
+        # keep data from original series if overlap:
+        result = self.edit_service.save_appending(overwrite = False)
+        len2= len(self.series.data_values)
+        assert len1 == len2
+
+
+        # self.edit_service.memDB.updateValue([self.sdate],'+', 5 )
+        # dvs = self.memory_db.getDataValuesDF()
+        # assert dvs["DataValue"][0] == 14
+        # assert result
+
+        print self.series.value_count
+        print len(self.series.data_values)
+        # keep new:
+        result = self.edit_service.save_appending(overwrite = True)
+        assert result
 
 
 
