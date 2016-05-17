@@ -1,0 +1,32 @@
+name: odmtools
+dependencies:
+- dateutil=2.4.1=py27_0
+- freetype=2.4.10=1
+- libpng=1.5.13=1
+- matplotlib=1.4.3=np19py27_0
+- numpy=1.9.2=py27_0
+- openssl=1.0.1k=1
+- pandas=0.15.2=np19py27_0
+- pip=7.1.2=py27_0
+- psycopg2=2.6=py27_0
+- pymysql=0.6.6=py27_0
+- pyparsing=2.0.3=py27_0
+- python=2.7.10=1
+- python.app=1.2=py27_3
+- pytz=2014.9=py27_0
+- readline=6.2=2
+- scipy=0.15.1=np19py27_0
+- setuptools=18.4=py27_0
+- six=1.9.0=py27_0
+- sqlalchemy=0.9.9=py27_0
+- sqlite=3.8.4.1=1
+- tk=8.5.18=0
+- wheel=0.26.0=py27_1
+- wxpython=3.0=py27_0
+- zlib=1.2.8=0
+- pip:
+  - geoalchemy2==0.2.5
+  - pyodbc==3.0.7
+  - python-dateutil==2.4.1
+  - wxpython-common==3.0.0.0
+

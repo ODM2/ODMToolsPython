@@ -1,0 +1,11 @@
+pyodbc
+pymysql
+numpy
+scipy
+sqlalchemy
+matplotlib
+#psycopg2
+#pandas
+#geoalchemy2
+
+
