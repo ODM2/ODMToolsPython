@@ -16,7 +16,6 @@ class TestFreeTDS:
         if  sys.platform != 'win32':
             # connection string
             # create engine
-            #quoted = urllib.quote_plus('DRIVER={FreeTDS};Server=iutahqc.uwrl.usu.edu;Database=iUTAH_Logan_OD;UID=qc;PWD=iUTAH123!!;TDS_Version=8.0;Port=1433;')
             quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=iutahqc;UID=qc;PWD=iUTAH123!!;')
             engine = sqlalchemy.create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
             # conn = engine.connect()
@@ -37,6 +36,6 @@ class TestFreeTDS:
                 print i
             assert q
             print engine
-    #todo: does this work on mac?
-    def test_connection(self):
-        pass
+    #
+    # def test_connection(self):
+    #     pass

@@ -62,6 +62,6 @@ install: # now just our code
 
 # command to run tests
 script:
-
-  - py.test
+  - pythonw -m pytest
+#  - py.test
 
