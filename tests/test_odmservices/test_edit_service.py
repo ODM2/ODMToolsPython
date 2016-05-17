@@ -82,25 +82,33 @@ class TestSeriesService:
         var = test_util.add_variable(self.session)
         assert self.edit_service.save_existing(var = var)
 
-    def test_save_append(self):
+    def test_save_append_keep(self):
         #TODO add custon test
 
         len1= len(self.series.data_values)
         # keep data from original series if overlap:
+
+
+        svalue = self.series.data_values[0]
+
+        self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5 )
+        news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
         result = self.edit_service.save_appending(overwrite = False)
         len2= len(self.series.data_values)
         assert len1 == len2
+        assert news.data_values[0].data_value == svalue.data_value
+        assert result
 
+    def test_save_append_overwrite(self):
+        len1= len(self.series.data_values)
+        svalue = self.series.data_values[0]
 
-        # self.edit_service.memDB.updateValue([self.sdate],'+', 5 )
-        # dvs = self.memory_db.getDataValuesDF()
-        # assert dvs["DataValue"][0] == 14
-        # assert result
-
-        print self.series.value_count
-        print len(self.series.data_values)
-        # keep new:
-        result = self.edit_service.save_appending(overwrite = True)
+        self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5 )
+        news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
+        result = self.edit_service.save_appending(overwrite = False)
+        len2= len(self.series.data_values)
+        assert len1 == len2
+        assert news.data_values[0].data_value == svalue.data_value + 5
         assert result
 
 
