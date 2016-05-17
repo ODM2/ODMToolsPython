@@ -74,19 +74,34 @@ class TestSeriesService:
     def test_save_as_series(self):
         var = test_util.add_variable(self.session)
         print var
+        stlen = len(self.series.data_values)
         assert self.edit_service.save_as(var= var)
-        ##assert self.edit_service.memDB.series_service.series_exists(self.series.site.id, var, self.series.method.id,
-        #                                         self.series.source.id, self.series.qcl.id)
+        assert self.edit_service.memDB.series_service.series_exists_quint(self.series.site_id, var.id, self.series.method_id, self.series.source_id, self.series.quality_control_level_id)
 
     def test_save_as_existing_series(self):
         var = test_util.add_variable(self.session)
         assert self.edit_service.save_existing(var = var)
 
-    def test_save_append(self):
-        #TODO add custon test
-        var = test_util.add_variable(self.session)
-        print var
-        assert self.edit_service.save_existing(var= var)
+    # def test_save_append(self):
+    #     #TODO add custon test
+    #     var = test_util.add_variable(self.session)
+    #     meth = test_util.add_method(self.session)
+    #
+    #     print var
+    #     print meth
+    #
+    #     print self.series.value_count
+    #     print len(self.series.data_values)
+    #     # keep data from original series if overlap:
+    #     result = self.edit_service.save_appending(var=var, overwrite = False)
+    #     assert result
+    #
+    #     print self.series.value_count
+    #     print len(self.series.data_values)
+    #     # keep new:
+    #     result = self.edit_service.save_appending(var=var, overwrite = True)
+    #     assert result
+
 
 
 

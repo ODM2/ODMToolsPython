@@ -744,6 +744,7 @@ class SeriesService():
             return True
         except:
             return False
+
     def qcl_exists(self, q):
         """
 
