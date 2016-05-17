@@ -105,7 +105,7 @@ class TestSeriesService:
 
         self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5 )
         news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
-        result = self.edit_service.save_appending(overwrite = False)
+        result = self.edit_service.save_appending(overwrite = True)
         len2= len(self.series.data_values)
         assert len1 == len2
         assert news.data_values[0].data_value == svalue.data_value + 5
