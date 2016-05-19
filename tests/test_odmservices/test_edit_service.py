@@ -103,7 +103,7 @@ class TestSeriesService:
         len1= len(self.series.data_values)
         svalue = self.series.data_values[0]
 
-        self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5 )
+        self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5)
         news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
         result = self.edit_service.save_appending(overwrite = True)
         len2= len(self.series.data_values)
