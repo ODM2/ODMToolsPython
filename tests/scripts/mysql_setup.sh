@@ -28,5 +28,5 @@ mysql --user=root -e   "GRANT ALL PRIVILEGES ON odm.* TO 'ODM'@'localhost';FLUSH
 # these should produce results, if they don't the lower_case_table_names failed
 # should make them grep or sed for some keywords
 mysql --user=ODM --password=odm odm -e "use odm; Select * from Variables;"
-mysql --user=ODM --password=odm odm -e "Select * from Variables;"
-mysql --user=ODM --password=odm  -e "Select * from Variables;"
+mysql --user=ODM --password=odm odm -e "use odm; Select * from Variables;"
+mysql --user=ODM --password=odm  -e "use odm; Select * from Variables;"
