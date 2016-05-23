@@ -176,6 +176,7 @@ class plotTimeSeries(wx.Panel):
     def lassoChangeSelection(self, filtered_datetime):
         self.parent.record_service.select_points(dataframe=filtered_datetime)
 
+
     def onShowLegend(self, isVisible):
         if isVisible:
             self.isShowLegendEnabled = True
@@ -303,6 +304,10 @@ class plotTimeSeries(wx.Panel):
         self.toolbar.update()
         self.toolbar.push_current()
 
+        #self._views.home()
+        #self._positions.home()
+        #self.set_history_buttons()
+
     #clear plot
     def clear(self):
         """
@@ -314,7 +319,12 @@ class plotTimeSeries(wx.Panel):
         for key, ax in self.axislist.items():
             ax.clear()
         self.axislist = {}
-
+        #self.canvas.draw()
+            # self.stopEdit()
+        #print "TimeSeries: ", dir(self.timeSeries), type(self.timeSeries)
+        #plt.cla()
+        #plt.clf()
+        #self.timeSeries.plot([], [], picker=5)
 
 
     def setUpYAxis(self):

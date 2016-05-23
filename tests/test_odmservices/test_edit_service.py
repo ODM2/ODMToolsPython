@@ -23,6 +23,47 @@ class TestSeriesService:
         self.edit_service =EditService(1, connection= self.memory_database)
 
 
+        """
+        @pytest.fixture(scope="class", autouse=True)
+    def build_db(self):
+        """
+        #Builds an empty sqlite (in-memory) database for testing
+        #:return: None
+        """
+        # path to the ddl script for building the database
+        ddlpath= abspath(join(dirname(__file__), 'data/empty.sql'))
+
+        # create and empty sqlite database for testing
+        db = dbconnection.createConnection('sqlite', ':memory:')
+
+        # read the ddl script and remove the first (BEGIN TRANSACTION) and last (COMMIT) lines
+        ddl = open(ddlpath, 'r').read()
+        ddl = ddl.replace('BEGIN TRANSACTION;','')
+        ddl = ddl.replace('COMMIT;','')
+
+        # execute each statement to build the odm2 database
+        for line in ddl.split(');')[:-1]:
+            try:
+                db.engine.execute(line + ');')
+            except Exception as e:
+                print e
+
+        self.write = CreateODM2(db)
+        self.engine= db.engine
+
+        globals['write'] = self.write
+        globals['engine'] = self.engine
+        globals['db'] = db
+        # return self.write, self.engine
+
+    def setup(self):
+
+        self.writer = globals['write']
+        self.engine = globals['engine']
+        self.db = globals['db']
+        """
+
+
 
     def test_save_series(self):
         assert self.edit_service.save()
