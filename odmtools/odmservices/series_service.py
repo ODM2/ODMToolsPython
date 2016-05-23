@@ -512,7 +512,6 @@ class SeriesService():
                 self._edit_session.rollback()
                 raise e
 
-
         logger.debug("A new series was added to the database, series id: "+str(series.id))
         return True
 
@@ -523,7 +522,6 @@ class SeriesService():
         :return:
         """
         values.to_sql(name="datavalues", if_exists='append', con=self._session_factory.engine, index=False)
-
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
         """
@@ -670,18 +668,28 @@ class SeriesService():
         self._edit_session.commit()
 
 
-    def delete_values_by_series(self, series):
+    def delete_values_by_series(self, series, startdate = None):
         """
 
         :param series:
         :return:
         """
         try:
-            return self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
+            if startdate is not None:
+                #start date indicates what day you should start deleting values. the values will delete to the end of the series
+                return self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
+                                                                 variable_id = series.variable_id,
+                                                                 method_id = series.method_id,
+                                                                 source_id = series.source_id,
+                                                                 quality_control_level_id = series.quality_control_level_id)\
+                                                            .filter(DataValue.local_date_time >= startdate).delete()
+            else:
+                return self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
                                                                  variable_id = series.variable_id,
                                                                  method_id = series.method_id,
                                                                  source_id = series.source_id,
                                                                  quality_control_level_id = series.quality_control_level_id).delete()
+
         except:
             return None
 

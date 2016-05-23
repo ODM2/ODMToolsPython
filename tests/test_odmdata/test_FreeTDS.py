@@ -2,7 +2,7 @@
 from odmtools.odmdata import SessionFactory, variable, series
 from odmtools.odmservices import SeriesService
 from tests import test_util
-import wx
+
 from tests.test_util import build_db
 import urllib
 import sqlalchemy
@@ -35,5 +35,6 @@ class TestFreeTDS:
         assert q
         print engine
 
+    
     def test_connection(self):
         pass

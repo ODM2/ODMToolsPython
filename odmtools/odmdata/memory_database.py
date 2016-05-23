@@ -126,8 +126,12 @@ class MemoryDatabase(object):
         #self.updateDF()
 
     def chunking(self, data):
+        if not isinstance(data, list):
+            points = [data]
         return [data[x:x+998] for x in xrange(0, len(data), 998)]
-        
+
+
+
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)

@@ -4,7 +4,7 @@
 import wx
 import wx.lib.newevent
 from datetime import datetime
-from odmtools.common import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
+from odmtools.common.icons import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
 from odmtools.controller.logicCellEdit import CellEdit, NULL
 
 

@@ -63,6 +63,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                 8: str.strip,
                                 9: str.strip})
         except CParserError as e:
+
             msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
                                          "Please compare your csv with the template version as the file"
                                          " you provided "
