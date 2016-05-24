@@ -2,10 +2,11 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODMTools"
+#define MyAppInstallName "ODMTools_1.2.3_Beta_win32_x86_64_console.exe"
 #define MyAppVersion "1.2.3_Beta"
 #define MyAppPublisher "ODM2"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
-#define MyAppExeName "ODMTools_1.2.3_Beta_win32_x86_64_console.exe"
+#define MyAppExeName "ODMTools.exe"
 #define MyAppDir "D:\DEV\ODMToolsPython"
 
 [Setup]
