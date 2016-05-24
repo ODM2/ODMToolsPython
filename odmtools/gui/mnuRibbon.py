@@ -15,7 +15,7 @@ from frmFlagValues import frmFlagValues
 from odmtools.controller.frmLinearDrift import frmLinearDrift
 from odmtools.controller.frmAbout import frmAbout
 import wizSave
-from odmtools.common import *
+from odmtools.common.icons import *
 import pandas as pd
 
 

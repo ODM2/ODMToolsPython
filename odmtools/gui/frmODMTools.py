@@ -23,7 +23,7 @@ from odmtools.controller import frmDBConfig
 from odmtools.controller.frmAbout import frmAbout
 from odmtools.controller.frmSeriesSelector import FrmSeriesSelector
 from odmtools.gui.frmConsole import ODMToolsConsole
-from odmtools.common import gtk_execute
+from odmtools.common.icons import gtk_execute
 from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmservices import ServiceManager
 from odmtools.common.logger import LoggerTool

@@ -98,6 +98,7 @@ class frmFlagValues(wx.Dialog):
 
         self.qualchoices = choices
 
+
         #len choices added in cases where ther are no flags in the database
         #desired functionality is to automatically select creation of new flag
         if isNew or len(choices ==0):
