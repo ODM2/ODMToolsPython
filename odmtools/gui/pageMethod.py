@@ -54,6 +54,7 @@ class pnlMethod(wx.Panel):
         self.lstMethods = wx.ListCtrl(id=wxID_PNLMETHODSLISTCTRL1,
               name='lstMethods', parent=self, pos=wx.Point(16, 48),
               size=wx.Size(392, 152), style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
+        self.lstMethods.Bind(wx.EVT_SET_FOCUS, self.OnLstMethodSetFocus)
 
 
         self.lstMethods.InsertColumn(0, 'Description')
@@ -71,6 +72,9 @@ class pnlMethod(wx.Panel):
         self.series_service = sm.get_series_service()
         self.prev_val = method
         self._init_ctrls(parent)
+
+    def OnLstMethodSetFocus(self, event):
+        self.rbSelect.SetValue(True)
 
     def OnRbGenerateRadiobutton(self, event):
         self.lstMethods.Enable(False)
