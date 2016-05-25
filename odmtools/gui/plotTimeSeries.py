@@ -278,6 +278,9 @@ class plotTimeSeries(wx.Panel):
         curraxis.set_xlabel('Date')
 
         convertedDates = matplotlib.dates.date2num(dates)
+
+        scale = 1.5
+        f = zoom_factory(curraxis , base_scale = scale)
         self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
@@ -696,3 +699,6 @@ class Cursor(object):
         self.toolbar.msg.SetLabelText("X= %s,  Y= %.4f (%s)" % (xValue, y, self.name))
         self.toolbar.msg.SetForegroundColour((66, 66, 66))
         #logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
+
+
+
