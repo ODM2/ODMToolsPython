@@ -63,7 +63,7 @@ class pnlMethod(wx.Panel):
         self.lstMethods.SetColumnWidth(0, 200)
         self.lstMethods.SetColumnWidth(1, 153)
         self.lstMethods.SetColumnWidth(2,0)
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
 
 
 
@@ -77,7 +77,7 @@ class pnlMethod(wx.Panel):
         self.rbSelect.SetValue(True)
 
     def OnRbGenerateRadiobutton(self, event):
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
         self.txtMethodDescrip.Enable(False)
 
         event.Skip()
