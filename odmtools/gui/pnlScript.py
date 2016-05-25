@@ -165,7 +165,7 @@ class pnlScript(wx.Panel):
         # get ahold of record service and turn it off do i need a publisher command?
 
         self.parent.record_service.toggle_record(False)
-        for line in text.split("\n"):
+        for line in text.splitlines():#("\n"):
             self.console.shell.run(line)
         #self.console.shell.run("\n")
         self.parent.record_service.toggle_record(True)
@@ -174,8 +174,18 @@ class pnlScript(wx.Panel):
     def OnExecute(self, e):
         self.runCommand(self.control.GetText())
 
+        # l1 = len(self.control.GetText().split('\n'))
+        # l2 = len(self.control.GetText().split('\r'))
+        #
+        # print("length by '\\n': %s \n length by '\\r': %s"%(l1,l2))
+        # for l in self.control.GetText().split('\n'):
+        #     self.runCommand(l)
+
+
     def OnExecuteSelection(self, e):
         self.runCommand(self.control.GetSelectedTextRaw())
+        # for l in self.control.GetSelectedTextRaw().split('\n'):
+        #     self.runCommand(l)
 
     def OnExecuteLine(self, e):
         text = self.control.GetSelectedTextRaw()
