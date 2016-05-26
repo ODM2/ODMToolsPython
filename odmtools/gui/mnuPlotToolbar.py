@@ -82,10 +82,12 @@ class MyCustomToolbar(NavigationToolbar):
 
         # create a long tooltip with newline to get around wx bug (in v2.6.3.3)
         # where newlines aren't recognized on subsequent self.tooltip.SetTip() calls
-        self.tooltip = wx.ToolTip(tip='tip with a long %s line and a newline\n')
+        self.tooltip = ToolTip(tip='tip with a long %s line and a newline\n')
         self.canvas.SetToolTip(self.tooltip)
-        self.tooltip.Enable(False)
+        # self.tooltip.Enable(False)
         self.tooltip.SetDelay(0)
+
+        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
 
 
 
@@ -309,7 +311,7 @@ class MyCustomToolbar(NavigationToolbar):
             #tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M:%S"), yValue)
             tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M"), yValue)
 
-            self.tooltip.SetTip(tip)
+            self.tooltip.SetString(tip)
             self.tooltip.Enable(True)
             self.tooltip.SetAutoPop(10000)
 
@@ -348,6 +350,7 @@ class MyCustomToolbar(NavigationToolbar):
 
 
 
+
     def on_scroll_zoom(self, event):
         axes = self.canvas.figure.axes[0]
         base_scale = 1.2
@@ -377,4 +380,23 @@ class MyCustomToolbar(NavigationToolbar):
 
     # fig = ax.get_figure() # get the figure of interest
     # attach the call back
+
+
+class ToolTip(wx.ToolTip):
+    """
+    a subclass of wx.Tooltip which can be disable on mac
+    """
+
+    def __init__(self, tip):
+        self.tooltip_string = tip
+        self.TooltipsEnabled = True
+        wx.ToolTip.__init__(self, tip)
+
+    def SetString(self, tip):
+        self.tooltip_string = tip
+
+    def Enable(self, x):
+        print ("in custom tooltip set enable")
+        if x: self.SetTip(self.tooltip_string)
+        else: self.SetTip("")
 
