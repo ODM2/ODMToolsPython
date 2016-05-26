@@ -125,20 +125,11 @@ class SeriesPlotInfo(object):
         else:
             return None
 
-
-
-
-    def updateEditSeries(self):
-        #update values
-        if self.editID in self._seriesInfos:
-            # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
-            data =self.memDB.getEditDataValuesforGraph()
-            self._seriesInfos[self.editID].dataTable = data
-
     def setEditSeries(self, seriesID):
 
         self.editID = int(seriesID)
         # self.memDB.initEditValues(self.editID)
+
         if self.editID not in self._seriesInfos:
             self.update(self.editID, True)
             # self.getSeriesInfo(self.editID)
@@ -152,6 +143,15 @@ class SeriesPlotInfo(object):
             self._seriesInfos[self.editID].edit = True
             self._seriesInfos[self.editID].plotcolor = self._seriesInfos[self.editID].color
             self._seriesInfos[self.editID].color = "Black"
+
+
+    def updateEditSeries(self):
+        #update values
+        if self.editID in self._seriesInfos:
+            # self._seriesInfos[self.editID].dataTable = self.memDB.getEditDataValuesforGraph()
+            data =self.memDB.getEditDataValuesforGraph()
+            self._seriesInfos[self.editID].dataTable = data
+
 
     def stopEditSeries(self):
         if self.editID in self._seriesInfos:

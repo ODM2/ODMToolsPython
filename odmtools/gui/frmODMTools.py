@@ -23,7 +23,7 @@ from odmtools.controller import frmDBConfig
 from odmtools.controller.frmAbout import frmAbout
 from odmtools.controller.frmSeriesSelector import FrmSeriesSelector
 from odmtools.gui.frmConsole import ODMToolsConsole
-from odmtools.common import gtk_execute
+from odmtools.common.icons import gtk_execute
 from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmservices import ServiceManager
 from odmtools.common.logger import LoggerTool
@@ -38,6 +38,7 @@ class frmODMToolsMain(wx.Frame):
 
     def __init__(self, **kwargs):
         """
+
         """
 
         self.taskserver = kwargs.pop('taskServer')
@@ -437,18 +438,12 @@ class frmODMToolsMain(wx.Frame):
 
     def stopEdit(self, event):
 
-        val = wx.MessageBox( "Are you sure you want to stop editing",
-                            'Stop Editing?', wx.YES_NO | wx.ICON_QUESTION, parent=self)
-        if val == 2:  #_YES
-
-            self.pnlSelector.stopEdit()
-
-            self.dataTable.stopEdit()
-            self.pnlPlot.stopEdit()
-            Publisher.sendMessage("toggleEdit", checked=False)
-            self.memDB.reset_edit()
-            self.record_service = None
-            self._ribbon.toggleEditButtons(False)
+        self.pnlSelector.stopEdit()
+        self.dataTable.stopEdit()
+        self.pnlPlot.stopEdit()
+        Publisher.sendMessage("toggleEdit", checked=False)
+        self.record_service = None
+        self._ribbon.toggleEditButtons(False)
 
 
     def getRecordService(self):

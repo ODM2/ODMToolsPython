@@ -1,6 +1,5 @@
 from odmtools.odmdata import *
-
-
+from odmtools.odmservices.service_manager import SessionFactory
 from tests import test_util
 
 

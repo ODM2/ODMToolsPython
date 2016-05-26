@@ -566,9 +566,9 @@
 						<key>IFPkgDescriptionDescription</key>
 						<string></string>
 						<key>IFPkgDescriptionTitle</key>
-						<string>ODMTools_v1.2.2</string>
+						<string>ODMTools_v1.2.4</string>
 						<key>IFPkgDescriptionVersion</key>
-						<string>1.2.2 Beta</string>
+						<string>1.2.4 Beta</string>
 					</dict>
 				</dict>
 				<key>Display Information</key>
@@ -619,7 +619,7 @@
 		<key>IFPkgFlagPackageSelection</key>
 		<integer>0</integer>
 		<key>Name</key>
-		<string>ODMTools_v1.2.2-beta_Mac_installer</string>
+		<string>ODMTools_v1.2.4-beta_Mac_installer</string>
 		<key>Status</key>
 		<integer>1</integer>
 		<key>Type</key>
