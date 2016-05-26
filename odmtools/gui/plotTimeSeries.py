@@ -279,8 +279,8 @@ class plotTimeSeries(wx.Panel):
 
         convertedDates = matplotlib.dates.date2num(dates)
 
-        scale = 1.5
-        f = zoom_factory(curraxis , base_scale = scale)
+        # scale = 1.5
+        # f = zoom_factory(curraxis , base_scale = scale)
         self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
