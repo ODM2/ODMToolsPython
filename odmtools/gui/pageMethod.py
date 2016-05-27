@@ -89,7 +89,7 @@ class pnlMethod(wx.Panel):
         event.Skip()
 
     def OnRbCreateNewRadiobutton(self, event):
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
         self.txtMethodDescrip.Enable(True)
 
         event.Skip()
