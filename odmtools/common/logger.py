@@ -15,12 +15,13 @@ from odmtools.lib.Appdirs.appdirs import user_log_dir
 class LoggerTool():
     def __init__(self):
         self.formatString = '%(asctime)s - %(levelname)s - %(name)s.%(funcName)s() (%(lineno)d): %(message)s'
-        self.formatString1 = '%(asctime)s (%(levelname)s) %(module)s:%(funcName)s.%(name)s(%(lineno)d) - %(message)s'
+        self.formatString1 = '%(asctime)s (%(levelname)s) %(module)s:%(funcName)s(%(lineno)d) - %(message)s'
+        self.formatString2 ='%(asctime)s - %(levelname)s - %(module)s - %(message)s'
 
     def setupLogger(self, loggerName, logFile, m='w', level=logging.INFO):
         l = logging.getLogger(loggerName)
         # formatter = logging.Formatter('%(asctime)s : %(message)s')
-        formatter = logging.Formatter(self.formatString)
+        formatter = logging.Formatter(self.formatString1)
 
 
         streamHandler = logging.StreamHandler()
