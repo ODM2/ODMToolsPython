@@ -24,11 +24,11 @@ from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 ## Enable logging
 import logging
-from odmtools.common.logger import LoggerTool
-
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class plotTimeSeries(wx.Panel):
     def __init__(self, parent, id, pos, size, style, name):
@@ -278,6 +278,9 @@ class plotTimeSeries(wx.Panel):
         curraxis.set_xlabel('Date')
 
         convertedDates = matplotlib.dates.date2num(dates)
+
+        # scale = 1.5
+        # f = zoom_factory(curraxis , base_scale = scale)
         self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
         self.toolbar.editSeries(self.xys, self.editCurve)
         self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
@@ -531,7 +534,9 @@ class plotTimeSeries(wx.Panel):
                 self.deactivateCursor(deselectedObject)
 
         except AttributeError as e:
-            print "Ignoring Attribute Error", e
+            message= "Ignoring Attribute Error", e
+            print message
+            logger.error (message)
 
     def deactivateCursor(self, deselectedObject=None):
         # Remove an object if supplied
@@ -611,7 +616,7 @@ class plotTimeSeries(wx.Panel):
                 self.toolbar.msg.SetForegroundColour((66, 66, 66))
             else:
                 self.toolbar.msg.SetLabelText("")
-        except ValueError:
+        except ValueError :
             pass
 
     def _onPick(self, event):
@@ -696,3 +701,6 @@ class Cursor(object):
         self.toolbar.msg.SetLabelText("X= %s,  Y= %.4f (%s)" % (xValue, y, self.name))
         self.toolbar.msg.SetForegroundColour((66, 66, 66))
         #logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
+
+
+

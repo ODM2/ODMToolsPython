@@ -26,10 +26,13 @@ from odmtools.gui.frmConsole import ODMToolsConsole
 from odmtools.common.icons import gtk_execute
 from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmservices import ServiceManager
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# logger = tool.setupLogger('main',  'odmtools.log', 'w', logging.INFO)
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class frmODMToolsMain(wx.Frame):
     """
@@ -60,9 +63,9 @@ class frmODMToolsMain(wx.Frame):
             self._init_sizers()
             self._ribbon.Realize()
             self.Refresh()
-            logger.debug("System starting ...")
+            logger.info("System starting ...")
         else:
-            logger.debug("System shutting down... ")
+            logger.info("System shutting down... ")
             sys.exit(0)
 
 
@@ -116,7 +119,7 @@ class frmODMToolsMain(wx.Frame):
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
     def _init_database(self, quit_if_cancel=True):
-        logger.debug("Loading Database...")
+        logger.info("Loading Database...")
 
 
 
@@ -256,7 +259,7 @@ class frmODMToolsMain(wx.Frame):
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
         self.dataTable = FrmDataTable(self.pnlDocking)
-        # self.dataTable = pnlDataTable.pnlDataTable(self.pnlDocking)
+
         # self.dataTable.toggleBindings()
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
@@ -277,10 +280,10 @@ class frmODMToolsMain(wx.Frame):
         Publisher.subscribe(self.onExecuteScript, ("execute.script"))
         Publisher.subscribe(self.onChangeDBConn, ("change.dbConfig"))
         Publisher.subscribe(self.onSetScriptTitle, ("script.title"))
-        #.subscribe(self.onSetScriptTitle, ("script.title"))
         Publisher.subscribe(self.onClose, ("onClose"))
         Publisher.subscribe(self.addEdit, ("selectEdit"))
         Publisher.subscribe(self.stopEdit, ("stopEdit"))
+
 
     def _init_aui_manager(self):
 
@@ -381,8 +384,9 @@ class frmODMToolsMain(wx.Frame):
     def addEdit(self, event):
 
         with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self):
-            logger.debug("Beginning editing")
+
             isSelected, seriesID = self.pnlSelector.onReadyToEdit()
+            logger.info("Beginning editing seriesID: %s"%str(seriesID))
 
             # logger.debug("Initializing DataTable")
             # # tasks = [("dataTable", (memDB.conn, self.dataTable.myOlv))]
@@ -526,6 +530,7 @@ class frmODMToolsMain(wx.Frame):
                     elif isinstance(item, wx.Dialog):
                         item.Destroy()
                     item.Close()
+        logger.info("Closing ODMTools\n")
         self.Destroy()
 
         wx.GetApp().ExitMainLoop()

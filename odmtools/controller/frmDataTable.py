@@ -49,7 +49,7 @@ class FrmDataTable(DataTable):
                     self.olvDataTable.SetItemState(i, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
                 self.olvDataTable.Focus(results[0][0])
                 self.enableSelectDataTable = False
-            except:
+            except Exception as e :
                 pass
     def clear(self):
         self.memDB = None

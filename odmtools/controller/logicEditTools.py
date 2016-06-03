@@ -5,9 +5,9 @@ from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
 
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class EditTools():
     # Script header (imports etc.) will be set up in Main when record is clicked.

@@ -7,6 +7,8 @@ try:
     from agw import genericmessagedialog as GMD
 except ImportError:
     import wx.lib.agw.genericmessagedialog as GMD
+import logging
+logger =logging.getLogger('main')
 
 # Implementing AddPoints
 class AddPoints(clsAddPoints.AddPoints):
@@ -79,6 +81,7 @@ class AddPoints(clsAddPoints.AddPoints):
             value = msg.ShowModal()
             if value == wx.ID_YES:
                 self.customRemove(self.selectedObject)
+
                 #self.sb.SetStatusText("Removing %s" % self.sb.SetStatusText("Removing %s" % self.selectedObject.dataValue))
 
         self.selectedObject = None

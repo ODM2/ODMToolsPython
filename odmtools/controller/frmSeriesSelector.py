@@ -10,8 +10,9 @@ from odmtools.common.logger import LoggerTool
 from odmtools.odmdata import MemoryDatabase
 from odmtools.view import clsSeriesSelector
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 __author__ = 'Jacob'
 
@@ -105,7 +106,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.series_service = self.parent.Parent.createService()
         #self.refreshTableSeries(self.dbservice)
         self.resetDB(self.series_service)
-        logger.debug("Repopulate Series Selector")
+        logger.info("Repopulate Series Selector")
 
     def initSVBoxes(self):
         """
@@ -366,7 +367,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.setFilter(site_code=self.site_code, var_code=self.variable_code)
             self.cbVariables.Enabled = True
             self.cbSites.Enabled = True
-        except IndexError:
+        except IndexError as i:
+            logger.error(i)
             pass
 
     def siteOnly(self):
@@ -466,7 +468,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         logger.debug("Obtain object")
         try:
             object = event.object
-        except:
+        except Exception as e :
             object = self.tblSeries.GetSelectedObject()
 
         if not self.tblSeries.IsChecked(object):

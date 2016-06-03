@@ -7,9 +7,9 @@ from sqlalchemy import update, bindparam
 from odmtools.common.taskServer import TaskServerMP
 from multiprocessing import cpu_count, freeze_support
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class MemoryDatabase(object):
     ### this code should be changed to work with the database abstract layer so that sql queries are not in the code

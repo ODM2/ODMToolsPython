@@ -18,8 +18,9 @@ from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
 import logging
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 
 ########################################################################
@@ -318,7 +319,7 @@ class wizSave(wx.wizard.Wizard):
                                 'Are you Sure?',
                                 wx.YES_NO | wx.ICON_QUESTION)
             if val == 2:
-                logger.debug("User selected yes to save a level 0 dataset")
+                logger.info("User selected yes to save a level 0 dataset")
                 val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure you are sure?\n",
                                       'Are you REALLY sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
@@ -393,7 +394,9 @@ class wizSave(wx.wizard.Wizard):
 
                     #self.page1.pnlIntroduction.rb
             except Exception as e:
-                wx.MessageBox("Save was unsuccessful %s" % e.message, "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
+                message = "Save was unsuccessful %s" % e.message
+                logger.error(message)
+                wx.MessageBox(message, "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
             event.Skip()
             self.Close()
 

@@ -1,11 +1,13 @@
 import wx
 import logging
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
 from odmtools.lib.ObjectListView import VirtualObjectListView, ObjectListView, ColumnDefn
 import pandas as pd
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
+
 
 __author__ = 'jmeline'
 

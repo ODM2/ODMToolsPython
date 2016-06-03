@@ -5,12 +5,13 @@ import wx.lib.newevent
 # from ObjectListView.ObjectListView import FastObjectListView, ColumnDefn
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
 from odmtools.odmdata import series
 
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 
