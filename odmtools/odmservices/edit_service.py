@@ -35,11 +35,10 @@ class EditService():
 
         if connection_string is  "" and connection is not None:
             self.memDB= connection
-            #self._series_service = self.memDB.series_service#SeriesService(connection_string, debug)
 
         elif connection_string is not "" and connection is None:
             from odmtools.odmdata import MemoryDatabase
-            self.memDB= MemoryDatabase()#(series_service)
+            self.memDB= MemoryDatabase()
             self.memDB.set_series_service(SeriesService(connection_string, False))
 
 

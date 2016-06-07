@@ -233,6 +233,7 @@ class SeriesService():
             result = self._edit_session.query(Method).filter_by(description=method_code).first()
         except:
             result = None
+            logger.error("method not found")
         return result
 
     def get_offset_types_by_series_id(self, series_id):
