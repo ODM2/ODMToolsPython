@@ -293,11 +293,16 @@ class MyCustomToolbar(NavigationToolbar):
             scale_factor = 1
             print event.button
         # set new limits
-        axes.set_xlim([xdata - cur_xrange*scale_factor,
-                     xdata + cur_xrange*scale_factor])
-        axes.set_ylim([ydata - cur_yrange*scale_factor,
-                     ydata + cur_yrange*scale_factor])
-        self.canvas.draw() # force re-draw
+        try:
+            axes.set_xlim([xdata - cur_xrange*scale_factor,
+                         xdata + cur_xrange*scale_factor])
+            axes.set_ylim([ydata - cur_yrange*scale_factor,
+                         ydata + cur_yrange*scale_factor])
+            self.canvas.draw() # force re-draw
+        except Exception as e:
+            #user tried to scroll outside the bounds of the plot, but still in the plot window. Ignore
+            pass
+
 
     # fig = ax.get_figure() # get the figure of interest
     # attach the call back
