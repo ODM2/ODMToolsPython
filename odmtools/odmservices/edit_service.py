@@ -504,7 +504,7 @@ class EditService():
             #if series end date is after  dvs startdate
             dbend = series.end_date_time
             dfstart = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)
-            overlap = dbend> dfstart
+            overlap = dbend>= dfstart
             #leave series start dates to those previously set
             series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
             series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)
