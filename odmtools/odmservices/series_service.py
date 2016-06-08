@@ -191,6 +191,14 @@ class SeriesService():
         result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
         return result
 
+    def get_qualifier_by_code(self, code):
+        """
+
+        :return: Qualifiers
+        """
+        result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
+        return result
+
     def get_qualifiers_by_series_id(self, series_id):
         """
 
