@@ -54,6 +54,7 @@ class pnlMethod(wx.Panel):
         self.lstMethods = wx.ListCtrl(id=wxID_PNLMETHODSLISTCTRL1,
               name='lstMethods', parent=self, pos=wx.Point(16, 48),
               size=wx.Size(392, 152), style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
+        self.lstMethods.Bind(wx.EVT_SET_FOCUS, self.OnLstMethodSetFocus)
 
 
         self.lstMethods.InsertColumn(0, 'Description')
@@ -62,7 +63,7 @@ class pnlMethod(wx.Panel):
         self.lstMethods.SetColumnWidth(0, 200)
         self.lstMethods.SetColumnWidth(1, 153)
         self.lstMethods.SetColumnWidth(2,0)
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
 
 
 
@@ -72,8 +73,11 @@ class pnlMethod(wx.Panel):
         self.prev_val = method
         self._init_ctrls(parent)
 
+    def OnLstMethodSetFocus(self, event):
+        self.rbSelect.SetValue(True)
+
     def OnRbGenerateRadiobutton(self, event):
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
         self.txtMethodDescrip.Enable(False)
 
         event.Skip()
@@ -85,7 +89,7 @@ class pnlMethod(wx.Panel):
         event.Skip()
 
     def OnRbCreateNewRadiobutton(self, event):
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
         self.txtMethodDescrip.Enable(True)
 
         event.Skip()
