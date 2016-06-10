@@ -164,11 +164,12 @@ class pnlPlot(fnb.FlatNotebook):
         logger.debug("Plot Boxwhisker")
         self.pltBox.Plot(self._seriesPlotInfo)
 
+        logger.debug("Plot Timeseries")
+        self.pltTS.Plot(self._seriesPlotInfo)
+
         logger.debug("Plot Histogram")
         self.pltHist.Plot(self._seriesPlotInfo)
 
-        logger.debug("Plot Timeseries")
-        self.pltTS.Plot(self._seriesPlotInfo)
 
         self.onShowLegend(event=None, isVisible=self.legendVisible)
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()
