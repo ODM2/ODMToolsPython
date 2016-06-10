@@ -186,34 +186,9 @@ class ServiceManager():
         return config_file
 
     def _build_connection_string(self, conn_dict):
-<<<<<<< Updated upstream
-        # driver = ""
-        # connformat= self._connection_format
-        # if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
-        #     driver = "pyodbc"
-        #     quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
-        #     conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
-        #
-        # else:
-        #     if conn_dict['engine'] == 'mssql':
-        #         driver = "pyodbc"
-        #         connformat=self._connection_format = "%s+%s://%s:%s@%s/%s?driver=SQL+Server+Native+Client+10.0"
-        #     elif conn_dict['engine'] == 'mysql':
-        #         driver = "pymysql"
-        #     elif conn_dict['engine'] == 'postgresql':
-        #         driver = "psycopg2"
-        #     else:
-        #         driver = "None"
-        #
-        #     conn_string = connformat % (
-        #         conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
-        #         conn_dict['db'])
-        # return conn_string
-    # driver = ""
-        # print "****", conn_dict
-=======
+
         self._connection_format = "%s+%s://%s:%s@%s/%s"
->>>>>>> Stashed changes
+
         if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
             driver = "pyodbc"
             quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'],
@@ -241,19 +216,11 @@ class ServiceManager():
             else:
                 driver = "None"
                 conn_string = self.constringBuilder(conn_dict, driver)
-<<<<<<< Updated upstream
 
 
         # print "******", conn_string
         return conn_string
 
-=======
-
-
-        # print "******", conn_string
-        return conn_string
-
->>>>>>> Stashed changes
     def constringBuilder(self, conn_dict, driver):
         if conn_dict['password'] is None or not conn_dict['password']:
             conn_string = self._connection_format_nopassword % (
