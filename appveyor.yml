@@ -8,8 +8,8 @@ environment:
     MINICONDA_VERSION: "latest"
     #    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers/appveyor/windows_sdk.cmd"
-    CONDA_DEPENDENCIES: "numpy matplotlib pandas pymysql scipy sqlite sqlalchemy psycopg2 wxpython pip"
-    PIP_DEPENDENCIES: "geoalchemy pyodbc pytest"
+    CONDA_DEPENDENCIES: "numpy matplotlib pandas pymysql scipy sqlite sqlalchemy wxpython pip"
+    PIP_DEPENDENCIES: "geoalchemy pyodbc pytest psycopg2"
 
 
 
@@ -115,7 +115,7 @@ install:
 build_script:
 ##https://github.com/sqlectron/sqlectron-core/blob/master/appveyor.yml
   # postgres
-  - createdb odm
+  - psql createdb odm
   - psql -d odm -a -f tests\data\sampledb\odm_postgres.sql
   # mysql
   - mysql -e "drop database test; create database odm;" --user=root
