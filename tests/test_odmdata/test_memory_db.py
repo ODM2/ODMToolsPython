@@ -32,6 +32,44 @@ class TestMemoryDB:
         assert self.series
         assert len(self.series.data_values) == dvs
 
+    def test_rollback_single(self):
+
+        self.memory_db.update([{"value":15,"id":self.sdate}])
+        dvs = self.memory_db.getDataValuesDF()
+        print dvs["DataValue"]
+        assert dvs["DataValue"][0] == 15
+
+        self.memory_db.mem_service._edit_session.begin_nested()
+
+        self.memory_db.update([{"value":50,"id":self.sdate}])
+        dvs = self.memory_db.getDataValuesDF()
+
+        assert dvs["DataValue"][0] == 50
+
+
+        self.memory_db.mem_service._edit_session.rollback()
+        #make sure not everythin was rolled back
+        dvs = self.memory_db.getDataValuesDF()
+
+        assert dvs["DataValue"][0] == 15
+
+    def test_rollback(self):
+        dvs = self.memory_db.getDataValuesDF()
+        startval = dvs["DataValue"][0]
+
+        #make a change
+        self.memory_db.update([{"value":15,"id":self.sdate}])
+        dvs = self.memory_db.getDataValuesDF()
+        #test if it was successful
+        assert dvs["DataValue"][0] == 15
+        #undo the change
+        self.memory_db.rollback()
+        dvs = self.memory_db.getDataValuesDF()
+
+        assert dvs["DataValue"][0] == startval
+
+
+
 
     def test_update_points(self):
 
