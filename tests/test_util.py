@@ -95,6 +95,7 @@ def add_series(session):
     series.end_date_time = dvs[-1].local_date_time
     series.begin_date_time_utc = dvs[0].date_time_utc
     series.end_date_time_utc = dvs[-1].date_time_utc
+    series.value_count = len(dvs)
 
     session.add(series)
     session.commit()

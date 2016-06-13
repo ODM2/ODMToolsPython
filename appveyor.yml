@@ -1,0 +1,126 @@
+environment:
+# patterned after: https://github.com/ogrisel/python-appveyor-demo/blob/master/appveyor.yml
+  global:
+    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+    # /E:ON and /V:ON options are not enabled in the batch script intepreter
+    # See: http://stackoverflow.com/a/13751649/163740
+    PYTHON: "C:\\conda"
+    MINICONDA_VERSION: "latest"
+    #    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers/appveyor/windows_sdk.cmd"
+    CONDA_DEPENDENCIES: "numpy matplotlib pandas pymysql scipy sqlite sqlalchemy wxpython pip"
+    PIP_DEPENDENCIES: "geoalchemy pyodbc pytest psycopg2"
+
+
+
+    # postgres
+    POSTGRES_PORT: tcp://localhost:5432
+    POSTGRES_ENV_POSTGRES_USER: postgres
+    POSTGRES_ENV_POSTGRES_PASSWORD: Password12!
+    POSTGRES_ENV_POSTGRES_DB: odm
+    POSTGRES_PATH: C:\Program Files\PostgreSQL\9.4\bin
+    PGUSER: postgres
+    PGPASSWORD: Password12!
+    # mysql
+    MYSQL_PORT: tcp://localhost:3306
+    MYSQL_ENV_MYSQL_USER: root
+    MYSQL_ENV_MYSQL_PASSWORD: Password12!
+    MYSQL_ENV_MYSQL_DATABASE: odm
+    MYSQL_PATH: C:\Program Files\MySql\MySQL Server 5.6\bin
+    MYSQL_PWD: Password12!
+    # sql server
+    SQLSERVER_ENV_SQLSERVER_HOST: localhost
+    SQLSERVER_ENV_SQLSERVER_PORT: 1433
+    SQLSERVER_ENV_SQLSERVER_USER: sa
+    SQLSERVER_ENV_SQLSERVER_PASSWORD: Password12!
+    SQLSERVER_ENV_SQLSERVER_DATABASE: odm
+
+
+
+    # Pre-installed Python versions, which Appveyor may upgrade to
+    # a later point release.
+    # See: http://www.appveyor.com/docs/installed-software#python
+
+  matrix:
+    - PYTHON: "C:\\Python27-conda32"
+      PYTHON_VERSION: "2.7"
+      PYTHON_ARCH: "32"
+  #        CONDA_PY: "27"
+  #        CONDA_NPY: "18"
+      NUMPY_VERSION: "stable"
+
+    - PYTHON: "C:\\Python27-conda64"
+      PYTHON_VERSION: "2.7"
+      PYTHON_ARCH: "64"
+      NUMPY_VERSION: "stable"
+  #        CONDA_PY: "27"
+  #        CONDA_NPY: "18"
+
+
+  #      - PYTHON: "C:\\Python34-conda64"
+  #        PYTHON_VERSION: "3.4"
+  #        PYTHON_ARCH: "64"
+
+services:
+  - mssql2008r2sp2
+  - mysql
+  - postgresql
+
+install:
+  # If there is a newer build queued for the same PR, cancel this one.
+  # The AppVeyor 'rollout builds' option is supposed to serve the same
+  # purpose but it is problematic because it tends to cancel builds pushed
+  # directly to master instead of just PR builds (or the converse).
+  # credits: JuliaLang developers.
+  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_BUILD_NUMBER -ne ((Invoke-RestMethod `
+        https://ci.appveyor.com/api/projects/$env:APPVEYOR_ACCOUNT_NAME/$env:APPVEYOR_PROJECT_SLUG/history?recordsNumber=50).builds | `
+        Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
+          throw "There are newer queued builds for this pull request, failing early." }
+  - ECHO "Filesystem root:"
+  - ps: "ls \"C:/\""
+
+  - ECHO "Installed SDKs:"
+  - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
+
+  # Install Python (from the official .msi of http://python.org) and pip when
+  # not already installed.
+#  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
+  - ps: ci-helpers/appveyor/install-miniconda.ps1
+
+
+  # Prepend newly installed Python to the PATH of this build (this cannot be
+  # done from inside the powershell script as it would require to restart
+  # the parent CMD process).
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  # add databases
+  - "SET PATH=%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%"
+  - "activate test"
+
+  # Check that we have the expected version and architecture for Python
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+
+
+
+build_script:
+##https://github.com/sqlectron/sqlectron-core/blob/master/appveyor.yml
+
+  # sqlserver
+  - ps: ci-helpers\appveyor\sqlserver.ps1 SQL2008R2SP2
+  - sqlcmd -S localhost,1433 -U sa -P Password12! -Q "CREATE DATABASE odm" -d "master"
+  - sqlcmd -S localhost,1433 -U sa -P Password12! -i tests\data\sampledb\odm_mssql.sql -d "odm"
+  - sqlcmd -S localhost,1433 -U sa -P Password12! -Q "select table_name from information_schema.tables" -d "odm"
+#  # postgres
+#  - psql createdb odm
+#  - psql -d odm -a -f tests\data\sampledb\odm_postgres.sql
+#  # mysql
+#  - mysql -e "drop database test; create database odm;" --user=root
+#  - mysql odm < tests\data\sampledb\odm_mysql.sql --user=root
+
+test_script:
+  # Run the project tests
+  - "py.test"
+
+
+
+

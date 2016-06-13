@@ -13,9 +13,9 @@ import numpy as np
 import logging
 from odmtools.common.logger import LoggerTool
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class EditService():
     # Mutual exclusion: cursor, or connection_string
@@ -35,11 +35,10 @@ class EditService():
 
         if connection_string is  "" and connection is not None:
             self.memDB= connection
-            #self._series_service = self.memDB.series_service#SeriesService(connection_string, debug)
 
         elif connection_string is not "" and connection is None:
             from odmtools.odmdata import MemoryDatabase
-            self.memDB= MemoryDatabase()#(series_service)
+            self.memDB= MemoryDatabase()
             self.memDB.set_series_service(SeriesService(connection_string, False))
 
 
@@ -505,12 +504,12 @@ class EditService():
             #if series end date is after  dvs startdate
             dbend = series.end_date_time
             dfstart = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)
-            overlap = dbend> dfstart
+            overlap = dbend>= dfstart
             #leave series start dates to those previously set
             series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
             series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)
             #TODO figure out how to calculate the new value count
-            series.value_count = series.value_count+len(dvs)
+            series.value_count = len(dvs)
 
             if overlap:
                 if overwrite:

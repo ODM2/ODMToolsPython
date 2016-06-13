@@ -10,10 +10,12 @@ from odmtools.odmdata import Method
  wxID_PNLMETHODSRICHTEXTCTRL1,
 ] = [wx.NewId() for _init_ctrls in range(6)]
 
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
 import logging
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
+
 
 class pnlMethod(wx.Panel):
     def _init_ctrls(self, prnt):
@@ -68,8 +70,8 @@ class pnlMethod(wx.Panel):
 
 
 
-    def __init__(self, parent, id, pos, size, style, name, sm, method):
-        self.series_service = sm.get_series_service()
+    def __init__(self, parent, id, pos, size, style, name, ss, method):
+        self.series_service = ss
         self.prev_val = method
         self._init_ctrls(parent)
 
@@ -89,7 +91,7 @@ class pnlMethod(wx.Panel):
         event.Skip()
 
     def OnRbCreateNewRadiobutton(self, event):
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
         self.txtMethodDescrip.Enable(True)
 
         event.Skip()
@@ -112,10 +114,10 @@ class pnlMethod(wx.Panel):
         m =  Method()
         if self.rbGenerate.Value:
             genmethod = "Values derived from ODM Tools Python"
-
-            try:
-                m= self.series_service.get_method_by_description(genmethod)
-            except:
+            m= self.series_service.get_method_by_description(genmethod)
+            if m is None:
+                logger.debug("assigning new method description")
+                m =  Method()
                 m.description = genmethod
 
         elif self.rbSelect.Value:
@@ -128,5 +130,6 @@ class pnlMethod(wx.Panel):
 
 
         elif self.rbCreateNew.Value:
+            logger.debug("assigning new method description")
             m.description = self.txtMethodDescrip.GetValue()
         return m

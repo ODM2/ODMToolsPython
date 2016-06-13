@@ -19,10 +19,11 @@ import plotProbability
 from odmtools.controller.logicPlotOptions import SeriesPlotInfo
 
 import logging
-from odmtools.common.logger import LoggerTool
-
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 [wxID_PANEL1, wxID_PAGEBOX, wxID_PAGEHIST, wxID_PAGEPROB,
  wxID_PAGESUMMARY, wxID_PAGETIMESERIES, wxID_TABPLOTS
@@ -164,11 +165,12 @@ class pnlPlot(fnb.FlatNotebook):
         logger.debug("Plot Boxwhisker")
         self.pltBox.Plot(self._seriesPlotInfo)
 
+        logger.debug("Plot Timeseries")
+        self.pltTS.Plot(self._seriesPlotInfo)
+
         logger.debug("Plot Histogram")
         self.pltHist.Plot(self._seriesPlotInfo)
 
-        logger.debug("Plot Timeseries")
-        self.pltTS.Plot(self._seriesPlotInfo)
 
         self.onShowLegend(event=None, isVisible=self.legendVisible)
         maxStart, maxEnd, currStart, currEnd = self._seriesPlotInfo.getDates()

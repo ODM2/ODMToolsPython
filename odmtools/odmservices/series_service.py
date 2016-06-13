@@ -19,9 +19,9 @@ from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
 import pandas as pd
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class SeriesService():
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
@@ -191,6 +191,14 @@ class SeriesService():
         result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
         return result
 
+    def get_qualifier_by_code(self, code):
+        """
+
+        :return: Qualifiers
+        """
+        result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
+        return result
+
     def get_qualifiers_by_series_id(self, series_id):
         """
 
@@ -233,6 +241,7 @@ class SeriesService():
             result = self._edit_session.query(Method).filter_by(description=method_code).first()
         except:
             result = None
+            logger.error("method not found")
         return result
 
     def get_offset_types_by_series_id(self, series_id):
@@ -483,7 +492,7 @@ class SeriesService():
             except Exception as e:
                 self._edit_session.rollback()
                 raise e
-            logger.debug("Existing File was overwritten with new information")
+            logger.info("Existing File was overwritten with new information")
             return True
         else:
             logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
@@ -500,7 +509,7 @@ class SeriesService():
         # Save As case
         if self.series_exists(series):
             msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
-            logger.debug(msg)
+            logger.info(msg)
             raise Exception(msg)
         else:
             try:
@@ -512,7 +521,7 @@ class SeriesService():
                 self._edit_session.rollback()
                 raise e
 
-        logger.debug("A new series was added to the database, series id: "+str(series.id))
+        logger.info("A new series was added to the database, series id: "+str(series.id))
         return True
 
     def save_values(self, values):
@@ -661,11 +670,17 @@ class SeriesService():
         :param series:
         :return:
         """
-        self.delete_values_by_series(series)
+        try:
+            self.delete_values_by_series(series)
 
-        delete_series = self._edit_session.merge(series)
-        self._edit_session.delete(delete_series)
-        self._edit_session.commit()
+            delete_series = self._edit_session.merge(series)
+            self._edit_session.delete(delete_series)
+            self._edit_session.commit()
+        except Exception as e:
+            message = "series was not successfully deleted: %s" % e
+            print message
+            logger.error(message)
+            raise e
 
 
     def delete_values_by_series(self, series, startdate = None):
@@ -675,31 +690,36 @@ class SeriesService():
         :return:
         """
         try:
+            q= self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
+                                                                 variable_id = series.variable_id,
+                                                                 method_id = series.method_id,
+                                                                 source_id = series.source_id,
+                                                                 quality_control_level_id = series.quality_control_level_id)
             if startdate is not None:
                 #start date indicates what day you should start deleting values. the values will delete to the end of the series
-                return self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
-                                                                 variable_id = series.variable_id,
-                                                                 method_id = series.method_id,
-                                                                 source_id = series.source_id,
-                                                                 quality_control_level_id = series.quality_control_level_id)\
-                                                            .filter(DataValue.local_date_time >= startdate).delete()
+                return q.filter(DataValue.local_date_time >= startdate).delete()
             else:
-                return self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
-                                                                 variable_id = series.variable_id,
-                                                                 method_id = series.method_id,
-                                                                 source_id = series.source_id,
-                                                                 quality_control_level_id = series.quality_control_level_id).delete()
+                return q.delete()
 
-        except:
-            return None
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
 
     def delete_dvs(self, id_list):
         """
 
-        :param id_list: list of ids
+        :param id_list: list of datetimes
         :return:
         """
-        self._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(id_list)).delete(False)
+        try:
+            self._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(id_list)).delete(False)
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
 
 #####################
 #
@@ -744,6 +764,7 @@ class SeriesService():
             return True
         except:
             return False
+
     def qcl_exists(self, q):
         """
 
