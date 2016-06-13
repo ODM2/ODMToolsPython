@@ -114,17 +114,18 @@ install:
 
 build_script:
 ##https://github.com/sqlectron/sqlectron-core/blob/master/appveyor.yml
-  # postgres
-  - psql createdb odm
-  - psql -d odm -a -f tests\data\sampledb\odm_postgres.sql
-  # mysql
-  - mysql -e "drop database test; create database odm;" --user=root
-  - mysql odm < tests\data\sampledb\odm_mysql.sql --user=root
+
   # sqlserver
   - ps: ci-helpers\appveyor\sqlserver.ps1 SQL2008R2SP2
   - sqlcmd -S localhost,1433 -U sa -P Password12! -Q "CREATE DATABASE odm" -d "master"
   - sqlcmd -S localhost,1433 -U sa -P Password12! -i tests\data\sampledb\odm_mssql.sql -d "odm"
   - sqlcmd -S localhost,1433 -U sa -P Password12! -Q "select table_name from information_schema.tables" -d "odm"
+#  # postgres
+#  - psql createdb odm
+#  - psql -d odm -a -f tests\data\sampledb\odm_postgres.sql
+#  # mysql
+#  - mysql -e "drop database test; create database odm;" --user=root
+#  - mysql odm < tests\data\sampledb\odm_mysql.sql --user=root
 
 test_script:
   # Run the project tests
