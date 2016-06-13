@@ -41,16 +41,19 @@ addons:
       - wx2.8-headers
       - wx2.8-i18n
 
+
 #  mariadb: '10.1'
 before_script:
   - ./ci-helpers/travis/mysql_setup.sh
   - ./ci-helpers/travis/postgres_setup.sh
   - ./ci-helpers/travis/freetds.sh
 
+
 before_install:
 # python -m pip makes the install go into the virtualenv
   - python -m pip install pandas
   - export PYMSSQL_BUILD_WITH_BUNDLED_FREETDS=1;python -m  pip install pymssql
+
 #  - python -m  pip install mysql-python
 install: # now just our code
   - pip install geoalchemy2
@@ -60,8 +63,17 @@ install: # now just our code
 # don't forget to open up the azure mssql server to these addreses
 # https://docs.travis-ci.com/user/ip-addresses/
 
+#  mariadb: '10.1'
+before_script:
+  - chmod +x ./tests/scripts/mysql_setup.sh
+#  - chmod +x ./tests/scripts/postgres_setup.sh
+  - chmod +x ./tests/scripts/freetds.sh
+  - ./tests/scripts/mysql_setup.sh
+#  - ./tests/scripts/postgres_setup.sh
+  - ./tests/scripts/freetds.sh
+
 # command to run tests
 script:
-
+#  - pythonw -m pytest
   - py.test
 

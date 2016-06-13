@@ -363,6 +363,16 @@ class TestSeriesService:
         self.series_service.delete_series(series)
         assert self.series_service.get_series_by_id(series.id) == None
 
+    def test_delete_values(self):
+        series = test_util.add_series(self.session)
+        assert self.series_service.get_series_by_id(series.id) != None
+        self.series_service.delete_values_by_series(series)
+        val = self.series_service.get_series_by_id(series.id)
+        print val
+        assert val != None
+
+
+
     def test_qcl_exists(self):
         qcl = test_util.add_qcl(self.session)
         assert self.series_service.qcl_exists(qcl) == True

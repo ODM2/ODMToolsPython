@@ -16,9 +16,9 @@ from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmdata.session_factory import SessionFactory
 
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class ServiceManager():
     def __init__(self, debug=False):
@@ -216,7 +216,10 @@ class ServiceManager():
             else:
                 driver = "None"
                 conn_string = self.constringBuilder(conn_dict, driver)
+<<<<<<< HEAD
 
+=======
+>>>>>>> logging
 
         # print "******", conn_string
         return conn_string

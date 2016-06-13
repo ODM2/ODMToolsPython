@@ -6,14 +6,16 @@ from matplotlib.widgets import Lasso
 from matplotlib import path
 from matplotlib import dates
 
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
 from odmtools.common.icons.plotToolbar import back, filesave, select, scroll_right, \
     scroll_left, zoom_data, zoom_to_rect, subplots, forward, home, move
 
 
 
-tools = LoggerTool()
-logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tools = LoggerTool()
+# logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
+
 
 def bind(actor,event,action,id=None):
         if id is not None:

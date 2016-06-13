@@ -66,18 +66,52 @@ class TestSeriesService:
 
 
     def test_save_series(self):
+        stlen = len(self.series.data_values)
         assert self.edit_service.save()
+        val = self.series_service.get_series_by_id(self.series.id)
+        assert len(val.data_values)==stlen
 
     def test_save_as_series(self):
         var = test_util.add_variable(self.session)
         print var
+        stlen = len(self.series.data_values)
         assert self.edit_service.save_as(var= var)
-        ##assert self.edit_service.memDB.series_service.series_exists(self.series.site.id, var, self.series.method.id,
-        #                                         self.series.source.id, self.series.qcl.id)
-
+        assert self.edit_service.memDB.series_service.series_exists_quint(self.series.site_id, var.id, self.series.method_id, self.series.source_id, self.series.quality_control_level_id)
 
     def test_save_as_existing_series(self):
         var = test_util.add_variable(self.session)
         assert self.edit_service.save_existing(var = var)
+
+    def test_save_append_keep(self):
+        #TODO add custon test
+
+        len1= len(self.series.data_values)
+        # keep data from original series if overlap:
+
+
+        svalue = self.series.data_values[0]
+
+        self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5 )
+        news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
+        result = self.edit_service.save_appending(overwrite = False)
+        len2= len(self.series.data_values)
+        assert len1 == len2
+        assert news.data_values[0].data_value == svalue.data_value
+        assert result
+
+    def test_save_append_overwrite(self):
+        len1= len(self.series.data_values)
+        svalue = self.series.data_values[0]
+
+        self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5)
+        news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
+        result = self.edit_service.save_appending(overwrite = True)
+        len2= len(self.series.data_values)
+        assert len1 == len2
+        assert news.data_values[0].data_value == svalue.data_value + 5
+        assert result
+
+
+
 
 

@@ -14,8 +14,9 @@ directory = os.path.dirname(os.path.dirname(this_file))
 sys.path.append(directory)
 '''
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class frmDBConfig(wx.Dialog):
     def __init__(self, parent, service_manager, is_main=False):
@@ -54,7 +55,7 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
             curr_dict = self.getFieldValues()
             if self.conn_dict == curr_dict:
                 self.btnSave.Enable(True)
-        except:
+        except Exception as e:
             pass
 
 

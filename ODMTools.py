@@ -23,7 +23,7 @@ import pymysql
 import psycopg2
 
 tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger = tool.setupLogger('main',  'odmtools.log', 'a', logging.INFO)
 wx.Log.SetLogLevel(0)
 
 
@@ -67,7 +67,7 @@ def runODM():
     app.MainLoop()
 
 if __name__ == '__main__':
-    logger.debug("Welcome to ODMTools Python. Please wait as system loads")
+    logger.info("Welcome to ODMTools Python. Please wait as system loads")
     # https://docs.python.org/2/library/multiprocessing.html#miscellaneous
 
     # Add support for when a program which uses multiprocessing has been frozen to produce a Windows executable.

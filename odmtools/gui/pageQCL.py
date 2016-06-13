@@ -9,10 +9,11 @@ from odmtools.odmdata import QualityControlLevel
  wxID_PNLQCLTXTEXPLANATION,
 ] = [wx.NewId() for _init_ctrls in range(10)]
 
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
 import logging
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class pnlQCL(wx.Panel):
     def _init_ctrls(self, prnt):

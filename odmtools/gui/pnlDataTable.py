@@ -10,10 +10,11 @@ import numpy as np
 import timeit
 
 
-from odmtools.common.logger import LoggerTool
-
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 [wxID_PNLDATATABLE, wxID_PNLDATATABLEDATAGRID,
 ] = [wx.NewId() for _init_ctrls in range(2)]
