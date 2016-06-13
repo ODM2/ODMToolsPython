@@ -36,5 +36,5 @@ class TestFreeTDS:
         print engine
 
     
-    def test_connection(self):
-        pass
+    # def test_connection(self):
+    #     pass
