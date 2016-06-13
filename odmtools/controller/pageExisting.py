@@ -13,7 +13,7 @@ import datetime
 
 ########################################################################
 class pageExisting(wiz.WizardPageSimple):
-    def __init__(self, parent, title, service_man, site):
+    def __init__(self, parent, title, series_service , site):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
 
@@ -30,7 +30,7 @@ class pageExisting(wiz.WizardPageSimple):
         #pos=wx.Point(536, 285), size=wx.Size(439, 357),
         #style=wx.TAB_TRAVERSAL)#, sm = service_man, series = series)
         self.sizer.Add(self.pnlExisting, 85, wx.ALL, 5)
-        self._init_data(service_man.get_series_service(), site.id)
+        self._init_data(series_service, site.id)
 
 
         self.pnlExisting.olvSeriesList.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnOLVItemSelected)

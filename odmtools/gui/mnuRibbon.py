@@ -21,11 +21,11 @@ import pandas as pd
 
 # # Enable logging
 import logging
-from odmtools.common.logger import LoggerTool
-
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-##
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 [wxID_PANEL1, wxID_RIBBONPLOTTIMESERIES, wxID_RIBBONPLOTPROB, wxID_RIBBONPLOTHIST, wxID_RIBBONPLOTBOX,
  wxID_RIBBONPLOTSUMMARY, wxID_RIBBONPLOTTSTYPE, wxID_RIBBONPLOTTSCOLOR, wxID_RIBBONPLOTTSLEGEND, wxID_RIBBONPLOTBOXTYPE,

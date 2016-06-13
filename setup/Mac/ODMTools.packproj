@@ -566,9 +566,11 @@
 						<key>IFPkgDescriptionDescription</key>
 						<string></string>
 						<key>IFPkgDescriptionTitle</key>
+
 						<string>ODMTools_v1.2.5</string>
 						<key>IFPkgDescriptionVersion</key>
 						<string>1.2.5 Beta</string>
+
 					</dict>
 				</dict>
 				<key>Display Information</key>
@@ -584,7 +586,7 @@
 					<key>CFBundleName</key>
 					<string>ODMTools</string>
 					<key>CFBundleShortVersionString</key>
-					<string>1.2.2</string>
+					<string>1.2.5</string>
 				</dict>
 				<key>Options</key>
 				<dict>

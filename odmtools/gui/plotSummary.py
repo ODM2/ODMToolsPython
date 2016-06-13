@@ -10,11 +10,11 @@ import os
 ] = [wx.NewId() for _init_ctrls in range(2)]
 
 import logging
-from odmtools.common.logger import LoggerTool
-
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class plotSummary(wx.Panel):
     def __init__(self, parent, id, pos, size, style, name):

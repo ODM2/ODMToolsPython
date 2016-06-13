@@ -9,10 +9,11 @@ from odmtools.odmdata import QualityControlLevel
  wxID_PNLQCLTXTEXPLANATION,
 ] = [wx.NewId() for _init_ctrls in range(10)]
 
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
 import logging
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class pnlQCL(wx.Panel):
     def _init_ctrls(self, prnt):
@@ -84,8 +85,8 @@ class pnlQCL(wx.Panel):
               label=u'Explanation:', name=u'lblExplanation', parent=self,
               pos=wx.Point(16, 248), size=wx.Size(61, 13), style=0)
 
-    def __init__(self, parent, id, pos, size, style, name, sm, qcl):
-        self.series_service = sm.get_series_service()
+    def __init__(self, parent, id, pos, size, style, name, ss, qcl):
+        self.series_service = ss
         self.prev_val = qcl
         self._init_ctrls(parent)
 

@@ -16,12 +16,12 @@ from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmdata.session_factory import SessionFactory
 
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class ServiceManager():
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, conn_dict = None):
         self.debug = debug
         f = self._get_file('r')
         self._conn_dicts = []
@@ -29,23 +29,26 @@ class ServiceManager():
         self._connection_format = "%s+%s://%s:%s@%s/%s"
 
         # Read all lines (connections) in the connection.cfg file
-        while True:
-            line = f.readline()
-            if not line:
-                break
-            else:
-                line = line.split()
-                #logger.debug(line)
+        if conn_dict is None:
+            while True:
+                line = f.readline()
+                if not line:
+                    break
+                else:
+                    line = line.split()
+                    #logger.debug(line)
 
-                if len(line) >= 5:
-                    line_dict = {}
+                    if len(line) >= 5:
+                        line_dict = {}
 
-                    line_dict['engine'] = line[0]
-                    line_dict['user'] = line[1]
-                    line_dict['password'] = line[2]
-                    line_dict['address'] = line[3]
-                    line_dict['db'] = line[4]
-                    self._conn_dicts.append(line_dict)
+                        line_dict['engine'] = line[0]
+                        line_dict['user'] = line[1]
+                        line_dict['password'] = line[2]
+                        line_dict['address'] = line[3]
+                        line_dict['db'] = line[4]
+                        self._conn_dicts.append(line_dict)
+        else:
+            self._conn_dicts.append(conn_dict)
 
         if len(self._conn_dicts) is not 0:
             # The current connection defaults to the most recent (i.e. the last written to the file)
@@ -152,7 +155,7 @@ class ServiceManager():
         return CVService(conn_string, self.debug)
 
     def get_edit_service(self, series_id, connection):
-        
+
         return EditService(series_id, connection=connection,  debug=self.debug)
 
     def get_record_service(self, script, series_id, connection):
@@ -197,6 +200,10 @@ class ServiceManager():
             #                            (conn_dict['address'], conn_dict['user'], conn_dict['password'],conn_dict['db'],
             #                             ))
             conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
+
+        elif conn_dict['engine']=='sqlite':
+            connformat = "%s:///%s"
+            conn_string = connformat%(conn_dict['engine'], conn_dict['address'])
         else:
             if conn_dict['engine'] == 'mssql':
                 driver = "pyodbc"
@@ -220,6 +227,8 @@ class ServiceManager():
 
         # print "******", conn_string
         return conn_string
+
+
 
     def constringBuilder(self, conn_dict, driver):
         if conn_dict['password'] is None or not conn_dict['password']:

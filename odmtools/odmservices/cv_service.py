@@ -36,8 +36,6 @@ class CVService():
         result = self._edit_session.query(Sample).order_by(Sample.lab_sample_code).all()
         return result
 
-
-
     def get_site_type_cvs(self):
         result = self._edit_session.query(SiteTypeCV).order_by(SiteTypeCV.term).all()
         return result

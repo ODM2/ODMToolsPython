@@ -2,6 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODMTools"
+
 #define MyAppVersion "1.2.5_Beta"
 #define MyAppExeLongName "ODMTools_1.2.5_Beta_win32_x86_64_console.exe"
 #define MyAppPublisher "ODM2"

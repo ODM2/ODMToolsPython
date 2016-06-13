@@ -18,13 +18,14 @@ from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
 import logging
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 
 ########################################################################
 class QCLPage(wiz.WizardPageSimple):
-    def __init__(self, parent, title, service_man, qcl):
+    def __init__(self, parent, title, series_service, qcl):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
 
@@ -39,10 +40,10 @@ class QCLPage(wiz.WizardPageSimple):
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
         self.panel = pageQCL.pnlQCL(self, id=wxID_PNLQCL, name=u'pnlQCL',
                                     pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                    style=wx.TAB_TRAVERSAL, sm=service_man, qcl=qcl)
+                                    style=wx.TAB_TRAVERSAL, ss=series_service, qcl=qcl)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
-        series_service = service_man.get_series_service()
-        self._init_data(series_service)
+
+        self._init_data(self.panel.series_service)
 
     def _init_data(self, series):
         qcl = series.get_all_qcls()
@@ -61,7 +62,7 @@ class QCLPage(wiz.WizardPageSimple):
 
 ########################################################################
 class VariablePage(wiz.WizardPageSimple):
-    def __init__(self, parent, title, service_man, var):
+    def __init__(self, parent, title, service_manager, var):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
 
@@ -76,10 +77,10 @@ class VariablePage(wiz.WizardPageSimple):
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
         self.panel = pageVariable.pnlVariable(self, id=wxID_PNLVARIABLE, name=u'pnlVariable',
                                               pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                              style=wx.TAB_TRAVERSAL, sm=service_man, var=var)
+                                              style=wx.TAB_TRAVERSAL, sm=service_manager, var=var)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
-        series_service = service_man.get_series_service()
-        self._init_data(series_service)
+
+        self._init_data(self.panel.series_service)
 
     def _init_data(self, series_service):
         vars = series_service.get_all_variables()
@@ -108,7 +109,7 @@ class VariablePage(wiz.WizardPageSimple):
 
 ########################################################################
 class MethodPage(wiz.WizardPageSimple):
-    def __init__(self, parent, title, service_man, method):
+    def __init__(self, parent, title, series_service, method):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
 
@@ -123,10 +124,10 @@ class MethodPage(wiz.WizardPageSimple):
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
         self.panel = pageMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
                                           pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                          style=wx.TAB_TRAVERSAL, sm=service_man, method=method)
+                                          style=wx.TAB_TRAVERSAL, ss=series_service, method=method)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
-        series_service = service_man.get_series_service()
-        self._init_data(series_service)
+
+        self._init_data(self.panel.series_service)
 
     def _init_data(self, series):
         meth = series.get_all_methods()
@@ -146,7 +147,7 @@ class MethodPage(wiz.WizardPageSimple):
 
 ########################################################################
 class SummaryPage(wiz.WizardPageSimple):
-    def __init__(self, parent, title, service_man):
+    def __init__(self, parent, title, series_service):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
         self.parent = parent
@@ -160,7 +161,7 @@ class SummaryPage(wiz.WizardPageSimple):
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
         self.panel = pageSummary.pnlSummary(self, id=wxID_PNLSUMMARY, name=u'pnlSummary',
                                             pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                            style=wx.TAB_TRAVERSAL, sm=service_man)
+                                            style=wx.TAB_TRAVERSAL, ss=series_service)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
 
 
@@ -215,34 +216,41 @@ class wizSave(wx.wizard.Wizard):
     def get_metadata(self):
 
         if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
+            logger.debug("SaveAs")
             method = self.pgMethod.panel.getMethod()
             qcl = self.pgQCL.panel.getQCL()
             variable = self.pgVariable.panel.getVariable()
         elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
+            logger.debug("Save")
             method = self.currSeries.method
             qcl = self.currSeries.quality_control_level
             variable = self.currSeries.variable
         elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
+            logger.debug("Existing")
             method, qcl, variable = self.pgExisting.getSeries()
         site = self.currSeries.site
         source = self.currSeries.source
         logger.debug("site: %s, variable: %s, method: %s, source: %s, qcl: %s" % (
-        site.id, variable.id, method.id, source.id, qcl.id))
+        str(site), str(variable), str(method), str(source), str(qcl)))
         return site, variable, method, source, qcl
 
-    def __init__(self, parent, service_man, record_service):
+    def __init__(self, parent, service_manager, record_service):
         self._init_ctrls(parent)
-        self.series_service = service_man.get_series_service()
+        try:
+            self.series_service = record_service._edit_service.memDB.series_service #service_man.get_series_service()
+        except:
+            #for testing
+            self.series_service = record_service.memDB.series_service
         self.record_service = record_service
         # self.is_changing_series = False
         self.currSeries = record_service.get_series()
 
         self.pgIntro = pageIntro.pageIntro(self, "Intro")
-        self.pgMethod = MethodPage(self, "Method", service_man, self.currSeries.method)
-        self.pgQCL = QCLPage(self, "Quality Control Level", service_man, self.currSeries.quality_control_level)
-        self.pgVariable = VariablePage(self, "Variable", service_man, self.currSeries.variable)
-        self.pgExisting = pageExisting.pageExisting(self, "Existing Series", service_man, self.currSeries.site)
-        self.pgSummary = SummaryPage(self, "Summary", service_man)
+        self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
+        self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
+        self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
+        self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
+        self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
         self.FitToPage(self.pgIntro)
 
@@ -318,7 +326,7 @@ class wizSave(wx.wizard.Wizard):
                                 'Are you Sure?',
                                 wx.YES_NO | wx.ICON_QUESTION)
             if val == 2:
-                logger.debug("User selected yes to save a level 0 dataset")
+                logger.info("User selected yes to save a level 0 dataset")
                 val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure you are sure?\n",
                                       'Are you REALLY sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
@@ -393,7 +401,9 @@ class wizSave(wx.wizard.Wizard):
 
                     #self.page1.pnlIntroduction.rb
             except Exception as e:
-                wx.MessageBox("Save was unsuccessful %s" % e.message, "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
+                message = "Save was unsuccessful %s" % e.message
+                logger.error(message)
+                wx.MessageBox(message, "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
             event.Skip()
             self.Close()
 

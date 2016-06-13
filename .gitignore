@@ -63,6 +63,7 @@ setup/Output/setup.exe
 
 #folders
 Temp
+
 *.app
 *.spec
 
