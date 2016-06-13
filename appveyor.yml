@@ -109,6 +109,19 @@ install:
 #  - "%CMD_IN_ENV% pip install -r requirements_tests.txt"
 
 
+# now just our code
+#  - pip install pandas
+#  - pip install geoalchemy2
+  - pip install .
+#  - pip install -r requirements_tests.txt  --allow-external pyodbc --allow-unverified pyodbc
+    # pysqlite
+  - pip install pysqlite
+  - dir   .\tests\scripts\sampledb\odm_mysql.sql .\tests\scripts\sampledb\odm_postgres.sql
+  - mysql --user root --verbose  odm < .\tests\scripts\sampledb\odm_mysql.sql
+# add -a to psql to see full log
+  - psql -U postgres   -f .\tests\scripts\sampledb\odm_postgres.sql
+
+
 #build_script:
 #  # Build the compiled extension
 #  - "%CMD_IN_ENV% python setup.py build"
@@ -155,17 +168,7 @@ before_install:
   - psql -c 'create database odm;' -U postgres;
   # patterned after: https://github.com/ptrv/gpx2spatialite/blob/master/.travis.yml
 
-#  - pip install pandas
-install: # now just our code
-#  - pip install geoalchemy2
-  - pip install .
-#  - pip install -r requirements_tests.txt  --allow-external pyodbc --allow-unverified pyodbc
-    # pysqlite
-  - pip install pysqlite
-  - dir   .\tests\scripts\sampledb\odm_mysql.sql .\tests\scripts\sampledb\odm_postgres.sql
-  - mysql --user root --verbose  odm < .\tests\scripts\sampledb\odm_mysql.sql
-# add -a to psql to see full log
-  - psql -U postgres   -f .\tests\scripts\sampledb\odm_postgres.sql
+
 
 # don't forget to open up the azure mssql server to these addreses
 # https://docs.travis-ci.com/user/ip-addresses/
