@@ -43,9 +43,9 @@ addons:
 
 #  mariadb: '10.1'
 before_script:
-  - ./scripts/tests/mysql_setup.sh
-  - ./scripts/tests/postgres_setup.sh
-  - ./scripts/tests/freetds.sh
+  - ./ci-helpers/travis/mysql_setup.sh
+  - ./ci-helpers/travis/postgres_setup.sh
+  - ./ci-helpers/travis/freetds.sh
 
 before_install:
 # python -m pip makes the install go into the virtualenv
