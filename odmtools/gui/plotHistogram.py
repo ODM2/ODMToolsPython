@@ -101,6 +101,7 @@ class plotHist(wx.Panel):
         ax = self.figure.add_subplot(repr(rows) + repr(cols) + repr(index))
 
         logger.debug("HISTOGRAM: %s"% ax)
+        logger.debut("rows: %s cols: %s, index: %s"%(rows, cols, index))
 
         # oneSeries.filteredData.hist(ax= ax, color='k', alpha=0.5, bins=50)
 

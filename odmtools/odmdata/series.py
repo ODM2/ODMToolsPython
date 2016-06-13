@@ -96,6 +96,23 @@ class Series(Base):
     def __repr__(self):
         return "<Series('%s', '%s', '%s', '%s')>" % (self.id, self.site_name, self.variable_code, self.variable_name)
 
+    def __eq__(self, other) :
+        # return self.__dict__ == other.__dict__
+        return [self.id, self.site_id, self.site_code, self.site_name, self.variable_id, self.variable_code,
+                self.variable_name, self.speciation, self.variable_units_id, self.variable_units_name,
+                self.sample_medium, self.value_type, self.time_support, self.time_units_id, self.time_units_name,
+                self.data_type, self.general_category, self.method_id, self.method_description,
+                self.source_id, self.source_description, self.organization, self.citation,
+                self.quality_control_level_id, self.quality_control_level_code, self.begin_date_time,
+                self.end_date_time, self.begin_date_time_utc, self.end_date_time_utc, self.value_count] ==\
+               [other.id, other.site_id, other.site_code, other.site_name, other.variable_id, other.variable_code,
+                other.variable_name, other.speciation, other.variable_units_id, other.variable_units_name,
+                other.sample_medium, other.value_type, other.time_support, other.time_units_id, other.time_units_name,
+                other.data_type, other.general_category, other.method_id, other.method_description,
+                other.source_id, other.source_description, other.organization, other.citation,
+                other.quality_control_level_id, other.quality_control_level_code, other.begin_date_time,
+                other.end_date_time, other.begin_date_time_utc, other.end_date_time_utc, other.value_count]
+
 
     def get_table_columns(self):
         return self.__table__.columns.keys()

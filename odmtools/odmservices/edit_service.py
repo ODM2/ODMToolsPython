@@ -35,11 +35,10 @@ class EditService():
 
         if connection_string is  "" and connection is not None:
             self.memDB= connection
-            #self._series_service = self.memDB.series_service#SeriesService(connection_string, debug)
 
         elif connection_string is not "" and connection is None:
             from odmtools.odmdata import MemoryDatabase
-            self.memDB= MemoryDatabase()#(series_service)
+            self.memDB= MemoryDatabase()
             self.memDB.set_series_service(SeriesService(connection_string, False))
 
 
@@ -505,7 +504,7 @@ class EditService():
             #if series end date is after  dvs startdate
             dbend = series.end_date_time
             dfstart = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)
-            overlap = dbend> dfstart
+            overlap = dbend>= dfstart
             #leave series start dates to those previously set
             series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
             series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)

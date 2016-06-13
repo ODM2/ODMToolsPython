@@ -85,6 +85,9 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
+        chcklist=  self.tblSeries.GetCheckedObjects()
+
+
         self.memDB.set_series_service(db)
         object = self.series_service.get_all_series()
         #checkedObjs = self.tblSeries.GetCheckedObjects()
@@ -94,6 +97,11 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             if x.id not in idList:
                 self.tblSeries.AddObject(x)
 
+
+        for c in chcklist:
+            self.tblSeries.SetCheckState(c, True)
+
+
         #for x in checkedObjs:
         #    super(FastObjectListView, self.tblSeries).SetCheckState(x, True)
 
@@ -102,11 +110,22 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
+        chcklist=  self.tblSeries.GetCheckedObjects()
         self.series_service = None
+
         self.series_service = self.parent.Parent.createService()
         #self.refreshTableSeries(self.dbservice)
         self.resetDB(self.series_service)
-        logger.info("Repopulate Series Selector")
+
+        for c in chcklist:
+            for val in self.tblSeries.GetObjects():
+                if c == val:
+                    self.tblSeries.SetCheckState(val, True)
+                    break
+
+        logger.debug("Repopulate Series Selector")
+
+
 
     def initSVBoxes(self):
         """
@@ -557,13 +576,18 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
     def stopEdit(self):
         """When edit button is untoggled, the editing feature closes
-
         :return:
         """
+
         self.isEditing = False
+        chcklist= self.tblSeries.GetCheckedObjects()
+
         self.tblSeries.RefreshObject(self.tblSeries.editingObject)
-        self.tblSeries.editingObject = None
+        for c in chcklist:
+            self.tblSeries.SetCheckState(c, True)
+
         self.memDB.stopEdit()
+
 
     def isEditing(self):
         """

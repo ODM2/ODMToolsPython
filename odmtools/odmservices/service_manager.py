@@ -223,20 +223,12 @@ class ServiceManager():
             else:
                 driver = "None"
                 conn_string = self.constringBuilder(conn_dict, driver)
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> logging
-
-        # print "******", conn_string
-        return conn_string
-=======
 
         # print "******", conn_string
         return conn_string
 
->>>>>>> qualid
+
 
     def constringBuilder(self, conn_dict, driver):
         if conn_dict['password'] is None or not conn_dict['password']:

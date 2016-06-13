@@ -134,7 +134,7 @@ class MyCustomToolbar(NavigationToolbar):
 
         self.msg = wx.StaticText(self, -1, "")
         self.AddControl(self.msg)
-        self.canvas.mpl_connect('scroll_event', self.on_scroll_zoom)
+
         self.Realize()
 
     def editSeries(self, xys, edit):
@@ -151,6 +151,8 @@ class MyCustomToolbar(NavigationToolbar):
         self.xys = None
         self.editCurve = None
         self.lassoAction = None
+        # untoggle select button
+        self.ToggleTool(self.select_tool.Id, False)
         # disable select button
         self.select_tool.Enable(False)
         self.zoom_to_data.Enable(False)
@@ -159,7 +161,7 @@ class MyCustomToolbar(NavigationToolbar):
         #self.ToggleTool(self.select_tool.Id, False)
 
 
-    # pan the graph to the left    
+    # pan the graph to the left
     def _on_custom_pan_left(self, evt):
         ONE_SCREEN = 7  # we default to 1 week
         axes = self.canvas.figure.axes[0]
@@ -250,8 +252,6 @@ class MyCustomToolbar(NavigationToolbar):
         self.canvas.draw()
 
 
-
-
 #must add these methods for mac functionality
     def release_zoom(self, event):
         super(self.__class__, self).release_zoom(event)
@@ -268,37 +268,3 @@ class MyCustomToolbar(NavigationToolbar):
     def home(self, event):
         super(self.__class__, self).home(event)
         self.canvas.draw()
-
-
-
-
-    def on_scroll_zoom(self, event):
-        axes = self.canvas.figure.axes[0]
-        base_scale = 1.2
-        # get the current x and y limits
-        cur_xlim = axes.get_xlim()
-        cur_ylim = axes.get_ylim()
-        cur_xrange = (cur_xlim[1] - cur_xlim[0])*.5
-        cur_yrange = (cur_ylim[1] - cur_ylim[0])*.5
-        xdata = event.xdata # get event x location
-        ydata = event.ydata # get event y location
-        if event.button == 'up':
-            # deal with zoom in
-            scale_factor = 1/base_scale
-        elif event.button == 'down':
-            # deal with zoom out
-            scale_factor = base_scale
-        else:
-            # deal with something that should never happen
-            scale_factor = 1
-            print event.button
-        # set new limits
-        axes.set_xlim([xdata - cur_xrange*scale_factor,
-                     xdata + cur_xrange*scale_factor])
-        axes.set_ylim([ydata - cur_yrange*scale_factor,
-                     ydata + cur_yrange*scale_factor])
-        self.canvas.draw() # force re-draw
-
-    # fig = ax.get_figure() # get the figure of interest
-    # attach the call back
-
