@@ -87,7 +87,8 @@ install:
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
-  - "%CMD_IN_ENV% pip install -r dev-requirements.txt"
+  #- "%CMD_IN_ENV% pip install -r dev-requirements.txt"
+  - "%CMD_IN_ENV% pip install -r requirements_tests.txt"
 
 build_script:
   # Build the compiled extension
@@ -95,7 +96,7 @@ build_script:
 build_script:
   # Build the compiled extension
   - "%CMD_IN_ENV% python setup.py build"
-  build_script:
+build_script:
   # postgres
   - createdb odm
   - psql -d odm -a -f spec/databases/postgresql/schema/schema.sql
