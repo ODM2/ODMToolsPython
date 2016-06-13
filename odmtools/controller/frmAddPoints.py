@@ -242,7 +242,9 @@ class AddPoints(clsAddPoints.AddPoints):
                 if i.offSetType != "NULL":
                     row[6] = i.offSetType
                 if i.qualifierCode != "NULL":
-                    row[8] = i.qualifierCode
+                    code = i.qualifierCode.split(':')[0]
+                    q=self.recordService._edit_service.memDB.series_service.get_qualifier_by_code(code=code)
+                    row[8] = q.id
                 if i.labSampleCode != "NULL":
                     row[9] = i.labSampleCode
 

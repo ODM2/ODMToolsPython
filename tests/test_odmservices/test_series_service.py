@@ -70,6 +70,15 @@ class TestSeriesService:
 
         assert qual.id is not None
 
+    def test_get_qualifier_by_code(self):
+        assert self.series_service.get_all_qualifiers() == []
+
+        qual= self.series_service.create_qualifier("ABC123","This is a test")
+
+        db_qual = self.series_service.get_qualifier_by_code("ABC123")
+
+        assert qual.id == db_qual.id
+
     def test_get_qualifiers(self):
         assert self.series_service.get_all_qualifiers() == []
 
@@ -394,3 +403,4 @@ class TestSeriesService:
         variable.code = "00000"
         variable.name = "A new name"
         assert not self.series_service.variable_exists(variable)
+

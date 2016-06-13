@@ -90,6 +90,11 @@ class MemoryDatabase(object):
         # self.mem_service._session_factory.engine.connect().connection.rollback()
         #self.updateDF()
 
+    #TODO is there a way to do a single rollback
+    def rollbacksingle(self):
+        pass
+
+
     def update(self, updates):
         '''
         updates : list of dictionary that contains 2 items, id and value

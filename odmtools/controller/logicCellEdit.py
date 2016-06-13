@@ -34,7 +34,7 @@ class CellEdit():
             self.censorCodeChoices = [NULL] + [x.term for x in self.cv_service.get_censor_code_cvs()]
             self.labSampleChoices = [NULL] + labChoices.keys()
 
-            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+            self.qualifierChoices = OrderedDict((x.code + ':' + x.description, x.id)
                                            for x in self.series_service.get_all_qualifiers() if x.code and x.description)
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
 
@@ -375,7 +375,7 @@ class CellEdit():
                 #dlg.Destroy()
 
         try:
-            self.qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id)
+            self.qualifierChoices = OrderedDict((x.code + ':' + x.description, x.id)
                                                for x in self.cv_service.get_all_qualifiers() if x.code and x.description)
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
         except:
