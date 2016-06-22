@@ -65,12 +65,12 @@ install: # now just our code
 
 #  mariadb: '10.1'
 before_script:
-  - chmod +x ./tests/scripts/mysql_setup.sh
-#  - chmod +x ./tests/scripts/postgres_setup.sh
-  - chmod +x ./tests/scripts/freetds.sh
-  - ./tests/scripts/mysql_setup.sh
-#  - ./tests/scripts/postgres_setup.sh
-  - ./tests/scripts/freetds.sh
+  - chmod +x ./ci-helpers/travis/mysql_setup.sh
+#  - chmod +x ../ci-helpers/travis/postgres_setup.sh
+  - chmod +x ./ci-helpers/travis/freetds.sh
+  - ./ci-helpers/travis/mysql_setup.sh
+#  - ./ci-helpers/travis/postgres_setup.sh
+  - ./ci-helpers/travis/freetds.sh
 
 # command to run tests
 script:
