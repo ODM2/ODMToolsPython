@@ -44,9 +44,10 @@ addons:
 
 #  mariadb: '10.1'
 before_script:
-  - ./ci-helpers/travis/mysql_setup.sh
-  - ./ci-helpers/travis/postgres_setup.sh
-  - ./ci-helpers/travis/freetds.sh
+  - ci-helpers/travis/mysql_setup.sh
+#  - ./ci-helpers/travis/mysql_setup.sh
+  - ci-helpers/travis/postgres_setup.sh
+  - ci-helpers/travis/freetds.sh
 
 
 before_install:
