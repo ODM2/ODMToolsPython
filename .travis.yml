@@ -42,12 +42,7 @@ addons:
       - wx2.8-i18n
 
 
-#  mariadb: '10.1'
-before_script:
-  - ci-helpers/travis/mysql_setup.sh
-#  - ./ci-helpers/travis/mysql_setup.sh
-  - ci-helpers/travis/postgres_setup.sh
-  - ci-helpers/travis/freetds.sh
+
 
 
 before_install:
@@ -67,7 +62,7 @@ install: # now just our code
 #  mariadb: '10.1'
 before_script:
   - chmod +x ./ci-helpers/travis/mysql_setup.sh
-#  - chmod +x ../ci-helpers/travis/postgres_setup.sh
+#  - chmod +x ./ci-helpers/travis/postgres_setup.sh
   - chmod +x ./ci-helpers/travis/freetds.sh
   - ./ci-helpers/travis/mysql_setup.sh
 #  - ./ci-helpers/travis/postgres_setup.sh
