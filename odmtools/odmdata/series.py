@@ -51,9 +51,7 @@ class Series(Base):
     variable_id =                   Column('VariableID', Integer, ForeignKey('Variables.VariableID'), nullable=False)
     variable_code =                 Column('VariableCode', String)
     variable_name =                 Column('VariableName', String)
-    quality_control_level_id =      Column('QualityControlLevelID', Integer,
-                                           ForeignKey('QualityControlLevels.QualityControlLevelID'), nullable=False)
-    quality_control_level_code =    Column('QualityControlLevelCode', String)
+
     speciation =                    Column('Speciation', String)
     variable_units_id =             Column('VariableUnitsID', Integer)
     variable_units_name =           Column('VariableUnitsName', String)
@@ -70,7 +68,9 @@ class Series(Base):
     source_description =            Column('SourceDescription', String)
     organization =                  Column('Organization', String)
     citation =                      Column('Citation', String)
-
+    quality_control_level_id =      Column('QualityControlLevelID', Integer,
+                                           ForeignKey('QualityControlLevels.QualityControlLevelID'), nullable=False)
+    quality_control_level_code =    Column('QualityControlLevelCode', String)
     begin_date_time =               Column('BeginDateTime', DateTime)
     end_date_time =                 Column('EndDateTime', DateTime)
     begin_date_time_utc =           Column('BeginDateTimeUTC', DateTime)
@@ -119,7 +119,7 @@ class Series(Base):
         return self.__table__.columns.keys()
 
     def list_repr(self):
-        return [self.id, self.variable_code, self.quality_control_level_code,
+        return [self.id, self.site_code, self.variable_code, self.quality_control_level_code,
                 self.site_id,  self.site_name, self.variable_id,
                 self.variable_name, self.speciation, self.variable_units_id, self.variable_units_name,
                 self.sample_medium, self.value_type, self.time_support, self.time_units_id, self.time_units_name,
