@@ -21,8 +21,8 @@ mysql -e "create database IF NOT EXISTS odm2test;" --user=root
 #####
 # install
 #####
-ls -al  ./tests/scripts/sampledb/odm_mysql.sql ./tests/scripts/sampledb/odm_postgres.sql
-mysql --user=ODM --password=odm  odm < ./tests/scripts/sampledb/odm_mysql.sql
+ls -al  ./tests/data/sampledb/odm_mysql.sql ./tests/data/sampledb/odm_postgres.sql
+mysql --user=ODM --password=odm  odm < ./tests/data/sampledb/odm_mysql.sql
 mysql --user=root  -e  "show databases;"
 mysql --user=root -e   "GRANT ALL PRIVILEGES ON odm.* TO 'ODM'@'localhost';FLUSH PRIVILEGES;"
 # these should produce results, if they don't the lower_case_table_names failed

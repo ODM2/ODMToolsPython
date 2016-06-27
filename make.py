@@ -157,6 +157,7 @@ def run_pyinstaller(console=False):
                 '--upx-dir=%s ' % BASE_DIR +
                 '--icon=%s ' % WIN_ICON_FILE +
                 '--version-file=%s ' % VERSION_FILE +
+                # '--onefile ' +
                 '--noconfirm ' + APP_FILE)
         else:
             ## Non Console Version
@@ -167,6 +168,7 @@ def run_pyinstaller(console=False):
                 '--specpath=%s ' % WIN_DIR +
                 '--upx-dir=%s ' % BASE_DIR +
                 '--icon=%s ' % WIN_ICON_FILE +
+                # '--onefile ' +
                 '--version-file=%s ' % VERSION_FILE +
                 '--noconsole '
                 '--noconfirm ' + APP_FILE)
@@ -186,15 +188,12 @@ def mac_pyinstaller():
             '--upx-dir=%s ' % BASE_DIR +
             '--icon=%s ' % MAC_ICON_FILE +
             '--version-file=%s ' % VERSION_FILE +
-            '--windowed '
-            #'--onefile '
-            #'--hidden-import="libwx_osx_cocoau-3.0.0.0.0.dylib" '
+            '--windowed '#'--onefile '
             '--noconfirm ' + APP_FILE)
 
-
-        os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
-        # os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
         #copy "libwx_osx_cocoau-3.0.0.0.0.dylib"
+        os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
+
         return True
     except Exception as e:
         print (e)

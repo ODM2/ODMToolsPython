@@ -51,6 +51,7 @@ class Series(Base):
     variable_id =                   Column('VariableID', Integer, ForeignKey('Variables.VariableID'), nullable=False)
     variable_code =                 Column('VariableCode', String)
     variable_name =                 Column('VariableName', String)
+
     speciation =                    Column('Speciation', String)
     variable_units_id =             Column('VariableUnitsID', Integer)
     variable_units_name =           Column('VariableUnitsName', String)
@@ -118,26 +119,29 @@ class Series(Base):
         return self.__table__.columns.keys()
 
     def list_repr(self):
-        return [self.id, self.site_id, self.site_code, self.site_name, self.variable_id, self.variable_code,
+        return [self.id, self.site_code, self.variable_code, self.quality_control_level_code,
+                self.site_id,  self.site_name, self.variable_id,
                 self.variable_name, self.speciation, self.variable_units_id, self.variable_units_name,
                 self.sample_medium, self.value_type, self.time_support, self.time_units_id, self.time_units_name,
                 self.data_type, self.general_category, self.method_id, self.method_description,
                 self.source_id, self.source_description, self.organization, self.citation,
-                self.quality_control_level_id, self.quality_control_level_code, self.begin_date_time,
+                self.quality_control_level_id,  self.begin_date_time,
                 self.end_date_time, self.begin_date_time_utc, self.end_date_time_utc, self.value_count]
 
 def returnDict():
-    keys = ['SeriesID', 'SiteID', 'SiteCode', 'SiteName', 'VariableID', 'VariableCode', 'VariableName', 'Speciation',
+    keys = ['SeriesID', 'SiteCode','VariableCode','QualityControlLevelCode',
+            'SiteID',  'SiteName', 'VariableID',  'VariableName', 'Speciation',
             'VariableUnitsID', 'VariableUnitsName', 'SampleMedium', 'ValueType', 'TimeSupport', 'TimeUnitsID',
             'TimeUnitsName', 'DataType', 'GeneralCategory', 'MethodID', 'MethodDescription', 'SourceID',
-            'SourceDescription', 'Organization', 'Citation', 'QualityControlLevelID', 'QualityControlLevelCode',
+            'SourceDescription', 'Organization', 'Citation', 'QualityControlLevelID',
             'BeginDateTime', 'EndDateTime', 'BeginDateTimeUTC', 'EndDateTimeUTC', 'ValueCount'
     ]
-    values = ['id', 'site_id', 'site_code', 'site_name', 'variable_id', 'variable_code', 'variable_name', 'speciation',
+    values = ['id', 'site_code','variable_code','quality_control_level_code',
+              'site_id',  'site_name', 'variable_id',  'variable_name', 'speciation',
               'variable_units_id', 'variable_units_name', 'sample_medium', 'value_type', 'time_support',
               'time_units_id', 'time_units_name', 'data_type', 'general_category', 'method_id', 'method_description',
               'source_id', 'source_description', 'organization', 'citation', 'quality_control_level_id',
-              'quality_control_level_code', 'begin_date_time', 'end_date_time', 'begin_date_time_utc',
+               'begin_date_time', 'end_date_time', 'begin_date_time_utc',
               'end_date_time_utc', 'value_count'
     ]
     return OrderedDict(zip(keys, values))
