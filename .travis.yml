@@ -64,6 +64,7 @@ before_script:
   - chmod +x ./ci-helpers/travis/mysql_setup.sh
 #  - chmod +x ./ci-helpers/travis/postgres_setup.sh
   - chmod +x ./ci-helpers/travis/freetds.sh
+
   - ./ci-helpers/travis/mysql_setup.sh
 #  - ./ci-helpers/travis/postgres_setup.sh
   - ./ci-helpers/travis/freetds.sh

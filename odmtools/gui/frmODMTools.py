@@ -12,6 +12,7 @@ import os
 from odmtools.controller.frmDataTable import FrmDataTable
 import mnuRibbon
 import pnlPlot
+import pnlPlot
 import pnlDataTable
 import wx.lib.agw.aui as aui
 import wx.py.crust
@@ -55,6 +56,7 @@ class frmODMToolsMain(wx.Frame):
 
         self.service_manager = ServiceManager()
         self.record_service = None
+        self.scriptcreate = False
 
         series_service = self._init_database()
         if series_service:
@@ -384,7 +386,7 @@ class frmODMToolsMain(wx.Frame):
     def addEdit(self, event):
 
         with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self):
-
+            self.scriptcreate = True
             isSelected, seriesID = self.pnlSelector.onReadyToEdit()
             logger.info("Beginning editing seriesID: %s"%str(seriesID))
 
@@ -496,6 +498,15 @@ class frmODMToolsMain(wx.Frame):
             Closes ODMTools Python
             Closes AUI Manager then closes MainWindow
         """
+
+        #check to see if a script has been created
+        if self.scriptcreate:
+            msg = wx.MessageDialog(None, 'Would you like to save your editing script',
+                                   'Save Script', wx.YES_NO | wx.ICON_QUESTION)
+            value = msg.ShowModal()
+            if value == wx.ID_YES:
+                pnlScript.OnSaveAs(event)
+
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
