@@ -93,7 +93,7 @@ install:
   # the parent CMD process).
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   # add databases
-  - "SET PATH=%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%"
+  - "SET PATH=%POSTGRES_PATH%\\bin;%MYSQL_PATH%\\bin;%PATH%"
   - "activate test"
 
   # Check that we have the expected version and architecture for Python
@@ -110,12 +110,12 @@ build_script:
   - sqlcmd -S localhost,1433 -U sa -P Password12! -Q "CREATE DATABASE odm" -d "master"
   - sqlcmd -S localhost,1433 -U sa -P Password12! -i tests\data\sampledb\odm_mssql.sql -d "odm"
   - sqlcmd -S localhost,1433 -U sa -P Password12! -Q "select table_name from information_schema.tables" -d "odm"
-#  # postgres
-#  - psql createdb odm
-#  - psql -d odm -a -f tests\data\sampledb\odm_postgres.sql
-#  # mysql
-#  - mysql -e "drop database test; create database odm;" --user=root
-#  - mysql odm < tests\data\sampledb\odm_mysql.sql --user=root
+  # postgres
+  - psql createdb odm
+  - psql -d odm -a -f tests\data\sampledb\odm_postgres.sql
+  # mysql
+  - mysql -e "drop database test; create database odm;" --user=root
+  - mysql odm < tests\data\sampledb\odm_mysql.sql --user=root
 
 test_script:
   # Run the project tests
