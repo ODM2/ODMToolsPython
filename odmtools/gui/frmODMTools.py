@@ -501,11 +501,11 @@ class frmODMToolsMain(wx.Frame):
 
         #check to see if a script has been created
         if self.scriptcreate:
-            msg = wx.MessageDialog(None, 'Would you like to save your editing script',
+            msg = wx.MessageDialog(None, 'Would you like to save your editing script?',
                                    'Save Script', wx.YES_NO | wx.ICON_QUESTION)
             value = msg.ShowModal()
             if value == wx.ID_YES:
-                pnlScript.OnSaveAs(event)
+                self.txtPythonScript.OnSaveAs(event)
 
         # deinitialize the frame manager
         self.pnlPlot.Close()
