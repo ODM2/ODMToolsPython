@@ -29,4 +29,3 @@ dependencies:
   - pyodbc==3.0.7
   - python-dateutil==2.4.1
   - wxpython-common==3.0.0.0
-
