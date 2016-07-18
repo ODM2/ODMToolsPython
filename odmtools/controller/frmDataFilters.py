@@ -26,8 +26,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
 
         self.Center()
 
+
         # self.chkToggleFilterSelection.SetValue(self.recordService.get_toggle())
-        # self.setDates()
+        self.setDates()
 
 
     def onCheckBox(self, event):
