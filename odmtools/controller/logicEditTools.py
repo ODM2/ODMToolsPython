@@ -65,6 +65,13 @@ class EditTools():
             self._script("edit_service.change_value_threshold(%s,'%s')\n" % (value, operator), 'black')
             Publisher.sendMessage("scroll")
 
+    def duplicate_value_filter(self):
+        self._edit_service.duplicate_value_filter()
+        self.refresh_selection()
+        if self._record:
+            self._script("edit_service.duplicate_value_filter()\n" , 'black')
+            Publisher.sendMessage("scroll")
+
     def filter_from_previous(self, value):
         '''
 

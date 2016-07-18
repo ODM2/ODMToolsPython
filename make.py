@@ -248,7 +248,6 @@ def main():
             run_inno(scriptpath)
 
         print "Create No Installer "
-
         ## Create Shortcut
         ## Create File
         ## Zip Executable
