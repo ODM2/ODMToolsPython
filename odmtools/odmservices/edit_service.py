@@ -210,8 +210,10 @@ class EditService():
     #Duplicate values filter
     def duplicate_value_filter(self):
         df = self._test_filter_previous()
-        self.filtered_dataframe= df.index.get_duplicates()
+        #self.filtered_dataframe= df[df.index.get_duplicates()]
+        self.filtered_dataframe= df[df.index.isin(df.index.get_duplicates())]
         #self.filtered_dataframe = df[df['DataValue'] < value]
+        print "dup value worked"
 
 
     def select_points_tf(self, tf_list):
