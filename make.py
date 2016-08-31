@@ -158,6 +158,7 @@ def run_pyinstaller(console=False):
                 '--icon=%s ' % WIN_ICON_FILE +
                 '--version-file=%s ' % VERSION_FILE +
                 # '--onefile ' +
+                '--exclude=
                 '--noconfirm ' + APP_FILE)
         else:
             ## Non Console Version
@@ -248,7 +249,6 @@ def main():
             run_inno(scriptpath)
 
         print "Create No Installer "
-
         ## Create Shortcut
         ## Create File
         ## Zip Executable

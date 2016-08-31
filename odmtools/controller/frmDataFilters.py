@@ -115,6 +115,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
             elif self.txtVChangeLT.GetValue():
                 self.recordService.value_change_threshold(float(self.txtVChangeLT.GetValue()), '<')
 
+        elif self.rbDuplicate.GetValue():
+            self.recordService.duplicate_value_filter()
+
         event.Skip()
 
 

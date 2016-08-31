@@ -63,7 +63,11 @@ class TestSeriesService:
         self.db = globals['db']
         """
 
-
+    def test_duplicate_values_filter(self):
+        duplicate_value = self.memory_database.getDataValues()[0]
+        self.memory_database.addPoints(duplicate_value)
+        vals = self.edit_service.duplicate_value_filter()
+        assert len(vals) == 1
 
     def test_save_series(self):
         stlen = len(self.series.data_values)
