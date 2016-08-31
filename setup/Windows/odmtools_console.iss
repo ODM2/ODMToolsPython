@@ -8,7 +8,7 @@
 #define MyAppPublisher "ODM2"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
 #define MyAppExeName "ODMTools.exe"
-#define MyAppDir "D:\DEV\ODMToolsPython"
+#define MyAppDir "D:\DEV\ODMTools"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
