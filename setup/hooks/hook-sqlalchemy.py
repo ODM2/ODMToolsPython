@@ -18,7 +18,7 @@ __author__ = 'stephanie'
 
 # Contributed by Greg Copeland
 
-from PyInstaller.hooks.hookutils import exec_statement
+from PyInstaller.utils.hooks import exec_statement
 
 # include most common database bindings
 # some database bindings are detected and include some
@@ -47,7 +47,6 @@ orm = eval(orm.strip())
 for n in orm:
     hiddenimports.append("sqlalchemy.orm." + n)
     print "!!", n
-
 
 # sqlalchemy.dialects package from 0.6 and newer sqlachemy versions
 version = exec_statement('import sqlalchemy; print sqlalchemy.__version__')
