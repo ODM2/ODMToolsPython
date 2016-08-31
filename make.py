@@ -154,9 +154,11 @@ def run_pyinstaller(console=False):
                 '--distpath=%s ' % WIN_DIR +
                 '--workpath=%s ' % WORK_DIR +
                 '--specpath=%s ' % WIN_DIR +
-                '--upx-dir=%s ' % BASE_DIR +
+                #'--upx-dir=%s ' % BASE_DIR +
+                '--noupx '
                 '--icon=%s ' % WIN_ICON_FILE +
                 '--version-file=%s ' % VERSION_FILE +
+                '--onedir '
                 # '--onefile ' +
                 '--exclude=
                 '--noconfirm ' + APP_FILE)
@@ -167,8 +169,10 @@ def run_pyinstaller(console=False):
                 '--distpath=%s ' % WIN_DIR +
                 '--workpath=%s ' % WORK_DIR +
                 '--specpath=%s ' % WIN_DIR +
-                '--upx-dir=%s ' % BASE_DIR +
+                #'--upx-dir=%s ' % BASE_DIR +
+                '--noupx '
                 '--icon=%s ' % WIN_ICON_FILE +
+                '--onedir '
                 # '--onefile ' +
                 '--version-file=%s ' % VERSION_FILE +
                 '--noconsole '
