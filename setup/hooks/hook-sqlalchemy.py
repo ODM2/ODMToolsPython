@@ -25,7 +25,7 @@ from PyInstaller.utils.hooks import exec_statement
 # are not. We should explicitly include database backends.
 hiddenimports = ['pysqlite2', 'MySQLdb']#, 'psycopg2', 'pyodbc', 'pymysql']
 
-print "in custom sql alchemy hook "
+# print ("in custom sql alchemy hook ")
 
 # sqlalchemy.databases package from pre 0.6 sqlachemy versions
 databases = exec_statement("import sqlalchemy.databases;print sqlalchemy.databases.__all__")
@@ -35,7 +35,7 @@ try:
     for n in databases:
         hiddenimports.append("sqlalchemy.databases." + n)
 except:
-    print "No databases found"
+    print ("No databases found")
 
 for n in databases:
     hiddenimports.append("sqlalchemy.databases." + n)
@@ -46,7 +46,7 @@ orm = eval(orm.strip())
 
 for n in orm:
     hiddenimports.append("sqlalchemy.orm." + n)
-    print "!!", n
+    # print ("!!", n)
 
 # sqlalchemy.dialects package from 0.6 and newer sqlachemy versions
 version = exec_statement('import sqlalchemy; print sqlalchemy.__version__')

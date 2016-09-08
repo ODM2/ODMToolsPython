@@ -4,11 +4,11 @@ block_cipher = None
 
 
 a = Analysis(['/Users/stephanie/DEV/ODMToolsPython/ODMTools.py'],
-             pathex=['../Mac'],
+             pathex=['/Users/stephanie/DEV/ODMToolsPython/setup/Mac'],
              binaries=None,
              datas=None,
              hiddenimports=[],
-             hookspath=['../hooks'],
+             hookspath=['/Users/stephanie/DEV/ODMToolsPython/setup/hooks'],
              runtime_hooks=None,
              excludes=['PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],
              win_no_prefer_redirects=False,
@@ -23,7 +23,7 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=False , version='/Users/stephanie/DEV/ODMToolsPython/setup/version.txt', icon='odmtools/common/icons/ODMTools.icns')
+          console=False , version='/Users/stephanie/DEV/ODMToolsPython/setup/version.txt', icon='/Users/stephanie/DEV/ODMToolsPython/odmtools/common/icons/ODMTools.icns')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -33,5 +33,5 @@ coll = COLLECT(exe,
                name='ODMTools')
 app = BUNDLE(coll,
              name='ODMTools.app',
-             icon='odmtools/common/icons/ODMTools.icns',
+             icon='/Users/stephanie/DEV/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
              bundle_identifier=None)
