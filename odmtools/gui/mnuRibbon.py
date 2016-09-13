@@ -398,9 +398,11 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditFilter(self, event):
         data_filter = frmDataFilter(self.parent, self.parent.getRecordService())
-        val = data_filter.ShowModal()
 
-        data_filter.Destroy()
+        if data_filter.Show() == wx.OK:
+            print "OK"
+            data_filter.Destroy()
+
         event.Skip()
 
     # ###################################
