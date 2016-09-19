@@ -27,7 +27,7 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
         self.Center()
 
         # self.chkToggleFilterSelection.SetValue(self.recordService.get_toggle())
-        # self.setDates()
+        self.setDates()
 
 
     def onCheckBox(self, event):
@@ -114,6 +114,9 @@ class frmDataFilter(clsDataFilters.clsDataFilters):
                 self.recordService.value_change_threshold(float(self.txtVChangeGT.GetValue()), '>')
             elif self.txtVChangeLT.GetValue():
                 self.recordService.value_change_threshold(float(self.txtVChangeLT.GetValue()), '<')
+
+        elif self.rbDuplicate.GetValue():
+            self.recordService.duplicate_value_filter()
 
         event.Skip()
 

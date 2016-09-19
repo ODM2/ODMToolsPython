@@ -207,6 +207,14 @@ class EditService():
         del copy_df
         self.filtered_dataframe = df[df.index.isin(tmplist)]
 
+    #Duplicate values filter
+    def duplicate_value_filter(self):
+        df = self._test_filter_previous()
+        #self.filtered_dataframe= df[df.index.get_duplicates()]
+        self.filtered_dataframe= df[df.index.isin(df.index.get_duplicates())]
+        #self.filtered_dataframe = df[df['DataValue'] < value]
+        print "dup value worked"
+
 
     def select_points_tf(self, tf_list):
         self._filter_list = tf_list
@@ -365,6 +373,9 @@ class EditService():
             self.filtered_dataframe = self._series_points_df[self._series_points_df.index.isin(ids)]
             return True
         return False
+
+
+
 
     def isOneGroup(self):
 
