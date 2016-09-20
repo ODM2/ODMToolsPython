@@ -527,6 +527,14 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
                 #print "Updating Cursor", editingObject.id
                 Publisher.sendMessage("updateCursor", selectedObject=editingObject)
 
+    def onBtnClear(self, event):
+        print("clear button")
+        chcklist = self.tblSeries.GetCheckedObjects()
+
+        self.tblSeries.RefreshObject(self.tblSeries.editingObject)
+        for c in chcklist:
+            print c
+            self.tblSeries.SetCheckState(c, False)
 
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector

@@ -9,8 +9,8 @@ from odmtools.odmservices import ServiceManager
  wxID_PNLSERIESSELECTORCHECKSITE, wxID_PNLSERIESSELECTORCHECKVARIABLE, wxID_PNLSERIESSELECTORLBLSITE,
  wxID_PNLSERIESSELECTORLBLVARIABLE, wxID_PNLSERIESSELECTORtableSeries, wxID_PNLSERIESSELECTORPANEL1,
  wxID_PNLSERIESSELECTORPANEL2, wxID_PNLSIMPLE, wxID_PNLRADIO, wxID_FRAME1RBADVANCED, wxID_FRAME1RBALL,
- wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER, wxID_PNLSERIESSELECTORtableSeriesTest, ] = [
-    wx.NewId() for _init_ctrls in range(18)]
+ wxID_FRAME1RBSIMPLE, wxID_FRAME1SPLITTER, wxID_PNLSPLITTER, wxID_PNLSERIESSELECTORtableSeriesTest,wxID_CLEAR, ] = [
+    wx.NewId() for _init_ctrls in range(19)]
 
 class ClsSeriesSelector(wx.Panel):
 
@@ -29,13 +29,20 @@ class ClsSeriesSelector(wx.Panel):
         self.export_service = self.service_manager.get_export_service()
         self.selectedIndex = 0
         self.isEditing = False
+
+
     ## Radio Sizer
-    ##    def _init_coll_boxSizer5_Items(self, parent):
-    ##        # generated method, don't edit
-    ##
-    ##        parent.AddWindow(self.rbAll, 0, border=1, flag=wx.ALL)
-    ##        parent.AddWindow(self.rbSimple, 0, border=1, flag=wx.ALL)
-    ##        parent.AddWindow(self.rbAdvanced, 0, border=1, flag=wx.ALL)
+    def _init_coll_boxSizer5_Items(self, parent):
+       # generated method, don't edit
+
+
+       self.pnlRadio = wx.Panel(id=wxID_PNLSPLITTER, name='pnlData', parent=self, pos=wx.Point(0, -10),
+                               size=wx.Size(900, 349), style=wx.TAB_TRAVERSAL)
+       parent.AddWindow(self.rbAll, 0, border=1, flag=wx.ALL)
+       parent.AddWindow(self.rbSimple, 0, border=1, flag=wx.ALL)
+       parent.AddWindow(self.rbAdvanced, 0, border=1, flag=wx.ALL)
+       parent.AddWindow(self.pnlRadio, 0 , flag= wx.EXPAND)
+       parent.AddWindow(self.btnClear, 100, border =0)
 
 
     ## Splitter Sizer
@@ -116,6 +123,9 @@ class ClsSeriesSelector(wx.Panel):
         self.rbAdvanced = wx.RadioButton(id=wxID_FRAME1RBADVANCED, label=u'Advanced Filter', name=u'rbAdvanced',
                                          parent=self.pnlRadio, pos=wx.Point(193, 0), size=wx.Size(104, 20), style=0)
 
+        self.btnClear = wx.Button(id=wxID_CLEAR, label=u"Clear", name=u'btnClear', parent=self.pnlRadio,
+                                  pos=wx.Point(700, 0), size=wx.Size(80, 15), style=0)
+
         self.rbAll.SetValue(True)
 
         self.rbAdvanced.Enable(False)
@@ -163,6 +173,7 @@ class ClsSeriesSelector(wx.Panel):
         self.rbAll.Bind(wx.EVT_RADIOBUTTON, self.onRbAllRadiobutton, id=wxID_FRAME1RBALL)
         self.rbSimple.Bind(wx.EVT_RADIOBUTTON, self.onRbSimpleRadiobutton, id=wxID_FRAME1RBSIMPLE)
         self.rbAdvanced.Bind(wx.EVT_RADIOBUTTON, self.onRbAdvancedRadiobutton, id=wxID_FRAME1RBADVANCED)
+        self.btnClear.Bind(wx.EVT_BUTTON, self.onBtnClear, id=wxID_CLEAR)
 
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.onPaneChanged, self.cpnlSimple)
         self.checkSite.Bind(wx.EVT_CHECKBOX, self.onCheck, id=wxID_PNLSERIESSELECTORCHECKSITE)
@@ -193,10 +204,13 @@ class ClsSeriesSelector(wx.Panel):
 
     ## Virtual Event Handlers
     def onReadyToPlot(self, event):
-        event.Skip()
+        pass
 
     def onReadyToEdit(self, event):
-        event.Skip()
+        pass
+
+    def onBtnClear(self, event):
+        pass
 
     def stopEdit(self):
         pass
