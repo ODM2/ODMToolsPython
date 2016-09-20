@@ -31,7 +31,8 @@ class OLVDataTable(VirtualObjectListView):
         self.SetColumns(columns)
         self.dataframe = self.memDB.getDataValuesDF()
         sort_by_index = list(self.dataframe.columns).index("LocalDateTime")
-        self.dataframe.sort(self.dataframe.columns[sort_by_index], inplace=True)
+        # self.dataframe.sort(self.dataframe.columns[sort_by_index], inplace=True) # sort() is depecrated
+        self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
         self.dataObjects = self.dataframe.values.tolist()
 
         self.SetObjectGetter(self.ObjectGetter)

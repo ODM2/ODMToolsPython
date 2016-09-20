@@ -1,10 +1,6 @@
 import logging
-
-
 from sqlalchemy import distinct, func
-
-
-from odmtools.odmdata import SessionFactory
+from odm2api.ODMconnection import SessionFactory  # from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import Site
 from odmtools.odmdata import Variable
 from odmtools.odmdata import Unit
@@ -18,20 +14,22 @@ from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
 import pandas as pd
+from odm2api.ODM2.services.createService import CreateODM2
 
 # tool = LoggerTool()
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-logger =logging.getLogger('main')
+logger = logging.getLogger('main')
 
-class SeriesService():
+class SeriesService():  # Change to createService
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
     def __init__(self, connection_string="", debug=False):
-        self._session_factory = SessionFactory(connection_string, debug)
-        self._edit_session = self._session_factory.get_session()
+        self._session_factory = SessionFactory(connection_string=connection_string, echo=debug)
+        self._edit_session = self._session_factory.getSession()
         self._debug = debug
+        self.create_service = CreateODM2(session_factory=self._session_factory, debug=self._debug)
 
     def reset_session(self):
-        self._edit_session = self._session_factory.get_session()  # Reset the session in order to prevent memory leaks
+        self._edit_session = self._session_factory.getSession()  # Reset the session in order to prevent memory leaks
 
     def get_db_version(self):
         return self._edit_session.query(ODMVersion).first().version_number
@@ -59,7 +57,7 @@ class SeriesService():
         try:
             site_ids = [x[0] for x in self._edit_session.query(distinct(Series.site_id)).all()]
         except:
-            site_ids = None
+            return None
 
         if not site_ids:
             return None
@@ -105,35 +103,6 @@ class SeriesService():
 
         return Variables
 
-    def get_all_variables(self):
-        """
-
-        :return: List[Variables]
-        """
-        return self._edit_session.query(Variable).all()
-
-    def get_variable_by_id(self, variable_id):
-        """
-
-        :param variable_id: int
-        :return: Variables
-        """
-        try:
-            return self._edit_session.query(Variable).filter_by(id=variable_id).first()
-        except:
-            return None
-
-    def get_variable_by_code(self, variable_code):
-        """
-
-        :param variable_code:  str
-        :return: Variables
-        """
-        try:
-            return self._edit_session.query(Variable).filter_by(code=variable_code).first()
-        except:
-            return None
-
     def get_variables_by_site_code(self, site_code):  # covers NoDV, VarUnits, TimeUnits
         """
         Finds all of variables at a site
@@ -151,79 +120,6 @@ class SeriesService():
             variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
 
         return variables
-
-    # Unit methods
-    def get_all_units(self):
-        """
-
-        :return: List[Units]
-        """
-        return self._edit_session.query(Unit).all()
-
-    def get_unit_by_name(self, unit_name):
-        """
-
-        :param unit_name: str
-        :return: Units
-        """
-        try:
-            return self._edit_session.query(Unit).filter_by(name=unit_name).first()
-        except:
-            return None
-
-    def get_unit_by_id(self, unit_id):
-        """
-
-        :param unit_id: int
-        :return: Units
-        """
-        try:
-            return self._edit_session.query(Unit).filter_by(id=unit_id).first()
-        except:
-            return None
-
-
-    def get_all_qualifiers(self):
-        """
-
-        :return: List[Qualifiers]
-        """
-        result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
-        return result
-
-    def get_qualifier_by_code(self, code):
-        """
-
-        :return: Qualifiers
-        """
-        result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
-        return result
-
-    def get_qualifiers_by_series_id(self, series_id):
-        """
-
-        :param series_id:
-        :return:
-        """
-        subquery = self._edit_session.query(DataValue.qualifier_id).outerjoin(
-            Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
-        return self._edit_session.query(Qualifier).join(subquery).distinct().all()
-
-    #QCL methods
-    def get_all_qcls(self):
-        return self._edit_session.query(QualityControlLevel).all()
-
-    def get_qcl_by_id(self, qcl_id):
-        try:
-            return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
-        except:
-            return None
-
-    def get_qcl_by_code(self, qcl_code):
-        try:
-            return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).first()
-        except:
-            return None
 
     # Method methods
     def get_all_methods(self):
@@ -567,8 +463,8 @@ class SeriesService():
         if link is not None:
             meth.link = link
 
-        self._edit_session.add(meth)
-        self._edit_session.commit()
+        self.create_service.createMethod(method=meth)
+
         return meth
 
     def create_variable_by_var(self, var):
@@ -577,12 +473,14 @@ class SeriesService():
         :param var:  Variable Object
         :return:
         """
-        try:
-            self._edit_session.add(var)
-            self._edit_session.commit()
-            return var
-        except:
-            return None
+        # try:
+        #     self._edit_session.add(var)
+        #     self._edit_session.commit()
+        #     return var
+        # except:
+        #     return None
+        self.create_service.createVariable(var)
+        return var
 
     def create_variable(
             self, code, name, speciation, variable_unit_id, sample_medium,
@@ -618,8 +516,7 @@ class SeriesService():
         var.general_category = general_category
         var.no_data_value = no_data_value
 
-        self._edit_session.add(var)
-        self._edit_session.commit()
+        self.create_variable_by_var(var)
         return var
 
     def create_qcl(self, code, definition, explanation):
