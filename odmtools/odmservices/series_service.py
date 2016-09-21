@@ -29,7 +29,8 @@ class SeriesService():  # Change to createService
         self.create_service = CreateODM2(session_factory=self._session_factory, debug=self._debug)
 
     def reset_session(self):
-        self._edit_session = self._session_factory.getSession()  # Reset the session in order to prevent memory leaks
+        # self._edit_session = self._session_factory.getSession()  # Reset the session in order to prevent memory leaks
+        self._edit_session = self.create_service.getSession()
 
     def get_db_version(self):
         return self._edit_session.query(ODMVersion).first().version_number
@@ -39,15 +40,6 @@ class SeriesService():  # Change to createService
 # Get functions
 #
 #####################
-
-    # Site methods
-    def get_all_sites(self):
-        """
-
-        :return: List[Sites]
-        """
-        return self._edit_session.query(Site).order_by(Site.code).all()
-
 
     def get_used_sites(self):
         """
@@ -67,18 +59,6 @@ class SeriesService():  # Change to createService
             Sites.append(self._edit_session.query(Site).filter_by(id=site_id).first())
 
         return Sites
-
-
-    def get_site_by_id(self, site_id):
-        """
-        return a Site object that has an id=site_id
-        :param site_id: integer- the identification number of the site
-        :return: Sites
-        """
-        try:
-            return self._edit_session.query(Site).filter_by(id=site_id).first()
-        except:
-            return None
 
     # Variables methods
     def get_used_variables(self):
@@ -102,43 +82,6 @@ class SeriesService():  # Change to createService
             Variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
 
         return Variables
-
-    def get_variables_by_site_code(self, site_code):  # covers NoDV, VarUnits, TimeUnits
-        """
-        Finds all of variables at a site
-        :param site_code: str
-        :return: List[Variables]
-        """
-        try:
-            var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).filter_by(
-                site_code=site_code).all()]
-        except:
-            var_ids = None
-
-        variables = []
-        for var_id in var_ids:
-            variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
-
-        return variables
-
-    # Method methods
-    def get_all_methods(self):
-        return self._edit_session.query(Method).all()
-
-    def get_method_by_id(self, method_id):
-        try:
-            result = self._edit_session.query(Method).filter_by(id=method_id).first()
-        except:
-            result = None
-        return result
-
-    def get_method_by_description(self, method_code):
-        try:
-            result = self._edit_session.query(Method).filter_by(description=method_code).first()
-        except:
-            result = None
-            logger.error("method not found")
-        return result
 
     def get_offset_types_by_series_id(self, series_id):
         """
@@ -215,6 +158,31 @@ class SeriesService():  # Change to createService
         # Pass in probably a Series object, match it against the database
         pass
 
+    def get_all_qualifiers(self):
+        """
+
+        :return: List[Qualifiers]
+        """
+        result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
+        return result
+
+    def get_qualifier_by_code(self, code):
+        """
+
+        :return: Qualifiers
+        """
+        result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
+        return result
+
+    def get_qualifiers_by_series_id(self, series_id):
+        """
+
+        :param series_id:
+        :return:
+        """
+        subquery = self._edit_session.query(DataValue.qualifier_id).outerjoin(
+            Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
+        return self._edit_session.query(Qualifier).join(subquery).distinct().all()
 
     #Data Value Methods
     def get_values_by_series(self, series_id):
@@ -430,7 +398,6 @@ class SeriesService():  # Change to createService
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
         """
-
         :param data_values:
         :param site_id:
         :param variable_id:
@@ -451,9 +418,8 @@ class SeriesService():  # Change to createService
         self._edit_session.commit()
         return series
 
-    def create_method(self, description, link):
+    def create_method(self, description, link):  # DONE
         """
-
         :param description:
         :param link:
         :return:
@@ -467,25 +433,19 @@ class SeriesService():  # Change to createService
 
         return meth
 
-    def create_variable_by_var(self, var):
+    def create_variable_by_var(self, var):  # DONE
         """
-
         :param var:  Variable Object
         :return:
         """
-        # try:
-        #     self._edit_session.add(var)
-        #     self._edit_session.commit()
-        #     return var
-        # except:
-        #     return None
+
         self.create_service.createVariable(var)
         return var
 
     def create_variable(
             self, code, name, speciation, variable_unit_id, sample_medium,
             value_type, is_regular, time_support, time_unit_id, data_type,
-            general_category, no_data_value):
+            general_category, no_data_value):  # DONE
         """
 
         :param code:
@@ -519,7 +479,7 @@ class SeriesService():  # Change to createService
         self.create_variable_by_var(var)
         return var
 
-    def create_qcl(self, code, definition, explanation):
+    def create_qcl(self, code, definition, explanation):  # DONE
         """
 
         :param code:
@@ -532,8 +492,7 @@ class SeriesService():  # Change to createService
         qcl.definition = definition
         qcl.explanation = explanation
 
-        self._edit_session.add(qcl)
-        self._edit_session.commit()
+        self.create_service.createProcessingLevel(qcl)
         return qcl
 
 
