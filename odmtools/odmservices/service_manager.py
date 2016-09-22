@@ -13,7 +13,7 @@ from edit_service import EditService
 from odmtools.controller import EditTools
 from export_service import ExportService
 from odmtools.lib.Appdirs.appdirs import user_config_dir
-from odm2api.ODMconnection import SessionFactory  #from odmtools.odmdata.session_factory import SessionFactory
+from odmtools.odmdata.session_factory import SessionFactory
 
 
 # tool = LoggerTool()
@@ -100,11 +100,12 @@ class ServiceManager():
     def testEngine(self, connection_string):
         s = SessionFactory(connection_string, echo=False)
         if 'mssql' in connection_string:
-            s.test_Session().execute("Select top 1 VariableCode From Variables")
+            s.ms_test_Session().execute("Select top 1 VariableCode From Variables")
         elif 'mysql' in connection_string:
-            s.test_Session().execute('Select "VariableCode" From Variables Limit 1')
+            s.my_test_Session().execute('Select "VariableCode" From Variables Limit 1')
         elif 'postgresql' in connection_string:
-            s.test_Session().execute('Select "VariableCode" From "Variables" Limit 1')
+            #s.psql_test_Session().execute('Select "VariableCode" From "ODM2"."Variables" Limit 1')
+            s.psql_test_Session().execute('Select "VariableCode" From "Variables" Limit 1')
         return True
 
     def test_connection(self, conn_dict):
