@@ -16,14 +16,17 @@ from odmtools.odmdata import Sample
 from odmtools.odmdata import Qualifier
 from odmtools.odmdata import Unit
 from sqlalchemy import not_
+from odm2api.ODM2.services.readService import ReadODM2
 
 
-class CVService():
+class CVService(): # Rename to ReadService
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
     def __init__(self, connection_string="", debug=False):
         self._session_factory = SessionFactory(connection_string, debug)
-        self._edit_session = self._session_factory.get_session()
+        self._edit_session = self._session_factory.getSession()
         self._debug = debug
+        self.read_service = ReadODM2(self._session_factory, debug=self._debug)
+
 
     # Controlled Vocabulary get methods
 

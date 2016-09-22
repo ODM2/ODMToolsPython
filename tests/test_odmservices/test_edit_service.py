@@ -15,7 +15,7 @@ class TestSeriesService:
 
         self.memory_database = MemoryDatabase()
         self.memory_database.set_series_service(self.series_service)
-        self.session = self.memory_database.series_service._session_factory.get_session()
+        self.session = self.memory_database.series_service._session_factory.getSession()
 
         self.series = test_util.add_series_bulk_data(self.session)
         #assert len(self.series.data_values) == 100

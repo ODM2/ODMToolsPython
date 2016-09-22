@@ -18,20 +18,23 @@ from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
 import pandas as pd
+from odm2api.ODM2.services.createService import CreateODM2
+
 
 # tool = LoggerTool()
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 logger =logging.getLogger('main')
 
-class SeriesService():
+class SeriesService():  # Rename to CreateService
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
     def __init__(self, connection_string="", debug=False):
         self._session_factory = SessionFactory(connection_string, debug)
-        self._edit_session = self._session_factory.get_session()
+        self._edit_session = self._session_factory.getSession()
         self._debug = debug
+        self.create_service = CreateODM2(session_factory=self._session_factory, debug=self._debug)
 
     def reset_session(self):
-        self._edit_session = self._session_factory.get_session()  # Reset the session in order to prevent memory leaks
+        self._edit_session = self._session_factory.getSession()  # Reset the session in order to prevent memory leaks
 
     def get_db_version(self):
         return self._edit_session.query(ODMVersion).first().version_number
@@ -534,7 +537,7 @@ class SeriesService():
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
         """
-
+        series -> Result in ODM2
         :param data_values:
         :param site_id:
         :param variable_id:
@@ -551,13 +554,10 @@ class SeriesService():
         series.source_id = source_id
         series.quality_control_level_id = qcl_id
 
-        self._edit_session.add(series)
-        self._edit_session.commit()
-        return series
+        return self.create_service.createResult(series)
 
     def create_method(self, description, link):
         """
-
         :param description:
         :param link:
         :return:
@@ -567,29 +567,22 @@ class SeriesService():
         if link is not None:
             meth.link = link
 
-        self._edit_session.add(meth)
-        self._edit_session.commit()
+        self.create_service.createMethod(method=meth)
         return meth
 
     def create_variable_by_var(self, var):
         """
-
         :param var:  Variable Object
         :return:
         """
-        try:
-            self._edit_session.add(var)
-            self._edit_session.commit()
-            return var
-        except:
-            return None
+        self.create_service.createVariable(var=var)
+        return var
 
     def create_variable(
             self, code, name, speciation, variable_unit_id, sample_medium,
             value_type, is_regular, time_support, time_unit_id, data_type,
             general_category, no_data_value):
         """
-
         :param code:
         :param name:
         :param speciation:
@@ -618,13 +611,12 @@ class SeriesService():
         var.general_category = general_category
         var.no_data_value = no_data_value
 
-        self._edit_session.add(var)
-        self._edit_session.commit()
+        self.create_service.createVariable(var=var)
         return var
 
     def create_qcl(self, code, definition, explanation):
         """
-
+        qcl -> Processing Level in ODM2
         :param code:
         :param definition:
         :param explanation:
@@ -634,9 +626,8 @@ class SeriesService():
         qcl.code = code
         qcl.definition = definition
         qcl.explanation = explanation
+        self.create_service.createProcessingLevel(proclevel=qcl)
 
-        self._edit_session.add(qcl)
-        self._edit_session.commit()
         return qcl
 
 
