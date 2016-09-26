@@ -490,6 +490,14 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         except Exception as e :
             object = self.tblSeries.GetSelectedObject()
 
+        self.newfunction(object)
+        logger.debug("refreshing...")
+        self.Refresh()
+
+        logger.debug("Finish Plotting")
+
+    def newfunction(self, object):
+
         if not self.tblSeries.IsChecked(object):
             Publisher.sendMessage("removePlot", seriesID=object.id)
             Publisher.sendMessage("updateCursor", deselectedObject=object)
@@ -499,10 +507,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.pnlPlot.addPlot(self.memDB, object.id)
             Publisher.sendMessage("updateCursor", selectedObject=object)
 
-        logger.debug("refreshing...")
-        self.Refresh()
 
-        logger.debug("Finish Plotting")
 
 
         #from meliae import scanner
@@ -528,13 +533,14 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
                 Publisher.sendMessage("updateCursor", selectedObject=editingObject)
 
     def onBtnClear(self, event):
-        print("clear button")
+        logger.debug("Clearing all selected objects from Series Catalog")
         chcklist = self.tblSeries.GetCheckedObjects()
 
         self.tblSeries.RefreshObject(self.tblSeries.editingObject)
         for c in chcklist:
-            print c
             self.tblSeries.SetCheckState(c, False)
+            self.newfunction(c)
+        self.Refresh()
 
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector
