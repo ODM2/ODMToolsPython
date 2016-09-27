@@ -459,13 +459,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         if site_code and var_code:
-            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:4],text=site_code)
-            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[6:7],text=var_code)
+            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[2:6],text=site_code)
+            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:8],text=var_code)
             self.tblSeries.SetFilter(Chain(self.siteFilter, self.variableFilter))
         elif site_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:4], text=site_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[2:6], text=site_code))
         elif var_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[6:7], text=var_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:8], text=var_code))
         elif advfilter:
             self.tblSeries.SetFilter(advfilter)
         else:

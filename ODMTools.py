@@ -20,7 +20,7 @@ from odmtools.odmdata import MemoryDatabase
 
 import pyodbc
 import pymysql
-import psycopg2
+#import psycopg2
 
 tool = LoggerTool()
 logger = tool.setupLogger('main',  'odmtools.log', 'a', logging.INFO)
