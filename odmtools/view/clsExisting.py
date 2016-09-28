@@ -48,7 +48,7 @@ class pnlExisting(wx.Panel):
                                           wx.DefaultSize, 0)
         bSizer2.Add(self.rbOverwrite, 0, wx.ALL, 5)
 
-        self.rbAppend = wx.RadioButton(self.m_panel1, wx.ID_ANY, u"Append To Series", wx.DefaultPosition,
+        self.rbAppend = wx.RadioButton(self.m_panel1, wx.ID_ANY, u"Append To Series(Add values to the end of a series)", wx.DefaultPosition,
                                        wx.DefaultSize, 0)
         bSizer2.Add(self.rbAppend, 0, wx.ALL, 5)
 
