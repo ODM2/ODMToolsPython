@@ -86,6 +86,7 @@ class EditService():
 
         return df
 
+
     def datetime2dataframe(self, datetime_list):
         """ Converts datetime_list to a pandas Dataframe
 
@@ -141,19 +142,47 @@ class EditService():
         if before and after:
             self.filtered_dataframe = df[(df.index < before) & (df.index > after)]
 
-    # Data Gaps
-    def data_gaps(self, value, time_period):
-        df = self._test_filter_previous()
+    def fill_gap(self, gap, period):
 
-        time_units = {
-            'second': 's',
-            'minute': 'm',
-            'hour': 'h',
-            'day': 'D',
-            'week': 'W',
-            'month': 'M',
-            'year': 'Y'
-        }
+        df = self.memDB.getDataValuesDF()
+        gaps= self.find_gaps(df, gap, period)
+        points = []
+        series= self.memDB.series
+        timegap = np.timedelta64(gap, self.time_units[period])
+
+        for g in gaps.iterrows():
+            row= g[0]
+            e = row["datetime"]
+            s= row["prevdate"]
+            print (s)
+            print (e)
+
+            # for each gap time period in the larger gap ( until datetime = prev value)
+            while s != e:
+                s= s + timegap
+                points.append(('-9999', None, s, series.begin_date_time_utc, s, None, None, u'nc', None, None, series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id))
+                #add a row points.append() [('-9999', None, datetime.datetime(2007, 9, 28, 0, 10), '-7', datetime.datetime(2007, 9, 28, 7, 10), None, None, u'nc', None, None, 1, 4, 2, 1, 0)
+                #('-9999', None, DATE, series.begin_date_time_utc, UTCDATE, None, None, u'nc', None, None, series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id
+
+
+        self.add_points(points)
+
+    time_units = {
+        'second': 's',
+        'minute': 'm',
+        'hour': 'h',
+        'day': 'D',
+        'week': 'W',
+        'month': 'M',
+        'year': 'Y'
+    }
+
+    # Data Gaps
+
+
+    def find_gaps(self, df, value, time_period):
+
+
 
         # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
         copy_df = df
@@ -165,19 +194,29 @@ class EditService():
             value = int(value)
 
         # create a bool column indicating which rows meet condition
-        filtered_results = copy_df['datetime'].diff() >= np.timedelta64(value, time_units[time_period])
+        filtered_results = copy_df['datetime'].diff() > np.timedelta64(value, self.time_units[time_period])
 
         # filter on rows that passed previous condition
-        copy_df = copy_df[filtered_results]
+        return copy_df[filtered_results]
 
+
+
+
+    def data_gaps(self, value, time_period):
+        df = self._test_filter_previous()
+        copy_df = self.find_gaps(df, value, time_period)
+        print (copy_df)
         # merge values and remove duplicates. this hack allows for both values to be marked when selecting data gaps
         newdf = pd.concat([copy_df['datetime'], copy_df['dateprev']], join='inner')
-        self.filtered_dataframe = df[df.index.isin(newdf.drop_duplicates().dropna())]
 
         # clean up
         del copy_df
-        del filtered_results
-        del newdf
+
+
+        self.filtered_dataframe= df[df.index.isin(newdf.drop_duplicates().dropna())]
+
+
+
 
     def change_value_threshold(self, value, operator):
 

@@ -201,7 +201,7 @@ class MemoryDatabase(object):
         """
         if not self.editLoaded:
             logger.debug("Load series from db")
-
+            self.series = self.series_service.get_series_by_id(seriesID)
             self.df = self.series_service.get_values_by_series(seriesID)
             self.editLoaded = True
 

@@ -36,9 +36,9 @@ logger =logging.getLogger('main')
  wxID_RIBBONEDITSCRIPTSAVE, wxID_RIBBONVIEWPLOT, wxID_RIBBONVIEWTABLE, wxID_RIBBONVIEWSERIES, wxID_RIBBONVIEWCONSOLE,
  wxID_RIBBONVIEWSCRIPT, wxID_RIBBONPLOTBLANKBTN, wxID_FileMenu, wxID_STARTDPDATE, wxID_ENDDPDATE, wxID_FRAME1SPINCTRL1,
  wxID_RIBBONEDITFILTER, wxID_RIBBONEDITRECORD, wxID_RIBBONEDITLINFILTER, wxID_RIBBONPLOTDATEAPPLY,
- wxID_RIBBONEDITRESETFILTER, wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDSAVE] = [wx.NewId() for
+ wxID_RIBBONEDITRESETFILTER, wxID_RIBBONRECORDNEW, wxID_RIBBONRECORDOPEN, wxID_RIBBONRECORDSAVE, wxID_GAPFILL] = [wx.NewId() for
                                                                                                       _init_ctrls in
-                                                                                                      range(46)]
+                                                                                                      range(47)]
 
 ## #################################
 ## Build Menu and Toolbar 
@@ -155,6 +155,7 @@ class mnuRibbon(RB.RibbonBar):
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITFLAG, "Flag", flag.GetBitmap(), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITADDPOINT, "Add Point", add.GetBitmap(), "")
         self.edit_bar.AddSimpleButton(wxID_RIBBONEDITDELPOINT, "Delete Point", delete.GetBitmap(), "")
+        self.edit_bar.AddSimpleButton(wxID_GAPFILL, "Fill Gap", add.GetBitmap(), "")
         #self.edit_bar.AddSimpleButton(wxID_RIBBONEDITRECORD, "Record", bitmap=record.GetBitmap(), help_string="",kind=0x4)
 
         self.edit_bar.EnableButton(wxID_RIBBONEDITFILTER, False)
@@ -250,6 +251,7 @@ class mnuRibbon(RB.RibbonBar):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditFlag, id=wxID_RIBBONEDITFLAG)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditAddPoint, id=wxID_RIBBONEDITADDPOINT)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onEditDelPoint, id=wxID_RIBBONEDITDELPOINT)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onGapFill, id = wxID_GAPFILL)
 
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordNew, id=wxID_RIBBONRECORDNEW)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onRecordOpen, id=wxID_RIBBONRECORDOPEN)
@@ -466,7 +468,12 @@ class mnuRibbon(RB.RibbonBar):
         addPoint.ShowModal()
 
         event.Skip()
-
+    # ###################################
+    #   Gap fill
+    # ###################################
+    def onGapFill(self, event):
+        self.parent.getRecordService().fill_gap(30, 'minute')
+        event.Skip()
     # ###################################
     #   Delete Point
     # ###################################

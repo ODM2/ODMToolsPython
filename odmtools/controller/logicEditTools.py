@@ -50,13 +50,19 @@ class EditTools():
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
+    def fill_gap(self, value, time_period):
+        self._edit_service.fill_gap(value, time_period)
+        self.refresh_selection()
+        if self._record:
+            self._script("edit_service.fill_gap(%s, '%s')\n" % (value, time_period), 'black')
+            Publisher.sendMessage("scroll")
+
     def data_gaps(self, value, time_period):
         self._edit_service.data_gaps(value, time_period)
         self.refresh_selection()
         if self._record:
             self._script("edit_service.data_gaps(%s, '%s')\n" % (value, time_period), 'black')
             Publisher.sendMessage("scroll")
-
 
     def value_change_threshold(self, value, operator):
         self._edit_service.change_value_threshold(value, operator)
