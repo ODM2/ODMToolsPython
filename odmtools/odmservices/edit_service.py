@@ -347,19 +347,20 @@ class EditService():
 
         self.memDB.update(update_list)
 
-
         self._populate_series()
 
         self.filtered_dataframe = self._series_points_df[self._series_points_df.index.isin(ids)]
+
 
     def drift_correction(self, gap_width):
         if self.isOneGroup():
             tmp_filter_list =self.get_filtered_points()
             startdate =tmp_filter_list.index[0]
             x_l = (tmp_filter_list.index[-1]-startdate).total_seconds()
-
+            #nodv= self.memDB.series_service.get_variable_by_id(self.memDB.df["VariableID"][0])
+            nodv = self.memDB.series.variable.no_data_value
             # y_n = y_0 + G(x_i / x_l)
-            f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
+            f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l)) if row["DataValue"] != nodv else row["DataValue"]
             tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
 
             update_list = [{"value": row["DataValue"], "id":index} for index, row in tmp_filter_list.iterrows()]
