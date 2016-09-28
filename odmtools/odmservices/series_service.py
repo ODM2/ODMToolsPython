@@ -19,6 +19,8 @@ from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
 import pandas as pd
 from odm2api.ODM2.services.createService import CreateODM2
+from odm2api.ODM2.models import Annotations
+from odm2api.ODM2.services.readService import ReadODM2
 
 
 # tool = LoggerTool()
@@ -32,6 +34,7 @@ class SeriesService():  # Rename to CreateService
         self._edit_session = self._session_factory.getSession()
         self._debug = debug
         self.create_service = CreateODM2(session_factory=self._session_factory, debug=self._debug)
+        self.read_service = ReadODM2(self._session_factory, debug=self._debug)
 
     def reset_session(self):
         self._edit_session = self._session_factory.getSession()  # Reset the session in order to prevent memory leaks
@@ -191,8 +194,9 @@ class SeriesService():  # Rename to CreateService
 
         :return: List[Qualifiers]
         """
-        result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
-        return result
+        # result = self._edit_session.query(Annotations).order_by(Annotations.AnnotationCode).all()
+        # return result
+        return self.read_service.getAnnotations(None)
 
     def get_qualifier_by_code(self, code):
         """
@@ -630,24 +634,23 @@ class SeriesService():  # Rename to CreateService
 
         return qcl
 
+    def create_annotation_by_anno(self, annotation):
+        self.create_service.create(annotation)
+        return annotation
 
-    def create_qualifier_by_qual(self, qualifier):
-        self._edit_session.add(qualifier)
-        self._edit_session.commit()
-        return qualifier
-
-    def create_qualifier(self,  code, description):
+    def create_annotation(self, code, description):
         """
 
         :param code:
         :param description:
         :return:
         """
-        qual = Qualifier()
-        qual.code = code
-        qual.description = description
+        annotation = Annotations()
+        annotation.AnnotationCode = code
+        annotation.AnnotationText = description
+        annotation.AnnotationTypeCV = "timeSeriesResultValueAnnotation"
 
-        return self.create_qualifier_by_qual(qual)
+        return self.create_annotation_by_anno(annotation)
 
 #####################
 #

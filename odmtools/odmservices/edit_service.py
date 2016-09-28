@@ -589,7 +589,7 @@ class EditService():
         return self.memDB.series_service.create_method(description, link)
 
     def create_qualifier(self, code, definition):
-        return self.memDB.series_service.create_qualifier(code, definition)
+        return self.memDB.series_service.create_annotation(code, definition)
 
     def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
                         value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):

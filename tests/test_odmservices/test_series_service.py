@@ -1,5 +1,6 @@
 from odmtools.odmdata import *
 from odmtools.odmservices import SeriesService
+from odm2api.ODM2.models import Annotations
 
 from tests import test_util
 
@@ -62,31 +63,30 @@ class TestSeriesService:
         #assert len(sites) == 0
         assert sites is None
 
-    def test_create_qualifier(self):
+    def test_create_annotation(self):
         qual = Qualifier()
         qual.code = "ABC123"
         qual.description = "This is a test"
-        self.series_service.create_qualifier_by_qual(qual)
+        self.series_service.create_annotation_by_anno(qual)
 
         assert qual.id is not None
 
-    def test_get_qualifier_by_code(self):
-        assert self.series_service.get_all_qualifiers() == []
+    def test_get_annotation_by_code(self):
+        assert self.series_service.get_all_qualifiers() == None
 
-        qual= self.series_service.create_qualifier("ABC123","This is a test")
+        qual = self.series_service.create_annotation("ABC123", "This is a test")
 
         db_qual = self.series_service.get_qualifier_by_code("ABC123")
 
         assert qual.id == db_qual.id
 
-    def test_get_qualifiers(self):
-        assert self.series_service.get_all_qualifiers() == []
+    def test_get_annotation(self):
+        assert self.series_service.get_all_qualifiers() == None
 
-        qual= self.series_service.create_qualifier("ABC123","This is a test")
+        qual= self.series_service.create_annotation("ABC123", "This is a test")
 
         db_qual = self.series_service.get_all_qualifiers()[0]
         assert qual.id == db_qual.id
-
 
     def test_get_all_sites(self):
         assert self.series_service.get_used_sites() is None

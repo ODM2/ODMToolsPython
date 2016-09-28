@@ -380,7 +380,7 @@ class EditTools():
         return qcl
 
     def create_qualifer(self, code, description):
-        qual = self._edit_service.create_qualifier(code, description)
+        qual = self._edit_service.create_annotation(code, description)
         if self._record:
             self._script('new_qual = series_service.get_qualifier_by_code(%s)\n' % (qual.code))
             Publisher.sendMessage("scroll")

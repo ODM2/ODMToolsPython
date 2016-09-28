@@ -99,3 +99,11 @@ class CVService(): # Rename to ReadService
     def get_unit_by_id(self, unit_id):
         result = self._edit_session.query(Unit).filter_by(id=unit_id).first()
         return result
+
+    def get_annotation_by_code(self, code):
+        self.read_service.getAnnotations(type=code)
+        return
+
+    def get_all_annotations(self):
+        return self.read_service.getAnnotations(type=None)
+
