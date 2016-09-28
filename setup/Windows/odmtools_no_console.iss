@@ -10,7 +10,7 @@
 #define MyAppPublisher "ODM2"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
 #define MyAppExeName "ODMTools.exe"
-#define MyAppDir "D:\DEV\ODMToolsPython"
+#define MyAppDir "D:\DEV\ODMTools"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -41,8 +41,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#MyAppDir}\setup\Windows\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\setup\Windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#MyAppDir}\setup\Windows\ODMTools\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppDir}\setup\Windows\ODMTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
