@@ -209,6 +209,9 @@ class SummaryPage(wiz.WizardPageSimple):
 
 
 ########################################################################
+from odmtools.controller.WizardMethodController import WizardMethodController
+from odmtools.controller.WizardProcessLevelController import WizardProcessLevelController
+
 class wizSave(wx.wizard.Wizard):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -257,8 +260,10 @@ class wizSave(wx.wizard.Wizard):
 
         self.pgIntro = pageIntro.pageIntro(self, "Intro")
         # self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
-        self.pgMethod = MethodPage(self)
-        self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
+        # self.pgMethod = MethodPage(self)
+        self.pgMethod = WizardMethodController(self)
+        # self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
+        self.pgQCL = WizardProcessLevelController(self)
         self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
