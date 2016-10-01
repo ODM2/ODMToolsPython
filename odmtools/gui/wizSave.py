@@ -25,6 +25,8 @@ logger =logging.getLogger('main')
 
 ########################################################################
 class QCLPage(wiz.WizardPageSimple):
+    # CLASS IS DEPECRATED
+    # REPLACED WITH WizardProcessLevelController.py
     def __init__(self, parent, title, series_service, qcl):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
@@ -62,6 +64,8 @@ class QCLPage(wiz.WizardPageSimple):
 
 ########################################################################
 class VariablePage(wiz.WizardPageSimple):
+    # CLASS IS DEPECRATED
+    # REPLACED WITH WizardVariableController.py
     def __init__(self, parent, title, service_manager, var):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
@@ -108,7 +112,9 @@ class VariablePage(wiz.WizardPageSimple):
 
 
 ########################################################################
-class MethodPage(wiz.WizardPageSimple):  # Raname this page to page method controller
+class MethodPage(wiz.WizardPageSimple):
+    # THIS CLASS IS DEPECRATED
+    # REPLACED WITH WizardMethodController.py
     def __init__(self, parent):
         # pageMethod.pnlMethod.__init__(self, parent)
         wiz.WizardPageSimple.__init__(self, parent)
@@ -211,6 +217,8 @@ class SummaryPage(wiz.WizardPageSimple):
 ########################################################################
 from odmtools.controller.WizardMethodController import WizardMethodController
 from odmtools.controller.WizardProcessLevelController import WizardProcessLevelController
+from odmtools.controller.WizardVariableController import WizardVariableController
+
 
 class wizSave(wx.wizard.Wizard):
     def _init_ctrls(self, prnt):
@@ -260,11 +268,11 @@ class wizSave(wx.wizard.Wizard):
 
         self.pgIntro = pageIntro.pageIntro(self, "Intro")
         # self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
-        # self.pgMethod = MethodPage(self)
         self.pgMethod = WizardMethodController(self)
         # self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
         self.pgQCL = WizardProcessLevelController(self)
-        self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
+        # self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
+        self.pgVariable = WizardVariableController(self)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
