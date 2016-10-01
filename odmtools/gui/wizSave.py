@@ -108,41 +108,51 @@ class VariablePage(wiz.WizardPageSimple):
 
 
 ########################################################################
-class MethodPage(wiz.WizardPageSimple):
-    def __init__(self, parent, title, series_service, method):
-        """Constructor"""
+class MethodPage(wiz.WizardPageSimple):  # Raname this page to page method controller
+    def __init__(self, parent):
+        # pageMethod.pnlMethod.__init__(self, parent)
         wiz.WizardPageSimple.__init__(self, parent)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer = sizer
-        self.SetSizer(sizer)
-        self.method = method
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.page_method_view = pageMethod.pnlMethod(self)
+        main_sizer.Add(self.page_method_view, 1, wx.EXPAND | wx.ALL, 0)
+        self.SetSizer(main_sizer)
 
-        title = wx.StaticText(self, -1, title)
-        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
-        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
-        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
-        self.panel = pageMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
-                                          pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                          style=wx.TAB_TRAVERSAL, ss=series_service, method=method)
-        self.sizer.Add(self.panel, 85, wx.ALL, 5)
-
-        self._init_data(self.panel.series_service)
-
-    def _init_data(self, series):
-        meth = series.get_all_methods()
-        index = 0
-        for m, i in zip(meth, range(len(meth))):
-            num_items = self.panel.lstMethods.GetItemCount()
-            self.panel.lstMethods.InsertStringItem(num_items, str(m.description))
-            self.panel.lstMethods.SetStringItem(num_items, 1, str(m.link))
-            self.panel.lstMethods.SetStringItem(num_items, 2, str(m.id))
-
-            if m.description == self.method.description:
-                index = i
-
-        self.panel.lstMethods.Focus(index)
-        self.panel.lstMethods.Select(index)
+# class MethodPage(wiz.WizardPageSimple):
+#     def __init__(self, parent, title, series_service, method):
+#         """Constructor"""
+#         wiz.WizardPageSimple.__init__(self, parent)
+#
+#         sizer = wx.BoxSizer(wx.VERTICAL)
+#         self.sizer = sizer
+#         self.SetSizer(sizer)
+#         self.method = method
+#
+#         title = wx.StaticText(self, -1, title)
+#         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
+#         sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
+#         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
+#         self.panel = pageMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
+#                                           pos=wx.Point(536, 285), size=wx.Size(439, 357),
+#                                           style=wx.TAB_TRAVERSAL, ss=series_service, method=method)
+#         self.sizer.Add(self.panel, 1, wx.EXPAND, 5)
+#
+#         self._init_data(self.panel.series_service)
+#
+#     def _init_data(self, series):
+#         meth = series.get_all_methods()
+#         index = 0
+#         for m, i in zip(meth, range(len(meth))):
+#             num_items = self.panel.lstMethods.GetItemCount()
+#             self.panel.lstMethods.InsertStringItem(num_items, str(m.description))
+#             self.panel.lstMethods.SetStringItem(num_items, 1, str(m.link))
+#             self.panel.lstMethods.SetStringItem(num_items, 2, str(m.id))
+#
+#             if m.description == self.method.description:
+#                 index = i
+#
+#         self.panel.lstMethods.Focus(index)
+#         self.panel.lstMethods.Select(index)
 
 
 ########################################################################
@@ -246,7 +256,8 @@ class wizSave(wx.wizard.Wizard):
         self.currSeries = record_service.get_series()
 
         self.pgIntro = pageIntro.pageIntro(self, "Intro")
-        self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
+        # self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
+        self.pgMethod = MethodPage(self)
         self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
         self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
