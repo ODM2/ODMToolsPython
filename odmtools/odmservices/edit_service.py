@@ -168,7 +168,7 @@ class EditService():
                 #       series.quality_control_level_id
 
                 s = s + timegap
-        print points
+        #print points
         self.add_points(points)
 
     time_units = {
@@ -353,7 +353,6 @@ class EditService():
 
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
-
         self.memDB.addPoints(points)
 
         self._populate_series()
