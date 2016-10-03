@@ -52,7 +52,7 @@ class EditTools():
 
     def fill_gap(self, value, time_period):
         self._edit_service.fill_gap(value, time_period)
-        self.refresh_selection()
+        self.refresh_edit()
         if self._record:
             self._script("edit_service.fill_gap(%s, '%s')\n" % (value, time_period), 'black')
             Publisher.sendMessage("scroll")
