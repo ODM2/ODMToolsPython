@@ -149,22 +149,25 @@ class EditService():
         points = []
         series= self.memDB.series
         timegap = np.timedelta64(gap, self.time_units[period])
-
+        #if gaps is not of type dataframe- put it in a dataframe
+        #if not isinstance(gaps, pd.DataFrame
         for g in gaps.iterrows():
-            row= g[0]
-            e = row["datetime"]
-            s= row["prevdate"]
-            print (s)
-            print (e)
+            row = g[1]
+            e = row.datetime
+            s = row.dateprev
 
+            #prime the loop
+            s = s + timegap
             # for each gap time period in the larger gap ( until datetime = prev value)
-            while s != e:
-                s= s + timegap
-                points.append(('-9999', None, s, series.begin_date_time_utc, s, None, None, u'nc', None, None, series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id))
-                #add a row points.append() [('-9999', None, datetime.datetime(2007, 9, 28, 0, 10), '-7', datetime.datetime(2007, 9, 28, 7, 10), None, None, u'nc', None, None, 1, 4, 2, 1, 0)
-                #('-9999', None, DATE, series.begin_date_time_utc, UTCDATE, None, None, u'nc', None, None, series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id
+            while s < e:
+                utc_offset = (series.begin_date_time-series.begin_date_time_utc).total_seconds()/3600
+                points.append((-9999, None, s, utc_offset, s, None, None, u'nc', None, None, series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id))
+                #('-9999', None, DATE, series.begin_date_time_utc, UTCDATE, None, None, u'nc', None, None,
+                #       series.site_id, series.variable_id, series.method_id, series.source_id,
+                #       series.quality_control_level_id
 
-
+                s = s + timegap
+        print points
         self.add_points(points)
 
     time_units = {
