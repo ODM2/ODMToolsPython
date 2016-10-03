@@ -136,8 +136,10 @@ class plotProb(wx.Panel):
                 #self.prob.append(
                 #prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
                 #todo FutureWarning: order is deprecated, use sort_values(...)
-                xValues = oneSeries.Probability.xAxis.order().values
-                yValues = oneSeries.Probability.yAxis.order().values
+                #xValues = oneSeries.Probability.xAxis.order().values
+                xValues = oneSeries.Probability.xAxis.sort_values()#.order().values
+                # yValues = oneSeries.Probability.yAxis.order().values
+                yValues = oneSeries.Probability.yAxis.sort_values()#order().values
 
                 ax = self.plots.plot(xValues, yValues, 'bs', color=oneSeries.color,
                                    label=oneSeries.plotTitle)
