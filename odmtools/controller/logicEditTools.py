@@ -50,8 +50,10 @@ class EditTools():
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
+
     def fill_gap(self, gap, fill):
         self._edit_service.fill_gap(gap , fill)
+
         self.refresh_edit()
         if self._record:
             self._script("edit_service.fill_gap(gap = %s, fill= %s)\n" % (gap, fill), 'black')
