@@ -71,10 +71,10 @@ class OLVDataTable(VirtualObjectListView):
         self.sortedColumnIndex = selected_column
         ascending = self.sortAscending
         if ascending:
-            self.dataframe.sort(self.dataframe.columns[selected_column], inplace=True)
+            self.dataframe.sort_values(by=self.dataframe.columns[selected_column], inplace=True)
             self.sortAscending = False
         elif not ascending:
-            self.dataframe.sort(self.dataframe.columns[selected_column], ascending=False, inplace=True)
+            self.dataframe.sort_values(by=self.dataframe.columns[selected_column], ascending=False, inplace=True)
             self.sortAscending = True
 
         self._UpdateColumnSortIndicators(selected_column, oldSortColumnIndex)
