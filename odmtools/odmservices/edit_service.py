@@ -17,6 +17,21 @@ from odmtools.common.logger import LoggerTool
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 logger =logging.getLogger('main')
 
+class time(object):
+    time_units = {
+        'second': 's',
+        'minute': 'm',
+        'hour': 'h',
+        'day': 'D',
+        'week': 'W',
+        'month': 'M',
+        'year': 'Y'
+    }
+
+    def __init__(self, value, time_period):
+        self.value = value
+        self.time_period = time_period
+
 class EditService():
     # Mutual exclusion: cursor, or connection_string
     def __init__(self, series_id, connection=None, connection_string="", debug=False):
@@ -142,13 +157,13 @@ class EditService():
         if before and after:
             self.filtered_dataframe = df[(df.index < before) & (df.index > after)]
 
-    def fill_gap(self, gap, period):
+    def fill_gap(self, gap, fill):
 
         df = self.memDB.getDataValuesDF()
-        gaps= self.find_gaps(df, gap, period)
+        gaps= self.find_gaps(df, gap[0], gap[1])
         points = []
         series= self.memDB.series
-        timegap = np.timedelta64(gap, self.time_units[period])
+        timegap = np.timedelta64(fill[0], self.time_units[fill[1]])
 
         #if gaps is not of type dataframe- put it in a dataframe
         #if not isinstance(gaps, pd.DataFrame

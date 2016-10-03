@@ -14,6 +14,7 @@ from odmtools.controller.frmChangeValue import frmChangeValue
 from frmFlagValues import frmFlagValues
 from odmtools.controller.frmLinearDrift import frmLinearDrift
 from odmtools.controller.frmAbout import frmAbout
+from odmtools.controller.frmGapFill import frmGapFill
 import wizSave
 from odmtools.common.icons import *
 import pandas as pd
@@ -472,7 +473,18 @@ class mnuRibbon(RB.RibbonBar):
     #   Gap fill
     # ###################################
     def onGapFill(self, event):
-        self.parent.getRecordService().fill_gap(30, 'minute')
+
+        gap_fill = frmGapFill(self.parent, self.parent.getRecordService())
+
+        if gap_fill.Show() == wx.OK:
+            gap_fill.Destroy()
+
+
+
+
+
+
+
         event.Skip()
     # ###################################
     #   Delete Point
