@@ -122,14 +122,9 @@ class frmODMToolsMain(wx.Frame):
 
     def _init_database(self, quit_if_cancel=True):
         logger.info("Loading Database...")
-
-
-
         while True:
             ## Database connection is valid, therefore proceed through the rest of the program
             if self.service_manager.is_valid_connection():
-                conn_dict = None
-
                 series_service = self.createService()
                 conn_dict = self.service_manager.get_current_conn_dict()
 

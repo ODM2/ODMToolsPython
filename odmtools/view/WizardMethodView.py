@@ -1,9 +1,13 @@
 import wx
+import wx.lib.scrolledpanel
 
 
-class WizardMethodView(wx.Panel):  # Rename this to page method view
+class WizardMethodView(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
+
+        # content_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
+        # content_panel.SetupScrolling()
 
         # Create components
         header_text = wx.StaticText(self, label="Method")
@@ -15,11 +19,11 @@ class WizardMethodView(wx.Panel):  # Rename this to page method view
         method_name_text = wx.StaticText(self, label="Method Name")
         self.method_name_text_ctrl = wx.TextCtrl(self)
         method_type_text = wx.StaticText(self, label="Method Type")
-        self.method_type_combo = wx.ComboBox(self)
+        self.method_type_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY | wx.CB_SORT)
 
         optional_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Optional Fields"), orient=wx.VERTICAL)
         organization_text = wx.StaticText(self, label="Organization")
-        self.organization_text_ctrl = wx.TextCtrl(self)
+        self.organization_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY | wx.CB_SORT)
         method_link_text = wx.StaticText(self, label="Method Link")
         self.method_link_text_ctrl = wx.TextCtrl(self)
         description_text = wx.StaticText(self, label="Description")
@@ -28,6 +32,8 @@ class WizardMethodView(wx.Panel):  # Rename this to page method view
         # Style Components
         font = wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD)
         header_text.SetFont(font)
+        self.method_type_combo.SetSelection(0)
+        self.organization_combo.SetSelection(0)
 
         # Add components to sizer
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -47,7 +53,7 @@ class WizardMethodView(wx.Panel):  # Rename this to page method view
 
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
         row_sizer.Add(organization_text, 0, wx.EXPAND)
-        row_sizer.Add(self.organization_text_ctrl, 1, wx.EXPAND | wx.LEFT, 27)
+        row_sizer.Add(self.organization_combo, 1, wx.EXPAND | wx.LEFT, 27)
         optional_static_box_sizer.Add(row_sizer, 0, wx.EXPAND | wx.ALL, 5)
 
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
