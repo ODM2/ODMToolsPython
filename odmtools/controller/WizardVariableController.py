@@ -10,8 +10,14 @@ class WizardVariableController(WizardPageSimple):
         self.service_manager = service_manager
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.variable_view = WizardVariableView(self)
-        main_sizer.Add(self.variable_view, 1, wx.EXPAND | wx.ALL, 0)
+        main_sizer.Add(self.variable_view, 1, wx.EXPAND | wx.RIGHT, -16)
         self.SetSizer(main_sizer)
+
+        table_columns = ["Code", "Name", "Speciation", "Units",
+                         "Sample Medium", "Value Type", "IsRegular", "Time Support",
+                         "Time Units", "DataType", "Genaral Category", "NoDataValue"]
+        self.variable_view.variable_table.set_columns(table_columns)
+
         self.__fetch_data()
 
     def __fetch_data(self):

@@ -9,9 +9,10 @@ class WizardMethodController(WizardPageSimple):
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.method_view = WizardMethodView(self)
-        main_sizer.Add(self.method_view, 1, wx.EXPAND | wx.ALL, 0)
+        main_sizer.Add(self.method_view, 1, wx.EXPAND | wx.RIGHT, -16)  # Sufficient to hide the scroll bar
         self.SetSizer(main_sizer)
 
         self.series = series
-
+        table_columns = ["Descriptions", "Link", "ID"]
+        self.method_view.existing_method_table.set_columns(table_columns)
         self.method_view.method_type_combo.AppendItems(["ABC"])

@@ -1,13 +1,18 @@
 import wx
+import wx.lib.scrolledpanel
+from odmtools.view.CustomListCtrl import CustomListCtrl
 
 
-class WizardProcessLevelView(wx.Panel):
+class WizardProcessLevelView(wx.lib.scrolledpanel.ScrolledPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        wx.lib.scrolledpanel.ScrolledPanel.__init__(self, parent)
 
         # Create components
         header_text = wx.StaticText(self, label="Processing Level")
         static_line = wx.StaticLine(self, size=(-1, 12))
+        self.existing_process_radio = wx.RadioButton(self, label="Select an existing Processing Level")
+        self.existing_process_table = CustomListCtrl(self)
+        self.create_process_level_radio = wx.RadioButton(self, label="Create Processing Level")
         required_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Required Fields"), orient=wx.VERTICAL)
         level_code = wx.StaticText(self, label="Processing Level Code")
         self.level_code_text_ctrl = wx.TextCtrl(self)
@@ -20,6 +25,7 @@ class WizardProcessLevelView(wx.Panel):
         # Style components
         font = wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD)
         header_text.SetFont(font)
+        self.SetupScrolling()
 
         # Add components to sizer
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -40,6 +46,9 @@ class WizardProcessLevelView(wx.Panel):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         main_sizer.Add(header_text, 0, wx.ALIGN_CENTER | wx.ALL, 5)
         main_sizer.Add(static_line, 0, wx.EXPAND | wx.TOP, 5)
+        main_sizer.Add(self.existing_process_radio, 0, wx.EXPAND | wx.TOP, 10)
+        main_sizer.Add(self.existing_process_table, 0, wx.EXPAND | wx.TOP, 10)
+        main_sizer.Add(self.create_process_level_radio, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(required_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(optional_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         self.SetSizer(main_sizer)

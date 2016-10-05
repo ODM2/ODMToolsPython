@@ -1,17 +1,19 @@
 import wx
 import wx.lib.scrolledpanel
+from odmtools.view.CustomListCtrl import CustomListCtrl
 
 
-class WizardMethodView(wx.Panel):
+class WizardMethodView(wx.lib.scrolledpanel.ScrolledPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
-
-        # content_panel = wx.lib.scrolledpanel.ScrolledPanel(self)
-        # content_panel.SetupScrolling()
+        wx.lib.scrolledpanel.ScrolledPanel.__init__(self, parent)
 
         # Create components
         header_text = wx.StaticText(self, label="Method")
         static_line = wx.StaticLine(self, size=(-1, 12))
+        self.auto_method_radio = wx.RadioButton(self, label="Automatically generate a method")
+        self.existing_method_radio = wx.RadioButton(self, label="Select an existing method")
+        self.existing_method_table = CustomListCtrl(self)
+        self.create_method_radio = wx.RadioButton(self, label="Create a new method")
 
         required_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Required Fields"), orient=wx.VERTICAL)
         method_code_text = wx.StaticText(self, label="Method Code")
@@ -34,6 +36,7 @@ class WizardMethodView(wx.Panel):
         header_text.SetFont(font)
         self.method_type_combo.SetSelection(0)
         self.organization_combo.SetSelection(0)
+        self.SetupScrolling()
 
         # Add components to sizer
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -69,6 +72,10 @@ class WizardMethodView(wx.Panel):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         main_sizer.Add(header_text, 0, wx.ALIGN_CENTER | wx.ALL, 5)
         main_sizer.Add(static_line, 0, wx.EXPAND | wx.TOP, 5)
+        main_sizer.Add(self.auto_method_radio, 0, wx.EXPAND | wx.TOP, 10)
+        main_sizer.Add(self.existing_method_radio, 0, wx.EXPAND | wx.TOP, 5)
+        main_sizer.Add(self.existing_method_table, 0, wx.EXPAND | wx.TOP, 5)
+        main_sizer.Add(self.create_method_radio, 0, wx.EXPAND | wx.TOP, 5)
         main_sizer.Add(required_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(optional_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         self.SetSizer(main_sizer)
