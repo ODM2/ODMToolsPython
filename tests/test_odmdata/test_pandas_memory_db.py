@@ -10,7 +10,7 @@ Sample ODM Database connection and data insertion for unittesting against
 
 class TestPandasMemoryDB:
     """
-    Test to Load up a series from a dataframe and load it into an in memory database
+    Test to Load up a series_service from a dataframe and load it into an in memory database
     """
     def setup(self):
         self.connection_string = "sqlite:///:memory:"

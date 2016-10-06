@@ -19,7 +19,7 @@ class EditTools():
         self._record = record
         self._serv_man = parent
 
-        self._edit_error = "no series selected for editing"
+        self._edit_error = "no series_service selected for editing"
         self._add_point_req_error = "A required field was left empty"
         self._add_point_format_error = "A date is not formatted correctly"
 

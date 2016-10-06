@@ -33,7 +33,7 @@ class TestPlotProbability:
         self.series = add_series(self.session)
         print "Series: ", self.series
         self.memory_db.initEditValues(self.series.id)
-        # add_bulk_data_values(self.session, self.series)
+        # add_bulk_data_values(self.session, self.series_service)
 
 
     def test_onPlotType(self):

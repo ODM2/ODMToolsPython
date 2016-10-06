@@ -85,7 +85,7 @@ class Series(Base):
                                            "DataValue.quality_control_level_id == Series.quality_control_level_id)",
                                foreign_keys="[DataValue.site_id, DataValue.variable_id, DataValue.method_id, DataValue.source_id, DataValue.quality_control_level_id]",
                                order_by="DataValue.local_date_time",
-                               backref="series")
+                               backref="series_service")
 
     site = relationship(Site)
     variable = relationship(Variable)

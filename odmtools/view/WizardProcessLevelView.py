@@ -11,7 +11,8 @@ class WizardProcessLevelView(wx.lib.scrolledpanel.ScrolledPanel):
         header_text = wx.StaticText(self, label="Processing Level")
         static_line = wx.StaticLine(self, size=(-1, 12))
         self.existing_process_radio = wx.RadioButton(self, label="Select an existing Processing Level")
-        self.existing_process_table = CustomListCtrl(self)
+        table_panel = wx.Panel(self)
+        self.existing_process_table = CustomListCtrl(table_panel)
         self.create_process_level_radio = wx.RadioButton(self, label="Create Processing Level")
         required_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Required Fields"), orient=wx.VERTICAL)
         level_code = wx.StaticText(self, label="Processing Level Code")
@@ -28,6 +29,10 @@ class WizardProcessLevelView(wx.lib.scrolledpanel.ScrolledPanel):
         self.SetupScrolling()
 
         # Add components to sizer
+        table_sizer = wx.BoxSizer(wx.VERTICAL)
+        table_sizer.Add(self.existing_process_table, 0, wx.EXPAND | wx.ALL, 0)
+        table_panel.SetSizerAndFit(table_sizer)
+
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
         row_sizer.Add(level_code, 0, wx.EXPAND)
         row_sizer.Add(self.level_code_text_ctrl, 1, wx.EXPAND | wx.LEFT, 30)
@@ -47,7 +52,7 @@ class WizardProcessLevelView(wx.lib.scrolledpanel.ScrolledPanel):
         main_sizer.Add(header_text, 0, wx.ALIGN_CENTER | wx.ALL, 5)
         main_sizer.Add(static_line, 0, wx.EXPAND | wx.TOP, 5)
         main_sizer.Add(self.existing_process_radio, 0, wx.EXPAND | wx.TOP, 10)
-        main_sizer.Add(self.existing_process_table, 0, wx.EXPAND | wx.TOP, 10)
+        main_sizer.Add(table_panel, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(self.create_process_level_radio, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(required_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(optional_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)

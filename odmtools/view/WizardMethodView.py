@@ -12,7 +12,8 @@ class WizardMethodView(wx.lib.scrolledpanel.ScrolledPanel):
         static_line = wx.StaticLine(self, size=(-1, 12))
         self.auto_method_radio = wx.RadioButton(self, label="Automatically generate a method")
         self.existing_method_radio = wx.RadioButton(self, label="Select an existing method")
-        self.existing_method_table = CustomListCtrl(self)
+        table_panel = wx.Panel(self)
+        self.existing_method_table = CustomListCtrl(table_panel)
         self.create_method_radio = wx.RadioButton(self, label="Create a new method")
 
         required_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Required Fields"), orient=wx.VERTICAL)
@@ -39,6 +40,10 @@ class WizardMethodView(wx.lib.scrolledpanel.ScrolledPanel):
         self.SetupScrolling()
 
         # Add components to sizer
+        table_sizer = wx.BoxSizer()
+        table_sizer.Add(self.existing_method_table, 0, wx.EXPAND | wx.ALL, 0)
+        table_panel.SetSizerAndFit(table_sizer)
+
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
         row_sizer.Add(method_code_text, 0, wx.EXPAND)
         row_sizer.Add(self.method_code_text_ctrl, 1, wx.EXPAND | wx.LEFT, 24)
@@ -74,7 +79,7 @@ class WizardMethodView(wx.lib.scrolledpanel.ScrolledPanel):
         main_sizer.Add(static_line, 0, wx.EXPAND | wx.TOP, 5)
         main_sizer.Add(self.auto_method_radio, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(self.existing_method_radio, 0, wx.EXPAND | wx.TOP, 5)
-        main_sizer.Add(self.existing_method_table, 0, wx.EXPAND | wx.TOP, 5)
+        main_sizer.Add(table_panel, 0, wx.EXPAND | wx.TOP, 5)
         main_sizer.Add(self.create_method_radio, 0, wx.EXPAND | wx.TOP, 5)
         main_sizer.Add(required_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(optional_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)

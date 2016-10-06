@@ -200,7 +200,7 @@ class MemoryDatabase(object):
         :return: nothing
         """
         if not self.editLoaded:
-            logger.debug("Load series from db")
+            logger.debug("Load series_service from db")
 
             self.df = self.series_service.get_values_by_series(seriesID)
             self.editLoaded = True
@@ -218,7 +218,7 @@ class MemoryDatabase(object):
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
             else:
-                logger.debug("no data in series")
+                logger.debug("no data in series_service")
 
     def changeSeriesIDs(self, var=None, qcl=None, method=None):
         """

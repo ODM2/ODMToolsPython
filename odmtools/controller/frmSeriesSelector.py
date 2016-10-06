@@ -61,7 +61,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.Layout()
 
     def initTableSeries(self):
-        """Set up columns and objects to be used in the objectlistview to be visible in the series selector
+        """Set up columns and objects to be used in the objectlistview to be visible in the series_service selector
 
         :return:
         """
@@ -80,7 +80,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             #self.tblSeries.SaveObject(object)
 
     def refreshTableSeries(self, db):
-        """ Refreshes the objectlistview to include newly saved database series and preserve which series was 'checked'
+        """ Refreshes the objectlistview to include newly saved database series_service and preserve which series_service was 'checked'
         for plotting/editing
 
         :return:
@@ -474,7 +474,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
 
     def onReadyToPlot(self, event):
-        """Plots a series selected from the series selector
+        """Plots a series_service selected from the series_service selector
 
         :param event: EVT_OVL_CHECK_EVENT type
         """
@@ -529,7 +529,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
 
     def onReadyToEdit(self):
-        """Choose a series to edit from the series selector
+        """Choose a series_service to edit from the series_service selector
 
         :return:
         """
@@ -565,8 +565,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             return True, object.id#, self.memDB
         else:
             isSelected = False
-            logger.debug("series was not checked")
-            val_2 = wx.MessageBox("Visualization is limited to 6 series.", "Can't add plot",
+            logger.debug("series_service was not checked")
+            val_2 = wx.MessageBox("Visualization is limited to 6 series_service.", "Can't add plot",
                                   wx.OK | wx.ICON_INFORMATION)
 
 

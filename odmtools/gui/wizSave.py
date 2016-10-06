@@ -145,8 +145,8 @@ class MethodPage(wiz.WizardPageSimple):
 #
 #         self._init_data(self.panel.series_service)
 #
-#     def _init_data(self, series):
-#         meth = series.get_all_methods()
+#     def _init_data(self, series_service):
+#         meth = series_service.get_all_methods()
 #         index = 0
 #         for m, i in zip(meth, range(len(meth))):
 #             num_items = self.panel.lstMethods.GetItemCount()
@@ -270,7 +270,7 @@ class wizSave(wx.wizard.Wizard):
         # self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
         self.pgMethod = WizardMethodController(self, self.series_service)
         # self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
-        self.pgQCL = WizardProcessLevelController(self)
+        self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager)
         # self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
         self.pgVariable = WizardVariableController(self, service_manager=service_manager)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
@@ -363,7 +363,7 @@ class wizSave(wx.wizard.Wizard):
             if self.pgExisting.pnlExisting.rbAppend.GetValue():
                 keyword = "append to"
 
-            message = "You are about to " + keyword + " an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
+            message = "You are about to " + keyword + " an existing series_service,\nthis action cannot be undone.\nWould you like to continue?\n"
             cont = wx.MessageBox(message, 'Are you sure?', wx.YES_NO | wx.ICON_QUESTION)
             if cont == 2:
                 closeSuccessful = True

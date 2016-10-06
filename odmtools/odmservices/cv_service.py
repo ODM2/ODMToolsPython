@@ -54,6 +54,7 @@ class CVService(): # Rename to ReadService
     def get_speciation_cvs(self):
         result = self._edit_session.query(SpeciationCV).order_by(SpeciationCV.term).all()
         return result
+        # return self.read_service.getCVs(type="Speciation") # Returns Error running Query,
 
     def get_sample_medium_cvs(self):
         result = self._edit_session.query(SampleMediumCV).order_by(SampleMediumCV.term).all()

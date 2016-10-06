@@ -18,7 +18,7 @@ class TestSeriesService:
         self.session = self.memory_database.series_service._session_factory.getSession()
 
         self.series = test_util.add_series_bulk_data(self.session)
-        #assert len(self.series.data_values) == 100
+        #assert len(self.series_service.data_values) == 100
 
         self.edit_service =EditService(1, connection= self.memory_database)
 
@@ -90,7 +90,7 @@ class TestSeriesService:
         #TODO add custon test
 
         len1= len(self.series.data_values)
-        # keep data from original series if overlap:
+        # keep data from original series_service if overlap:
 
 
         svalue = self.series.data_values[0]

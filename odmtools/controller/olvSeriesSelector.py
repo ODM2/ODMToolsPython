@@ -52,7 +52,7 @@ class clsSeriesTable(FastObjectListView):
             for key, value in series.returnDict().iteritems()]
         self.SetColumns(seriesColumns)
 
-    """User can select series using the mouse to click on check boxes """
+    """User can select series_service using the mouse to click on check boxes """
 
     def _HandleLeftDownOnImage(self, rowIndex, subItemIndex):
         """
@@ -80,7 +80,7 @@ class clsSeriesTable(FastObjectListView):
 
                     self.RefreshIndex(rowIndex, modelObject)
                 else:
-                    wx.MessageBox("Visualization is limited to {0} series.".format(self.allowedLimit), "Can't add plot",
+                    wx.MessageBox("Visualization is limited to {0} series_service.".format(self.allowedLimit), "Can't add plot",
                                   wx.OK | wx.ICON_INFORMATION)
             else:
                 if checkedlen > 0:

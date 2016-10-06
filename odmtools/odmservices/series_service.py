@@ -274,7 +274,7 @@ class SeriesService():  # Rename to CreateService
     # Series Catalog methods
     def get_all_series(self):
         """
-        Returns all series as a modelObject
+        Returns all series_service as a modelObject
         :return: List[Series]
         """
 
@@ -528,7 +528,7 @@ class SeriesService():  # Rename to CreateService
                 self._edit_session.rollback()
                 raise e
 
-        logger.info("A new series was added to the database, series id: "+str(series.id))
+        logger.info("A new series_service was added to the database, series_service id: "+str(series.id))
         return True
 
     def save_values(self, values):
@@ -541,7 +541,7 @@ class SeriesService():  # Rename to CreateService
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
         """
-        series -> Result in ODM2
+        series_service -> Result in ODM2
         :param data_values:
         :param site_id:
         :param variable_id:
@@ -671,7 +671,7 @@ class SeriesService():  # Rename to CreateService
             self._edit_session.delete(delete_series)
             self._edit_session.commit()
         except Exception as e:
-            message = "series was not successfully deleted: %s" % e
+            message = "series_service was not successfully deleted: %s" % e
             print message
             logger.error(message)
             raise e
@@ -690,7 +690,7 @@ class SeriesService():  # Rename to CreateService
                                                                  source_id = series.source_id,
                                                                  quality_control_level_id = series.quality_control_level_id)
             if startdate is not None:
-                #start date indicates what day you should start deleting values. the values will delete to the end of the series
+                #start date indicates what day you should start deleting values. the values will delete to the end of the series_service
                 return q.filter(DataValue.local_date_time >= startdate).delete()
             else:
                 return q.delete()

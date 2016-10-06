@@ -209,18 +209,18 @@ class TestSeriesService:
 
     '''
     def test_save_series(self):
-        series = Series()
+        series_service = Series()
         site = test_util.add_site(self.session)
         variable = test_util.add_variable(self.session)
         method = test_util.add_method(self.session)
         source = test_util.add_source(self.session)
         qcl = test_util.add_qcl(self.session)
 
-        series.site_id = site.id
-        series.variable_id = variable.id
-        series.method_id = method.id
-        series.source_id = source.id
-        series.quality_control_level_id = qcl.id
+        series_service.site_id = site.id
+        series_service.variable_id = variable.id
+        series_service.method_id = method.id
+        series_service.source_id = source.id
+        series_service.quality_control_level_id = qcl.id
 
         dvs = []
         for val in range(10):
@@ -233,10 +233,10 @@ class TestSeriesService:
             dv.quality_control_level_id = qcl.id
             dvs.append(dv)
 
-        print series.variable_code
-        assert self.series_service.save_series(series)
+        print series_service.variable_code
+        assert self.series_service.save_series(series_service)
         assert self.series_service.series_exists(site.id, variable.id, method.id, source.id, qcl.id)
-        assert not self.series_service.save_series(series)
+        assert not self.series_service.save_series(series_service)
     '''
 
     def test_get_data_value_by_id(self):

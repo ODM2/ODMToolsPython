@@ -13,7 +13,7 @@ def build_db(engine):
 
 def add_bulk_data_values(session, series, dvs_size):
     """
-    Load up exampleData.csv into a series' datavalues field
+    Load up exampleData.csv into a series_service' datavalues field
     """
     assert 10000 >= dvs_size > 0
     path = os.path.dirname(os.path.realpath(__file__))
