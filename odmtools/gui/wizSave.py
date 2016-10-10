@@ -238,9 +238,9 @@ class wizSave(wx.wizard.Wizard):
 
         if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             logger.debug("SaveAs")
-            method = self.pgMethod.panel.getMethod()
-            qcl = self.pgQCL.panel.getQCL()
-            variable = self.pgVariable.panel.getVariable()
+            method = self.pgMethod.getMethod()
+            qcl = self.pgQCL.getQCL()
+            variable = self.pgVariable.get_variable()
         elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
             logger.debug("Save")
             method = self.currSeries.method
@@ -272,7 +272,8 @@ class wizSave(wx.wizard.Wizard):
         # self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
         self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager)
         # self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
-        self.pgVariable = WizardVariableController(self, service_manager=service_manager)
+        self.pgVariable = WizardVariableController(self, service_manager=service_manager,
+                                                   current_variable=self.currSeries.variable)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
@@ -302,7 +303,6 @@ class wizSave(wx.wizard.Wizard):
         self.Destroy()
 
     def on_page_changed(self, event):
-        #if  isinstance(event.Page, pageSummary.pnlSummary):
         if event.Page == self.pgSummary:
             self.pgSummary.fill_summary()
 

@@ -172,5 +172,6 @@ class CustomListCtrl(wx.ListCtrl):
             for j in range(len(data[i])):
                 self.SetStringItem(index, j, str(data[i][j]))
 
+        self.Select(0)
         self.auto_size_table()
         self.alternate_row_color()

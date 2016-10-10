@@ -14,7 +14,7 @@ class WizardVariableView(wx.lib.scrolledpanel.ScrolledPanel):
         self.current_variable_radio = wx.RadioButton(self, label="Use current variable")
         self.variable_table = CustomListCtrl(table_panel)
         self.existing_variable_radio = wx.RadioButton(self, label="Select an existing variable")
-
+        self.create_variable_radio = wx.RadioButton(self, label="Create new variable")
         required_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Required Fields"), orient=wx.VERTICAL)
         variable_code_text = wx.StaticText(self, label="Variable Code")
         self.variable_code_text_ctrl = wx.TextCtrl(self)
@@ -38,6 +38,7 @@ class WizardVariableView(wx.lib.scrolledpanel.ScrolledPanel):
         self.speciation_combo.SetSelection(0)
         self.variable_type_combo.SetSelection(0)
         self.SetupScrolling()
+        self.current_variable_radio.SetValue(True)
 
         # Add components to sizer
         table_sizer = wx.BoxSizer()
@@ -80,6 +81,7 @@ class WizardVariableView(wx.lib.scrolledpanel.ScrolledPanel):
         main_sizer.Add(self.current_variable_radio, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(self.existing_variable_radio, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(table_panel, 0, wx.EXPAND | wx.TOP, 10)
+        main_sizer.Add(self.create_variable_radio, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(required_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         main_sizer.Add(optional_static_box_sizer, 0, wx.EXPAND | wx.TOP, 10)
         self.SetSizer(main_sizer)
