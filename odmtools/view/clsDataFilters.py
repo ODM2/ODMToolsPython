@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 
-# ##########################################################################
-# # Python code generated with wxFormBuilder (version Feb 26 2014)
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun  5 2014)
 ## http://www.wxformbuilder.org/
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
@@ -11,17 +11,15 @@ import wx
 import wx.xrc
 import wx.lib.masked as masked
 
+
 ###########################################################################
 ## Class clsDataFilters
 ###########################################################################
 
 class clsDataFilters(wx.Dialog):
-
-
     def __init__(self, parent):
-
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=u"Data Filter", pos=wx.Point(599, 384),
-                           size=wx.Size(382, 500), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+                           size=wx.Size(382, 547), style=wx.DEFAULT_DIALOG_STYLE)
 
         self.SetSizeHintsSz(wx.Size(358, 452), wx.DefaultSize)
 
@@ -55,16 +53,16 @@ class clsDataFilters(wx.Dialog):
         self.txtThreshValLT = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(248, -1), 0)
         fgSizer1.Add(self.txtThreshValLT, 1, wx.ALL | wx.EXPAND, 5)
 
-        sbThreshold.Add(fgSizer1, 0, wx.EXPAND, 5)
+        sbThreshold.Add(fgSizer1, 1, wx.EXPAND, 5)
 
-        bsValueThresh.Add(sbThreshold, 1, 0, 5)
+        bsValueThresh.Add(sbThreshold, 1, wx.EXPAND, 5)
 
         bSizer3.Add(bsValueThresh, 1, wx.EXPAND, 5)
 
         bsGaps = wx.BoxSizer(wx.HORIZONTAL)
 
         self.rbDataGaps = wx.RadioButton(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
-        bsGaps.Add(self.rbDataGaps, 1, wx.ALL, 5)
+        bsGaps.Add(self.rbDataGaps, 0, wx.ALL, 5)
 
         sbGaps = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, u"Data Gaps"), wx.VERTICAL)
 
@@ -76,7 +74,7 @@ class clsDataFilters(wx.Dialog):
         self.lblGapsVal.Wrap(-1)
         fgSizer2.Add(self.lblGapsVal, 0, wx.ALL, 5)
 
-        self.txtGapsVal = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(230, -1), 0)
+        self.txtGapsVal = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(220, -1), 0)
         fgSizer2.Add(self.txtGapsVal, 0, wx.ALL, 5)
 
         self.lblGapsTime = wx.StaticText(self, wx.ID_ANY, u"Time Period:", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -84,15 +82,15 @@ class clsDataFilters(wx.Dialog):
         fgSizer2.Add(self.lblGapsTime, 0, wx.ALL, 5)
 
         cbGapTimeChoices = [u"second", u"minute", u"hour", u"day"]
-        self.cbGapTime = wx.ComboBox(self, wx.ID_ANY, u"second", wx.DefaultPosition, wx.Size(230, -1), cbGapTimeChoices,
+        self.cbGapTime = wx.ComboBox(self, wx.ID_ANY, u"second", wx.DefaultPosition, wx.Size(220, -1), cbGapTimeChoices,
                                      wx.CB_READONLY)
         fgSizer2.Add(self.cbGapTime, 0, wx.ALL, 5)
 
         sbGaps.Add(fgSizer2, 1, wx.EXPAND, 5)
 
-        bsGaps.Add(sbGaps, 0, 0, 5)
+        bsGaps.Add(sbGaps, 1, wx.EXPAND, 5)
 
-        bSizer3.Add(bsGaps, 0, 0, 5)
+        bSizer3.Add(bsGaps, 1, wx.EXPAND, 5)
 
         bsDate = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -134,13 +132,14 @@ class clsDataFilters(wx.Dialog):
         self.tpBefore = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(80, -1),
                                         name="24 hour control",
                                         fmt24hr=True, spinButton=self.sbBefore, oob_color='White')
-        fgSizer3.Add( self.tpBefore, 0, wx.ALL, 5 )
-        fgSizer3.Add( self.sbBefore, 0, wx.ALL, 5 )
+        fgSizer3.Add(self.tpBefore, 0, wx.ALL, 5)
+        fgSizer3.Add(self.sbBefore, 0, wx.ALL, 5)
+
         sbDate.Add(fgSizer3, 1, wx.EXPAND, 5)
 
-        bsDate.Add( sbDate, 1, wx.EXPAND, 5 )
+        bsDate.Add(sbDate, 1, wx.EXPAND, 5)
 
-        bSizer3.Add(bsDate, 0, wx.EXPAND, 5)
+        bSizer3.Add(bsDate, 1, wx.EXPAND, 5)
 
         bsValChange = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -169,13 +168,16 @@ class clsDataFilters(wx.Dialog):
 
         sbValChange.Add(fgSizer4, 1, wx.EXPAND, 5)
 
-        bsValChange.Add(sbValChange, 1, 0, 5)
+        bsValChange.Add(sbValChange, 1, wx.EXPAND, 5)
 
         bSizer3.Add(bsValChange, 1, wx.EXPAND, 5)
 
+        self.rbDuplicate = wx.RadioButton(self, wx.ID_ANY, u"   Duplicate Values", wx.Point(10, 8), wx.DefaultSize, 0)
+        bSizer3.Add(self.rbDuplicate, 0, wx.ALL, 5)
+
         self.chkToggleFilterSelection = wx.CheckBox(self, wx.ID_ANY, u"Filter from previous filter", wx.DefaultPosition,
                                                     wx.DefaultSize, 0)
-        bSizer3.Add(self.chkToggleFilterSelection, 1, wx.ALL | wx.EXPAND, 5)
+        bSizer3.Add(self.chkToggleFilterSelection, 0, wx.ALL | wx.EXPAND, 5)
 
         bsButtons = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -191,14 +193,16 @@ class clsDataFilters(wx.Dialog):
         self.btnClear = wx.Button(self, wx.ID_ANY, u"Clear Filter", wx.DefaultPosition, wx.Size(64, 23), 0)
         bsButtons.Add(self.btnClear, 1, wx.ALL | wx.EXPAND, 5)
 
-        bSizer3.Add(bsButtons, 1, wx.EXPAND, 0)
+        bSizer3.Add(bsButtons, 0, wx.EXPAND, 0)
 
         bSizer1.Add(bSizer3, 1, wx.EXPAND, 5)
 
         self.SetSizer(bSizer1)
         self.Layout()
 
-        self.Centre(wx.BOTH)  # Connect Events
+        self.Centre(wx.BOTH)
+
+        # Connect Events
         self.txtThreshValGT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtThreshValLT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtGapsVal.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
@@ -212,28 +216,22 @@ class clsDataFilters(wx.Dialog):
         self.txtVChangeGT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.txtVChangeLT.Bind(wx.EVT_SET_FOCUS, self.onSetFocus)
         self.chkToggleFilterSelection.Bind(wx.EVT_CHECKBOX, self.onCheckBox)
-        self.btnClear.Bind(wx.EVT_BUTTON, self.onBtnClearButton)
         self.btnOK.Bind(wx.EVT_BUTTON, self.onBtnOKButton)
         self.btnCancel.Bind(wx.EVT_BUTTON, self.onBtnCancelButton)
         self.btnApply.Bind(wx.EVT_BUTTON, self.onBtnApplyButton)
+        self.btnClear.Bind(wx.EVT_BUTTON, self.onBtnClearButton)
 
 
     def __del__(self):
         pass
 
 
-        # Virtual event handlers, overide them in your derived class
-
-
+    # Virtual event handlers, overide them in your derived class
     def onSetFocus(self, event):
         event.Skip()
 
 
     def onCheckBox(self, event):
-        event.Skip()
-
-
-    def onBtnClearButton(self, event):
         event.Skip()
 
 
@@ -248,8 +246,14 @@ class clsDataFilters(wx.Dialog):
     def onBtnApplyButton(self, event):
         event.Skip()
 
+
+    def onBtnClearButton(self, event):
+        event.Skip()
+
+
+
     # self.dpAfter = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
-    #                                  wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+    # wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
     # fgSizer3.Add(self.dpAfter, 0, wx.ALL, 5)
     #
     # self.sbAfter = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), 0)

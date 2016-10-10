@@ -35,8 +35,8 @@ class pnlSummary(wx.Panel):
 
         self._init_sizers()
 
-    def __init__(self, parent, id, size, style, name, sm, pos= (0,0)):
-        self.series_service = sm.get_series_service()
+    def __init__(self, parent, id, size, style, name, ss, pos= (0,0)):
+        self.series_service = ss
         self._init_ctrls(parent)
 
 

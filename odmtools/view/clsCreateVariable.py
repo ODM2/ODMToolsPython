@@ -127,7 +127,7 @@ class clsCreateVariable(wx.Dialog):
         #fgSizer6.Add(self.txtGenCat, 0, wx.ALL | wx.EXPAND, 5)
 
         cbGenCatChoices = []
-        self.cbGenCat = wx.ComboBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, cbGenCatChoices, wx.CB_READONLY|wx.CB_SORT )
+        self.cbGenCat = wx.ComboBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, cbGenCatChoices, wx.CB_READONLY)#|wx.CB_SORT )#sort not supported by mac
         fgSizer6.Add( self.cbGenCat, 0, wx.ALL|wx.EXPAND, 5 )
 
         self.stNoDV = wx.StaticText(self, wx.ID_ANY, u"NoDataValue:", wx.DefaultPosition, wx.DefaultSize, 0)

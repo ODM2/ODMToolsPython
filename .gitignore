@@ -3,6 +3,7 @@
 *.so
 *.log
 __pycache__
+.cache
 htmlcov
 
 # Packages
@@ -62,7 +63,7 @@ setup/Output/setup.exe
 
 #folders
 Temp
+
 *.app
-*.spec
 
 

@@ -1,0 +1,20 @@
+name: odmtools
+channels:
+  - ioos
+dependencies:
+  - python=2.7
+  - matplotlib
+  - numpy
+  - pandas
+  - pip
+  - psycopg2
+  - pymysql
+  - pyparsing
+  - scipy
+  - sqlalchemy
+  - sqlite
+  - wheel
+  - wxpython
+  - pip:
+    - geoalchemy
+    - pyodbc

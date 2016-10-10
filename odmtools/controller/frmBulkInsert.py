@@ -8,7 +8,8 @@ import pandas as pd
 from pandas.parser import CParserError
 import csv
 import StringIO
-
+import logging
+logger =logging.getLogger('main')
 __author__ = 'Jacob'
 
 
@@ -63,11 +64,14 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                 8: str.strip,
                                 9: str.strip})
         except CParserError as e:
-            msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
-                                         "Please compare your csv with the template version as the file"
-                                         " you provided "
-                                         "doesn't work: %s" % e, 'Issue with csv', wx.OK | wx.ICON_WARNING |
+            message = "There was an issue trying to parse your file. "\
+                                         "Please compare your csv with the template version as the file"\
+                                         " you provided "\
+                                         "doesn't work: %s" % e
+            msg = wx.MessageDialog(None,message , 'Issue with csv', wx.OK | wx.ICON_WARNING |
                                    wx.OK_DEFAULT)
+
+            logger.info(message)
             value = msg.ShowModal()
             return False
         
@@ -96,11 +100,13 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
             except TypeError as e:
                 dlg.Destroy()
-                msg = wx.MessageDialog(None, "There was an issue trying to parse your file. "
-                                             "Please check to see if there could be more columns or"
-                                             " values than"
-                                             " the program expects",
+                message =  "There was an issue trying to parse your file. "\
+                                             "Please check to see if there could be more columns or"\
+                                             " values than"\
+                                             " the program expects"
+                msg = wx.MessageDialog(None, message,
                                        'Issue with csv', wx.OK | wx.ICON_WARNING | wx.OK_DEFAULT)
+                logger.info(message)
                 value = msg.ShowModal()
                 return False
 

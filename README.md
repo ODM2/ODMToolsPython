@@ -19,10 +19,10 @@ To make running ODMTools easier we have included installers. Please select the o
 
 ####Windows
 Recommended Release:
-+   [Window v1.2.0-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.0-Win/ODMTools_1.2.0_Beta_Win_Installer.exe)
++   [Window v1.2.5-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.5_beta/ODMTools_1.2.5_Beta_Win_Installer.exe)
 
 ####Mac
-+   [Mac v1.2.0-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.0-Win/ODMTools_1.2.0_Beta_Mac_Installer.pkg.zip)
++   [Mac v1.2.5-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.5_beta/ODMTools_v1.2.5-beta_Mac_installer.pkg.zip)
 
 ####Linux
 +   *Please run from source*
@@ -56,6 +56,24 @@ if psycopg2 isn't found, download it manually and follow these [directions](http
 Once you have downloaded the source code and all the dependencies installed, run the main application:
 
     python ODMTools.py
+
+if installing pyodbc onto a Mac machine please follow these instructions:
+
+pyodbc Configuration
+Download the source code ​[here](https://code.google.com/p/pyodbc/downloads/detail?name=pyodbc-3.0.7.zip&can=2&q=)​.
+Unzip the directory where ever you want.
+Edit ​setup.py​ within the pyodbc directory.
+Look for the line that says “OS/X now ships with iODBC.” Right underneath that, remove the letter i from the statement:
+
+    settings[‘libraries’].append(‘iodbc’)
+
+so that it reads:
+
+    settings[‘libraries’].append(‘odbc’)
+
+Now that the setup.py file is configured correctly, pyodbc is ready to be installed. From your virtual environment, do a pip install of pyodbc and use the modified package.
+
+    pip install -e PATH_TO_PYODBC
 
 
 Sponsors

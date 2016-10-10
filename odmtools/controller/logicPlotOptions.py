@@ -12,9 +12,9 @@ from odmtools.common.logger import LoggerTool
 
 import timeit
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 def calcSeason(x):
     x = int(x)
@@ -172,7 +172,7 @@ class SeriesPlotInfo(object):
         return len(self._seriesInfos)
 
     def update(self, key, isselected):
-        logger.debug("Begin generating plots")
+        logger.info("Begin generating plots")
         if not isselected:
             try:
                 self.colorList.append(self._seriesInfos[key].color)
@@ -214,7 +214,10 @@ class SeriesPlotInfo(object):
             series = self.memDB.series_service.get_series_by_id(seriesID)
             self.memDB.series_service.reset_session()
             return series
-        except Exception as e:
+
+        except Exception as e :
+            logger.error("Series Not Found %s"%e)
+
             return None
 
     def getSelectedSeries(self, seriesID):

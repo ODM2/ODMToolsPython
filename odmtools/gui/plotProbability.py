@@ -135,7 +135,7 @@ class plotProb(wx.Panel):
             if len(oneSeries.dataTable) > 0:
                 #self.prob.append(
                 #prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
-
+                #todo FutureWarning: order is deprecated, use sort_values(...)
                 xValues = oneSeries.Probability.xAxis.order().values
                 yValues = oneSeries.Probability.yAxis.order().values
 

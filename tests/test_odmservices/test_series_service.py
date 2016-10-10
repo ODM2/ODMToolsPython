@@ -11,6 +11,46 @@ class TestSeriesService:
         self.session = self.series_service._session_factory.get_session()
         engine = self.series_service._session_factory.engine
         test_util.build_db(engine)
+        """
+        @pytest.fixture(scope="class", autouse=True)
+    def build_db(self):
+        """
+        #Builds an empty sqlite (in-memory) database for testing
+        #:return: None
+        """
+        # path to the ddl script for building the database
+        ddlpath= abspath(join(dirname(__file__), 'data/empty.sql'))
+
+        # create and empty sqlite database for testing
+        db = dbconnection.createConnection('sqlite', ':memory:')
+
+        # read the ddl script and remove the first (BEGIN TRANSACTION) and last (COMMIT) lines
+        ddl = open(ddlpath, 'r').read()
+        ddl = ddl.replace('BEGIN TRANSACTION;','')
+        ddl = ddl.replace('COMMIT;','')
+
+        # execute each statement to build the odm2 database
+        for line in ddl.split(');')[:-1]:
+            try:
+                db.engine.execute(line + ');')
+            except Exception as e:
+                print e
+
+        self.write = CreateODM2(db)
+        self.engine= db.engine
+
+        globals['write'] = self.write
+        globals['engine'] = self.engine
+        globals['db'] = db
+        # return self.write, self.engine
+
+    def setup(self):
+
+        self.writer = globals['write']
+        self.engine = globals['engine']
+        self.db = globals['db']
+        """
+
 
     # def test_get_db_version(self):
     #     version = test_util.add_version(self.session)
@@ -29,6 +69,15 @@ class TestSeriesService:
         self.series_service.create_qualifier_by_qual(qual)
 
         assert qual.id is not None
+
+    def test_get_qualifier_by_code(self):
+        assert self.series_service.get_all_qualifiers() == []
+
+        qual= self.series_service.create_qualifier("ABC123","This is a test")
+
+        db_qual = self.series_service.get_qualifier_by_code("ABC123")
+
+        assert qual.id == db_qual.id
 
     def test_get_qualifiers(self):
         assert self.series_service.get_all_qualifiers() == []
@@ -237,7 +286,7 @@ class TestSeriesService:
         dvs = series.data_values
 
         subset = dvs[:5]
-        self.series_service.delete_dvs([x.id for x in subset])
+        self.series_service.delete_dvs([x.local_date_time for x in subset])
         assert self.series_service.get_data_value_by_id(subset[0].id) == None
         series = self.series_service.get_series_by_id(series.id)  # Reload
         assert len(series.data_values) == 5
@@ -323,6 +372,16 @@ class TestSeriesService:
         self.series_service.delete_series(series)
         assert self.series_service.get_series_by_id(series.id) == None
 
+    def test_delete_values(self):
+        series = test_util.add_series(self.session)
+        assert self.series_service.get_series_by_id(series.id) != None
+        self.series_service.delete_values_by_series(series)
+        val = self.series_service.get_series_by_id(series.id)
+        print val
+        assert val != None
+
+
+
     def test_qcl_exists(self):
         qcl = test_util.add_qcl(self.session)
         assert self.series_service.qcl_exists(qcl) == True
@@ -344,3 +403,4 @@ class TestSeriesService:
         variable.code = "00000"
         variable.name = "A new name"
         assert not self.series_service.variable_exists(variable)
+

@@ -5,9 +5,9 @@ from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
 
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class EditTools():
     # Script header (imports etc.) will be set up in Main when record is clicked.
@@ -63,6 +63,13 @@ class EditTools():
         self.refresh_selection()
         if self._record:
             self._script("edit_service.change_value_threshold(%s,'%s')\n" % (value, operator), 'black')
+            Publisher.sendMessage("scroll")
+
+    def duplicate_value_filter(self):
+        self._edit_service.duplicate_value_filter()
+        self.refresh_selection()
+        if self._record:
+            self._script("edit_service.duplicate_value_filter()\n" , 'black')
             Publisher.sendMessage("scroll")
 
     def filter_from_previous(self, value):
@@ -257,6 +264,33 @@ class EditTools():
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
         return result
+
+    def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
+        """
+
+        :param var:
+        :param method:
+        :param qcl:
+        :param override:
+        :return:
+        """
+        result = self._edit_service.save_appending(var=var, method=method, qcl=qcl, overwrite= overwrite)
+        if result:
+            print "Save worked!"
+
+            if self._record:
+
+                self._script(
+                    "edit_service.save_appending(%s, %s, %s, " % self.saveFactory(var, method, qcl)+str(overwrite )+")\n",
+                    'black')
+                #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
+                Publisher.sendMessage("scroll")
+
+        else:
+            print "Save didn't work!"
+            #self._edit_service.restore()
+        return result
+
 
     def save_existing(self, var=None, method=None, qcl=None):
         """

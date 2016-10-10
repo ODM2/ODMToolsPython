@@ -11,13 +11,14 @@ from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmdata import SessionFactory, change_schema, ODM#, refreshDB
 
 
-from odmtools.common.logger import LoggerTool
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 
 class ServiceManager():
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, conn_dict = None):
         self.debug = debug
         f = self._get_file('r')
         self._conn_dicts = []
@@ -25,24 +26,28 @@ class ServiceManager():
         self._connection_format = "%s+%s://%s:%s@%s/%s"
 
         # Read all lines (connections) in the connection.cfg file
-        while True:
-            line = f.readline()
-            if not line:
-                break
-            else:
-                line = line.split()
-                #logger.debug(line)
 
-                if len(line) >= 5:
-                    line_dict = {}
+        if conn_dict is None:
+            while True:
+                line = f.readline()
+                if not line:
+                    break
+                else:
+                    line = line.split()
+                    #logger.debug(line)
 
-                    line_dict['engine'] = line[0]
-                    line_dict['user'] = line[1]
-                    line_dict['password'] = line[2]
-                    line_dict['address'] = line[3]
-                    line_dict['db'] = line[4]
-                    line_dict['version']=1.1 if len(line) == 5 else line[5]
-                    self._conn_dicts.append(line_dict)
+                    if len(line) >= 5:
+                        line_dict = {}
+
+                        line_dict['engine'] = line[0]
+                        line_dict['user'] = line[1]
+                        line_dict['password'] = line[2]
+                        line_dict['address'] = line[3]
+                        line_dict['db'] = line[4]
+                        self._conn_dicts.append(line_dict)
+        else:
+            self._conn_dicts.append(conn_dict)
+
 
 
         if len(self._conn_dicts) is not 0:
@@ -195,8 +200,9 @@ class ServiceManager():
     #     return CVService(SessionFactory(conn_string, self.debug))
 
     def get_edit_service(self, series_id, connection):
-        
-        return EditService(series_id, connection,  debug=self.debug)
+
+        return EditService(series_id, connection=connection,  debug=self.debug)
+
 
     def get_record_service(self, script, series_id, connection):
         return EditTools(self, script, self.get_edit_service(series_id, connection),
@@ -230,22 +236,53 @@ class ServiceManager():
         return config_file
 
     def _build_connection_string(self, conn_dict):
-        driver = ""
+
+        self._connection_format = "%s+%s://%s:%s@%s/%s"
+
         if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
             driver = "pyodbc"
-            quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'], conn_dict['password']))
+            quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'],
+                                                                                  conn_dict['password']))
+            # quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;DATABASE=%s' %
+            #                            (conn_dict['address'], conn_dict['user'], conn_dict['password'],conn_dict['db'],
+            #                             ))
             conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
-        
+
+        elif conn_dict['engine']=='sqlite':
+            connformat = "%s:///%s"
+            conn_string = connformat%(conn_dict['engine'], conn_dict['address'])
         else:
             if conn_dict['engine'] == 'mssql':
                 driver = "pyodbc"
+                conn = "%s+%s://%s:%s@%s/%s?driver=SQL+Server"
+                if "sqlncli11.dll" in os.listdir("C:\\Windows\\System32"):
+                    conn = "%s+%s://%s:%s@%s/%s?driver=SQL+Server+Native+Client+11.0"
+                self._connection_format = conn
+                conn_string = self._connection_format % (
+                    conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
+                    conn_dict['db'])
             elif conn_dict['engine'] == 'mysql':
                 driver = "pymysql"
+                conn_string = self.constringBuilder(conn_dict, driver)
             elif conn_dict['engine'] == 'postgresql':
                 driver = "psycopg2"
+                conn_string = self.constringBuilder(conn_dict, driver)
             else:
                 driver = "None"
+                conn_string = self.constringBuilder(conn_dict, driver)
 
+
+        # print "******", conn_string
+        return conn_string
+
+
+
+    def constringBuilder(self, conn_dict, driver):
+        if conn_dict['password'] is None or not conn_dict['password']:
+            conn_string = self._connection_format_nopassword % (
+                conn_dict['engine'], driver, conn_dict['user'], conn_dict['address'],
+                conn_dict['db'])
+        else:
             conn_string = self._connection_format % (
                 conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
                 conn_dict['db'])

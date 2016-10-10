@@ -101,8 +101,8 @@ class TestAddPoints:
         ## Test order remains the same after removing
         size = 10000
         objects = self._buildObjects(size)
-        for i in objects:
-            print i.dataValue
+        # for i in objects:
+        #     print i.dataValue
         assert len(objects) == size
         tests = [1, 5, 25, 100, 150, 300, 600, 55, 9000]
 

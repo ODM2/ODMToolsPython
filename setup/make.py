@@ -154,23 +154,31 @@ def run_pyinstaller(console=False):
                 '--distpath=%s ' % WIN_DIR +
                 '--workpath=%s ' % WORK_DIR +
                 '--specpath=%s ' % WIN_DIR +
-                '--upx-dir=%s ' % BASE_DIR +
+                #'--upx-dir=%s ' % BASE_DIR +
+                '--noupx '
                 '--icon=%s ' % WIN_ICON_FILE +
                 '--version-file=%s ' % VERSION_FILE +
+                '--onedir '
+                # '--onefile ' +
+                '--exclude=
                 '--noconfirm ' + APP_FILE)
         else:
             ## Non Console Version
-            cmd = 'pyinstaller '+\
-                '--clean '+\
-                '--distpath=%s ' % WIN_DIR +\
-                '--workpath=%s ' % WORK_DIR +\
-                '--specpath=%s ' % WIN_DIR +\
-                '--upx-dir=%s ' % BASE_DIR +\
-                '--icon=%s ' % WIN_ICON_FILE +\
-                '--version-file=%s ' % VERSION_FILE +\
-                '--noconsole '+\
-                '--noconfirm ' + APP_FILE
-            val = os.system(cmd)
+
+            val = os.system('pyinstaller '
+                '--clean '
+                '--distpath=%s ' % WIN_DIR +
+                '--workpath=%s ' % WORK_DIR +
+                '--specpath=%s ' % WIN_DIR +
+                #'--upx-dir=%s ' % BASE_DIR +
+                '--noupx '
+                '--icon=%s ' % WIN_ICON_FILE +
+                '--onedir '
+                # '--onefile ' +
+                '--version-file=%s ' % VERSION_FILE +
+                '--noconsole '
+                '--noconfirm ' + APP_FILE)
+
 
         return True
     except Exception as e:
@@ -187,15 +195,12 @@ def mac_pyinstaller():
             '--upx-dir=%s ' % BASE_DIR +
             '--icon=%s ' % MAC_ICON_FILE +
             '--version-file=%s ' % VERSION_FILE +
-            '--windowed '
-            #'--onefile '
-            #'--hidden-import="libwx_osx_cocoau-3.0.0.0.0.dylib" '
+            '--windowed '#'--onefile '
             '--noconfirm ' + APP_FILE)
 
-
-        os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
-        # os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
         #copy "libwx_osx_cocoau-3.0.0.0.0.dylib"
+        os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
+
         return True
     except Exception as e:
         print (e)
@@ -215,8 +220,11 @@ def move_to_dist(filename):
         print (e)
 
 
-def run_inno():
-    os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
+def run_inno(script = None):
+    if script is not None:
+        os.system(INNO_EXECUTABLE + " " + script)
+    else:
+        os.system(INNO_EXECUTABLE + " " + INNO_SCRIPT)
 
 def run_no_installer():
     # Need to finish, Not functional
@@ -238,16 +246,17 @@ def main():
 
         print "Creating Windows Executable..."
         if run_pyinstaller():
-            INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_no_console.iss")
-            run_inno()
+
+            scriptpath = os.path.join(WIN_DIR, "odmtools_no_console.iss")
+            run_inno(script= scriptpath)
 
         print "Creating Windows Executable Console..."
         if run_pyinstaller(console=True):
-            INNO_SCRIPT = os.path.join(WIN_DIR, "odmtools_console.iss")
-            run_inno()
+            scriptpath = os.path.join(WIN_DIR, "odmtools_console.iss")
+            run_inno(scriptpath)
+
 
         print "Create No Installer "
-
         ## Create Shortcut
         ## Create File
         ## Zip Executable

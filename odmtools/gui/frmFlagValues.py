@@ -97,10 +97,15 @@ class frmFlagValues(wx.Dialog):
         self.series_service = series_service
 
         self.qualchoices = choices
-        if isNew:
+
+
+        #len choices added in cases where ther are no flags in the database
+        #desired functionality is to automatically select creation of new flag
+        if isNew or len(choices) ==0:
             self.selectedValue = NEW
             wx.CallAfter(self.showNewFields)
         else:
+
             self.selectedValue=choices.keys()[0]
 
 

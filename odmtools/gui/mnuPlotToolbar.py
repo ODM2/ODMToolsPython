@@ -6,14 +6,22 @@ from matplotlib.widgets import Lasso
 from matplotlib import path
 from matplotlib import dates
 
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
 from odmtools.common.icons.plotToolbar import back, filesave, select, scroll_right, \
     scroll_left, zoom_data, zoom_to_rect, subplots, forward, home, move
 
 
 
-tools = LoggerTool()
-logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+
+# tools = LoggerTool()
+# logger = tools.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
+
+import matplotlib.dates as mdates
+from matplotlib.lines import Line2D
+from matplotlib.text import Text
+from matplotlib import dates
+
 
 def bind(actor,event,action,id=None):
         if id is not None:
@@ -71,6 +79,20 @@ class MyCustomToolbar(NavigationToolbar):
                self.AddSimpleTool(self.wx_ids[text], image_file.GetBitmap(),
                                   text, tooltip_text)
             bind(self, wx.EVT_TOOL, getattr(self, callback), id=self.wx_ids[text])
+
+
+        #init hover tooltip
+
+        # create a long tooltip with newline to get around wx bug (in v2.6.3.3)
+        # where newlines aren't recognized on subsequent self.tooltip.SetTip() calls
+        self.tooltip = ToolTip(tip='tip with a long %s line and a newline\n')
+        self.canvas.SetToolTip(self.tooltip)
+        # self.tooltip.Enable(False)
+        self.tooltip.SetDelay(0)
+
+        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+
+
 
         self.Realize()
 
@@ -139,16 +161,24 @@ class MyCustomToolbar(NavigationToolbar):
         # enable select button
         self.xys = xys
         self.editCurve = edit
+        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.select_tool.Enable(True)
         self.zoom_to_data.Enable(True)
         self.Realize()
 
     def stopEdit(self):
+        try:
+            self.canvas.mpl_disconnect(self.pointPick)
+            self.pointPick = None
+        except AttributeError as e:
+            logger.error(e)
 
         self.canvas.mpl_disconnect(self.lassoAction)
         self.xys = None
         self.editCurve = None
         self.lassoAction = None
+        # untoggle select button
+        self.ToggleTool(self.select_tool.Id, False)
         # disable select button
         self.select_tool.Enable(False)
         self.zoom_to_data.Enable(False)
@@ -157,7 +187,7 @@ class MyCustomToolbar(NavigationToolbar):
         #self.ToggleTool(self.select_tool.Id, False)
 
 
-    # pan the graph to the left    
+    # pan the graph to the left
     def _on_custom_pan_left(self, evt):
         ONE_SCREEN = 7  # we default to 1 week
         axes = self.canvas.figure.axes[0]
@@ -248,6 +278,63 @@ class MyCustomToolbar(NavigationToolbar):
         self.canvas.draw()
 
 
+
+    def _onMotion(self, event):
+        """
+
+        :type event: matplotlib.backend_bases.MouseEvent
+        :return:
+        """
+        try:
+            if event.xdata and event.ydata:
+                xValue = dates.num2date(event.xdata).replace(tzinfo=None)
+                #self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%Y-%m-%d %H:%M:%S"), event.ydata))
+                #self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%b %d, %Y %H:%M:%S"), event.ydata))
+                self.toolbar.msg.SetLabelText("X= %s,  Y= %.2f" % (xValue.strftime("%b %d, %Y %H:%M"), event.ydata))
+                self.toolbar.msg.SetForegroundColour((66, 66, 66))
+            else:
+                self.toolbar.msg.SetLabelText("")
+        except ValueError:
+            pass
+
+    def _onPick(self, event):
+        """
+
+        :param event:
+        :return:
+        """
+
+        if isinstance(event.artist, Line2D):
+            thisline = event.artist
+            xdata = thisline.get_xdata()
+            ydata = thisline.get_ydata()
+            ind = event.ind
+
+            xValue = xdata[ind][0]
+            yValue = ydata[ind][0]
+            #tip = '(%s, %s)' % (xValue.strftime("%Y-%m-%d %H:%M:%S"), yValue)
+            #tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M:%S"), yValue)
+            tip = '(%s, %s)' % (xValue.strftime("%b %d, %Y %H:%M"), yValue)
+
+            self.tooltip.SetString(tip)
+            self.tooltip.Enable(True)
+            self.tooltip.SetAutoPop(10000)
+
+        elif isinstance(event.artist, Text):
+            text = event.artist
+            #print "Picking Label: ", text.get_text()
+
+    def _onFigureLeave(self, event):
+        """Catches mouse leaving the figure
+
+        :param event:
+        :return:
+        """
+
+        if self.tooltip.Window.Enabled:
+            self.tooltip.SetTip("")
+
+
 #must add these methods for mac functionality
     def release_zoom(self, event):
         super(self.__class__, self).release_zoom(event)
@@ -264,3 +351,58 @@ class MyCustomToolbar(NavigationToolbar):
     def home(self, event):
         super(self.__class__, self).home(event)
         self.canvas.draw()
+
+
+
+
+
+
+    def on_scroll_zoom(self, event):
+        axes = self.canvas.figure.axes[0]
+        base_scale = 1.2
+        # get the current x and y limits
+        cur_xlim = axes.get_xlim()
+        cur_ylim = axes.get_ylim()
+        cur_xrange = (cur_xlim[1] - cur_xlim[0])*.5
+        cur_yrange = (cur_ylim[1] - cur_ylim[0])*.5
+        xdata = event.xdata # get event x location
+        ydata = event.ydata # get event y location
+        if event.button == 'up':
+            # deal with zoom in
+            scale_factor = 1/base_scale
+        elif event.button == 'down':
+            # deal with zoom out
+            scale_factor = base_scale
+        else:
+            # deal with something that should never happen
+            scale_factor = 1
+            print event.button
+        # set new limits
+        axes.set_xlim([xdata - cur_xrange*scale_factor,
+                     xdata + cur_xrange*scale_factor])
+        axes.set_ylim([ydata - cur_yrange*scale_factor,
+                     ydata + cur_yrange*scale_factor])
+        self.canvas.draw() # force re-draw
+
+    # fig = ax.get_figure() # get the figure of interest
+    # attach the call back
+
+
+class ToolTip(wx.ToolTip):
+    """
+    a subclass of wx.Tooltip which can be disable on mac
+    """
+
+    def __init__(self, tip):
+        self.tooltip_string = tip
+        self.TooltipsEnabled = True
+        wx.ToolTip.__init__(self, tip)
+
+    def SetString(self, tip):
+        self.tooltip_string = tip
+
+    def Enable(self, x):
+        print ("in custom tooltip set enable")
+        if x: self.SetTip(self.tooltip_string)
+        else: self.SetTip("")
+

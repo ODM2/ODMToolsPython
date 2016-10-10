@@ -7,9 +7,9 @@ from odmtools.odmservices import SeriesService
 from odmtools.odmservices import ServiceManager
 from odmtools.odmdata import ODM
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class MemoryDatabase(object):
     ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
@@ -95,6 +95,11 @@ class MemoryDatabase(object):
         # self.mem_service._session_factory.engine.connect().connection.rollback()
         #self.updateDF()
 
+    #TODO is there a way to do a single rollback
+    def rollbacksingle(self):
+        pass
+
+
     def update(self, updates):
         '''
         updates : list of dictionary that contains 2 items, id and value
@@ -131,8 +136,12 @@ class MemoryDatabase(object):
         #self.updateDF()
 
     def chunking(self, data):
+        if not isinstance(data, list):
+            points = [data]
         return [data[x:x+998] for x in xrange(0, len(data), 998)]
-        
+
+
+
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)

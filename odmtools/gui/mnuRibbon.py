@@ -15,17 +15,17 @@ from frmFlagValues import frmFlagValues
 from odmtools.controller.frmLinearDrift import frmLinearDrift
 from odmtools.controller.frmAbout import frmAbout
 import wizSave
-from odmtools.common import *
+from odmtools.common.icons import *
 import pandas as pd
 
 
 # # Enable logging
 import logging
-from odmtools.common.logger import LoggerTool
-
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-##
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 [wxID_PANEL1, wxID_RIBBONPLOTTIMESERIES, wxID_RIBBONPLOTPROB, wxID_RIBBONPLOTHIST, wxID_RIBBONPLOTBOX,
  wxID_RIBBONPLOTSUMMARY, wxID_RIBBONPLOTTSTYPE, wxID_RIBBONPLOTTSCOLOR, wxID_RIBBONPLOTTSLEGEND, wxID_RIBBONPLOTBOXTYPE,
@@ -398,8 +398,11 @@ class mnuRibbon(RB.RibbonBar):
 
     def onEditFilter(self, event):
         data_filter = frmDataFilter(self.parent, self.parent.getRecordService())
-        data_filter.ShowModal()
-        data_filter.Destroy()
+
+        if data_filter.Show() == wx.OK:
+            print "OK"
+            data_filter.Destroy()
+
         event.Skip()
 
     # ###################################

@@ -12,6 +12,7 @@ import os
 from odmtools.controller.frmDataTable import FrmDataTable
 import mnuRibbon
 import pnlPlot
+import pnlPlot
 import pnlDataTable
 import wx.lib.agw.aui as aui
 import wx.py.crust
@@ -23,13 +24,16 @@ from odmtools.controller import frmDBConfig
 from odmtools.controller.frmAbout import frmAbout
 from odmtools.controller.frmSeriesSelector import FrmSeriesSelector
 from odmtools.gui.frmConsole import ODMToolsConsole
-from odmtools.common import gtk_execute
+from odmtools.common.icons import gtk_execute
 from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmservices import ServiceManager
-from odmtools.common.logger import LoggerTool
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+# logger = tool.setupLogger('main',  'odmtools.log', 'w', logging.INFO)
 
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 
 class frmODMToolsMain(wx.Frame):
@@ -51,6 +55,11 @@ class frmODMToolsMain(wx.Frame):
 
         wx.Frame.__init__(self, **kwargs)
 
+        self.service_manager = ServiceManager()
+        self.record_service = None
+        self.scriptcreate = False
+
+
         series_service = self._init_database()
         if series_service:
             self._init_ctrls(series_service)
@@ -58,9 +67,9 @@ class frmODMToolsMain(wx.Frame):
             self._init_sizers()
             self._ribbon.Realize()
             self.Refresh()
-            logger.debug("System starting ...")
+            logger.info("System starting ...")
         else:
-            logger.debug("System shutting down... ")
+            logger.info("System shutting down... ")
             sys.exit(0)
 
     def _obtainScreenResolution(self):
@@ -111,12 +120,9 @@ class frmODMToolsMain(wx.Frame):
         parent.AddWindow(self._ribbon, 0, wx.EXPAND)
         parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
-    def _init_database(self, quit_if_cancel=True, newConnection=''):
-        logger.debug("Loading Database...")
 
-        self.service_manager = ServiceManager()
-        self.record_service = None
-        series_service = None
+    def _init_database(self, quit_if_cancel=True):
+        logger.info("Loading Database...")
 
         while True:
             ## Database connection is valid, therefore proceed through the rest of the program
@@ -153,6 +159,32 @@ class frmODMToolsMain(wx.Frame):
         logger.debug("...Connected to '%s'" % msg)
 
         return series_service
+
+
+    def onChangeDBConn(self, event):
+        db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
+        value = db_config.ShowModal()
+        if value == wx.ID_CANCEL:
+            return
+
+        newConnection = db_config.panel.getFieldValues()
+        self.service_manager.set_current_conn_dict(newConnection)
+        db_config.Destroy()
+
+        if self._init_database(quit_if_cancel=False):
+            # if editing, stop editing...
+            if self._ribbon.getEditStatus():
+                self.stopEdit(event=None)
+
+        if value == wx.ID_OK:
+
+            series_service = self.createService(newConnection)
+            self.pnlSelector.resetDB(series_service)
+            self.refreshConnectionInfo()
+            self.pnlPlot.clear()
+            self.dataTable.clear()
+
+
 
     def servicesValid(self, service, displayMsg=True):
         """
@@ -234,7 +266,7 @@ class frmODMToolsMain(wx.Frame):
         ####################grid Table View##################
         logger.debug("Loading DataTable ...")
         self.dataTable = FrmDataTable(self.pnlDocking)
-        # self.dataTable = pnlDataTable.pnlDataTable(self.pnlDocking)
+
         # self.dataTable.toggleBindings()
         ############# Script & Console ###############
         logger.debug("Loading Python Console ...")
@@ -252,10 +284,10 @@ class frmODMToolsMain(wx.Frame):
         Publisher.subscribe(self.onExecuteScript, ("execute.script"))
         Publisher.subscribe(self.onChangeDBConn, ("change.dbConfig"))
         Publisher.subscribe(self.onSetScriptTitle, ("script.title"))
-        # .subscribe(self.onSetScriptTitle, ("script.title"))
         Publisher.subscribe(self.onClose, ("onClose"))
         Publisher.subscribe(self.addEdit, ("selectEdit"))
         Publisher.subscribe(self.stopEdit, ("stopEdit"))
+
 
     def _init_aui_manager(self):
 
@@ -354,10 +386,11 @@ class frmODMToolsMain(wx.Frame):
 
     def addEdit(self, event):
 
-        with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database",
-                         parent=self):
-            logger.debug("Beginning editing")
+
+        with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self):
+            self.scriptcreate = True
             isSelected, seriesID = self.pnlSelector.onReadyToEdit()
+            logger.info("Beginning editing seriesID: %s"%str(seriesID))
 
             # logger.debug("Initializing DataTable")
             # # tasks = [("dataTable", (memDB.conn, self.dataTable.myOlv))]
@@ -416,32 +449,14 @@ class frmODMToolsMain(wx.Frame):
         self.dataTable.stopEdit()
         self.pnlPlot.stopEdit()
         Publisher.sendMessage("toggleEdit", checked=False)
+        self.memDB.reset_edit()
         self.record_service = None
         self._ribbon.toggleEditButtons(False)
 
     def getRecordService(self):
         return self.record_service
 
-    def onChangeDBConn(self, event):
-        db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
-        value = db_config.ShowModal()
-        if value == wx.ID_CANCEL:
-            return
 
-        newConnection = db_config.panel.getFieldValues()
-        db_config.Destroy()
-
-        if self._init_database(quit_if_cancel=False, newConnection=newConnection):
-            # if editing, stop editing...
-            if self._ribbon.getEditStatus():
-                self.stopEdit(event=None)
-
-        if value == wx.ID_OK:
-            series_service = self.createService(newConnection)
-            self.pnlSelector.resetDB(series_service)
-            self.refreshConnectionInfo()
-            self.pnlPlot.clear()
-            self.dataTable.clear()
 
     def createService(self, conn_dict=""):
         """
@@ -486,6 +501,15 @@ class frmODMToolsMain(wx.Frame):
             Closes ODMTools Python
             Closes AUI Manager then closes MainWindow
         """
+
+        #check to see if a script has been created
+        if self.scriptcreate:
+            msg = wx.MessageDialog(None, 'Would you like to save your editing script?',
+                                   'Save Script', wx.YES_NO | wx.ICON_QUESTION)
+            value = msg.ShowModal()
+            if value == wx.ID_YES:
+                self.txtPythonScript.OnSaveAs(event)
+
         # deinitialize the frame manager
         self.pnlPlot.Close()
         try:
@@ -521,6 +545,7 @@ class frmODMToolsMain(wx.Frame):
                     elif isinstance(item, wx.Dialog):
                         item.Destroy()
                     item.Close()
+        logger.info("Closing ODMTools\n")
         self.Destroy()
 
         wx.GetApp().ExitMainLoop()

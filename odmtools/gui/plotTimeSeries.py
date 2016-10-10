@@ -15,8 +15,7 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
 
 
-from matplotlib.lines import Line2D
-from matplotlib.text import Text
+
 
 from matplotlib.font_manager import FontProperties
 from wx.lib.pubsub import pub as Publisher
@@ -24,11 +23,11 @@ from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
 
 ## Enable logging
 import logging
-from odmtools.common.logger import LoggerTool
-
-tool = LoggerTool()
-logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-
+# from odmtools.common.logger import LoggerTool
+#
+# tool = LoggerTool()
+# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+logger =logging.getLogger('main')
 
 class plotTimeSeries(wx.Panel):
     def __init__(self, parent, id, pos, size, style, name):
@@ -59,11 +58,12 @@ class plotTimeSeries(wx.Panel):
         self.canvas.SetFont(wx.Font(20, wx.SWISS, wx.NORMAL, wx.NORMAL, False, u'Tahoma'))
         self.isShowLegendEnabled = False
 
-        self.canvas.mpl_connect('figure_leave_event', self._onFigureLeave)
-        Publisher.subscribe(self.updateCursor, "updateCursor")
+
 
         # Create the navigation toolbar, tied to the canvas
         self.toolbar = NavigationToolbar(self.canvas, allowselect=True)
+        self.canvas.mpl_connect('figure_leave_event', self.toolbar._onFigureLeave)
+        Publisher.subscribe(self.updateCursor, "updateCursor")
         self.toolbar.Realize()
         self.seriesPlotInfo = None
 
@@ -76,24 +76,13 @@ class plotTimeSeries(wx.Panel):
         self._setColor("WHITE")
 
         left = 0.125  # the left side of the subplots of the figure
-        #right = 0.9  # the right side of the subplots of the figure
-        #bottom = 0.51  # the bottom of the subplots of the figure
-        #top = 1.2  # the top of the subplots of the figure
-        #wspace = .8  # the amount of width reserved for blank space between subplots
-        #hspace = .8  # the amount of height reserved for white space between subplots
+
         plt.subplots_adjust(
             left=left#, bottom=bottom, right=right, top=top, wspace=wspace, hspace=hspace
         )
         plt.tight_layout()
 
-        #init hover tooltip
 
-        # create a long tooltip with newline to get around wx bug (in v2.6.3.3)
-        # where newlines aren't recognized on subsequent self.tooltip.SetTip() calls
-        self.tooltip = wx.ToolTip(tip='tip with a long %s line and a newline\n')
-        self.canvas.SetToolTip(self.tooltip)
-        self.tooltip.Enable(False)
-        self.tooltip.SetDelay(0)
 
         #init lists
         #self.lines = {}
@@ -103,7 +92,7 @@ class plotTimeSeries(wx.Panel):
         self.editseriesID = -1
         self.editCurve = None
         self.editPoint =None
-        self.hoverAction = None
+        # self.hoverAction = None
         self.selplot= None
 
         self.cursors = []
@@ -117,28 +106,6 @@ class plotTimeSeries(wx.Panel):
         self._init_coll_boxSizer1_Items(self.boxSizer1)
         self.SetSizer(self.boxSizer1)
 
-    '''
-    def changePlotSelection(self, datetime_list=[]):
-        cc= ColorConverter()
-        # k black,    # r red
-        # needs to have graph first
-        selected = cc.to_rgba('r', 1)
-        unselected = cc.to_rgba('k', 0.1)
-        allunselected = cc.to_rgba('k', 1)
-        if self.editPoint:
-            colorlist=[allunselected] *len(self.editCurve.dataTable)
-            if len(datetime_list)>0:
-                for i in xrange(len(self.editCurve.dataTable)):
-                    if  self.editCurve.dataTable[i][1] in datetime_list:
-                        colorlist[i]=selected
-                    else:
-                        colorlist[i]=unselected
-
-            self.editPoint.set_color(colorlist)
-            #self.editPoint.set_color(['k' if x == 0 else 'r' for x in tflist])
-            self.canvas.draw()
-
-    '''
     ## TODO 10/15/2014 Change function so that it will accept a list of datavalues. This will remove the need to loop through the values currently plotted and we would instead plot the list of datetimes and datavalues together.
 
     def changePlotSelection(self, filtered_datetime):
@@ -225,13 +192,13 @@ class plotTimeSeries(wx.Panel):
         self.lman = None
 
         #self.canvas.mpl_disconnect(self.hoverAction)
-        try:
-            self.canvas.mpl_disconnect(self.pointPick)
-            self.pointPick = None
-        except AttributeError as e:
-            logger.error(e)
+        # try:
+        #     self.canvas.mpl_disconnect(self.pointPick)
+        #     self.pointPick = None
+        # except AttributeError as e:
+        #     logger.error(e)
 
-        self.hoverAction = None
+        # self.hoverAction = None
         self.xys = None
         self.alpha=1
 
@@ -278,11 +245,15 @@ class plotTimeSeries(wx.Panel):
         curraxis.set_xlabel('Date')
 
         convertedDates = matplotlib.dates.date2num(dates)
+
+
+        # scale = 1.5
+        # f = zoom_factory(curraxis , base_scale = scale)
+
         self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
         self.toolbar.editSeries(self.xys, self.editCurve)
-        self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
+        # self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.editSeries = oneSeries
-
 
     def _setColor(self, color):
         """Set figure and canvas colours to be the same.
@@ -531,7 +502,9 @@ class plotTimeSeries(wx.Panel):
                 self.deactivateCursor(deselectedObject)
 
         except AttributeError as e:
-            print "Ignoring Attribute Error", e
+            message= "Ignoring Attribute Error", e
+            print message
+            logger.error (message)
 
     def deactivateCursor(self, deselectedObject=None):
         # Remove an object if supplied
@@ -596,6 +569,7 @@ class plotTimeSeries(wx.Panel):
         for sp in ax.spines.itervalues():
             sp.set_visible(False)
 
+
     def _onMotion(self, event):
         """
 
@@ -611,7 +585,7 @@ class plotTimeSeries(wx.Panel):
                 self.toolbar.msg.SetForegroundColour((66, 66, 66))
             else:
                 self.toolbar.msg.SetLabelText("")
-        except ValueError:
+        except ValueError :
             pass
 
     def _onPick(self, event):
@@ -696,3 +670,6 @@ class Cursor(object):
         self.toolbar.msg.SetLabelText("X= %s,  Y= %.4f (%s)" % (xValue, y, self.name))
         self.toolbar.msg.SetForegroundColour((66, 66, 66))
         #logger.debug('{n}: ({x}, {y:0.2f})'.format(n=self.name, x=xValue.strftime("%Y-%m-%d %H:%M:%S"), y=y))
+
+
+
