@@ -9,7 +9,7 @@
 # import pyodbc
 # #import psycopg2
 
-from api.ODM1_1_1.services import SeriesService, EditService, ExportService#, , CVService,
+from odm2api.ODM1_1_1.services import SeriesService, EditService, ExportService#, , CVService,
 from service_manager import ServiceManager
 
 __all__ = [
