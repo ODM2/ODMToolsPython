@@ -5,8 +5,8 @@ from sqlalchemy import bindparam
 from odmtools.common.logger import LoggerTool
 from odmtools.odmservices import SeriesService
 from odmtools.odmservices import ServiceManager
-from odmtools.odmdata import ODM
-
+from odmtools.odmdata import SeriesService#ODM
+ODM = SeriesService.ODM
 # tool = LoggerTool()
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 logger =logging.getLogger('main')

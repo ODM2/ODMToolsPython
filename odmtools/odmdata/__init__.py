@@ -31,11 +31,11 @@
 # Variable = ODM.Variable
 # VerticalDatumCV=ODM.VerticalDatumCV
 # returnDict = ODM.returnDict
-from odm2api.ODM1_1_1.services.series_service import ODM#, refreshDB
-from odm2api.ODMconnection import SessionFactory
+from odm2api.ODM1_1_1.services import SeriesService#, refreshDB
+from odm2api.ODMconnection import SessionFactory,  dbconnection
 from odm2api.ODM2.models import _changeSchema as change_schema
 from odmtools.odmdata.memory_database import MemoryDatabase
-
+ODM = SeriesService.ODM
 
 from collections import OrderedDict
 def returnDict():
@@ -54,11 +54,13 @@ def returnDict():
               ]
     return OrderedDict(zip(keys, values))
 __all__=[
-        'SessionFactory',
+        #'SessionFactory',
         'refreshDB',
         'change_schema',
         'returnDict',
-        'ODM',
+        #'ODM',
         'MemoryDatabase',
         'returnDict'
+        'SeriesService'
+        'dbconnection'
          ]

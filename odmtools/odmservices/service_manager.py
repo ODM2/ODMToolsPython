@@ -8,7 +8,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from odmtools.odmservices import SeriesService, EditService, ExportService
 from odmtools.controller import EditTools
 from odmtools.lib.Appdirs.appdirs import user_config_dir
-from odmtools.odmdata import SessionFactory, change_schema, ODM#, refreshDB
+from odmtools.odmdata import  SeriesService, dbconnection #ODM#, refreshDBSessionFactory,
+
 
 
 
@@ -44,6 +45,7 @@ class ServiceManager():
                         line_dict['password'] = line[2]
                         line_dict['address'] = line[3]
                         line_dict['db'] = line[4]
+                        line_dict['version']= line[5]
                         self._conn_dicts.append(line_dict)
         else:
             self._conn_dicts.append(conn_dict)
@@ -84,115 +86,30 @@ class ServiceManager():
         #     logger.error("Unable to save connection due to invalid connection to database")
         #     return False
 
-    @staticmethod
-    def _getSchema(engine):
-        from sqlalchemy.engine import reflection
-
-        insp=reflection.Inspector.from_engine(engine)
-
-        for name in insp.get_schema_names():
-            if 'odm2'== name.lower():
-                return name
-        else:
-            return insp.default_schema_name
-
-    @classmethod
-    def _setSchema(self, engine):
-
-        s = self._getSchema(engine)
-        change_schema(s)
-
-
-    @classmethod
-    def testEngine(self, connection_string):
-
-        s = SessionFactory(connection_string, echo=False)
-        try:
-            # s.ms_test_Session().query(Variable1).limit(1).first()
-            s.test_Session().query(ODM.Variable.code).limit(1).first()
-
-
-        except Exception as e:
-            print "Connection was unsuccessful ", e.message
-            return False
-        return True
-    # def is_valid_connection(self):
-    #     if self._current_conn_dict:
-    #         conn_string = self._build_connection_string(self._current_conn_dict)
-    #         logger.debug("Conn_string: %s" % conn_string)
-    #         try:
-    #             if self.testEngine(conn_string):
-    #                return self._current_conn_dict
-    #
-    #     return None
-
-    def is_valid_connection(self):
-        if self._current_conn_dict:
-            conn_string = self._build_connection_string(self._current_conn_dict)
-            logger.debug("Conn_string: %s" % conn_string)
-            dbtype = float(self._current_conn_dict['version'])
-            #dbtype =1.1
-            #refreshDB(dbtype)
-
-            try:
-                if self.testEngine(conn_string):
-                    return self._current_conn_dict
-            except Exception as e:
-                logger.fatal("The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
-                return None
-
-    def test_connection(self, conn_dict):
-        try:
-            conn_string = self._build_connection_string(conn_dict)
-
-            dbtype = float(conn_dict['version'])
-            #dbtype =1.1
-            #refreshDB(dbtype)
-            if self.testEngine(conn_string):# and self.get_db_version(conn_string) == '1.1.1':
-
-                return True
-        except SQLAlchemyError as e:
-            logger.error("SQLAlchemy Error: %s" % e.message)
-            raise e
-        except Exception as e:
-            logger.error("Error: %s" % e)
-            raise e
-        return False
 
     def delete_connection(self, conn_dict):
         self._conn_dicts[:] = [x for x in self._conn_dicts if x != conn_dict]
 
-    # Create and return services based on the currently active connection
-    # def get_db_version_dict(self, conn_dict):
-    #     conn_string = self._build_connection_string(conn_dict)
-    #     self.get_db_version(conn_string)
-
-    # def get_db_version(self, conn_string):
-    #     if isinstance(conn_string, dict):
-    #         conn_string = self._build_connection_string(conn_string)
-    #     service = SeriesService(conn_string)
-    #     #if not self.version:
-    #     try:
-    #         self.version = service.get_db_version()
-    #     except Exception as e:
-    #         logger.error("Exception: %s" % e.message)
-    #         return None
-    #     return self.version
 
     def get_series_service(self, conn_dict=None, conn_string=""):
-        version = 1.1
-        if conn_dict:
-            conn_string = self._build_connection_string(conn_dict)
-            #self._current_conn_dict = conn_dict
+        if not conn_dict and not conn_string:
+            conn_dict = self._current_conn_dict
+        conn = dbconnection.createConnection(conn_dict['engine'], conn_dict['address'], conn_dict['db'], conn_dict['user'],
+                                      conn_dict['password'], conn_dict['version'])
 
-            version = float(conn_dict['version'])
-        elif not conn_dict and not conn_string:
-            conn_string = self._build_connection_string(self._current_conn_dict)
-            version = float(self._current_conn_dict['version'])
-
-        sf = SessionFactory(conn_string, self.debug, version = version)
-        ss= SeriesService(sf)
-        ss.refreshDB(sf.version)
+        # version = 1.1
+        # if conn_dict:
+        #     conn_string = self._build_connection_string(conn_dict)
+        #     #self._current_conn_dict = conn_dict
+        #
+        #     version = float(conn_dict['version'])
+        # elif not conn_dict and not conn_string:
+        #     conn_string = self._build_connection_string(self._current_conn_dict)
+        #     version = float(self._current_conn_dict['version'])
+        #
+        # sf = SessionFactory(conn_string, self.debug, version = version)
+        ss= SeriesService(conn)
+        ss.refreshDB(conn.version)
         return ss
 
     # def get_cv_service(self):

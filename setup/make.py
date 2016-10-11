@@ -160,7 +160,7 @@ def run_pyinstaller(console=False):
                 '--version-file=%s ' % VERSION_FILE +
                 '--onedir '
                 # '--onefile ' +
-                '--exclude=
+                #'--exclude=
                 '--noconfirm ' + APP_FILE)
         else:
             ## Non Console Version

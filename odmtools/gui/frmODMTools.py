@@ -126,15 +126,11 @@ class frmODMToolsMain(wx.Frame):
 
         while True:
             ## Database connection is valid, therefore proceed through the rest of the program
-            if newConnection:
-                conn_dict = newConnection
-            else:
-                conn_dict = self.service_manager.is_valid_connection()
-            if conn_dict:
-                # conn_dict = None
+            if self.service_manager.is_valid_connection():
+                conn_dict = None
 
-                series_service = self.createService(conn_dict)
-                # conn_dict = self.service_manager.get_current_conn_dict()
+                series_service = self.createService()
+                conn_dict = self.service_manager.get_current_conn_dict()
 
                 if self.servicesValid(series_service):
                     self.service_manager.add_connection(conn_dict)
