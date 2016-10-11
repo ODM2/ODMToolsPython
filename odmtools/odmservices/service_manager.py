@@ -45,7 +45,7 @@ class ServiceManager():
                         line_dict['password'] = line[2]
                         line_dict['address'] = line[3]
                         line_dict['db'] = line[4]
-                        line_dict['version']= line[5]
+                        line_dict['version']= float(line[5]) if len(line)>5 else 1.1
                         self._conn_dicts.append(line_dict)
         else:
             self._conn_dicts.append(conn_dict)
@@ -86,16 +86,38 @@ class ServiceManager():
         #     logger.error("Unable to save connection due to invalid connection to database")
         #     return False
 
+    def is_valid_connection(self):
+
+        if self.get_current_conn_dict():
+            #conn_string = self._build_connection_string(self._current_conn_dict)
+            #logger.debug("Conn_string: %s" % conn_string)
+            conn_dict = self.get_current_conn_dict()
+            try:
+                if dbconnection.isValidConnection(dbconnection.buildConnectionString(conn_dict['engine'], conn_dict['address'], conn_dict['db'], conn_dict['user'],
+                                      conn_dict['password']), dbtype = conn_dict['version']):
+                    return self.get_current_conn_dict()
+            except Exception as e:
+                logger.fatal(
+                    "The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
+                return None
+        return None
+
 
     def delete_connection(self, conn_dict):
         self._conn_dicts[:] = [x for x in self._conn_dicts if x != conn_dict]
 
 
     def get_series_service(self, conn_dict=None, conn_string=""):
-        if not conn_dict and not conn_string:
-            conn_dict = self._current_conn_dict
-        conn = dbconnection.createConnection(conn_dict['engine'], conn_dict['address'], conn_dict['db'], conn_dict['user'],
+        if not conn_dict:
+            conn_dict = self.get_current_conn_dict()
+
+        if conn_string:
+            #todo how to get version from a connection string
+            conn = dbconnection.createConnectionFromString(conn_string, float(self.get_current_conn_dict()["version"]))
+        else:
+            conn = dbconnection.createConnection(conn_dict['engine'], conn_dict['address'], conn_dict['db'], conn_dict['user'],
                                       conn_dict['password'], conn_dict['version'])
+
 
         # version = 1.1
         # if conn_dict:
@@ -117,7 +139,6 @@ class ServiceManager():
     #     return CVService(SessionFactory(conn_string, self.debug))
 
     def get_edit_service(self, series_id, connection):
-
         return EditService(series_id, connection=connection,  debug=self.debug)
 
 
@@ -152,58 +173,6 @@ class ServiceManager():
 
         return config_file
 
-    def _build_connection_string(self, conn_dict):
-
-        self._connection_format = "%s+%s://%s:%s@%s/%s"
-
-        if conn_dict['engine'] == 'mssql' and sys.platform != 'win32':
-            driver = "pyodbc"
-            quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;' % (conn_dict['address'], conn_dict['user'],
-                                                                                  conn_dict['password']))
-            # quoted = urllib.quote_plus('DRIVER={FreeTDS};DSN=%s;UID=%s;PWD=%s;DATABASE=%s' %
-            #                            (conn_dict['address'], conn_dict['user'], conn_dict['password'],conn_dict['db'],
-            #                             ))
-            conn_string = 'mssql+pyodbc:///?odbc_connect={}'.format(quoted)
-
-        elif conn_dict['engine']=='sqlite':
-            connformat = "%s:///%s"
-            conn_string = connformat%(conn_dict['engine'], conn_dict['address'])
-        else:
-            if conn_dict['engine'] == 'mssql':
-                driver = "pyodbc"
-                conn = "%s+%s://%s:%s@%s/%s?driver=SQL+Server"
-                if "sqlncli11.dll" in os.listdir("C:\\Windows\\System32"):
-                    conn = "%s+%s://%s:%s@%s/%s?driver=SQL+Server+Native+Client+11.0"
-                self._connection_format = conn
-                conn_string = self._connection_format % (
-                    conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
-                    conn_dict['db'])
-            elif conn_dict['engine'] == 'mysql':
-                driver = "pymysql"
-                conn_string = self.constringBuilder(conn_dict, driver)
-            elif conn_dict['engine'] == 'postgresql':
-                driver = "psycopg2"
-                conn_string = self.constringBuilder(conn_dict, driver)
-            else:
-                driver = "None"
-                conn_string = self.constringBuilder(conn_dict, driver)
-
-
-        # print "******", conn_string
-        return conn_string
-
-
-
-    def constringBuilder(self, conn_dict, driver):
-        if conn_dict['password'] is None or not conn_dict['password']:
-            conn_string = self._connection_format_nopassword % (
-                conn_dict['engine'], driver, conn_dict['user'], conn_dict['address'],
-                conn_dict['db'])
-        else:
-            conn_string = self._connection_format % (
-                conn_dict['engine'], driver, conn_dict['user'], conn_dict['password'], conn_dict['address'],
-                conn_dict['db'])
-        return conn_string
 
     def _save_connections(self):
         f = self._get_file('w')

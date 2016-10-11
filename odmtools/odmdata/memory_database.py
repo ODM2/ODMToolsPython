@@ -24,7 +24,7 @@ class MemoryDatabase(object):
         # Memory_service handles in memory database
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
-        self.mem_service.refreshDB(1.1)
+
         # TODO clean up closing of program
         # if taskserver is None:
         #numproc = cpu_count()
@@ -36,7 +36,7 @@ class MemoryDatabase(object):
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
-        self.mem_service.refreshDB(1.1)
+
 
     def set_series_service(self, service):
         self.series_service = service
