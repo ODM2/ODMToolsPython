@@ -1,5 +1,3 @@
-
-
 '''
 Different from generated code
         from odmtools.lib.ObjectListView import FastObjectListView as objectListView, ColumnDefn
@@ -9,26 +7,23 @@ Different from generated code
        # self.myOlv = FastObjectListView(self, -1, style=wx.LC_REPORT)
 '''
 
-
-
-
 # -*- coding: utf-8 -*-
 
 ###########################################################################
 ## Python code generated with wxFormBuilder (version Jun  5 2014)
 ## http://www.wxformbuilder.org/
 ##
- ## PLEASE DO "NOT" EDIT THIS FILE!
+## PLEASE DO "NOT" EDIT THIS FILE!
 ###########################################################################
 
 import wx
 import wx.xrc
- from odmtools.lib.ObjectListView import FastObjectListView as objectListView, ColumnDefn
+from odmtools.lib.ObjectListView import FastObjectListView as objectListView, ColumnDefn
 ###########################################################################
 ## Class pnlExisting
 ###########################################################################
 
- class pnlExisting(wx.Panel):
+class pnlExisting(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(500, 300),
                           style=wx.TAB_TRAVERSAL)
@@ -50,7 +45,8 @@ import wx.xrc
                                           wx.DefaultSize, 0)
         bSizer2.Add(self.rbOverwrite, 0, wx.ALL, 5)
 
-        self.rbAppend = wx.RadioButton(self.m_panel1, wx.ID_ANY, u"Append to Series (adds values to the end of a series)", wx.DefaultPosition,
+        self.rbAppend = wx.RadioButton(self.m_panel1, wx.ID_ANY,
+                                       u"Append to Series (adds values to the end of a series)", wx.DefaultPosition,
                                        wx.DefaultSize, 0)
         bSizer2.Add(self.rbAppend, 0, wx.ALL, 5)
 
@@ -62,14 +58,15 @@ import wx.xrc
         bSizer3 = wx.BoxSizer(wx.VERTICAL)
 
         self.lblOverlap = wx.StaticText(self.m_panel1, wx.ID_ANY, u"If Data Overlaps:", wx.DefaultPosition,
-                                           wx.DefaultSize, 0)
+                                        wx.DefaultSize, 0)
         self.lblOverlap.Wrap(-1)
         self.lblOverlap.Enable(False)
 
         bSizer3.Add(self.lblOverlap, 0, wx.ALL, 5)
 
-        #Group 2
-        self.rbNew = wx.RadioButton(self.m_panel1, wx.ID_ANY, u"Keep New", wx.DefaultPosition, wx.DefaultSize, style=wx.RB_GROUP)
+        # Group 2
+        self.rbNew = wx.RadioButton(self.m_panel1, wx.ID_ANY, u"Keep New", wx.DefaultPosition, wx.DefaultSize,
+                                    style=wx.RB_GROUP)
         self.rbNew.Enable(False)
 
         bSizer3.Add(self.rbNew, 0, wx.ALL, 5)
@@ -101,17 +98,12 @@ import wx.xrc
     def __del__(self):
         pass
 
-
     # Virtual event handlers, overide them in your derived class
     def OnOLVItemSelected(self, event):
         event.Skip()
 
-
     def onOverwrite(self, event):
         event.Skip()
 
-
     def onAppend(self, event):
         event.Skip()
-
-
