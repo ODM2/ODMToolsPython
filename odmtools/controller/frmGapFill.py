@@ -14,8 +14,8 @@ class frmGapFill(clsGapFill.dlgFill):
         #TODO add validation
         gapvalue= self.txtGap.Value
         gaptime = self.cbGap.Value
-        fillvalue = self.txtGap.Value
-        filltime= self.cbGap.Value
+        fillvalue = self.txtFill.Value
+        filltime= self.cbFill.Value
 
         self.record_service.fill_gap(gap=[gapvalue, gaptime], fill=[fillvalue, filltime])
         self.Close()
