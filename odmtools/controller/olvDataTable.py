@@ -31,7 +31,7 @@ class OLVDataTable(VirtualObjectListView):
         self.SetColumns(columns)
         self.dataframe = self.memDB.getDataValuesDF()
         sort_by_index = list(self.dataframe.columns).index("LocalDateTime")
-        self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
+        self.dataframe.sort(self.dataframe.columns[sort_by_index], inplace=True)
         self.dataObjects = self.dataframe.values.tolist()
 
         self.SetObjectGetter(self.ObjectGetter)
@@ -71,10 +71,10 @@ class OLVDataTable(VirtualObjectListView):
         self.sortedColumnIndex = selected_column
         ascending = self.sortAscending
         if ascending:
-            self.dataframe.sort_values(by=self.dataframe.columns[selected_column], inplace=True)
+            self.dataframe.sort(by=self.dataframe.columns[selected_column], inplace=True)
             self.sortAscending = False
         elif not ascending:
-            self.dataframe.sort_values(by=self.dataframe.columns[selected_column], ascending=False, inplace=True)
+            self.dataframe.sort(by=self.dataframe.columns[selected_column], ascending=False, inplace=True)
             self.sortAscending = True
 
         self._UpdateColumnSortIndicators(selected_column, oldSortColumnIndex)
