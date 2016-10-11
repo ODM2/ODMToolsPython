@@ -29,8 +29,8 @@ class dlgFill ( wx.Dialog ):
 		self.lblGap.Wrap( -1 )
 		bsGap.Add( self.lblGap, 0, wx.ALL, 5 )
 		
-		self.txtGap1 = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bsGap.Add( self.txtGap1, 0, wx.ALL, 5 )
+		self.txtGap = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bsGap.Add( self.txtGap, 0, wx.ALL, 5 )
 		
 		cbGapChoices = [ u"second", u"minute", u"hour", u"days", u"week", u"month", u"day", u"year", wx.EmptyString, wx.EmptyString, wx.EmptyString ]
 		self.cbGap = wx.ComboBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, cbGapChoices, 0 )
@@ -46,8 +46,8 @@ class dlgFill ( wx.Dialog ):
 		self.lblFill.Wrap( -1 )
 		bsFill.Add( self.lblFill, 0, wx.ALL, 5 )
 		
-		self.txtGap = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bsFill.Add( self.txtGap, 0, wx.ALL, 5 )
+		self.txtFill = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bsFill.Add( self.txtFill, 0, wx.ALL, 5 )
 		
 		cbFillChoices = [ u"second", u"minute", u"hour", u"day", u"week", u"month", u"year" ]
 		self.cbFill = wx.ComboBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, cbFillChoices, 0 )
