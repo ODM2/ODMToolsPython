@@ -93,7 +93,18 @@ class WizardVariableController(WizardPageSimple):
 
         elif self.variable_view.create_variable_radio.GetValue():
             # v = self.createdVar
-            pass
+            v = self.get_new_variable()
+
+        return v
+
+    def get_new_variable(self):
+        v = Variable()
+        v.code = self.variable_view.variable_code_text_ctrl.GetValue() if self.variable_view.variable_code_text_ctrl.GetValue() <> "" else None
+        v.name = self.variable_view.variable_name_combo.GetValue() if self.variable_view.variable_name_combo.GetValue() <> "" else None
+        v.speciation = self.variable_view.speciation_combo.GetValue() if self.variable_view.speciation_combo.GetValue() <> "" else None
+        v.variable_unit = self.service_manager.get_series_service()
+        v.no_data_value = self.variable_view.no_data_value_text_ctrl.GetValue() if self.variable_view.no_data_value_text_ctrl.GetValue() <> "" else None
+        # Need unit name, time support but neither of them are in the form...
 
         return v
 
