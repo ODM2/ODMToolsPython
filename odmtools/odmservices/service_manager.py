@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError#OperationalError, DBAPIError
 
 from odmtools.common.logger import LoggerTool
 from series_service import SeriesService
-from cv_service import CVService
+from ReadService import ReadService
 from edit_service import EditService
 from odmtools.controller import EditTools
 from export_service import ExportService
@@ -153,7 +153,7 @@ class ServiceManager():
 
     def get_cv_service(self):
         conn_string = self._build_connection_string(self._current_conn_dict)
-        return CVService(conn_string, self.debug)
+        return ReadService(conn_string, self.debug)
 
     def get_edit_service(self, series_id, connection):
 
