@@ -23,3 +23,4 @@ class frmGapFill(clsGapFill.dlgFill):
     def OnCancelBtn(self, event):
 
         self.Close()
+        self.Destroy()
