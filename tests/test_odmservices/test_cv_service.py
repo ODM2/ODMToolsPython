@@ -5,7 +5,7 @@ from tests import test_util
 session = None
 
 
-class TestCVService:
+class TestReadService:
     def setup(self):
         self.connection_string = "sqlite:///:memory:"
         self.cv_service = ReadService(self.connection_string, debug=False)

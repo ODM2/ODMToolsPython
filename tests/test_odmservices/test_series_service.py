@@ -104,7 +104,6 @@ class TestSeriesService:
         if isinstance(sites, list) and len(sites) > 0:
             assert site.code == sites[0].code
 
-
     def test_get_site_by_id_fail(self):
         assert self.series_service.get_site_by_id(0) == None
 

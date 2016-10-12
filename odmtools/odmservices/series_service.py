@@ -6,14 +6,16 @@ from sqlalchemy import distinct, func
 
 from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import Site
-from odmtools.odmdata import Variable
+# from odmtools.odmdata import Variable
+from odm2api.ODM2.models import Variables
 from odmtools.odmdata import Unit
 from odmtools.odmdata import Series
 from odmtools.odmdata import DataValue
 from odmtools.odmdata import Qualifier
 from odmtools.odmdata import OffsetType
 from odmtools.odmdata import Sample
-from odmtools.odmdata import Method
+# from odmtools.odmdata import Method
+from odm2api.ODM2.models import Methods
 from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
@@ -107,7 +109,7 @@ class SeriesService():  # Rename to CreateService
 
         #create list of variables from the list of ids
         for var_id in var_ids:
-            Variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
+            Variables.append(self._edit_session.query(Variables).filter_by(id=var_id).first())
 
         return Variables
 
@@ -116,7 +118,7 @@ class SeriesService():  # Rename to CreateService
 
         :return: List[Variables]
         """
-        return self._edit_session.query(Variable).all()
+        return self._edit_session.query(Variables).all()
 
     def get_variable_by_id(self, variable_id):
         """
@@ -125,7 +127,7 @@ class SeriesService():  # Rename to CreateService
         :return: Variables
         """
         try:
-            return self._edit_session.query(Variable).filter_by(id=variable_id).first()
+            return self._edit_session.query(Variables).filter_by(id=variable_id).first()
         except:
             return None
 
@@ -136,7 +138,7 @@ class SeriesService():  # Rename to CreateService
         :return: Variables
         """
         try:
-            return self._edit_session.query(Variable).filter_by(code=variable_code).first()
+            return self._edit_session.query(Variables).filter_by(code=variable_code).first()
         except:
             return None
 
@@ -154,7 +156,7 @@ class SeriesService():  # Rename to CreateService
 
         variables = []
         for var_id in var_ids:
-            variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
+            variables.append(self._edit_session.query(Variables).filter_by(id=var_id).first())
 
         return variables
 
@@ -234,18 +236,18 @@ class SeriesService():  # Rename to CreateService
 
     # Method methods
     def get_all_methods(self):
-        return self._edit_session.query(Method).all()
+        return self._edit_session.query(Methods).all()
 
     def get_method_by_id(self, method_id):
         try:
-            result = self._edit_session.query(Method).filter_by(id=method_id).first()
+            result = self._edit_session.query(Methods).filter_by(id=method_id).first()
         except:
             result = None
         return result
 
     def get_method_by_description(self, method_code):
         try:
-            result = self._edit_session.query(Method).filter_by(description=method_code).first()
+            result = self._edit_session.query(Methods).filter_by(description=method_code).first()
         except:
             result = None
             logger.error("method not found")
@@ -566,21 +568,19 @@ class SeriesService():  # Rename to CreateService
         :param link:
         :return:
         """
-        meth = Method()
-        meth.description = description
+        method = Methods()
+        method.MethodDescription = description
         if link is not None:
-            meth.link = link
+            method.MethodLink = link
 
-        self.create_service.createMethod(method=meth)
-        return meth
+        return self.create_service.createMethod(method=method)
 
     def create_variable_by_var(self, var):
         """
         :param var:  Variable Object
         :return:
         """
-        self.create_service.createVariable(var=var)
-        return var
+        return self.create_service.createVariable(var=var)
 
     def create_variable(
             self, code, name, speciation, variable_unit_id, sample_medium,
@@ -601,22 +601,23 @@ class SeriesService():  # Rename to CreateService
         :param no_data_value:
         :return:
         """
-        var = Variable()
-        var.code = code
-        var.name = name
-        var.speciation = speciation
-        var.variable_unit_id = variable_unit_id
-        var.sample_medium = sample_medium
-        var.value_type = value_type
-        var.is_regular = is_regular
-        var.time_support = time_support
-        var.time_unit_id = time_unit_id
-        var.data_type = data_type
-        var.general_category = general_category
-        var.no_data_value = no_data_value
+        # var = Variable()
+        variable = Variables()
+        variable.VariableCode = code
+        variable.VariableNameCV = name
+        variable.SpeciationCV = speciation
+        # Commented lines indicate that Variables does not have such attributes
+        # var.variable_unit_id = variable_unit_id
+        # var.sample_medium = sample_medium
+        # var.value_type = value_type
+        # var.is_regular = is_regular
+        # var.time_support = time_support
+        # var.time_unit_id = time_unit_id
+        # var.data_type = data_type
+        # var.general_category = general_category
+        variable.NoDataValue = no_data_value
 
-        self.create_service.createVariable(var=var)
-        return var
+        return self.create_service.createVariable(var=variable)
 
     def create_qcl(self, code, definition, explanation):
         """
@@ -630,13 +631,10 @@ class SeriesService():  # Rename to CreateService
         qcl.code = code
         qcl.definition = definition
         qcl.explanation = explanation
-        self.create_service.createProcessingLevel(proclevel=qcl)
-
-        return qcl
+        return self.create_service.createProcessingLevel(proclevel=qcl)
 
     def create_annotation_by_anno(self, annotation):
-        self.create_service.create(annotation)
-        return annotation
+        return self.create_service.create(annotation)
 
     def create_annotation(self, code, description):
         """
@@ -779,7 +777,7 @@ class SeriesService():  # Rename to CreateService
         :return:
         """
         try:
-            result = self._edit_session.query(Method).filter_by(description=m.description).one()
+            result = self._edit_session.query(Methods).filter_by(description=m.description).one()
             return True
         except:
             return False
@@ -791,7 +789,7 @@ class SeriesService():  # Rename to CreateService
         :return:
         """
         try:
-            result = self._edit_session.query(Variable).filter_by(code=v.code,
+            result = self._edit_session.query(Variables).filter_by(code=v.code,
                                                                   name=v.name, speciation=v.speciation,
                                                                   variable_unit_id=v.variable_unit_id,
                                                                   sample_medium=v.sample_medium,
