@@ -1,41 +1,12 @@
 
 
 
+#from odm2api.ODM1_1_1.services import SeriesService#, refreshDB
 
-
-
-#from api.versionSwitcher import ODM, refreshDB
-
-
-# DataTypeCV=ODM.DataTypeCV
-# DataValue=ODM.DataValue
-# # GeneralCategoryCV=ODM.GeneralCategoryCV
-# ISOMetadata=ODM.ISOMetadata
-# LabMethod=ODM.LabMethod
-# Method=ODM.Method
-# OffsetType=ODM.OffsetType
-# Qualifier=ODM.Qualifier
-# QualityControlLevel=ODM.QualityControlLevel
-# Sample =ODM.Sample
-# SampledMediumCV= ODM.SampleMediumCV
-# # SampleTypeCV=ODM.SampleTypeCV
-# Series=ODM.Series
-# Site= ODM.Site
-# SiteType=ODM.SiteTypeCV
-# Source =ODM.Source
-# SpatialReferences=ODM.SpatialReference
-# SpeciationCV=ODM.SpeciationCV
-# # TopicCategoryCV=ODM.TopicCategoryCV
-# Unit= ODM.Unit
-# # ValueTypeCV=ODM.ValueTypeCV
-# Variable = ODM.Variable
-# VerticalDatumCV=ODM.VerticalDatumCV
-# returnDict = ODM.returnDict
-from odm2api.ODM1_1_1.services import SeriesService#, refreshDB
 from odm2api.ODMconnection import SessionFactory,  dbconnection
 from odm2api.ODM2.models import _changeSchema as change_schema
 from odmtools.odmdata.memory_database import MemoryDatabase
-ODM = SeriesService.ODM
+#ODM = SeriesService.ODM
 
 from collections import OrderedDict
 def returnDict():
@@ -61,6 +32,7 @@ __all__=[
         #'ODM',
         'MemoryDatabase',
         'returnDict'
-        'SeriesService'
+        #'SeriesService'
+        'readService', 'createService', 'updateService', 'deleteService'
         'dbconnection'
          ]

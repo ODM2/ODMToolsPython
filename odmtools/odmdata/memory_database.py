@@ -4,11 +4,13 @@ from sqlalchemy import bindparam
 
 from odmtools.common.logger import LoggerTool
 from odmtools.odmservices import SeriesService
-from odmtools.odmservices import ServiceManager
-from odmtools.odmdata import SeriesService#ODM
-ODM = SeriesService.ODM
-# tool = LoggerTool()
-# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
+from odmtools.odmservices import ServiceManager, SeriesService
+
+# from odmtools.odmdata import SeriesService#ODM
+# ODM = SeriesService.ODM
+from odm2api.ODM2.models import TimeSeriesResultValues as DataValue
+
+
 logger =logging.getLogger('main')
 
 class MemoryDatabase(object):
@@ -105,8 +107,8 @@ class MemoryDatabase(object):
         updates : list of dictionary that contains 2 items, id and value
         '''
 
-        stmt = (ODM.DataValue.__table__.update().
-                where(ODM.DataValue.local_date_time == bindparam('id')).
+        stmt = (DataValue.__table__.update().
+                where(DataValue.ValueDateTime == bindparam('id')).
                 values(DataValue=bindparam('value'))
         )
 
@@ -118,11 +120,11 @@ class MemoryDatabase(object):
     def updateValue(self, ids, operator, value):
         # query = DataValue.data_value+value
         if operator == '+':
-            query = ODM.DataValue.data_value + value
+            query = DataValue.DataValue + value
         elif operator == '-':
-            query = ODM.DataValue.data_value - value
+            query = DataValue.DataValue - value
         elif operator == '*':
-            query = ODM.DataValue.data_value * value
+            query = DataValue.DataValue * value
         elif operator == '=':
             query = value
 
@@ -130,8 +132,8 @@ class MemoryDatabase(object):
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
         chunks=self.chunking(ids)
         for c in chunks:
-            q=self.mem_service._session.query(ODM.DataValue).filter(ODM.DataValue.local_date_time.in_(c))
-            q.update({ODM.DataValue.data_value: query}, False)
+            q=self.mem_service._session.query(DataValue).filter(DataValue.ValueDateTime.in_(c))
+            q.update({DataValue.DataValue: query}, False)
 
         #self.updateDF()
 
@@ -143,11 +145,12 @@ class MemoryDatabase(object):
 
 
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
+    #TODO update to work with odm2
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)
         for c in chunks:
-            self.mem_service._session.query(ODM.DataValue).filter(ODM.DataValue.local_date_time.in_(c))\
-                .update({ODM.DataValue.qualifier_id: value}, False)
+            self.mem_service._session.query(DataValue).filter(DataValue.ValueDateTime.in_(c))\
+                .update({DataValue.qualifier_id: value}, False)
 
 
     def delete(self, ids):
@@ -161,7 +164,7 @@ class MemoryDatabase(object):
         """
         Takes in a list of points and loads each point into the database
         """
-        stmt = ODM.DataValue.__table__.insert()
+        stmt = DataValue.__table__.insert()
 
         if not isinstance(points, list):
             points = [points]
@@ -228,6 +231,8 @@ class MemoryDatabase(object):
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
 
+
+#TODO: update to work with ODM2
     def changeSeriesIDs(self, var=None, qcl=None, method=None):
         """
 
@@ -237,17 +242,17 @@ class MemoryDatabase(object):
         :return:
         """
 
-        query = self.mem_service._session.query(ODM.DataValue)
+        query = self.mem_service._session.query(DataValue)
         if var is not None:
             logger.debug(var)
-            query.update({ODM.DataValue.variable_id: var})
+            query.update({DataValue.variable_id: var})
 
         if method is not None:
             logger.debug(method)
-            query.update({ODM.DataValue.method_id: method})
+            query.update({DataValue.method_id: method})
         # check that the code is not zero
         # if qcl is not None and qcl.code != 0:
         if qcl is not None:
             logger.debug(qcl)
-            query.update({ODM.DataValue.quality_control_level_id: qcl})
+            query.update({DataValue.quality_control_level_id: qcl})
 

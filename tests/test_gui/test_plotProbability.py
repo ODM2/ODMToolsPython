@@ -23,8 +23,8 @@ class TestPlotProbability:
 
         self.connection_string = "sqlite:///:memory:"
         self.series_service = SeriesService(connection_string=self.connection_string, debug=False)
-        self.session = self.series_service._session_factory.get_session()
-        engine = self.series_service._session_factory.engine
+        self.session = self.series_service._connection.get_session()
+        engine = self.series_service._connection.engine
         build_db(engine)
 
         self.memory_db = MemoryDatabase()

@@ -7,7 +7,6 @@ from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
 
 # from odmtools.common.logger import LoggerTool
-from odmtools.odmdata import series
 
 
 # tool = LoggerTool()
@@ -16,21 +15,25 @@ logger =logging.getLogger('main')
 
 OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 from collections import OrderedDict
-def returnDict():
-    keys = ['SeriesID', 'SiteID', 'SiteCode', 'SiteName', 'VariableID', 'VariableCode', 'VariableName', 'Speciation',
-            'VariableUnitsID', 'VariableUnitsName', 'SampleMedium', 'ValueType', 'TimeSupport', 'TimeUnitsID',
-            'TimeUnitsName', 'DataType', 'GeneralCategory', 'MethodID', 'MethodDescription', 'SourceID',
-            'SourceDescription', 'Organization', 'Citation', 'QualityControlLevelID', 'QualityControlLevelCode',
-            'BeginDateTime', 'EndDateTime', 'BeginDateTimeUTC', 'EndDateTimeUTC', 'ValueCount'
-            ]
-    values = ['id', 'site_id', 'site_code', 'site_name', 'variable_id', 'variable_code', 'variable_name', 'speciation',
-              'variable_units_id', 'variable_units_name', 'sample_medium', 'value_type', 'time_support',
-              'time_units_id', 'time_units_name', 'data_type', 'general_category', 'method_id', 'method_description',
-              'source_id', 'source_description', 'organization', 'citation', 'quality_control_level_id',
-              'quality_control_level_code', 'begin_date_time', 'end_date_time', 'begin_date_time_utc',
-              'end_date_time_utc', 'value_count'
-              ]
-    return OrderedDict(zip(keys, values))
+# def returnDict():
+#     keys = ['SeriesID', 'SiteID', 'SiteCode', 'SiteName', 'VariableID', 'VariableCode', 'VariableName', 'Speciation',
+#             'VariableUnitsID', 'VariableUnitsName', 'SampleMedium', 'ValueType', 'TimeSupport', 'TimeUnitsID',
+#             'TimeUnitsName', 'DataType', 'GeneralCategory', 'MethodID', 'MethodDescription', 'SourceID',
+#             'SourceDescription', 'Organization', 'Citation', 'QualityControlLevelID', 'QualityControlLevelCode',
+#             'BeginDateTime', 'EndDateTime', 'BeginDateTimeUTC', 'EndDateTimeUTC', 'ValueCount'
+#             ]
+#     values = ['id', 'site_id', 'site_code', 'site_name', 'variable_id', 'variable_code', 'variable_name', 'speciation',
+#               'variable_units_id', 'variable_units_name', 'sample_medium', 'value_type', 'time_support',
+#               'time_units_id', 'time_units_name', 'data_type', 'general_category', 'method_id', 'method_description',
+#               'source_id', 'source_description', 'organization', 'citation', 'quality_control_level_id',
+#               'quality_control_level_code', 'begin_date_time', 'end_date_time', 'begin_date_time_utc',
+#               'end_date_time_utc', 'value_count'
+#               ]
+#     return OrderedDict(zip(keys, values))
+
+
+
+# def returnDict():
 
 class clsSeriesTable(FastObjectListView):
     def __init__(self, *args, **kwargs):
@@ -47,8 +50,8 @@ class clsSeriesTable(FastObjectListView):
         """Object being edited"""
         self.editingObject = None
 
-        self._buildColumns()
-        self.CreateCheckStateColumn()
+        #self._buildColumns()
+
 
         def rowFormatter(listItem, point):
             listItem.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
@@ -60,13 +63,16 @@ class clsSeriesTable(FastObjectListView):
         """Ignores Keypresses"""
         pass
 
-    def _buildColumns(self):
+    def _buildColumns(self, columns):
         seriesColumns = [
-            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=value,
+            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=key,
                        # stringConverter = '%s')
                        stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
-            for key, value in returnDict().iteritems()]
+            for key in columns]
+
+
         self.SetColumns(seriesColumns)
+        self.CreateCheckStateColumn()
 
     """User can select series using the mouse to click on check boxes """
 

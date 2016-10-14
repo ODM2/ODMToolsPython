@@ -132,7 +132,7 @@ class TaskServerMP:
                 connection = SeriesService("sqlite:///:memory:")
                 df = task[1]
                 logger.debug("Load series from db")
-                df.to_sql(name="DataValues", con=connection._session_factory.engine, flavor='sqlite', index = False, chunksize = 10000)
+                df.to_sql(name="DataValues", con=connection._connection.engine, flavor='sqlite', index = False, chunksize = 10000)
                 logger.debug("done loading database")
                 result = connection
             if task_type == "UpdateEditDF":

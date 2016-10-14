@@ -3,7 +3,8 @@
 import wx
 import wx.grid
 import wx.richtext
-from odmtools.odmdata import ODM
+# from odmtools.odmdata import ODM
+from odm2api.ODM2.models import Methods
 
 
 [wxID_PNLMETHOD, wxID_PNLMETHODSLISTCTRL1, wxID_PNLMETHODSRBCREATENEW,
@@ -119,8 +120,8 @@ class pnlMethod(wx.Panel):
             m= self.series_service.get_method_by_description(genmethod)
             if m is None:
                 logger.debug("assigning new method description")
-                m =  ODM.Method()
-                m.description = genmethod
+                m = Methods()
+                m.MethodDescription = genmethod
 
 
         elif self.rbSelect.Value:

@@ -69,7 +69,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.memDB.set_series_service(self.series_service)
 
             object = self.series_service.get_all_series()
-
+            cols = object[0].__dict__.keys()
+            self.tblSeries._buildColumns(cols)
             if object:
                 self.tblSeries.SetObjects(object)
             else:
@@ -140,13 +141,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         try:
             self.siteList = self.series_service.get_used_sites()
             for site in self.siteList:
-                self.cbSites.Append(site.code + '-' + site.name)
+                self.cbSites.Append("%s-%s"%(site.SamplingFeatureCode, site.SamplingFeatureName))
             self.cbSites.SetSelection(0)
-            self.site_code = self.siteList[0].code
+            self.site_code = self.siteList[0].SamplingFeatureCode
 
             self.varList = self.series_service.get_used_variables()
             for var in self.varList:
-                self.cbVariables.Append(var.code + '-' + var.name)
+                self.cbVariables.Append("%s-%s"%(var.VariableCode, var.VariableNameCV))
             self.cbVariables.SetSelection(0)
         except AttributeError as e:
             logger.error(e)
@@ -340,12 +341,12 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
 
         if self.checkSite.GetValue():
-            self.site_code = self.siteList[event.GetSelection()].code
+            self.site_code = self.siteList[event.GetSelection()].SamplingFeatureCode
             self.varList = self.series_service.get_variables_by_site_code(self.site_code)
 
             self.cbVariables.Clear()
             for var in self.varList:
-                self.cbVariables.Append(var.code + '-' + var.name)
+                self.cbVariables.Append("%s-%s"%(var.VariableCode, var.VariableNameCV))
             self.cbVariables.SetSelection(0)
 
             if (self.checkSite.GetValue() and not self.checkVariable.GetValue()):
@@ -362,7 +363,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         """
 
         if self.checkVariable.GetValue():
-            self.variable_code = self.varList[event.GetSelection()].code
+            self.variable_code = self.varList[event.GetSelection()].VariableCode
             if (not self.checkSite.GetValue() and self.checkVariable.GetValue()):
                 self.site_code = None
             self.setFilter(site_code=self.site_code, var_code=self.variable_code)
@@ -373,16 +374,16 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
-        self.site_code = self.siteList[self.cbSites.Selection].code
+        self.site_code = self.siteList[self.cbSites.Selection].VariableCode
 
         self.cbVariables.Clear()
         self.varList = self.series_service.get_variables_by_site_code(self.site_code)
         for var in self.varList:
-            self.cbVariables.Append(var.code + '-' + var.name)
+            self.cbVariables.Append("%s-%s"%(var.VariableCode, var.VariableNameCV))
         self.cbVariables.SetSelection(0)
 
         try:
-            self.variable_code = self.varList[self.cbVariables.Selection].code
+            self.variable_code = self.varList[self.cbVariables.Selection].VariableCode
             self.setFilter(site_code=self.site_code, var_code=self.variable_code)
             self.cbVariables.Enabled = True
             self.cbSites.Enabled = True
@@ -411,12 +412,12 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.cbVariables.Clear()
         self.varList = self.series_service.get_used_variables()
         for var in self.varList:
-            self.cbVariables.Append(var.code + '-' + var.name)
+            self.cbVariables.Append("%s-%s"%(var.VariableCode, var.VariableNameCV))
         self.cbVariables.SetSelection(0)
         self.cbSites.Enabled = False
         self.cbVariables.Enabled = True
 
-        self.variable_code = self.varList[0].code
+        self.variable_code = self.varList[0].VariableCode
 
         self.setFilter(var_code=self.variable_code)
 

@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from odmtools.odmservices import SeriesService, EditService, ExportService
 from odmtools.controller import EditTools
 from odmtools.lib.Appdirs.appdirs import user_config_dir
-from odmtools.odmdata import  SeriesService, dbconnection #ODM#, refreshDBSessionFactory,
+from odmtools.odmdata import dbconnection #ODM
 
 
 
@@ -86,20 +86,34 @@ class ServiceManager():
         #     logger.error("Unable to save connection due to invalid connection to database")
         #     return False
 
+    def test_connection(self, conn_dict):
+
+        try:
+            if dbconnection.isValidConnection(
+                    dbconnection.buildConnectionString(conn_dict['engine'], conn_dict['address'], conn_dict['db'],
+                                                       conn_dict['user'],
+                                                       conn_dict['password']), dbtype=conn_dict['version']):
+                return self.get_current_conn_dict()
+        # except Exception as e:
+        #     logger.fatal(
+        #         "The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
+        #     return None
+        except SQLAlchemyError as e:
+            logger.error("SQLAlchemy Error: %s" % e.message)
+            raise e
+        except Exception as e:
+            logger.error("The database is not accessible please enter a new connection. Error: %s" % e.message)
+            raise e
+
+
     def is_valid_connection(self):
+        # conn_string = self._build_connection_string(self._current_conn_dict)
+        # logger.debug("Conn_string: %s" % conn_string)
 
         if self.get_current_conn_dict():
-            #conn_string = self._build_connection_string(self._current_conn_dict)
-            #logger.debug("Conn_string: %s" % conn_string)
             conn_dict = self.get_current_conn_dict()
-            try:
-                if dbconnection.isValidConnection(dbconnection.buildConnectionString(conn_dict['engine'], conn_dict['address'], conn_dict['db'], conn_dict['user'],
-                                      conn_dict['password']), dbtype = conn_dict['version']):
-                    return self.get_current_conn_dict()
-            except Exception as e:
-                logger.fatal(
-                    "The previous database for some reason isn't accessible, please enter a new connection %s" % e.message)
-                return None
+            return self.test_connection(conn_dict)
+
         return None
 
 
@@ -131,7 +145,6 @@ class ServiceManager():
         #
         # sf = SessionFactory(conn_string, self.debug, version = version)
         ss= SeriesService(conn)
-        ss.refreshDB(conn.version)
         return ss
 
     # def get_cv_service(self):
