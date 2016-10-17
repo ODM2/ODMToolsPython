@@ -64,7 +64,7 @@ class WizardMethodController(WizardPageSimple):
         m = Method()
         if self.method_view.auto_method_radio.GetValue():
             description = "Values derived from ODM Tools Python"
-            m = self.series_service.get_method_by_description(description)
+            m = self.series_service.get_method_by_code(description)
             if m is None:
                 m = Method()
                 m.description = description
@@ -72,7 +72,7 @@ class WizardMethodController(WizardPageSimple):
             index = self.method_view.existing_method_table.GetFirstSelected()
             desc = self.method_view.existing_method_table.GetItem(index, 0).GetText()
 
-            m = self.series_service.get_method_by_description(desc)
+            m = self.series_service.get_method_by_code(desc)
         elif self.method_view.create_method_radio.GetValue():
             m.description = self.method_view.description_text_ctrl.GetValue()
 

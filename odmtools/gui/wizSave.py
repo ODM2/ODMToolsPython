@@ -48,7 +48,7 @@ class QCLPage(wiz.WizardPageSimple):
         self._init_data(self.panel.series_service)
 
     def _init_data(self, series):
-        qcl = series.get_all_qcls()
+        qcl = series.get_all_processing_levels()
         index = 0
         for q, i in zip(qcl, range(len(qcl))):
             num_items = self.panel.lstQCL.GetItemCount()

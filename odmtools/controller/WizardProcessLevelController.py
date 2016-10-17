@@ -39,7 +39,7 @@ class WizardProcessLevelController(WizardPageSimple):
 
     def __fetch_data(self):
         series_service = self.service_manager.get_series_service()
-        processes = series_service.get_all_qcls()
+        processes = series_service.get_all_processing_levels()
 
         data = []
         for proc in processes:
@@ -62,6 +62,6 @@ class WizardProcessLevelController(WizardPageSimple):
         elif self.processing_level_view.existing_process_radio.GetValue():
             selected_row = self.processing_level_view.existing_process_table.get_selected_row()
             code = selected_row[0]
-            q = self.service_manager.get_series_service().get_qcl_by_code(qcl_code=code)
+            q = self.service_manager.get_series_service().get_processing_level_by_code(proc_level_code=code)
 
         return q

@@ -122,7 +122,7 @@ class pnlQCL(wx.Panel):
             logger.debug("lstQCL: %s" %(self.lstQCL))
             code= self.lstQCL.GetItem(index, 0).GetText()
             logger.debug(code)
-            q= self.series_service.get_qcl_by_code(code)
+            q= self.series_service.get_processing_level_by_code(code)
 
 ##            q.id = self.lstQCL.GetItem(index,3).GetText()
 ##            q.code = self.lstQCL.GetItem(index, 0).GetText()

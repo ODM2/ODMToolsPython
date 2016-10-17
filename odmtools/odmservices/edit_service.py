@@ -284,7 +284,7 @@ class EditService():
         return self._filter_list
 
     def get_qcl(self, qcl_id):
-        return self.memDB.series_service.get_qcl_by_id(qcl_id)
+        return self.memDB.series_service.get_processing_level_by_id(qcl_id)
 
     def get_method(self, method_id):
         return self.memDB.series_service.get_method_by_id(method_id)

@@ -1,27 +1,20 @@
 import logging
-
-
 from sqlalchemy import distinct, func
-
-
 from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import Site
 # from odmtools.odmdata import Variable
 from odm2api.ODM2.models import *
-from odmtools.odmdata import Unit
 from odmtools.odmdata import Series
 from odmtools.odmdata import DataValue
 from odmtools.odmdata import Qualifier
 from odmtools.odmdata import OffsetType
 from odmtools.odmdata import Sample
 # from odmtools.odmdata import Method
-from odm2api.ODM2.models import Methods
 from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
 from odmtools.common.logger import LoggerTool
 import pandas as pd
 from odm2api.ODM2.services.createService import CreateODM2
-from odm2api.ODM2.models import Annotations
 from odm2api.ODM2.services.readService import *
 
 
@@ -51,12 +44,13 @@ class SeriesService():  # Rename to CreateService
 #####################
 
     # Site methods
-    def get_all_sites(self):
+    def get_all_sites(self):  # Site -> Sampling Feature in ODM2
         """
 
         :return: List[Sites]
         """
-        return self._edit_session.query(Site).order_by(Site.code).all()
+        # return self._edit_session.query(Site).order_by(Site.code).all()
+        return self.read_service.getSamplingFeatures(ids=None, codes=None, uuids=None,type=None, wkt=None)
 
 
     def get_used_sites(self):
@@ -65,9 +59,11 @@ class SeriesService():  # Rename to CreateService
         :return: List[Sites]
         """
         try:
-            site_ids = [x[0] for x in self._edit_session.query(distinct(Series.site_id)).all()]
+            site_ids = [site_ids[0] for site_ids in self._edit_session.query(distinct(Results.FeatureActionID)).all()]
         except:
             site_ids = None
+
+        site_ids = self._edit_session.query(FeatureActions.SamplingFeatureID).filter(FeatureActions.FeatureActionID.in_(site_ids)).all()
 
         if not site_ids:
             return None
@@ -85,10 +81,11 @@ class SeriesService():  # Rename to CreateService
         :param site_id: integer- the identification number of the site
         :return: Sites
         """
-        try:
-            return self._edit_session.query(Site).filter_by(id=site_id).first()
-        except:
-            return None
+        # try:
+        #     return self._edit_session.query(Site).filter_by(id=site_id).first()
+        # except:
+        #     return None
+        return self.read_service.getSamplingFeatures(ids=site_id)
 
     # Variables methods
     def get_used_variables(self):
@@ -98,10 +95,12 @@ class SeriesService():  # Rename to CreateService
         """
 
         try:
-            var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).all()]
+            # var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).all()]
+            var_ids = [x[0] for x in self._edit_session.query(distinct(Results.VariableID)).all()]
         except:
             var_ids = None
 
+        var_ids = self._edit_session.query(Results.VariableID).filter(Results.VariableID.in_(var_ids)).all()
         if not var_ids:
             return None
 
@@ -115,10 +114,9 @@ class SeriesService():  # Rename to CreateService
 
     def get_all_variables(self):
         """
-
         :return: List[Variables]
         """
-        return self._edit_session.query(Variables).all()
+        return self.read_service.getVariables(ids=None, codes=None)
 
     def get_variable_by_id(self, variable_id):
         """
@@ -126,10 +124,7 @@ class SeriesService():  # Rename to CreateService
         :param variable_id: int
         :return: Variables
         """
-        try:
-            return self._edit_session.query(Variables).filter_by(id=variable_id).first()
-        except:
-            return None
+        return self.read_service.getVariables(ids=variable_id)
 
     def get_variable_by_code(self, variable_code):
         """
@@ -137,10 +132,7 @@ class SeriesService():  # Rename to CreateService
         :param variable_code:  str
         :return: Variables
         """
-        try:
-            return self._edit_session.query(Variables).filter_by(code=variable_code).first()
-        except:
-            return None
+        return self.read_service.getVariables(codes=variable_code)
 
     def get_variables_by_site_code(self, site_code):  # covers NoDV, VarUnits, TimeUnits
         """
@@ -163,50 +155,39 @@ class SeriesService():  # Rename to CreateService
     # Unit methods
     def get_all_units(self):
         """
-
         :return: List[Units]
         """
-        return self._edit_session.query(Unit).all()
+        return self.read_service.getUnits(ids=None, name=None, type=None)
 
     def get_unit_by_name(self, unit_name):
         """
-
         :param unit_name: str
         :return: Units
         """
-        try:
-            return self._edit_session.query(Unit).filter_by(name=unit_name).first()
-        except:
-            return None
+        return self.read_service.getUnits(name=unit_name)
 
     def get_unit_by_id(self, unit_id):
         """
-
         :param unit_id: int
         :return: Units
         """
-        try:
-            return self._edit_session.query(Unit).filter_by(id=unit_id).first()
-        except:
-            return None
+        self.read_service.getUnits(ids=unit_id)
 
-
-    def get_all_qualifiers(self):
+    def get_all_qualifiers(self):  # Rename to annotations
         """
-
         :return: List[Qualifiers]
         """
         # result = self._edit_session.query(Annotations).order_by(Annotations.AnnotationCode).all()
         # return result
         return self.read_service.getAnnotations(None)
 
-    def get_qualifier_by_code(self, code):
+    def get_qualifier_by_code(self, code):  # Rename to get_annotations_by_type
         """
-
         :return: Qualifiers
         """
-        result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
-        return result
+        # result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
+        # return result
+        return self.read_service.getAnnotations(type=code)
 
     def get_qualifiers_by_series_id(self, series_id):
         """
@@ -218,40 +199,23 @@ class SeriesService():  # Rename to CreateService
             Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
         return self._edit_session.query(Qualifier).join(subquery).distinct().all()
 
-    #QCL methods
-    def get_all_qcls(self):
-        return self._edit_session.query(QualityControlLevel).all()
+    def get_all_processing_levels(self):
+        return self.read_service.getProcessingLevels(ids=None, codes=None)
 
-    def get_qcl_by_id(self, qcl_id):
-        try:
-            return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
-        except:
-            return None
+    def get_processing_level_by_id(self, proc_level_id):
+        return self.read_service.getProcessingLevels(ids=proc_level_id)
 
-    def get_qcl_by_code(self, qcl_code):
-        try:
-            return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).first()
-        except:
-            return None
+    def get_processing_level_by_code(self, proc_level_code):
+        return self.read_service.getProcessingLevels(codes=proc_level_code)
 
-    # Method methods
     def get_all_methods(self):
-        return self._edit_session.query(Methods).all()
+        return self.read_service.getMethods(ids=None, codes=None, type=None)
 
     def get_method_by_id(self, method_id):
-        try:
-            result = self._edit_session.query(Methods).filter_by(id=method_id).first()
-        except:
-            result = None
-        return result
+        return self.read_service.getMethods(ids=method_id)
 
-    def get_method_by_description(self, method_code):
-        try:
-            result = self._edit_session.query(Methods).filter_by(description=method_code).first()
-        except:
-            result = None
-            logger.error("method not found")
-        return result
+    def get_method_by_code(self, method_code):
+        return self.read_service.getMethods(codes=method_code)
 
     def get_offset_types_by_series_id(self, series_id):
         """
