@@ -25,7 +25,7 @@ class dlgFill(wx.Dialog):
         bsForm = wx.BoxSizer(wx.VERTICAL)
 
         self.lblInstructions = wx.StaticText(self, wx.ID_ANY,
-                                             u"This function fills any gaps less than the gap duration with a no-data value at the fill frequency",
+                                             u"This function fills any gaps greater than the gap duration with a no-data value at the fill frequency.",
                                              wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblInstructions.Wrap(300)
         bsForm.Add(self.lblInstructions, 0, wx.ALL, 5)

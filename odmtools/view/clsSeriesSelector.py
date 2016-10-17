@@ -155,7 +155,7 @@ class ClsSeriesSelector(wx.Panel):
 
         self.cbVariables = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
                                        parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25), style=wx.CB_READONLY,
-                                       value='comboBox4')
+                                       value='')
         self.cbVariables.SetLabel(u'')
         self.cbVariables.Enable(False)
 
