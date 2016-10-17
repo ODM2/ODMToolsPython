@@ -35,14 +35,14 @@ class ClsSeriesSelector(wx.Panel):
     def _init_coll_boxSizer5_Items(self, parent):
        # generated method, don't edit
 
-
-       self.pnlRadio = wx.Panel(id=wxID_PNLSPLITTER, name='pnlData', parent=self, pos=wx.Point(0, -10),
-                               size=wx.Size(900, 349), style=wx.TAB_TRAVERSAL)
+       pnlSpacer= wx.Panel(id=0, name='pnlSpacer', parent=self.pnlRadio, pos=wx.Point(3, 3),
+                                size=wx.Size(0, 25), style=wx.TAB_TRAVERSAL)
        parent.AddWindow(self.rbAll, 0, border=1, flag=wx.ALL)
        parent.AddWindow(self.rbSimple, 0, border=1, flag=wx.ALL)
        parent.AddWindow(self.rbAdvanced, 0, border=1, flag=wx.ALL)
-       parent.AddWindow(self.pnlRadio, 0 , flag= wx.EXPAND)
-       parent.AddWindow(self.btnClear, 100, border =0)
+       parent.AddWindow(pnlSpacer, 100, border=1, flag=wx.EXPAND)
+
+       parent.AddWindow(self.btnClear, 0, border=1, flag=wx.ALL)
 
 
     ## Splitter Sizer
@@ -81,27 +81,26 @@ class ClsSeriesSelector(wx.Panel):
 
     def _init_sizers(self):
         # generated method, don't edit
-        self.boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
-        self.boxSizer2 = wx.BoxSizer(orient=wx.HORIZONTAL)
-        self.boxSizer3 = wx.BoxSizer(orient=wx.VERTICAL)
-        self.boxSizer4 = wx.BoxSizer(orient=wx.HORIZONTAL)
-        ##        self.boxSizer5 = wx.BoxSizer(orient=wx.HORIZONTAL)
-        self.boxSizer6 = wx.BoxSizer(orient=wx.VERTICAL)
+        boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
+        boxSizer2 = wx.BoxSizer(orient=wx.HORIZONTAL)
+        boxSizer3 = wx.BoxSizer(orient=wx.VERTICAL)
+        boxSizer4 = wx.BoxSizer(orient=wx.HORIZONTAL)
+        boxSizer5 = wx.BoxSizer(orient=wx.HORIZONTAL)
+        boxSizer6 = wx.BoxSizer(orient=wx.VERTICAL)
 
-        self._init_coll_boxSizer1_Items(self.boxSizer1)
-        self._init_coll_boxSizer2_Items(self.boxSizer2)
-        self._init_coll_boxSizer3_Items(self.boxSizer3)
-        self._init_coll_boxSizer4_Items(self.boxSizer4)
-        ##        self._init_coll_boxSizer5_Items(self.boxSizer5)
-        self._init_coll_boxSizer6_Items(self.boxSizer6)
+        self._init_coll_boxSizer1_Items(boxSizer1)
+        self._init_coll_boxSizer2_Items(boxSizer2)
+        self._init_coll_boxSizer3_Items(boxSizer3)
+        self._init_coll_boxSizer4_Items(boxSizer4)
+        self._init_coll_boxSizer5_Items(boxSizer5)
+        self._init_coll_boxSizer6_Items(boxSizer6)
 
-        self.SetSizer(self.boxSizer1)
-        ##        self.pnlRadio.SetSizer(self.boxSizer5)
-        ##        self.pnlSite.SetSizer(self.boxSizer4)
-        ##        self.pnlVar.SetSizer(self.boxSizer2)
-        self.cpnlSimple.SetSizer(self.boxSizer6)
-        self.pnlData.SetSizer(self.boxSizer3)
-        # self.pnlRadio.SetSizer(self.boxSizer5)
+        self.SetSizer(boxSizer1)
+        self.pnlRadio.SetSizer(boxSizer5)
+        self.pnlSite.SetSizer(boxSizer4)
+        self.pnlVar.SetSizer(boxSizer2)
+        self.cpnlSimple.SetSizer(boxSizer6)
+        self.pnlData.SetSizer(boxSizer3)
 
     def _init_ctrls(self):
         # generated method, don't edit
@@ -112,19 +111,19 @@ class ClsSeriesSelector(wx.Panel):
 
         ## Radio panel
         self.pnlRadio = wx.Panel(id=wxID_PNLRADIO, name='pnlRadio', parent=self, pos=wx.Point(3, 3),
-                                 size=wx.Size(919, 20), style=wx.TAB_TRAVERSAL)
+                                 size=wx.Size(100000000, 25), style=wx.TAB_TRAVERSAL)
 
         self.rbAll = wx.RadioButton(id=wxID_FRAME1RBALL, label=u'All', name=u'rbAll', parent=self.pnlRadio,
                                     pos=wx.Point(0, 0), size=wx.Size(81, 20), style=0)
 
         self.rbSimple = wx.RadioButton(id=wxID_FRAME1RBSIMPLE, label=u'Simple Filter', name=u'rbSimple',
-                                       parent=self.pnlRadio, pos=wx.Point(81, 0), size=wx.Size(112, 20), style=0)
+                                       parent=self.pnlRadio, pos=wx.Point(0, 0), size=wx.Size(112, 20), style=0)
 
         self.rbAdvanced = wx.RadioButton(id=wxID_FRAME1RBADVANCED, label=u'Advanced Filter', name=u'rbAdvanced',
-                                         parent=self.pnlRadio, pos=wx.Point(193, 0), size=wx.Size(104, 20), style=0)
+                                         parent=self.pnlRadio, pos=wx.Point(0, 0), size=wx.Size(104, 20), style=0)
 
-        self.btnClear = wx.Button(id=wxID_CLEAR, label=u"Clear", name=u'btnClear', parent=self.pnlRadio,
-                                  pos=wx.Point(700, 0), size=wx.Size(80, 15), style=0)
+        self.btnClear = wx.Button(id=wxID_CLEAR, label="Clear Plot", name=u'btnClear', parent=self.pnlRadio,
+                                  pos=wx.Point(0, 0), size=wx.Size(80, 20), style=0)
 
         self.rbAll.SetValue(True)
 
@@ -148,7 +147,7 @@ class ClsSeriesSelector(wx.Panel):
 
         self.lblSite = wx.StaticText(id=wxID_PNLSERIESSELECTORLBLSITE, label=u'Site', name=u'lblSite',
                                      parent=self.pnlSite, pos=wx.Point(30, 0), size=wx.Size(60, 21), style=0)
-        self.lblSite.SetToolTipString(u'staticText1')
+        self.lblSite.SetToolTipString(u'')
 
         self.cbSites.SetLabel(u'')
         #self.checkSite.SetValue(False)
@@ -165,7 +164,7 @@ class ClsSeriesSelector(wx.Panel):
 
         self.cbVariables = wx.ComboBox(choices=[], id=wxID_PNLSERIESSELECTORCBVARIABLES, name=u'cbVariables',
                                        parent=self.pnlVar, pos=wx.Point(100, 0), size=wx.Size(700, 25), style=wx.CB_READONLY,
-                                       value='comboBox4')
+                                       value='')
         self.cbVariables.SetLabel(u'')
         self.cbVariables.Enable(False)
 
