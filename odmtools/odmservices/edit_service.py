@@ -594,7 +594,7 @@ class EditService():
             return False
 
     def create_qcl(self, code, definition, explanation):
-        return self.memDB.series_service.create_qcl(code, definition, explanation)
+        return self.memDB.series_service.create_processing_level(code, definition, explanation)
 
     def create_method(self, description, link):
         return self.memDB.series_service.create_method(description, link)

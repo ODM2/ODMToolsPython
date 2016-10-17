@@ -359,7 +359,7 @@ class TestSeriesService:
         assert variable.variable_unit_id == unit.id
 
     def test_create_qcl(self):
-        qcl = self.series_service.create_qcl("Code", "Definition", "Explanation")
+        qcl = self.series_service.create_processing_level("Code", "Definition", "Explanation")
 
         assert qcl.id != None
         assert qcl.code == "Code"

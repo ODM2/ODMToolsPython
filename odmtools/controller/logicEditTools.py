@@ -379,7 +379,7 @@ class EditTools():
     # Creates
     ###################
     def create_qcl(self, code, definition, explanation):
-        qcl = self._edit_service.create_qcl(code, definition, explanation)
+        qcl = self._edit_service.create_processing_level(code, definition, explanation)
         if self._record:
             self._script('new_qcl = series_service.get_qcl_by_id(%s)\n' % (qcl.id))
             Publisher.sendMessage("scroll")

@@ -18,8 +18,7 @@ class ReadService:
     # Controlled Vocabulary get methods
     #return a list of all terms in the cv
     def get_vertical_datum_cvs(self):
-        result = self._edit_session.query(VerticalDatumCV).order_by(VerticalDatumCV.term).all()
-        return result
+        return self.read_service.getCVs(type="Elevation Datum")
 
     def get_samples(self):
         return self.read_service.getSamplingFeatures(ids=None, codes=None, uuids=None, type=None, wkt=None)
@@ -47,8 +46,7 @@ class ReadService:
         return self.read_service.getCVs(type="dataset type")
 
     def get_general_category_cvs(self):
-        result = self._edit_session.query(GeneralCategoryCV).order_by(GeneralCategoryCV.term).all()
-        return result
+        return self.read_service.getAnnotations(type="categoricalresultvalue")
 
     def get_censor_code_cvs(self):
         return self.read_service.getCVs(type="censorcode")

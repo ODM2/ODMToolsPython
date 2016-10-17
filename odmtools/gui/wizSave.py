@@ -380,7 +380,7 @@ class wizSave(wx.wizard.Wizard):
                 else:
                     QCL = self.record_service.get_qcl(QCL)
             else:
-                QCL = self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
+                QCL = self.record_service.create_processing_level(QCL.code, QCL.definition, QCL.explanation)
 
             #if variable exists use its id
             if self.series_service.variable_exists(Variable):

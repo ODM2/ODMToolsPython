@@ -7,7 +7,7 @@ from sqlalchemy import distinct, func
 from odmtools.odmdata import SessionFactory
 from odmtools.odmdata import Site
 # from odmtools.odmdata import Variable
-from odm2api.ODM2.models import Variables
+from odm2api.ODM2.models import *
 from odmtools.odmdata import Unit
 from odmtools.odmdata import Series
 from odmtools.odmdata import DataValue
@@ -22,7 +22,7 @@ from odmtools.common.logger import LoggerTool
 import pandas as pd
 from odm2api.ODM2.services.createService import CreateODM2
 from odm2api.ODM2.models import Annotations
-from odm2api.ODM2.services.readService import ReadODM2
+from odm2api.ODM2.services.readService import *
 
 
 # tool = LoggerTool()
@@ -619,7 +619,7 @@ class SeriesService():  # Rename to CreateService
 
         return self.create_service.createVariable(var=variable)
 
-    def create_qcl(self, code, definition, explanation):
+    def create_processing_level(self, code, definition, explanation):
         """
         qcl -> Processing Level in ODM2
         :param code:
@@ -627,18 +627,17 @@ class SeriesService():  # Rename to CreateService
         :param explanation:
         :return:
         """
-        qcl = QualityControlLevel()
-        qcl.code = code
-        qcl.definition = definition
-        qcl.explanation = explanation
-        return self.create_service.createProcessingLevel(proclevel=qcl)
+        procLevel = ProcessingLevels()
+        procLevel.ProcessingLevelCode = code
+        procLevel.Definition = definition
+        procLevel.Explanation = explanation
+        return self.create_service.createProcessingLevel(proclevel=procLevel)
 
     def create_annotation_by_anno(self, annotation):
         return self.create_service.create(annotation)
 
     def create_annotation(self, code, description):
         """
-
         :param code:
         :param description:
         :return:
