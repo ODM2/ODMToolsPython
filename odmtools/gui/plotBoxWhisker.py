@@ -116,17 +116,17 @@ class PlotBox(wx.Panel):
         ax.scatter([range(1, len(med) + 1)], med, marker='s', c="k", s=10)
 
         # bp = onSeries.dataTable.boxplot(
-        bp = oneSeries.dataTable[oneSeries.dataTable["DataValue"]<>oneSeries.noDataValue].boxplot(column="DataValue", ax=ax, by=oneSeries.BoxWhisker.currinterval.groupby,
+        bp = oneSeries.dataTable[oneSeries.dataTable["datavalue"]<>oneSeries.noDataValue].boxplot(column="datavalue", ax=ax, by=oneSeries.BoxWhisker.currinterval.groupby,
                                          rot=35,  notch=True, sym="-s", conf_intervals=ci, return_type='dict',
                                          grid=False)
 
         # Set Colors of the Box Whisker plot
         try:
-            plt.setp(bp['DataValue']['whiskers'], color='k', linestyle='-')
-            plt.setp(bp['DataValue']['medians'], color='k', linestyle='-')
-            plt.setp(bp['DataValue']['boxes'], color='GREY', linestyle='-')
-            plt.setp(bp['DataValue']['caps'], color='k')
-            plt.setp(bp['DataValue']['fliers'], markersize=3.5, color=oneSeries.color)
+            plt.setp(bp['datavalue']['whiskers'], color='k', linestyle='-')
+            plt.setp(bp['datavalue']['medians'], color='k', linestyle='-')
+            plt.setp(bp['datavalue']['boxes'], color='GREY', linestyle='-')
+            plt.setp(bp['datavalue']['caps'], color='k')
+            plt.setp(bp['datavalue']['fliers'], markersize=3.5, color=oneSeries.color)
         except:
             plt.setp(bp['whiskers'], color='k', linestyle='-')
             plt.setp(bp['medians'], color='k', linestyle='-')
@@ -169,22 +169,22 @@ class PlotBox(wx.Panel):
 
     def monthly(self, str):
         # print "monthly"
-        self.seriesPlotInfo.setBoxInterval("Month")
+        self.seriesPlotInfo.setBoxInterval("month")
         self.updatePlot()
 
     def seasonaly(self, str):
         # print"seasonal"
-        self.seriesPlotInfo.setBoxInterval("Season")
+        self.seriesPlotInfo.setBoxInterval("season")
         self.updatePlot()
 
     def yearly(self, str):
         # print "yearly"
-        self.seriesPlotInfo.setBoxInterval("Year")
+        self.seriesPlotInfo.setBoxInterval("year")
         self.updatePlot()
 
     def overall(self, str):
         # print "overall"
-        self.seriesPlotInfo.setBoxInterval("Overall")
+        self.seriesPlotInfo.setBoxInterval("overall")
         self.updatePlot()
 
 

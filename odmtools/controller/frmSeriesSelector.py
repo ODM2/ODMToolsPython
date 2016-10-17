@@ -162,7 +162,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         # build pop-up menu for right-click display
         self.selectedIndex = event.m_itemIndex
         #self.selectedID = self.tableSeries.getColumnText(event.m_itemIndex, 1)
-        self.selectedID = self.tblSeries.GetSelectedObject().id
+        self.selectedID = self.tblSeries.GetSelectedObject().resultID
 
         # print self.selectedID
         popup_edit_series = wx.NewId()
@@ -374,7 +374,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         :return:
         """
-        self.site_code = self.siteList[self.cbSites.Selection].VariableCode
+        self.site_code = self.siteList[self.cbSites.Selection].SamplingFeatureCode
 
         self.cbVariables.Clear()
         self.varList = self.series_service.get_variables_by_site_code(self.site_code)
@@ -400,7 +400,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.cbSites.Enabled = True
         self.variable_code = None
 
-        self.site_code = self.siteList[self.cbSites.Selection].code
+        self.site_code = self.siteList[self.cbSites.Selection].SamplingFeatureCode
         self.setFilter(site_code=self.site_code)
 
     def variableOnly(self):
@@ -460,17 +460,17 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         if site_code and var_code:
-            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:4],text=site_code)
-            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[6:7],text=var_code)
+            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10],text=site_code)
+            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10],text=var_code)
             self.tblSeries.SetFilter(Chain(self.siteFilter, self.variableFilter))
         elif site_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:4], text=site_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10], text=site_code))
         elif var_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[6:7], text=var_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10], text=var_code))
         elif advfilter:
             self.tblSeries.SetFilter(advfilter)
         else:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:1]))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10]))
         self.tblSeries.RepopulateList()
 
 
@@ -492,12 +492,12 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             object = self.tblSeries.GetSelectedObject()
 
         if not self.tblSeries.IsChecked(object):
-            Publisher.sendMessage("removePlot", seriesID=object.id)
+            Publisher.sendMessage("removePlot", seriesID=object.ResultID)
             Publisher.sendMessage("updateCursor", deselectedObject=object)
 
         else:
             logger.debug("Obtained object, entering addplot")
-            self.pnlPlot.addPlot(self.memDB, object.id)
+            self.pnlPlot.addPlot(self.memDB, object.ResultID)
             Publisher.sendMessage("updateCursor", selectedObject=object)
 
         logger.debug("refreshing...")
@@ -524,7 +524,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
 
         ## update Cursor
         if self.parent.Parent.pnlPlot._seriesPlotInfo:
-            if self.parent.Parent.pnlPlot._seriesPlotInfo.isPlotted(editingObject.id):
+            if self.parent.Parent.pnlPlot._seriesPlotInfo.isPlotted(editingObject.ResultID):
                 #print "Updating Cursor", editingObject.id
                 Publisher.sendMessage("updateCursor", selectedObject=editingObject)
 
@@ -563,7 +563,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             ovl.RefreshObject(ovl.editingObject)
 
 
-            return True, object.id#, self.memDB
+            return True, object.ResultID#, self.memDB
         else:
             isSelected = False
             logger.debug("series was not checked")

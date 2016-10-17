@@ -54,7 +54,7 @@ class OneSeriesPlotInfo(object):
         self.plotTitle = None
         self.numBins = 25
         self.binWidth = 1.5
-        self.boxWhiskerMethod = "Month"
+        self.boxWhiskerMethod = "month"
 
         self.yrange = 0
         self.color = ""
@@ -226,8 +226,10 @@ class SeriesPlotInfo(object):
         return self.createSeriesInfo(seriesID, seriesInfo, series)
 
     def createSeriesInfo(self, seriesID, seriesInfo, series):
-        startDate = series.begin_date_time
-        endDate = series.end_date_time
+
+        dates = self.memDB.series_service.get_result_dates(series.ResultID)
+        startDate = dates[1]
+        endDate = dates[0]
 
         if endDate > self.endDate:
             self.endDate = endDate
@@ -237,14 +239,15 @@ class SeriesPlotInfo(object):
         if not self.isSubsetted:
             self.currentStart = self.startDate
             self.currentEnd = self.endDate
+#TODO odm2
 
-        variableName = series.variable_name
-        unitsName = series.variable_units_name
-        siteName = series.site_name
-        dataType = series.data_type
-        variable = self.memDB.series_service.get_variable_by_id(series.variable_id)
-
-        noDataValue = variable.no_data_value
+        unitsName = series.UnitsObj.UnitsName
+        siteName = series.FeatureActionObj.SamplingFeatureObj.SamplingFeatureName
+        dataType = "datatype"#series.data_type
+        #variable = self.memDB.series_service.get_variable_by_id(series.variable_id)
+        variable =series.VariableObj
+        variableName = variable.VariableNameCV
+        noDataValue = variable.NoDataValue
         if self.editID == seriesID:
             #d= DataFrame(pandas.read_sql())
             logger.debug("editing -- getting datavalues for graph")
@@ -256,6 +259,7 @@ class SeriesPlotInfo(object):
             data = self.memDB.getDataValuesforGraph(seriesID, noDataValue, self.currentStart, self.currentEnd)
             logger.debug("Finished plotting -- getting datavalues for graph")
 
+
         logger.debug("assigning variables...")
         seriesInfo.seriesID = seriesID
         seriesInfo.series = series
@@ -266,13 +270,13 @@ class SeriesPlotInfo(object):
         seriesInfo.siteName = siteName
         seriesInfo.variableName = variableName
         seriesInfo.variableUnits = unitsName
-        seriesInfo.plotTitle = "Site: " + siteName + "\nVarName: " + variableName + "\nQCL: " + series.quality_control_level_code
-        seriesInfo.axisTitle = variableName + " (" + unitsName + ")"
+        seriesInfo.plotTitle = "Site: %s \nVarName: %s \nQCL: %s" %(siteName, variableName, series.ProcessingLevelID)
+        seriesInfo.axisTitle = "%s (%s)"%(variableName, unitsName)
         seriesInfo.noDataValue = noDataValue
         seriesInfo.dataTable = data
 
         if len(data) > 0:
-            seriesInfo.yrange = np.max(data['DataValue']) - np.min(data['DataValue'])
+            seriesInfo.yrange = np.max(data['datavalue']) - np.min(data['datavalue'])
         else:
             seriesInfo.yrange = 0
 
@@ -298,9 +302,9 @@ class SeriesPlotInfo(object):
 
     def buildPlotInfo(self, seriesInfo):
         #remove all of the nodatavalues from the pandas table
-        filteredData = seriesInfo.dataTable[seriesInfo.dataTable["DataValue"] != seriesInfo.noDataValue]
-        val = filteredData["Month"].map(calcSeason)
-        filteredData["Season"] = val
+        filteredData = seriesInfo.dataTable[seriesInfo.dataTable["datavalue"] != seriesInfo.noDataValue]
+        val = filteredData["month"].map(calcSeason)
+        filteredData["season"] = val
 
         # construct tasks for the task server
         tasks = [("Probability", filteredData),
@@ -353,12 +357,12 @@ class Statistics(object):
     def __init__(self, data):
         start_time = timeit.default_timer()
 
-        dvs = data["DataValue"]
+        dvs = data["datavalue"]
         count = len(dvs)
         if count > 0:
 
             time = timeit.default_timer()
-            self.NumberofCensoredObservations = len(data[data["CensorCode"] != "nc"])
+            self.NumberofCensoredObservations = len(data[data["censorcodecv"] != "nc"])
             elapsed = timeit.default_timer() - time
             logger.debug("censored observations using len: %s" % elapsed)
 
@@ -396,13 +400,13 @@ class BoxWhisker(object):
         self.intervals = {}
         self.method = method
 
-        interval_types = ["Overall", "Year", "Month", "Season"]
-        intervals = ["Overall", "Year", "Month", "Season"]
+        interval_types = ["overall", "year", "month", "season"]
+        intervals = ["overall", "year", "month", "season"]
 
         interval_options = zip(interval_types, intervals)
         for interval_type, interval in interval_options:
             start_time = timeit.default_timer()
-            if interval_type == "Overall":
+            if interval_type == "overall":
                 interval = data
             else:
                 interval = data.groupby(interval_type)
@@ -421,18 +425,18 @@ class BoxWhisker(object):
 
         results = self.calculateIntervalsOnGroups(interval)
 
-        if interval_type == "Season" or interval_type == "Month":
+        if interval_type == "season" or interval_type == "month":
             func = None
-            if interval_type == "Season":
+            if interval_type == "season":
                 func = numToSeason
-            elif interval_type == "Month":
+            elif interval_type == "month":
                 func = numToMonth
 
             self.intervals[interval_type] = BoxWhiskerPlotInfo(
                 interval_type, interval_type, [func(x) for x in results["names"]],
                 [results["median"], results["conflimit"], results["mean"], results["confint"]])
 
-        elif interval_type == "Overall":
+        elif interval_type == "overall":
             self.intervals[interval_type] = BoxWhiskerPlotInfo(
                 interval_type, None, [],
                 [results["median"], results["conflimit"], results["mean"], results["confint"]])
@@ -452,7 +456,7 @@ class BoxWhisker(object):
 
         if isinstance(interval, pd.core.groupby.DataFrameGroupBy):
             for name, group in interval:
-                datavalue = group['DataValue']
+                datavalue = group['datavalue']
                 group_mean = np.mean(datavalue)
                 group_median = np.median(datavalue)
                 group_std = math.sqrt(np.var(datavalue))
@@ -467,8 +471,8 @@ class BoxWhisker(object):
                 median.append(group_median)
                 mean.append(group_mean)
         else:
-            name = "Overall"
-            datavalue = interval['DataValue']
+            name = "overall"
+            datavalue = interval['datavalue']
             data_mean = np.mean(datavalue)
             data_median = np.median(datavalue)
             data_std = math.sqrt(np.var(datavalue))
@@ -539,7 +543,7 @@ class Probability(object):
         :param data:
         :return:
         """
-        self.yAxis = data['DataValue']
+        self.yAxis = data['datavalue']
         # Determine rank, sorting values doesn't change outcome while using pandas.
         ranks = self.yAxis.rank()
         PrbExc = ranks / (len(ranks) + 1) * 100

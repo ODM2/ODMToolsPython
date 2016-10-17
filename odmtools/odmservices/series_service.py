@@ -43,6 +43,10 @@ class SeriesService(serviceBase):
 
 
     def get_used_sites(self):
+        """
+        Return a list of all sites that are being referenced in the Series Catalog Table
+        :return: List[Sites]
+        """
         try:
             fas=[x[0] for x in self._session.query(distinct(Results.FeatureActionID)).all()]
         except:
@@ -54,6 +58,10 @@ class SeriesService(serviceBase):
         return sites
 
     def get_used_variables(self):
+        """
+        #get list of used variable ids
+        :return: List[Variables]
+        """
         try:
             ids= [x[0] for x in self._session.query(distinct(Results.VariableID)).all()]
         except:
@@ -63,8 +71,35 @@ class SeriesService(serviceBase):
         return vars
 
 
+
+    # Query DetailedResultInfo/series object is for Display purposes
+
     def get_all_series(self):
+        """
+        Returns all series as a modelObject
+        :return: List[Series]
+        """
         return self.read.getDetailedResultInfo('Time Series Coverage')
+
+    def get_series_by_id(self, series_id):
+        """
+
+        :param series_id: int
+        :return: Series
+        """
+        # try:
+        #     return self.read.getDetailedResultInfo('Time Series Coverage', resultID = series_id)[0]
+        # except Exception as e:
+        #     print e
+        #     return None
+        return self.read.getResults(ids=[series_id])[0]
+
+    # Query result objects for data purposes
+    def get_result_dates(self, result_id):
+        q = self.read._session.query(
+            func.max(TimeSeriesResultValues.ValueDateTime), func.min(TimeSeriesResultValues.ValueDateTime)
+            ).filter(TimeSeriesResultValues.ResultID == result_id)
+        return q.all()[0]
 
     def get_variables_by_site_code(self, site_code):
         """
@@ -74,44 +109,21 @@ class SeriesService(serviceBase):
         """
         try:
             var_ids = [x[0] for x in
-                       self._session.query(distinct(Results.VariableID)) \
-                    .filter(Results.FeatureActionID == FeatureActions.FeatureActionID) \
-                    .filter(FeatureActions.SamplingFeatureID == SamplingFeatures.SamplingFeatureID) \
-                    .filter(SamplingFeatures.SamplingFeatureCode == site_code)
+                       self._session.query(distinct(Results.VariableID))
+                       .filter(Results.FeatureActionID == FeatureActions.FeatureActionID)
+                       .filter(FeatureActions.SamplingFeatureID == SamplingFeatures.SamplingFeatureID)
+                       .filter(SamplingFeatures.SamplingFeatureCode == site_code).all()
 
             ]
         except:
             var_ids = None
 
+        q = self._session.query(Variables).filter(Variables.VariableID.in_(var_ids))
+        return q.all()
 
-
-# def get_variables_by_site_code(self, site_code):  # covers NoDV, VarUnits, TimeUnits
-#         """
-#         Finds all of variables at a site
-#         :param site_code: str
-#         :return: List[Variables]
-#         """
-#         try:
-#             var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).filter_by(
-#                 site_code=site_code).all()]
-#         except:
-#             var_ids = None
-#
-#         variables = []
-#         for var_id in var_ids:
-#             variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
-#
-#         return variables
 
 # Series Catalog methods
-#     def get_all_series(self):
-#         """
-#         Returns all series as a modelObject
-#         :return: List[Series]
-#         """
-#
-#         #logger.debug("%s" % self._edit_session.query(Series).order_by(Series.id).all())
-#         return self._edit_session.query(Series).order_by(Series.id).all()
+
 #
 #     def get_series_by_site(self , site_id):
 #         """
@@ -124,18 +136,7 @@ class SeriesService(serviceBase):
 #             return selectedSeries
 #         except:
 #             return None
-#
-#     def get_series_by_id(self, series_id):
-#         """
-#
-#         :param series_id: int
-#         :return: Series
-#         """
-#         try:
-#             return self._edit_session.query(Series).filter_by(id=series_id).first()
-#         except Exception as e:
-#             print e
-#             return None
+
 
 
 #
@@ -148,60 +149,22 @@ class SeriesService(serviceBase):
 #         return self._edit_session.query(Site).order_by(Site.code).all()
 #
 #
-#     def get_used_sites(self):
-#         """
-#         Return a list of all sites that are being referenced in the Series Catalog Table
-#         :return: List[Sites]
-#         """
-#         try:
-#             site_ids = [x[0] for x in self._edit_session.query(distinct(Series.site_id)).all()]
-#         except:
-#             site_ids = None
 #
-#         if not site_ids:
-#             return None
-#
-#         Sites = []
-#         for site_id in site_ids:
-#             Sites.append(self._edit_session.query(Site).filter_by(id=site_id).first())
-#
-#         return Sites
-
-#
-#
-#     def get_site_by_id(self, site_id):
-#         """
-#         return a Site object that has an id=site_id
-#         :param site_id: integer- the identification number of the site
-#         :return: Sites
-#         """
+    def get_site_by_id(self, site_id):
+        """
+        return a Site object that has an id=site_id
+        :param site_id: integer- the identification number of the site
+        :return: Sites
+        """
 #         try:
 #             return self._edit_session.query(Site).filter_by(id=site_id).first()
 #         except:
 #             return None
+
+        return self.read.getSampling(ids = [site_id])[0]
+
 #
-#     # Variables methods
-#     def get_used_variables(self):
-#         """
-#         #get list of used variable ids
-#         :return: List[Variables]
-#         """
-#
-#         try:
-#             var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).all()]
-#         except:
-#             var_ids = None
-#
-#         if not var_ids:
-#             return None
-#
-#         Variables = []
-#
-#         #create list of variables from the list of ids
-#         for var_id in var_ids:
-#             Variables.append(self._edit_session.query(Variable).filter_by(id=var_id).first())
-#
-#         return Variables
+
 #
 #     def get_all_variables(self):
 #         """
@@ -210,16 +173,17 @@ class SeriesService(serviceBase):
 #         """
 #         return self._edit_session.query(Variable).all()
 #
-#     def get_variable_by_id(self, variable_id):
-#         """
-#
-#         :param variable_id: int
-#         :return: Variables
-#         """
+    def get_variable_by_id(self, variable_id):
+        """
+
+        :param variable_id: int
+        :return: Variables
+        """
 #         try:
 #             return self._edit_session.query(Variable).filter_by(id=variable_id).first()
 #         except:
 #             return None
+        return self.read.getVariables(ids = [variable_id])[0]
 #
 #     def get_variable_by_code(self, variable_code):
 #         """
@@ -402,30 +366,38 @@ class SeriesService(serviceBase):
 #         pass
 #
 #
-#     #Data Value Methods
-#     def get_values_by_series(self, series_id):
-#         '''
-#
-#         :param series_id:  Series id
-#         :return: pandas dataframe
-#         '''
-#         series= self.get_series_by_id(series_id)
-#         if series:
-#             q = self._edit_session.query(DataValue).filter_by(
-#                     site_id=series.site_id,
-#                     variable_id=series.variable_id,
-#                     method_id=series.method_id,
-#                     source_id=series.source_id,
-#                     quality_control_level_id=series.quality_control_level_id)
-#
-#             query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-#             data= pd.read_sql_query(sql= query,
-#                               con = self._session_factory.engine,
-#                               params = query.params )
-#             #return data.set_index(data['LocalDateTime'])
-#             return data
-#         else:
-#             return None
+    #Data Value Methods
+    def get_values_by_series(self, series_id):
+        '''
+
+        :param series_id:  Series id
+        :return: pandas dataframe
+        '''
+        #series= self.get_series_by_id(series_id)
+        # if series:
+        #     q = self._edit_session.query(DataValue).filter_by(
+        #             site_id=series.site_id,
+        #             variable_id=series.variable_id,
+        #             method_id=series.method_id,
+        #             source_id=series.source_id,
+        #             quality_control_level_id=series.quality_control_level_id)
+        #
+        #     query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+        #     data= pd.read_sql_query(sql= query,
+        #                       con = self._session_factory.engine,
+        #                       params = query.params )
+        #     #return data.set_index(data['LocalDateTime'])
+        #     return data
+        # else:
+        #     return None
+
+        q = self.read._session.query(TimeSeriesResultValues).filter_by(ResultID=series_id).order_by(TimeSeriesResultValues.ValueDateTime)
+        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql=query,
+                                 con=self._session_factory.engine,
+                                 params=query.params)
+        data.set_index(data['valuedatetime'], inplace=True)
+        return data
 #
 #     def get_all_values_df(self):
 #         """
@@ -456,19 +428,20 @@ class SeriesService(serviceBase):
 #     def get_all_values(self):
 #         return self._edit_session.query(DataValue).order_by(DataValue.local_date_time).all()
 #
-#     @staticmethod
-#     def calcSeason(row):
-#
-#         month = int(row["Month"])
-#
-#         if month in [1, 2, 3]:
-#             return 1
-#         elif month in[4, 5, 6]:
-#             return 2
-#         elif month in [7, 8, 9]:
-#             return 3
-#         elif month in [10, 11, 12]:
-#             return 4
+    @staticmethod
+    def calcSeason(row):
+
+        month = int(row["month"])
+
+        if month in [1, 2, 3]:
+            return 1
+        elif month in[4, 5, 6]:
+            return 2
+        elif month in [7, 8, 9]:
+            return 3
+        elif month in [10, 11, 12]:
+            return 4
+
 #
 #     def get_all_plot_values(self):
 #         """
@@ -490,30 +463,45 @@ class SeriesService(serviceBase):
 #         data["Season"] = data.apply(self.calcSeason, axis=1)
 #         return data.set_index(data['LocalDateTime'])
 #
-#     def get_plot_values(self, seriesID, noDataValue, startDate = None, endDate = None ):
-#         """
-#
-#         :param seriesID:
-#         :param noDataValue:
-#         :param startDate:
-#         :param endDate:
-#         :return:
-#         """
-#         series = self.get_series_by_id(seriesID)
-#
-#         DataValues = [
-#             (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
-#                 dv.local_date_time.strftime('%Y'))
-#             for dv in series.data_values
-#             if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
-#         ]
-#         data = pd.DataFrame(DataValues, columns=["DataValue", "LocalDateTime", "CensorCode", "Month", "Year"])
-#         data.set_index(data['LocalDateTime'], inplace=True)
-#         data["Season"] = data.apply(self.calcSeason, axis=1)
-#         return data
-#
-#
-#
+    def get_plot_values(self, seriesID, noDataValue, startDate = None, endDate = None ):
+        """
+
+        :param seriesID:
+        :param noDataValue:
+        :param startDate:
+        :param endDate:
+        :return:
+        """
+
+        #series = self.get_series_by_id(seriesID)
+        #
+        # DataValues = [
+        #     (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
+        #         dv.local_date_time.strftime('%Y'))
+        #     for dv in series.data_values
+        #     if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
+        # ]
+        # data = pd.DataFrame(DataValues, columns=["DataValue", "LocalDateTime", "CensorCode", "Month", "Year"])
+        # data.set_index(data['LocalDateTime'], inplace=True)
+        # data["Season"] = data.apply(self.calcSeason, axis=1)
+        # return data
+
+
+        Values = self.get_values_by_series(seriesID)
+        data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
+
+
+        #data.set_index(data['LocalDateTime'], inplace=True)
+        data["month"] = data['valuedatetime'].apply(lambda x: x.month)
+        data["year"] = data['valuedatetime'].apply(lambda x: x.year)
+        data["season"] = data.apply(self.calcSeason, axis=1)
+        return data
+
+
+
+
+
+
 #     def get_data_value_by_id(self, id):
 #         """
 #

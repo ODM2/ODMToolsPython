@@ -412,7 +412,7 @@ class plotTimeSeries(wx.Panel):
                 data = oneSeries.dataTable
                 dates = data.index.astype(datetime.datetime)
                 #data.plot(ax=curraxis)
-                curraxis.plot_date(dates, data['DataValue'],
+                curraxis.plot_date(dates, data['datavalue'],
                         color=oneSeries.color, fmt=self.format, xdate=True, tz=None, antialiased=True,
                         label=oneSeries.plotTitle, alpha=self.alpha, picker=5.0, pickradius=5.0,
                         markersize=4)
@@ -484,7 +484,7 @@ class plotTimeSeries(wx.Panel):
                 Activate Cursor. Happens when a plot is selected
                 """
                 if self.seriesPlotInfo:
-                    seriesInfo = self.seriesPlotInfo.getSeries(selectedObject.id)
+                    seriesInfo = self.seriesPlotInfo.getSeries(selectedObject.ResultID)
 
                     if seriesInfo:
                         currentAxis = None

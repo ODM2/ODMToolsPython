@@ -658,7 +658,7 @@ class mnuRibbon(RB.RibbonBar):
             self.spnBins.Enabled = False
             self.enableDateSelection(True)
 
-        ##HIstogram
+        ##Histogram
         elif plot == 2:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, False)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, False)
