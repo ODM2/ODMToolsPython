@@ -489,6 +489,9 @@ class SeriesService(serviceBase):
 
         Values = self.get_values_by_series(seriesID)
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
+        # data = data[data['datavalue'] != noDataValue]
+        data = data[(data['datavalue'] != noDataValue) & (data['valuedatetime'] >= startDate) & (
+        data['valuedatetime'] <= endDate)]
 
 
         #data.set_index(data['LocalDateTime'], inplace=True)
