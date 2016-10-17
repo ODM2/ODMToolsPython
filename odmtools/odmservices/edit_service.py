@@ -98,9 +98,9 @@ class EditService():
 
         if isinstance(datetime_list, list):
 
-            result = pd.DataFrame(datetime_list, columns=["LocalDateTime"])
+            result = pd.DataFrame(datetime_list, columns=["valuedatetime"])
 
-            result.set_index("LocalDateTime", inplace=True)
+            result.set_index("valuedatetime", inplace=True)
 
         return result
 
@@ -130,10 +130,10 @@ class EditService():
         df = self._test_filter_previous()
 
         if ops == '>':
-            self.filtered_dataframe = df[df['DataValue'] > value]
+            self.filtered_dataframe = df[df['datavalue'] > value]
 
         if ops == '<':
-            self.filtered_dataframe = df[df['DataValue'] < value]
+            self.filtered_dataframe = df[df['datavalue'] < value]
 
 
     def filter_date(self, before, after):
@@ -185,9 +185,9 @@ class EditService():
 
         # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
         copy_df = df
-        copy_df['values'] = df['DataValue']
+        copy_df['values'] = df['datavalue']
         copy_df['diff'] = copy_df['values'].shift()
-        copy_df["diff_date"] = copy_df['LocalDateTime'].shift()
+        copy_df["diff_date"] = copy_df['valuedatetime'].shift()
         copy_df['change_threshold'] = abs(df['values'] - df['diff'])
 
         if not isinstance(value, float):
@@ -337,13 +337,13 @@ class EditService():
         df = self._series_points_df
         issel = df.index.isin(tmp_filter_list.index)
 
-        mdf = df["DataValue"].mask(issel)
+        mdf = df["datavalue"].mask(issel)
         mdf.interpolate(method = "time", inplace=True)
-        tmp_filter_list["DataValue"]=mdf[issel]
+        tmp_filter_list["datavalue"]=mdf[issel]
         ids = tmp_filter_list.index.tolist()
 
         #update_list = [(row["DataValue"], row["ValueID"]) for index, row in tmp_filter_list.iterrows()]
-        update_list = [{"value": row["DataValue"], "id": index} for index, row in tmp_filter_list.iterrows()]
+        update_list = [{"value": row["datavalue"], "id": index} for index, row in tmp_filter_list.iterrows()]
 
         self.memDB.update(update_list)
 
@@ -359,10 +359,10 @@ class EditService():
             x_l = (tmp_filter_list.index[-1]-startdate).total_seconds()
 
             # y_n = y_0 + G(x_i / x_l)
-            f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
-            tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
+            f = lambda row :  row["datavalue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
+            tmp_filter_list["datavalue"]=tmp_filter_list.apply(f, axis = 1)
 
-            update_list = [{"value": row["DataValue"], "id":index} for index, row in tmp_filter_list.iterrows()]
+            update_list = [{"value": row["datavalue"], "id":index} for index, row in tmp_filter_list.iterrows()]
 
             ids = tmp_filter_list.index.tolist()
             self.memDB.update(update_list)

@@ -271,7 +271,7 @@ class MyCustomToolbar(NavigationToolbar):
         #date= [x[1] for x in self.editCurve.dataTable if x[0] != self.editCurve.noDataValue]
 
         axes = self.canvas.figure.axes[0]
-        axes.set_ylim(min(nodvvals["DataValue"]), max(nodvvals["DataValue"]))
+        axes.set_ylim(min(nodvvals["datavalue"]), max(nodvvals["datavalue"]))
         axes.set_xlim(dates.date2num([min(nodvvals.index), max(nodvvals.index)]))
 
         self.push_current()

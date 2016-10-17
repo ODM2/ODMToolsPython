@@ -67,7 +67,7 @@ class clsSeriesTable(FastObjectListView):
         seriesColumns = [
             ColumnDefn(key, align="left", minimumWidth=100, valueGetter=key,
                        # stringConverter = '%s')
-                       stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else'%s')
+                       stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else '%s')
             for key in columns]
 
 

@@ -37,13 +37,13 @@ class TestMemoryDB:
 
         self.memory_db.update([{"value":15,"id":self.sdate}])
         dvs = self.memory_db.getDataValuesDF()
-        print dvs["DataValue"]
-        assert dvs["DataValue"][0] == 15
+        print dvs["datavalue"]
+        assert dvs["datavalue"][0] == 15
 
     def test_update_value(self):
         self.memory_db.updateValue([self.sdate],'+', 5 )
         dvs = self.memory_db.getDataValuesDF()
-        assert dvs["DataValue"][0] == 14
+        assert dvs["datavalue"][0] == 14
 
     def test_add_points(self):
         #with pytest.raises(NotImplementedError):
@@ -55,7 +55,7 @@ class TestMemoryDB:
         dvs = self.memory_db.getDataValuesDF()
 
         assert len(dvs.index) == 11
-        assert dvs["DataValue"][0] == -9999
+        assert dvs["datavalue"][0] == -9999
 
     def test_update_flag(self):
         self.memory_db.updateFlag([self.sdate], '50')
@@ -66,7 +66,7 @@ class TestMemoryDB:
     def test_delete_points(self):
         stlen= len(self.memory_db.df.index)
 
-        self.memory_db.delete(self.memory_db.df["LocalDateTime"].tolist()[0:10])
+        self.memory_db.delete(self.memory_db.df["resultdatetime"].tolist()[0:10])
         dvs = self.memory_db.getDataValuesDF()
         assert len(dvs.index) == stlen-10
 
