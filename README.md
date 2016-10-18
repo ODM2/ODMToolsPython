@@ -19,7 +19,7 @@ To make running ODMTools easier we have included installers. Please select the o
 
 ####Windows
 Recommended Release:
-+   [Window v1.2.8-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.8_beta/ODMTools_1.2.8_Beta_Win_Installer.exe)
++   [Window v1.2.8-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.8_beta/ODMTools_v1.2.8-beta_Installer.exe)
 
 ####Mac
 +   [Mac v1.2.8-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.8_beta/ODMTools_v1.2.8-beta_Mac_installer.pkg.zip)
