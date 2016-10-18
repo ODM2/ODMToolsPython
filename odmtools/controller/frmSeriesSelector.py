@@ -459,13 +459,13 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         if site_code and var_code:
-            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:4],text=site_code)
-            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[6:7],text=var_code)
+            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[2:6],text=site_code)
+            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:8],text=var_code)
             self.tblSeries.SetFilter(Chain(self.siteFilter, self.variableFilter))
         elif site_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:4], text=site_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[2:6], text=site_code))
         elif var_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[6:7], text=var_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[3:8], text=var_code))
         elif advfilter:
             self.tblSeries.SetFilter(advfilter)
         else:
@@ -490,6 +490,14 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         except Exception as e :
             object = self.tblSeries.GetSelectedObject()
 
+        self.drawPlot(object)
+        logger.debug("refreshing...")
+        self.Refresh()
+
+        logger.debug("Finish Plotting")
+
+    def drawPlot(self, object):
+
         if not self.tblSeries.IsChecked(object):
             Publisher.sendMessage("removePlot", seriesID=object.id)
             Publisher.sendMessage("updateCursor", deselectedObject=object)
@@ -498,12 +506,6 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             logger.debug("Obtained object, entering addplot")
             self.pnlPlot.addPlot(self.memDB, object.id)
             Publisher.sendMessage("updateCursor", selectedObject=object)
-
-        logger.debug("refreshing...")
-        self.Refresh()
-
-        logger.debug("Finish Plotting")
-
 
         #from meliae import scanner
         #scanner.dump_all_objects("plot_plotting.dat")
@@ -527,6 +529,17 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
                 #print "Updating Cursor", editingObject.id
                 Publisher.sendMessage("updateCursor", selectedObject=editingObject)
 
+    def onBtnClear(self, event):
+        logger.debug("Clearing all selected objects from Series Catalog")
+        chcklist = self.tblSeries.GetCheckedObjects()
+
+        self.tblSeries.RefreshObject(self.tblSeries.editingObject)
+        for c in chcklist:
+            self.tblSeries.SetCheckState(c, False)
+        Publisher.sendMessage("removeMultPlot", seriesIDs= chcklist)
+        Publisher.sendMessage("updateCursor", deselectedObject=object)
+            #self.drawPlot(c)
+        self.Refresh()
 
     def onReadyToEdit(self):
         """Choose a series to edit from the series selector
