@@ -367,7 +367,7 @@ class SeriesService(serviceBase):
 #
 #
     #Data Value Methods
-    def get_values_by_series(self, series_id):
+    def get_values(self, series_id=None):
         '''
 
         :param series_id:  Series id
@@ -391,19 +391,23 @@ class SeriesService(serviceBase):
         # else:
         #     return None
 
-        q = self.read._session.query(TimeSeriesResultValues).filter_by(ResultID=series_id).order_by(TimeSeriesResultValues.ValueDateTime)
+        q = self.read._session.query(TimeSeriesResultValues)
+        if series_id:
+            q=q.filter_by(ResultID=series_id)
+        q= q.order_by(TimeSeriesResultValues.ValueDateTime)
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query,
                                  con=self._session_factory.engine,
                                  params=query.params)
         data.set_index(data['valuedatetime'], inplace=True)
         return data
-#
-#     def get_all_values_df(self):
-#         """
-#
-#         :return: Pandas DataFrame object
-#         """
+
+    # def get_all_values_df(self):
+
+    #     """
+    #
+    #     :return: Pandas DataFrame object
+    #     """
 #         q = self._edit_session.query(DataValue).order_by(DataValue.local_date_time)
 #         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
 #         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
@@ -416,6 +420,13 @@ class SeriesService(serviceBase):
 #
 #         data = data.ix[:, columns]
 #         return data.set_index(data['LocalDateTime'])
+#         q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
+#         query = q.statement.compile(dialect = self._session_factory.engine.dialect)
+#         data = pd.read_sql_query(sql= query,
+#                                  con= self._session_factory.engine,
+#                                  params=query.params)
+#
+
 #
 #     def get_all_values_list(self):
 #         """
@@ -487,7 +498,7 @@ class SeriesService(serviceBase):
         # return data
 
 
-        Values = self.get_values_by_series(seriesID)
+        Values = self.get_values(seriesID)
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
         # data = data[data['datavalue'] != noDataValue]
         data = data[(data['datavalue'] != noDataValue) & (data['valuedatetime'] >= startDate) & (

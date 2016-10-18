@@ -137,7 +137,7 @@ class TaskServerMP:
                 result = connection
             if task_type == "UpdateEditDF":
                 connection = task[1]
-                result = connection.get_all_values_df()
+                result = connection.get_values()
 
             result = (task_type, result)
 

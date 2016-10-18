@@ -200,7 +200,7 @@ class MemoryDatabase(object):
             self.taskserver.processTasks()
         else:
         '''
-        self.df = self.mem_service.get_all_values_df()
+        self.df = self.mem_service.get_values()
         print self.mem_service._version
 
 
@@ -212,7 +212,7 @@ class MemoryDatabase(object):
         if not self.editLoaded:
             logger.debug("Load series from db")
 
-            self.df = self.series_service.get_values_by_series(seriesID)
+            self.df = self.series_service.get_values(seriesID)
             self.editLoaded = True
 
             '''
