@@ -196,10 +196,11 @@ class EditTools():
 
     def drift_correction(self, gap_width):
         ret = self._edit_service.drift_correction(gap_width)
-        self.refresh_edit()
-        if self._record:
-            self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
-            Publisher.sendMessage("scroll")
+        if ret:
+            self.refresh_edit()
+            if self._record:
+                self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
+                Publisher.sendMessage("scroll")
         return ret
 
     def reset_filter(self):

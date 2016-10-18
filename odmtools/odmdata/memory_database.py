@@ -21,6 +21,7 @@ class MemoryDatabase(object):
         self.df = None
         # Series_Service handles remote database
         self.series_service = None
+
         # Memory_service handles in memory database
         self.mem_service = SeriesService("sqlite:///:memory:")
         # TODO clean up closing of program

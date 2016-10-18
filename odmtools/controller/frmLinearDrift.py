@@ -13,7 +13,10 @@ class frmLinearDrift(clsLinearDrift):
         Perform Drift Correction based on given input. Catch errors if the user enters something invalid
         """
         try:
-            self._record_service.drift_correction(float(self.txtFinalGapValue.GetValue()))
+            result = self._record_service.drift_correction(float(self.txtFinalGapValue.GetValue()))
+            if not result:
+                dial = wx.MessageDialog( None, "Linear drift can only be performed on one continuous data selection. \nPlease modify your selection and try again.", "Bad Input", wx.OK)
+                dial.ShowModal()
         except Exception as e:
             dial = wx.MessageDialog(None, "Unable to convert value to float %s" % e, "Bad Input",
                 wx.OK | wx.ICON_ERROR)
