@@ -17,6 +17,21 @@ from odmtools.common.logger import LoggerTool
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 logger =logging.getLogger('main')
 
+class time(object):
+    time_units = {
+        'second': 's',
+        'minute': 'm',
+        'hour': 'h',
+        'day': 'D',
+        'week': 'W',
+        'month': 'M',
+        'year': 'Y'
+    }
+
+    def __init__(self, value, time_period):
+        self.value = value
+        self.time_period = time_period
+
 class EditService():
     # Mutual exclusion: cursor, or connection_string
     def __init__(self, series_id, connection=None, connection_string="", debug=False):
@@ -86,6 +101,7 @@ class EditService():
 
         return df
 
+
     def datetime2dataframe(self, datetime_list):
         """ Converts datetime_list to a pandas Dataframe
 
@@ -141,19 +157,51 @@ class EditService():
         if before and after:
             self.filtered_dataframe = df[(df.index < before) & (df.index > after)]
 
-    # Data Gaps
-    def data_gaps(self, value, time_period):
-        df = self._test_filter_previous()
+    def fill_gap(self, gap, fill):
 
-        time_units = {
-            'second': 's',
-            'minute': 'm',
-            'hour': 'h',
-            'day': 'D',
-            'week': 'W',
-            'month': 'M',
-            'year': 'Y'
-        }
+        df = self.memDB.getDataValuesDF()
+        gaps= self.find_gaps(df, gap[0], gap[1])
+        points = []
+        series= self.memDB.series
+        timegap = np.timedelta64(fill[0], self.time_units[fill[1]])
+
+        #if gaps is not of type dataframe- put it in a dataframe
+        #if not isinstance(gaps, pd.DataFrame
+        for g in gaps.iterrows():
+            row = g[1]
+            e = row.datetime
+            s = row.dateprev
+
+            #prime the loop
+            s = s + timegap
+            # for each gap time period in the larger gap ( until datetime = prev value)
+            while s < e:
+                utc_offset = (series.begin_date_time-series.begin_date_time_utc).total_seconds()/3600
+                points.append((-9999, None, s, utc_offset, s, None, None, u'nc', None, None, series.site_id, series.variable_id, series.method_id, series.source_id, series.quality_control_level_id))
+                #('-9999', None, DATE, series.begin_date_time_utc, UTCDATE, None, None, u'nc', None, None,
+                #       series.site_id, series.variable_id, series.method_id, series.source_id,
+                #       series.quality_control_level_id
+
+                s = s + timegap
+        #print points
+        self.add_points(points)
+
+    time_units = {
+        'second': 's',
+        'minute': 'm',
+        'hour': 'h',
+        'day': 'D',
+        'week': 'W',
+        'month': 'M',
+        'year': 'Y'
+    }
+
+    # Data Gaps
+
+
+    def find_gaps(self, df, value, time_period):
+
+
 
         # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
         copy_df = df
@@ -165,19 +213,29 @@ class EditService():
             value = int(value)
 
         # create a bool column indicating which rows meet condition
-        filtered_results = copy_df['datetime'].diff() >= np.timedelta64(value, time_units[time_period])
+        filtered_results = copy_df['datetime'].diff() > np.timedelta64(value, self.time_units[time_period])
 
         # filter on rows that passed previous condition
-        copy_df = copy_df[filtered_results]
+        return copy_df[filtered_results]
 
+
+
+
+    def data_gaps(self, value, time_period):
+        df = self._test_filter_previous()
+        copy_df = self.find_gaps(df, value, time_period)
+        print (copy_df)
         # merge values and remove duplicates. this hack allows for both values to be marked when selecting data gaps
         newdf = pd.concat([copy_df['datetime'], copy_df['dateprev']], join='inner')
-        self.filtered_dataframe = df[df.index.isin(newdf.drop_duplicates().dropna())]
 
         # clean up
         del copy_df
-        del filtered_results
-        del newdf
+
+
+        self.filtered_dataframe= df[df.index.isin(newdf.drop_duplicates().dropna())]
+
+
+
 
     def change_value_threshold(self, value, operator):
 
@@ -310,7 +368,6 @@ class EditService():
 
     def add_points(self, points):
         # todo: add the ability to send in multiple datetimes to a single 'point'
-
         self.memDB.addPoints(points)
 
         self._populate_series()
