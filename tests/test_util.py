@@ -25,18 +25,13 @@ def add_bulk_data_values(session, series, dvs_size):
     df['DateTimeUTC'] = pd.to_datetime(df['DateTimeUTC']).astype(datetime.datetime)
     dvs = []
     for record in df.to_dict('records')[:dvs_size]:
-        dv = DataValue()
-        dv.data_value = record['DataValue']
-        dv.local_date_time = record['LocalDateTime']
-        dv.utc_offset = record['UTCOffset']
-        dv.date_time_utc = record['DateTimeUTC']
-        dv.site_id = series.site_id
-        dv.variable_id = series.variable_id
-        dv.censor_code = record['CensorCode']
-        dv.method_id = series.method_id
-        dv.source_id = series.source_id
-        dv.quality_control_level_id = series.quality_control_level_id
-        dvs.append(dv)
+        timeseries_result_value = TimeSeriesResultValues()
+        timeseries_result_value.DataValue = record["DataValue"]
+        timeseries_result_value.ValueDateTimeUTCOffset = record["UTCOffset"]
+        timeseries_result_value.ValueDateTime = record["DateTimeUTC"]
+        timeseries_result_value.CensorCodeCV = record["CensorCode"]
+        timeseries_result_value.QualityCodeCV = series.quality_control_level_code
+        dvs.append(timeseries_result_value)
     series.data_values = dvs
     session.add_all(dvs)
     session.commit()
@@ -93,18 +88,14 @@ def add_series(session):
 def add_data_values(session, series):
     dvs = []
     for i in range(10):
-        dv = DataValue()
-        dv.data_value = i
-        dv.local_date_time = datetime.datetime.now() - datetime.timedelta(days=i)
-        dv.utc_offset = 0
-        dv.date_time_utc = dv.local_date_time
-        dv.site_id = series.site_id
-        dv.variable_id = series.variable_id
-        dv.censor_code = "NC"
-        dv.method_id = series.method_id
-        dv.source_id = series.source_id
-        dv.quality_control_level_id = series.quality_control_level_id
-        dvs.append(dv)
+        timeseries = TimeSeriesResultValues()
+        timeseries.DataValue = i
+        timeseries.TimeAggregationInterval = datetime.datetime.now() - datetime.timedelta(days=i)
+        timeseries.ValueDateTimeUTCOffset = 0
+        timeseries.ValueDateTime = timeseries.TimeAggregationInterval
+        timeseries.CensorCodeCV = "NC"
+        timeseries.QualityCodeCV = series.quality_control_level
+        dvs.append(timeseries)
 
     series.data_values = dvs
     session.add_all(dvs)
