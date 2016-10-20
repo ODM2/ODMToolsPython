@@ -250,14 +250,14 @@ class TestSeriesService:
     def test_get_qcl_by_id(self):
         assert self.series_service.get_processing_level_by_id(10) == None
 
-        qcl = test_util.add_qcl(self.session)
+        qcl = test_util.add_process_level(self.session)
         db_qcl = self.series_service.get_processing_level_by_id(qcl.id)
         assert qcl.code == db_qcl.code
 
     def test_get_all_qcls(self):
         assert self.series_service.get_all_processing_levels() == []
 
-        qcl = test_util.add_qcl(self.session)
+        qcl = test_util.add_process_level(self.session)
         all_qcls = self.series_service.get_all_processing_levels()
 
         assert len(all_qcls) == 1
@@ -307,7 +307,7 @@ class TestSeriesService:
         variable = test_util.add_variable(self.session)
         method = test_util.add_method(self.session)
         source = test_util.add_source(self.session)
-        qcl = test_util.add_qcl(self.session)
+        qcl = test_util.add_process_level(self.session)
 
         dvs = []
         for val in range(10):
@@ -382,7 +382,7 @@ class TestSeriesService:
 
 
     def test_qcl_exists(self):
-        qcl = test_util.add_qcl(self.session)
+        qcl = test_util.add_process_level(self.session)
         assert self.series_service.qcl_exists(qcl) == True
 
         qcl.code = "00000"

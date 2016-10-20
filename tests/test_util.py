@@ -3,6 +3,8 @@ import pandas as pd
 from odmtools.odmdata import *
 import os
 import sys
+from odm2api.ODM2.models import *
+from odm2api.ODM2.services.readService import DetailedResult
 
 
 def build_db(engine):
@@ -40,10 +42,11 @@ def add_bulk_data_values(session, series, dvs_size):
     session.commit()
     return df
 
+
 def add_series_bulk_data(session, dvs_size=50):
     site = add_site(session)
     var = add_variable(session)
-    qcl = add_qcl(session)
+    qcl = add_process_level(session)
     method = add_method(session)
     source = add_source(session)
 
@@ -73,33 +76,18 @@ def add_series_bulk_data(session, dvs_size=50):
     session.commit()
     return series
 
+
 # Create Series objects
 def add_series(session):
-    site = add_site(session)
+    result = Results()
     var = add_variable(session)
-    qcl = add_qcl(session)
-    method = add_method(session)
-    source = add_source(session)
-
-    series = Series()
-    series.site = site
-    series.site_code = site.code
-    series.variable = var
-    series.variable_code = var.code
-    series.method = method
-    series.source = source
-    series.quality_control_level_id = qcl.id
-
-    dvs = add_data_values(session, series)
-    series.begin_date_time = dvs[0].local_date_time
-    series.end_date_time = dvs[-1].local_date_time
-    series.begin_date_time_utc = dvs[0].date_time_utc
-    series.end_date_time_utc = dvs[-1].date_time_utc
-    series.value_count = len(dvs)
-
-    session.add(series)
+    qcl = add_process_level(session)
+    result.VariableObj = var
+    result.ProcessingLevelObj = qcl
+    result.ProcessingLevelID = qcl.ProcessingLevelID
+    session.add(result)
     session.commit()
-    return series
+    return result
 
 
 def add_data_values(session, series):
@@ -126,14 +114,14 @@ def add_data_values(session, series):
 
 def add_site(session):
     spatial_ref = add_spatial_reference(session)
-    site = Site("ABC123", "Test Site")
-    site.latitude = 10.0
-    site.longitude = 10.0
-    site.lat_long_datum_id = spatial_ref.id
-    site.local_projection_id = spatial_ref.id
-    site.elevation_m = 1000
-    site.local_x = 10.0
-    site.local_y = 10.0
+    site = Sites("ABC123", "Test Site")
+    site.Latitude = 10.0
+    site.Longitude = 10.0
+    site.lat_long_datum_id = spatial_ref.SpatialReferenceID
+    site.local_projection_id = spatial_ref.SpatialReferenceID
+    site.Elevation_m = 1000
+    # site.local_x = 10.0
+    # site.local_y = 10.0
     session.add(site)
     session.commit()
     return site
@@ -141,60 +129,48 @@ def add_site(session):
 
 def add_variable(session):
     unit = add_unit(session)
-    variable = Variable()
-    variable.code = "ABC123"
-    variable.name = "Test Variable"
-    variable.speciation = "Test"
-    variable.variable_unit_id = unit.id
-    variable.sample_medium = "Test Medium"
-    variable.value_type = "Test Val Type"
-    variable.is_regular = True
-    variable.time_support = 3.14
-    variable.time_unit_id = unit.id
-    variable.data_type = "Test Data Type"
-    variable.general_category = "Test Category"
-    variable.no_data_value = -2000.0
+    variable = Variables()
+    variable.VariableCode = "ABC123"
+    variable.VariableNameCV = "Test Variable"
+    variable.SpeciationCV = "Test"
+    variable.VariableID = unit.id
+    variable.NoDataValue = -2000.0
     session.add(variable)
     session.commit()
     return variable
 
 
 def add_method(session):
-    method = Method()
-    method.description = "This is a test"
+    method = Methods()
+    method.MethodDescription = "This is a test"
     session.add(method)
     session.commit()
     return method
 
 
-def add_qcl(session):
-    qcl = QualityControlLevel()
-    qcl.code = "ABC123"
-    qcl.definition = "This is a test"
-    qcl.explanation = "A test is a thing that tests code"
-    session.add(qcl)
+def add_process_level(session):
+    proc_level = ProcessingLevels()
+    proc_level.ProcessingLevelCode = "ABC123"
+    proc_level.Definition = "This is a test"
+    proc_level.Explanation = "A test is a thing that tests code"
+    session.add(proc_level)
     session.commit()
-    return qcl
+    return proc_level
 
 
 def add_source(session):
-    source = Source()
-    source.organization = "Test Organization"
-    source.description = "This is a test"
-    source.contact_name = "Test Name"
-    source.phone = "555-1234"
-    source.email = "source@example.com"
-    source.address = "123 Test Street"
-    source.city = "Metropolis"
-    source.state = "NY"
-    source.zip_code = "12345"
-    source.citation = "Test Citation"
-
-    iso = add_iso_metadata(session)
-    source.iso_metadata_id = iso.id
-    session.add(source)
+    organization = Organizations()
+    affiliation = Affiliations()
+    organization.OrganizationName = "Test Organization"
+    organization.OrganizationDescription = "This is a test"
+    affiliation.PersonLink = "Test Name"
+    affiliation.PrimaryPhone = "555-1234"
+    affiliation.PrimaryEmail = "source@example.com"
+    affiliation.PrimaryAddress = "123 Test Street"
+    affiliation.OrganizationObj = organization
+    session.add(affiliation)
     session.commit()
-    return source
+    return affiliation
 
 
 def add_iso_metadata(session):
@@ -209,8 +185,8 @@ def add_iso_metadata(session):
 
 
 def add_spatial_reference(session):
-    spatial_ref = SpatialReference()
-    spatial_ref.srs_name = "This is a test"
+    spatial_ref = SpatialReferences()
+    spatial_ref.SRSName = "This is a test"
     session.add(spatial_ref)
     session.commit()
     return spatial_ref
@@ -258,19 +234,19 @@ def add_site_type_cv(session):
 
 
 def add_variable_name_cv(session):
-    var_name_cv = VariableNameCV()
-    var_name_cv.term = "Test"
-    var_name_cv.definition = "This is a test"
+    var_name_cv = CVVariableName()
+    var_name_cv.Term = "Test"
+    var_name_cv.Definition = "This is a test"
     session.add(var_name_cv)
     session.commit()
     return var_name_cv
 
 
 def add_unit(session):
-    unit = Unit()
-    unit.name = "Test"
-    unit.type = "Test"
-    unit.abbreviation = "T"
+    unit = Units()
+    unit.UnitsName = "Test"
+    unit.UnitsTypeCV = "Test"
+    unit.UnitsAbbreviation = "T"
     session.add(unit)
     session.commit()
     return unit
@@ -286,9 +262,9 @@ def add_offset_type_cv(session, unit_id):
 
 
 def add_speciation_cv(session):
-    spec = SpeciationCV()
-    spec.term = "Test"
-    spec.definition = "This is a test"
+    spec = CVSpeciation()
+    spec.Term = "Test"
+    spec.Definition = "This is a test"
     session.add(spec)
     session.commit()
     return spec
