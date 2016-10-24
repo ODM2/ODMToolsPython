@@ -1,7 +1,7 @@
 import wx
 from wx.wizard import WizardPageSimple
 from odmtools.view.WizardMethodView import WizardMethodView
-from odmtools.odmdata import Method
+from odm2api.ODM2.models import Methods as Method
 
 
 class WizardMethodController(WizardPageSimple):

@@ -1,8 +1,8 @@
 import wx
 from odmtools.view.WizardVariableView import WizardVariableView
 from wx.wizard import WizardPageSimple
-from odmtools.odmdata import Variable
-
+# from odmtools.odmdata import Variable
+from odm2api.ODM2.models import Variables as Variable
 
 class WizardVariableController(WizardPageSimple):
     def __init__(self, parent, service_manager, current_variable):

@@ -8,13 +8,10 @@ class TestExportService:
 	def setup(self):		
 		self.connection_string = "sqlite:///:memory:"
 		self.series_service = SeriesService(self.connection_string, debug=False)
-<<<<<<< HEAD
+
 		self.session = self.series_service._connection.get_session()
 		engine = self.series_service._connection.engine
-=======
-		self.session = self.series_service._session_factory.getSession()
-		engine = self.series_service._session_factory.engine
->>>>>>> origin/update_cvs
+
 		test_util.build_db(engine)
 		self.series = test_util.add_series(self.session)
 

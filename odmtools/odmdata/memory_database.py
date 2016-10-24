@@ -230,11 +230,7 @@ class MemoryDatabase(object):
                 self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
-<<<<<<< HEAD
-=======
-            else:
-                logger.debug("no data in series_service")
->>>>>>> origin/update_cvs
+
 
 
 #TODO: update to work with ODM2

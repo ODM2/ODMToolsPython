@@ -1,7 +1,8 @@
 import wx
 from odmtools.view.WizardProcessLevelView import WizardProcessLevelView
 from wx.wizard import WizardPageSimple
-from odmtools.odmdata import QualityControlLevel
+# from odmtools.odmdata import QualityControlLevel
+from odm2api.ODM2.models import ProcessingLevels as QualityControlLevel
 
 
 class WizardProcessLevelController(WizardPageSimple):

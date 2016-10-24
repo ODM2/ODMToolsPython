@@ -123,10 +123,7 @@ class frmODMToolsMain(wx.Frame):
 
     def _init_database(self, quit_if_cancel=True):
         logger.info("Loading Database...")
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/update_cvs
         while True:
             ## Database connection is valid, therefore proceed through the rest of the program
             if self.service_manager.is_valid_connection():
