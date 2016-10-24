@@ -1,5 +1,6 @@
 from odmtools.odmdata import *
 from odmtools.odmservices import SeriesService
+from odm2api.ODM2.models import Annotations
 
 from tests import test_util
 
@@ -8,8 +9,13 @@ class TestSeriesService:
     def setup(self):
         self.connection_string = "sqlite:///:memory:"
         self.series_service = SeriesService(self.connection_string, debug=False)
+<<<<<<< HEAD
         self.session = self.series_service._connection.get_session()
         engine = self.series_service._connection.engine
+=======
+        self.session = self.series_service._session_factory.getSession()
+        engine = self.series_service._session_factory.engine
+>>>>>>> origin/update_cvs
         test_util.build_db(engine)
         """
         @pytest.fixture(scope="class", autouse=True)
@@ -62,31 +68,30 @@ class TestSeriesService:
         #assert len(sites) == 0
         assert sites is None
 
-    def test_create_qualifier(self):
+    def test_create_annotation(self):
         qual = Qualifier()
         qual.code = "ABC123"
         qual.description = "This is a test"
-        self.series_service.create_qualifier_by_qual(qual)
+        self.series_service.create_annotation_by_anno(qual)
 
         assert qual.id is not None
 
-    def test_get_qualifier_by_code(self):
-        assert self.series_service.get_all_qualifiers() == []
+    def test_get_annotation_by_code(self):
+        assert self.series_service.get_all_qualifiers() == None
 
-        qual= self.series_service.create_qualifier("ABC123","This is a test")
+        qual = self.series_service.create_annotation("ABC123", "This is a test")
 
         db_qual = self.series_service.get_qualifier_by_code("ABC123")
 
         assert qual.id == db_qual.id
 
-    def test_get_qualifiers(self):
-        assert self.series_service.get_all_qualifiers() == []
+    def test_get_annotation(self):
+        assert self.series_service.get_all_qualifiers() == None
 
-        qual= self.series_service.create_qualifier("ABC123","This is a test")
+        qual= self.series_service.create_annotation("ABC123", "This is a test")
 
         db_qual = self.series_service.get_all_qualifiers()[0]
         assert qual.id == db_qual.id
-
 
     def test_get_all_sites(self):
         assert self.series_service.get_used_sites() is None
@@ -103,7 +108,6 @@ class TestSeriesService:
         assert len(sites) == 1
         if isinstance(sites, list) and len(sites) > 0:
             assert site.code == sites[0].code
-
 
     def test_get_site_by_id_fail(self):
         assert self.series_service.get_site_by_id(0) == None
@@ -209,18 +213,18 @@ class TestSeriesService:
 
     '''
     def test_save_series(self):
-        series = Series()
+        series_service = Series()
         site = test_util.add_site(self.session)
         variable = test_util.add_variable(self.session)
         method = test_util.add_method(self.session)
         source = test_util.add_source(self.session)
         qcl = test_util.add_qcl(self.session)
 
-        series.site_id = site.id
-        series.variable_id = variable.id
-        series.method_id = method.id
-        series.source_id = source.id
-        series.quality_control_level_id = qcl.id
+        series_service.site_id = site.id
+        series_service.variable_id = variable.id
+        series_service.method_id = method.id
+        series_service.source_id = source.id
+        series_service.quality_control_level_id = qcl.id
 
         dvs = []
         for val in range(10):
@@ -233,10 +237,10 @@ class TestSeriesService:
             dv.quality_control_level_id = qcl.id
             dvs.append(dv)
 
-        print series.variable_code
-        assert self.series_service.save_series(series)
+        print series_service.variable_code
+        assert self.series_service.save_series(series_service)
         assert self.series_service.series_exists(site.id, variable.id, method.id, source.id, qcl.id)
-        assert not self.series_service.save_series(series)
+        assert not self.series_service.save_series(series_service)
     '''
 
     def test_get_data_value_by_id(self):
@@ -249,17 +253,17 @@ class TestSeriesService:
         assert dv.data_value == db_dv.data_value
 
     def test_get_qcl_by_id(self):
-        assert self.series_service.get_qcl_by_id(10) == None
+        assert self.series_service.get_processing_level_by_id(10) == None
 
-        qcl = test_util.add_qcl(self.session)
-        db_qcl = self.series_service.get_qcl_by_id(qcl.id)
+        qcl = test_util.add_process_level(self.session)
+        db_qcl = self.series_service.get_processing_level_by_id(qcl.id)
         assert qcl.code == db_qcl.code
 
     def test_get_all_qcls(self):
-        assert self.series_service.get_all_qcls() == []
+        assert self.series_service.get_all_processing_levels() == []
 
-        qcl = test_util.add_qcl(self.session)
-        all_qcls = self.series_service.get_all_qcls()
+        qcl = test_util.add_process_level(self.session)
+        all_qcls = self.series_service.get_all_processing_levels()
 
         assert len(all_qcls) == 1
         assert qcl.id == all_qcls[0].id
@@ -308,7 +312,7 @@ class TestSeriesService:
         variable = test_util.add_variable(self.session)
         method = test_util.add_method(self.session)
         source = test_util.add_source(self.session)
-        qcl = test_util.add_qcl(self.session)
+        qcl = test_util.add_process_level(self.session)
 
         dvs = []
         for val in range(10):
@@ -360,7 +364,7 @@ class TestSeriesService:
         assert variable.variable_unit_id == unit.id
 
     def test_create_qcl(self):
-        qcl = self.series_service.create_qcl("Code", "Definition", "Explanation")
+        qcl = self.series_service.create_processing_level("Code", "Definition", "Explanation")
 
         assert qcl.id != None
         assert qcl.code == "Code"
@@ -383,7 +387,7 @@ class TestSeriesService:
 
 
     def test_qcl_exists(self):
-        qcl = test_util.add_qcl(self.session)
+        qcl = test_util.add_process_level(self.session)
         assert self.series_service.qcl_exists(qcl) == True
 
         qcl.code = "00000"

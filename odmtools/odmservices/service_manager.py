@@ -4,13 +4,27 @@ import sys
 
 import urllib
 
+<<<<<<< HEAD
 from sqlalchemy.exc import SQLAlchemyError
 from odmtools.odmservices import SeriesService, EditService, ExportService
+=======
+from sqlalchemy.exc import SQLAlchemyError#OperationalError, DBAPIError
+
+from odmtools.common.logger import LoggerTool
+from series_service import SeriesService
+from ReadService import ReadService
+from edit_service import EditService
+>>>>>>> origin/update_cvs
 from odmtools.controller import EditTools
 from odmtools.lib.Appdirs.appdirs import user_config_dir
+<<<<<<< HEAD
 from odmtools.odmdata import dbconnection #ODM
 
 
+=======
+# from odmtools.odmdata.session_factory import SessionFactory
+from odm2api.ODMconnection import SessionFactory
+>>>>>>> origin/update_cvs
 
 
 # tool = LoggerTool()
@@ -75,12 +89,36 @@ class ServiceManager():
         # remove earlier connections that are identical to this one
         self.delete_connection(conn_dict)
 
+<<<<<<< HEAD
         #assume connection has already been tested
         # if self.test_connection(conn_dict):
         # write changes to connection file
         self._conn_dicts.append(conn_dict)
         self._current_conn_dict = self._conn_dicts[-1]
         self._save_connections()
+=======
+        if self.test_connection(conn_dict):
+            # write changes to connection file
+            self._conn_dicts.append(conn_dict)
+            self._current_conn_dict = self._conn_dicts[-1]
+            self._save_connections()
+            return True
+        else:
+            logger.error("Unable to save connection due to invalid connection to database")
+            return False
+
+
+    @classmethod
+    def testEngine(self, connection_string):
+        s = SessionFactory(connection_string, echo=False)
+        if 'mssql' in connection_string:
+            s.test_Session().execute("Select top 1 VariableCode From Variables")
+        elif 'mysql' in connection_string:
+            s.test_Session().execute('Select "VariableCode" From Variables Limit 1')
+        elif 'postgresql' in connection_string:
+            #s.psql_test_Session().execute('Select "VariableCode" From "ODM2"."Variables" Limit 1')
+            s.test_Session().execute('Select "VariableCode" From "Variables" Limit 1')
+>>>>>>> origin/update_cvs
         return True
         # else:
         #     logger.error("Unable to save connection due to invalid connection to database")
@@ -125,6 +163,7 @@ class ServiceManager():
         if not conn_dict:
             conn_dict = self.get_current_conn_dict()
 
+<<<<<<< HEAD
         if conn_string:
             #todo how to get version from a connection string
             conn = dbconnection.createConnectionFromString(conn_string, float(self.get_current_conn_dict()["version"]))
@@ -150,6 +189,11 @@ class ServiceManager():
     # def get_cv_service(self):
     #     conn_string = self._build_connection_string(self._current_conn_dict)
     #     return CVService(SessionFactory(conn_string, self.debug))
+=======
+    def get_cv_service(self):
+        conn_string = self._build_connection_string(self._current_conn_dict)
+        return ReadService(conn_string, self.debug)
+>>>>>>> origin/update_cvs
 
     def get_edit_service(self, series_id, connection):
         return EditService(series_id, connection=connection,  debug=self.debug)

@@ -32,7 +32,7 @@ class TestWizSave:
 
         self.memory_database = MemoryDatabase()
         self.memory_database.set_series_service(self.series_service)
-        # self.memory_database.initEditValues(self.series.id)
+        # self.memory_database.initEditValues(self.series_service.id)
 
         self.app = wx.App()
         self.frame = wx.Frame(None)

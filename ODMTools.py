@@ -60,11 +60,6 @@ class MyApp(wx.App):
         app= self.frame
         return True
 
-def runODM():
-    app = wx.App(False)
-    #frame = create(None)
-    #frame.Show()
-    app.MainLoop()
 
 if __name__ == '__main__':
     logger.info("Welcome to ODMTools Python. Please wait as system loads")

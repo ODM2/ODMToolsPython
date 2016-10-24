@@ -514,7 +514,7 @@ class mnuRibbon(RB.RibbonBar):
             Publisher.sendMessage(("stopEdit"), event=event)
             #self.parent.stopEdit()
 
-            # # Start editing right when a series is being edited
+            # # Start editing right when a series_service is being edited
 
         #self.parent.getRecordService().toggle_record()
         #record_service.toggle_record()
@@ -608,7 +608,7 @@ class mnuRibbon(RB.RibbonBar):
             value = 3
         elif event.Id == wxID_RIBBONPLOTSUMMARY:
             value = 4
-        # TODO fix case where the plot enables the buttons without checking if series is actually selected
+        # TODO fix case where the plot enables the buttons without checking if series_service is actually selected
         self.enableButtons(value, True)
         Publisher.sendMessage(("select.Plot"), value=value)
         event.Skip()
@@ -650,7 +650,7 @@ class mnuRibbon(RB.RibbonBar):
             self.spnBins.Enabled = False
             self.enableDateSelection(False)
 
-        ##tims series or probability
+        ##tims series_service or probability
         elif plot == 0 or plot == 1:
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSTYPE, True)
             self.PlotsOptions_bar.EnableButton(wxID_RIBBONPLOTTSLEGEND, True)
@@ -686,7 +686,7 @@ class mnuRibbon(RB.RibbonBar):
     # TODO change states when points are selected rather than all at once
     def toggleEditButtons(self, state):
 
-        # edit when series is selected for editing
+        # edit when series_service is selected for editing
         self.main_bar.EnableButton(wxID_RIBBONEDITRESTORE, state)
         self.main_bar.EnableButton(wxID_RIBBONEDITSAVE, state)
         self.edit_bar.EnableButton(wxID_RIBBONEDITFILTER, state)

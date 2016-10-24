@@ -1,19 +1,15 @@
-import pytest
-import sqlalchemy.orm.exc
-from odmtools.odmdata import Qualifier
-from odmtools.odmservices import CVService
-
+from odmtools.odmservices import ReadService
 from tests import test_util
 
 
 session = None
 
 
-class TestCVService:
+class TestReadService:
     def setup(self):
         self.connection_string = "sqlite:///:memory:"
-        self.cv_service = CVService(self.connection_string, debug=False)
-        self.session = self.cv_service._session_factory.get_session()
+        self.cv_service = ReadService(self.connection_string, debug=False)
+        self.session = self.cv_service._session_factory.getSession()
         engine = self.cv_service._session_factory.engine
         test_util.build_db(engine)
 

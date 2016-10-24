@@ -34,7 +34,7 @@
 #
 #         bSizer2 = wx.BoxSizer(wx.VERTICAL)
 #
-#         self.lblHow = wx.StaticText(self.m_panel2, wx.ID_ANY, u"How would you like to save the series?",
+#         self.lblHow = wx.StaticText(self.m_panel2, wx.ID_ANY, u"How would you like to save the series_service?",
 #                                     wx.DefaultPosition, wx.DefaultSize, 0)
 #         self.lblHow.Wrap(-1)
 #         bSizer2.Add(self.lblHow, 0, wx.ALL, 15)
@@ -139,7 +139,7 @@ class pnlIntro(wx.Panel):
 
         bSizer2 = wx.BoxSizer(wx.VERTICAL)
 
-        self.lblHow = wx.StaticText(self.m_panel2, wx.ID_ANY, u"How would you like to save the series?",
+        self.lblHow = wx.StaticText(self.m_panel2, wx.ID_ANY, u"How would you like to save the series_service?",
                                     wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblHow.Wrap(-1)
         bSizer2.Add(self.lblHow, 0, wx.ALL, 15)

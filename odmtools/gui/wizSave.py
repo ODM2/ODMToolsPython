@@ -25,6 +25,8 @@ logger =logging.getLogger('main')
 
 ########################################################################
 class QCLPage(wiz.WizardPageSimple):
+    # CLASS IS DEPECRATED
+    # REPLACED WITH WizardProcessLevelController.py
     def __init__(self, parent, title, series_service, qcl):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
@@ -46,7 +48,7 @@ class QCLPage(wiz.WizardPageSimple):
         self._init_data(self.panel.series_service)
 
     def _init_data(self, series):
-        qcl = series.get_all_qcls()
+        qcl = series.get_all_processing_levels()
         index = 0
         for q, i in zip(qcl, range(len(qcl))):
             num_items = self.panel.lstQCL.GetItemCount()
@@ -62,6 +64,8 @@ class QCLPage(wiz.WizardPageSimple):
 
 ########################################################################
 class VariablePage(wiz.WizardPageSimple):
+    # CLASS IS DEPECRATED
+    # REPLACED WITH WizardVariableController.py
     def __init__(self, parent, title, service_manager, var):
         """Constructor"""
         wiz.WizardPageSimple.__init__(self, parent)
@@ -109,40 +113,52 @@ class VariablePage(wiz.WizardPageSimple):
 
 ########################################################################
 class MethodPage(wiz.WizardPageSimple):
-    def __init__(self, parent, title, series_service, method):
-        """Constructor"""
+    # THIS CLASS IS DEPECRATED
+    # REPLACED WITH WizardMethodController.py
+    def __init__(self, parent):
+        # pageMethod.pnlMethod.__init__(self, parent)
         wiz.WizardPageSimple.__init__(self, parent)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer = sizer
-        self.SetSizer(sizer)
-        self.method = method
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.page_method_view = pageMethod.pnlMethod(self)
+        main_sizer.Add(self.page_method_view, 1, wx.EXPAND | wx.ALL, 0)
+        self.SetSizer(main_sizer)
 
-        title = wx.StaticText(self, -1, title)
-        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
-        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
-        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
-        self.panel = pageMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
-                                          pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                          style=wx.TAB_TRAVERSAL, ss=series_service, method=method)
-        self.sizer.Add(self.panel, 85, wx.ALL, 5)
-
-        self._init_data(self.panel.series_service)
-
-    def _init_data(self, series):
-        meth = series.get_all_methods()
-        index = 0
-        for m, i in zip(meth, range(len(meth))):
-            num_items = self.panel.lstMethods.GetItemCount()
-            self.panel.lstMethods.InsertStringItem(num_items, str(m.description))
-            self.panel.lstMethods.SetStringItem(num_items, 1, str(m.link))
-            self.panel.lstMethods.SetStringItem(num_items, 2, str(m.id))
-
-            if m.description == self.method.description:
-                index = i
-
-        self.panel.lstMethods.Focus(index)
-        self.panel.lstMethods.Select(index)
+# class MethodPage(wiz.WizardPageSimple):
+#     def __init__(self, parent, title, series_service, method):
+#         """Constructor"""
+#         wiz.WizardPageSimple.__init__(self, parent)
+#
+#         sizer = wx.BoxSizer(wx.VERTICAL)
+#         self.sizer = sizer
+#         self.SetSizer(sizer)
+#         self.method = method
+#
+#         title = wx.StaticText(self, -1, title)
+#         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
+#         sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
+#         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
+#         self.panel = pageMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
+#                                           pos=wx.Point(536, 285), size=wx.Size(439, 357),
+#                                           style=wx.TAB_TRAVERSAL, ss=series_service, method=method)
+#         self.sizer.Add(self.panel, 1, wx.EXPAND, 5)
+#
+#         self._init_data(self.panel.series_service)
+#
+#     def _init_data(self, series_service):
+#         meth = series_service.get_all_methods()
+#         index = 0
+#         for m, i in zip(meth, range(len(meth))):
+#             num_items = self.panel.lstMethods.GetItemCount()
+#             self.panel.lstMethods.InsertStringItem(num_items, str(m.description))
+#             self.panel.lstMethods.SetStringItem(num_items, 1, str(m.link))
+#             self.panel.lstMethods.SetStringItem(num_items, 2, str(m.id))
+#
+#             if m.description == self.method.description:
+#                 index = i
+#
+#         self.panel.lstMethods.Focus(index)
+#         self.panel.lstMethods.Select(index)
 
 
 ########################################################################
@@ -199,6 +215,11 @@ class SummaryPage(wiz.WizardPageSimple):
 
 
 ########################################################################
+from odmtools.controller.WizardMethodController import WizardMethodController
+from odmtools.controller.WizardProcessLevelController import WizardProcessLevelController
+from odmtools.controller.WizardVariableController import WizardVariableController
+
+
 class wizSave(wx.wizard.Wizard):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
@@ -217,9 +238,9 @@ class wizSave(wx.wizard.Wizard):
 
         if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             logger.debug("SaveAs")
-            method = self.pgMethod.panel.getMethod()
-            qcl = self.pgQCL.panel.getQCL()
-            variable = self.pgVariable.panel.getVariable()
+            method = self.pgMethod.getMethod()
+            qcl = self.pgQCL.getQCL()
+            variable = self.pgVariable.get_variable()
         elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
             logger.debug("Save")
             method = self.currSeries.method
@@ -246,9 +267,13 @@ class wizSave(wx.wizard.Wizard):
         self.currSeries = record_service.get_series()
 
         self.pgIntro = pageIntro.pageIntro(self, "Intro")
-        self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
-        self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
-        self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
+        # self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
+        self.pgMethod = WizardMethodController(self, self.series_service)
+        # self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
+        self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager)
+        # self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
+        self.pgVariable = WizardVariableController(self, service_manager=service_manager,
+                                                   current_variable=self.currSeries.variable)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
@@ -278,7 +303,6 @@ class wizSave(wx.wizard.Wizard):
         self.Destroy()
 
     def on_page_changed(self, event):
-        #if  isinstance(event.Page, pageSummary.pnlSummary):
         if event.Page == self.pgSummary:
             self.pgSummary.fill_summary()
 
@@ -339,7 +363,7 @@ class wizSave(wx.wizard.Wizard):
             if self.pgExisting.pnlExisting.rbAppend.GetValue():
                 keyword = "append to"
 
-            message = "You are about to " + keyword + " an existing series,\nthis action cannot be undone.\nWould you like to continue?\n"
+            message = "You are about to " + keyword + " an existing series_service,\nthis action cannot be undone.\nWould you like to continue?\n"
             cont = wx.MessageBox(message, 'Are you sure?', wx.YES_NO | wx.ICON_QUESTION)
             if cont == 2:
                 closeSuccessful = True
@@ -356,7 +380,7 @@ class wizSave(wx.wizard.Wizard):
                 else:
                     QCL = self.record_service.get_qcl(QCL)
             else:
-                QCL = self.record_service.create_qcl(QCL.code, QCL.definition, QCL.explanation)
+                QCL = self.record_service.create_processing_level(QCL.code, QCL.definition, QCL.explanation)
 
             #if variable exists use its id
             if self.series_service.variable_exists(Variable):

@@ -111,8 +111,10 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
 
     # Returns a dictionary of the database values entered in the form
     def getFieldValues(self):
-        conn_dict = {}
+        if self.isFormEmpty():
+            return {}
 
+        conn_dict = {}
         conn_dict['engine'] = self.choices[self.cbDatabaseType.GetValue()]
         conn_dict['user'] = self.txtUser.GetValue()
         conn_dict['password'] = self.txtPass.GetValue()
@@ -121,6 +123,28 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
         conn_dict['version']= self.cbVersion.GetValue()
 
         return conn_dict
+
+    def isFormEmpty(self):
+        """
+        If any of the entries are empty return true
+        :return:
+        """
+        if not self.cbDatabaseType.GetValue().strip():
+            return True
+
+        if not self.txtUser.GetValue().strip():
+            return True
+
+        if not self.txtPass.GetValue().strip():
+            return True
+
+        if not self.txtServer.GetValue().strip():
+            return True
+
+        if not self.txtDBName.GetValue().strip():
+            return True
+
+        return False
 
     def set_field_values(self):
         conn = self.service_manager.is_valid_connection()

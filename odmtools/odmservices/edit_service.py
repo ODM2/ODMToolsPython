@@ -253,7 +253,7 @@ class EditService():
         return self.memDB.series_service.get_series_by_id(self._series_id)
 
     def get_series_points(self):
-        # all point in the series
+        # all point in the series_service
         return self._series_points
 
     def get_series_points_df(self):
@@ -280,11 +280,11 @@ class EditService():
         return self.filtered_dataframe
 
     def get_filter_list(self):
-        # true or false list the length of the entire series. true indicate the point is selected
+        # true or false list the length of the entire series_service. true indicate the point is selected
         return self._filter_list
 
     def get_qcl(self, qcl_id):
-        return self.memDB.series_service.get_qcl_by_id(qcl_id)
+        return self.memDB.series_service.get_processing_level_by_id(qcl_id)
 
     def get_method(self, method_id):
         return self.memDB.series_service.get_method_by_id(method_id)
@@ -442,7 +442,7 @@ class EditService():
 
 
 
-        #if is new series remove valueids
+        #if is new series_service remove valueids
         #if is_new_series:
         dvs["ValueID"] = None
         '''
@@ -451,7 +451,7 @@ class EditService():
         '''
 
         series = self.memDB.series_service.get_series_by_id(self._series_id)
-        logger.debug("original editing series id: %s" % str(series.id))
+        logger.debug("original editing series_service id: %s" % str(series.id))
 
         if (var or method or qcl ):
             tseries = self.memDB.series_service.get_series_by_id_quint(site_id=int(series.site_id),
@@ -462,7 +462,7 @@ class EditService():
                                                                   qcl_id=qcl_id if qcl else int(
                                                                       series.quality_control_level_id))
             if tseries:
-                logger.debug("Save existing series ID: %s" % str(tseries.id))
+                logger.debug("Save existing series_service ID: %s" % str(tseries.id))
                 series = tseries
             else:
                 print "Series doesn't exist (if you are not, you should be running SaveAs)"
@@ -512,11 +512,11 @@ class EditService():
                 #pass
                 self.memDB.series_service.delete_values_by_series(series)
         elif append:
-            #if series end date is after  dvs startdate
+            #if series_service end date is after  dvs startdate
             dbend = series.end_date_time
             dfstart = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)
             overlap = dbend>= dfstart
-            #leave series start dates to those previously set
+            #leave series_service start dates to those previously set
             series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
             series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)
             #TODO figure out how to calculate the new value count
@@ -532,7 +532,7 @@ class EditService():
 
 
 
-        #logger.debug("series.data_values: %s" % ([x for x in series.data_values]))
+        #logger.debug("series_service.data_values: %s" % ([x for x in series_service.data_values]))
         dvs.drop('ValueID', axis=1, inplace=True)
         return series, dvs
 
@@ -546,7 +546,7 @@ class EditService():
 
         series, dvs = self.updateSeries(is_new_series=False)
         if self.memDB.series_service.save_series(series, dvs):
-            logger.debug("series saved!")
+            logger.debug("series_service saved!")
             return True
         else:
             logger.debug("The Save was unsuccessful")
@@ -562,7 +562,7 @@ class EditService():
         series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
 
         if self.memDB.series_service.save_new_series(series, dvs):
-            logger.debug("series saved!")
+            logger.debug("series_service saved!")
             return True
         else:
             logger.debug("The Save As Function was Unsuccessful")
@@ -572,7 +572,7 @@ class EditService():
         series, dvs = self.updateSeries(var, method, qcl, is_new_series=False, append= True, overwrite=overwrite)
 
         if self.memDB.series_service.save_series(series, dvs):
-            logger.debug("series saved!")
+            logger.debug("series_service saved!")
             return True
         else:
             logger.debug("The Append Existing Function was Unsuccessful")
@@ -587,20 +587,20 @@ class EditService():
         """
         series, dvs = self.updateSeries(var, method, qcl, is_new_series=False)
         if self.memDB.series_service.save_series(series, dvs):
-            logger.debug("series saved!")
+            logger.debug("series_service saved!")
             return True
         else:
             logger.debug("The Save As Existing Function was Unsuccessful")
             return False
 
     def create_qcl(self, code, definition, explanation):
-        return self.memDB.series_service.create_qcl(code, definition, explanation)
+        return self.memDB.series_service.create_processing_level(code, definition, explanation)
 
     def create_method(self, description, link):
         return self.memDB.series_service.create_method(description, link)
 
     def create_qualifier(self, code, definition):
-        return self.memDB.series_service.create_qualifier(code, definition)
+        return self.memDB.series_service.create_annotation(code, definition)
 
     def create_variable(self, code, name, speciation, variable_unit_id, sample_medium,
                         value_type, is_regular, time_support, time_unit_id, data_type, general_category, no_data_value):
@@ -610,8 +610,8 @@ class EditService():
                                                     general_category, no_data_value)
 
     def reconcile_dates(self, parent_series_id):
-        # FUTURE FEATURE: pull in new field data from another series and add to this series
-        # (i.e one series contains new field data of an edited series at a higher qcl)
+        # FUTURE FEATURE: pull in new field data from another series_service and add to this series_service
+        # (i.e one series_service contains new field data of an edited series_service at a higher qcl)
         pass
 
 

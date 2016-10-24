@@ -1,17 +1,34 @@
 import logging
-
-
 from sqlalchemy import distinct, func
+<<<<<<< HEAD
 
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
+=======
+from odmtools.odmdata import SessionFactory
+from odmtools.odmdata import Site
+# from odmtools.odmdata import Variable
+from odm2api.ODM2.models import *
+from odmtools.odmdata import Series
+from odmtools.odmdata import DataValue
+from odmtools.odmdata import Qualifier
+from odmtools.odmdata import OffsetType
+from odmtools.odmdata import Sample
+# from odmtools.odmdata import Method
+from odmtools.odmdata import QualityControlLevel
+from odmtools.odmdata import ODMVersion
+>>>>>>> origin/update_cvs
 from odmtools.common.logger import LoggerTool
 import pandas as pd
+from odm2api.ODM2.services.createService import CreateODM2
+from odm2api.ODM2.services.readService import *
+
 
 
 logger =logging.getLogger('main')
 
+<<<<<<< HEAD
 class SeriesService(serviceBase):
 
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
@@ -32,6 +49,19 @@ class SeriesService(serviceBase):
 
 
 
+=======
+class SeriesService():  # Rename to CreateService
+    # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
+    def __init__(self, connection_string="", debug=False):
+        self._session_factory = SessionFactory(connection_string, debug)
+        self._edit_session = self._session_factory.getSession()
+        self._debug = debug
+        self.create_service = CreateODM2(session_factory=self._session_factory, debug=self._debug)
+        self.read_service = ReadODM2(self._session_factory, debug=self._debug)
+
+    def reset_session(self):
+        self._edit_session = self._session_factory.getSession()  # Reset the session in order to prevent memory leaks
+>>>>>>> origin/update_cvs
 
 
 #####################
@@ -40,6 +70,17 @@ class SeriesService(serviceBase):
 #
 #####################
 
+<<<<<<< HEAD
+=======
+    # Site methods
+    def get_all_sites(self):  # Site -> Sampling Feature in ODM2
+        """
+
+        :return: List[Sites]
+        """
+        # return self._edit_session.query(Site).order_by(Site.code).all()
+        return self.read_service.getSamplingFeatures(ids=None, codes=None, uuids=None,type=None, wkt=None)
+>>>>>>> origin/update_cvs
 
 
     def get_used_sites(self):
@@ -48,8 +89,18 @@ class SeriesService(serviceBase):
         :return: List[Sites]
         """
         try:
+<<<<<<< HEAD
             fas=[x[0] for x in self._session.query(distinct(Results.FeatureActionID)).all()]
         except:
+=======
+            site_ids = [site_ids[0] for site_ids in self._edit_session.query(distinct(Results.FeatureActionID)).all()]
+        except:
+            site_ids = None
+
+        site_ids = self._edit_session.query(FeatureActions.SamplingFeatureID).filter(FeatureActions.FeatureActionID.in_(site_ids)).all()
+
+        if not site_ids:
+>>>>>>> origin/update_cvs
             return None
 
         sf=[x[0] for x in self._session.query(distinct(FeatureActions.SamplingFeatureID)).filter(FeatureActions.FeatureActionID.in_(fas)).all()]
@@ -57,12 +108,29 @@ class SeriesService(serviceBase):
         sites = self.read.getSamplingFeatures(type = "site", ids = sf)
         return sites
 
+<<<<<<< HEAD
+=======
+    def get_site_by_id(self, site_id):
+        """
+        return a Site object that has an id=site_id
+        :param site_id: integer- the identification number of the site
+        :return: Sites
+        """
+        # try:
+        #     return self._edit_session.query(Site).filter_by(id=site_id).first()
+        # except:
+        #     return None
+        return self.read_service.getSamplingFeatures(ids=site_id)
+
+    # Variables methods
+>>>>>>> origin/update_cvs
     def get_used_variables(self):
         """
         #get list of used variable ids
         :return: List[Variables]
         """
         try:
+<<<<<<< HEAD
             ids= [x[0] for x in self._session.query(distinct(Results.VariableID)).all()]
         except:
             return None
@@ -71,19 +139,63 @@ class SeriesService(serviceBase):
         return vars
 
 
+=======
+            # var_ids = [x[0] for x in self._edit_session.query(distinct(Series.variable_id)).all()]
+            var_ids = [x[0] for x in self._edit_session.query(distinct(Results.VariableID)).all()]
+        except:
+            var_ids = None
+
+        var_ids = self._edit_session.query(Results.VariableID).filter(Results.VariableID.in_(var_ids)).all()
+        if not var_ids:
+            return None
+
+        Variables = []
+
+        #create list of variables from the list of ids
+        for var_id in var_ids:
+            Variables.append(self._edit_session.query(Variables).filter_by(id=var_id).first())
+
+        return Variables
+
+    def get_all_variables(self):
+        """
+        :return: List[Variables]
+        """
+        return self.read_service.getVariables(ids=None, codes=None)
+>>>>>>> origin/update_cvs
 
     # Query DetailedResultInfo/series object is for Display purposes
 
     def get_all_series(self):
         """
+<<<<<<< HEAD
         Returns all series as a modelObject
         :return: List[Series]
+=======
+        return self.read_service.getVariables(ids=variable_id)
+
+    def get_variable_by_code(self, variable_code):
+>>>>>>> origin/update_cvs
         """
         return self.read.getDetailedResultInfo('Time Series Coverage')
 
+<<<<<<< HEAD
     def get_series_by_id(self, series_id):
+=======
+        :param variable_code:  str
+        :return: Variables
+        """
+        return self.read_service.getVariables(codes=variable_code)
+
+    def get_variables_by_site_code(self, site_code):  # covers NoDV, VarUnits, TimeUnits
+        """
+        Finds all of variables at a site
+        :param site_code: str
+        :return: List[Variables]
+>>>>>>> origin/update_cvs
         """
 
+<<<<<<< HEAD
         :param series_id: int
         :return: Series
         """
@@ -100,9 +212,24 @@ class SeriesService(serviceBase):
             func.max(TimeSeriesResultValues.ValueDateTime), func.min(TimeSeriesResultValues.ValueDateTime)
             ).filter(TimeSeriesResultValues.ResultID == result_id)
         return q.all()[0]
+=======
+        variables = []
+        for var_id in var_ids:
+            variables.append(self._edit_session.query(Variables).filter_by(id=var_id).first())
+
+        return variables
+
+    # Unit methods
+    def get_all_units(self):
+        """
+        :return: List[Units]
+        """
+        return self.read_service.getUnits(ids=None, name=None, type=None)
+>>>>>>> origin/update_cvs
 
     def get_variables_by_site_code(self, site_code):
         """
+<<<<<<< HEAD
             Finds all of variables at a site
             :param site_code: str
             :return: List[Variables]
@@ -124,6 +251,35 @@ class SeriesService(serviceBase):
 
 # Series Catalog methods
 
+=======
+        :param unit_name: str
+        :return: Units
+        """
+        return self.read_service.getUnits(name=unit_name)
+
+    def get_unit_by_id(self, unit_id):
+        """
+        :param unit_id: int
+        :return: Units
+        """
+        self.read_service.getUnits(ids=unit_id)
+
+    def get_all_qualifiers(self):  # Rename to annotations
+        """
+        :return: List[Qualifiers]
+        """
+        # result = self._edit_session.query(Annotations).order_by(Annotations.AnnotationCode).all()
+        # return result
+        return self.read_service.getAnnotations(None)
+
+    def get_qualifier_by_code(self, code):  # Rename to get_annotations_by_type
+        """
+        :return: Qualifiers
+        """
+        # result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
+        # return result
+        return self.read_service.getAnnotations(type=code)
+>>>>>>> origin/update_cvs
 
     def get_series_by_site(self , site_id):
         """
@@ -131,6 +287,7 @@ class SeriesService(serviceBase):
         :param site_id: int
         :return: List[Series]
         """
+<<<<<<< HEAD
         # try:
         #     selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
         #     return selectedSeries
@@ -141,6 +298,29 @@ class SeriesService(serviceBase):
     ##TODO : check is this the right way to get the series??
 
 
+=======
+        subquery = self._edit_session.query(DataValue.qualifier_id).outerjoin(
+            Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
+        return self._edit_session.query(Qualifier).join(subquery).distinct().all()
+
+    def get_all_processing_levels(self):
+        return self.read_service.getProcessingLevels(ids=None, codes=None)
+
+    def get_processing_level_by_id(self, proc_level_id):
+        return self.read_service.getProcessingLevels(ids=proc_level_id)
+
+    def get_processing_level_by_code(self, proc_level_code):
+        return self.read_service.getProcessingLevels(codes=proc_level_code)
+
+    def get_all_methods(self):
+        return self.read_service.getMethods(ids=None, codes=None, type=None)
+
+    def get_method_by_id(self, method_id):
+        return self.read_service.getMethods(ids=method_id)
+
+    def get_method_by_code(self, method_code):
+        return self.read_service.getMethods(codes=method_code)
+>>>>>>> origin/update_cvs
 
 
     # Site methods
@@ -156,9 +336,14 @@ class SeriesService(serviceBase):
 #
     def get_site_by_id(self, site_id):
         """
+<<<<<<< HEAD
         return a Site object that has an id=site_id
         :param site_id: integer- the identification number of the site
         :return: Sites
+=======
+        Returns all series_service as a modelObject
+        :return: List[Series]
+>>>>>>> origin/update_cvs
         """
 #         try:
 #             return self._edit_session.query(Site).filter_by(id=site_id).first()
@@ -532,8 +717,240 @@ class SeriesService(serviceBase):
 #         except:
 #             return None
 #
+<<<<<<< HEAD
+=======
+#####################
+    def save_series(self, series, dvs):
+        """ Save to an Existing Series
+        :param series:
+        :param data_values:
+        :return:
+        """
+
+        if self.series_exists(series):
+
+            try:
+                self._edit_session.add(series)
+                self._edit_session.commit()
+                self.save_values(dvs)
+            except Exception as e:
+                self._edit_session.rollback()
+                raise e
+            logger.info("Existing File was overwritten with new information")
+            return True
+        else:
+            logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
+            # there wasn't an existing file to overwrite
+            raise Exception("Series does not exist, unable to save. Please select 'Save As'")
+
+
+    def save_new_series(self, series, dvs):
+        """ Create as a new catalog entry
+        :param series:
+        :param data_values:
+        :return:
+        """
+        # Save As case
+        if self.series_exists(series):
+            msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
+            logger.info(msg)
+            raise Exception(msg)
+        else:
+            try:
+                self._edit_session.add(series)
+                self._edit_session.commit()
+                self.save_values(dvs)
+                #self._edit_session.add_all(dvs)
+            except Exception as e:
+                self._edit_session.rollback()
+                raise e
+
+        logger.info("A new series_service was added to the database, series_service id: "+str(series.id))
+        return True
+
+    def save_values(self, values):
+        """
+
+        :param values: pandas dataframe
+        :return:
+        """
+        values.to_sql(name="datavalues", if_exists='append', con=self._session_factory.engine, index=False)
+
+    def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
+        """
+        series_service -> Result in ODM2
+        :param data_values:
+        :param site_id:
+        :param variable_id:
+        :param method_id:
+        :param source_id:
+        :param qcl_id:
+        :return:
+        """
+        self.update_dvs(data_values)
+        series = Series()
+        series.site_id = site_id
+        series.variable_id = variable_id
+        series.method_id = method_id
+        series.source_id = source_id
+        series.quality_control_level_id = qcl_id
+
+        return self.create_service.createResult(series)
+
+    def create_method(self, description, link):
+        """
+        :param description:
+        :param link:
+        :return:
+        """
+        method = Methods()
+        method.MethodDescription = description
+        if link is not None:
+            method.MethodLink = link
+
+        return self.create_service.createMethod(method=method)
+
+    def create_variable_by_var(self, var):
+        """
+        :param var:  Variable Object
+        :return:
+        """
+        return self.create_service.createVariable(var=var)
+
+    def create_variable(
+            self, code, name, speciation, variable_unit_id, sample_medium,
+            value_type, is_regular, time_support, time_unit_id, data_type,
+            general_category, no_data_value):
+        """
+        :param code:
+        :param name:
+        :param speciation:
+        :param variable_unit_id:
+        :param sample_medium:
+        :param value_type:
+        :param is_regular:
+        :param time_support:
+        :param time_unit_id:
+        :param data_type:
+        :param general_category:
+        :param no_data_value:
+        :return:
+        """
+        # var = Variable()
+        variable = Variables()
+        variable.VariableCode = code
+        variable.VariableNameCV = name
+        variable.SpeciationCV = speciation
+        # Commented lines indicate that Variables does not have such attributes
+        # var.variable_unit_id = variable_unit_id
+        # var.sample_medium = sample_medium
+        # var.value_type = value_type
+        # var.is_regular = is_regular
+        # var.time_support = time_support
+        # var.time_unit_id = time_unit_id
+        # var.data_type = data_type
+        # var.general_category = general_category
+        variable.NoDataValue = no_data_value
+
+        return self.create_service.createVariable(var=variable)
+
+    def create_processing_level(self, code, definition, explanation):
+        """
+        qcl -> Processing Level in ODM2
+        :param code:
+        :param definition:
+        :param explanation:
+        :return:
+        """
+        procLevel = ProcessingLevels()
+        procLevel.ProcessingLevelCode = code
+        procLevel.Definition = definition
+        procLevel.Explanation = explanation
+        return self.create_service.createProcessingLevel(proclevel=procLevel)
+
+    def create_annotation_by_anno(self, annotation):
+        return self.create_service.create(annotation)
+
+    def create_annotation(self, code, description):
+        """
+        :param code:
+        :param description:
+        :return:
+        """
+        annotation = Annotations()
+        annotation.AnnotationCode = code
+        annotation.AnnotationText = description
+        annotation.AnnotationTypeCV = "timeSeriesResultValueAnnotation"
+
+        return self.create_annotation_by_anno(annotation)
+
+#####################
+>>>>>>> origin/update_cvs
 #
 #
+<<<<<<< HEAD
+=======
+#####################
+
+    def delete_series(self, series):
+        """
+
+        :param series:
+        :return:
+        """
+        try:
+            self.delete_values_by_series(series)
+
+            delete_series = self._edit_session.merge(series)
+            self._edit_session.delete(delete_series)
+            self._edit_session.commit()
+        except Exception as e:
+            message = "series_service was not successfully deleted: %s" % e
+            print message
+            logger.error(message)
+            raise e
+
+
+    def delete_values_by_series(self, series, startdate = None):
+        """
+
+        :param series:
+        :return:
+        """
+        try:
+            q= self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
+                                                                 variable_id = series.variable_id,
+                                                                 method_id = series.method_id,
+                                                                 source_id = series.source_id,
+                                                                 quality_control_level_id = series.quality_control_level_id)
+            if startdate is not None:
+                #start date indicates what day you should start deleting values. the values will delete to the end of the series_service
+                return q.filter(DataValue.local_date_time >= startdate).delete()
+            else:
+                return q.delete()
+
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
+
+    def delete_dvs(self, id_list):
+        """
+
+        :param id_list: list of datetimes
+        :return:
+        """
+        try:
+            self._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(id_list)).delete(False)
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
+
+#####################
+>>>>>>> origin/update_cvs
 #
 # #####################
 # #
@@ -543,6 +960,7 @@ class SeriesService(serviceBase):
 #     def update_series(self, series):
 #         """
 #
+<<<<<<< HEAD
 #         :param series:
 #         :return:
 #         """
@@ -898,3 +1316,89 @@ class SeriesService(serviceBase):
 #             return result
 #         except:
 #             return None
+=======
+#####################
+
+
+    def series_exists(self, series):
+        """
+
+        :param series:
+        :return:
+        """
+        return self.series_exists_quint(
+            series.site_id,
+            series.variable_id,
+            series.method_id,
+            series.source_id,
+            series.quality_control_level_id
+        )
+
+    def series_exists_quint(self, site_id, var_id, method_id, source_id, qcl_id):
+        """
+
+        :param site_id:
+        :param var_id:
+        :param method_id:
+        :param source_id:
+        :param qcl_id:
+        :return:
+        """
+        try:
+            result = self._edit_session.query(Series).filter_by(
+                site_id=site_id,
+                variable_id=var_id,
+                method_id=method_id,
+                source_id=source_id,
+                quality_control_level_id=qcl_id
+            ).one()
+
+            return True
+        except:
+            return False
+
+    def qcl_exists(self, q):
+        """
+
+        :param q:
+        :return:
+        """
+        try:
+            result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
+            return True
+        except:
+
+            return False
+
+    def method_exists(self, m):
+        """
+
+        :param m:
+        :return:
+        """
+        try:
+            result = self._edit_session.query(Methods).filter_by(description=m.description).one()
+            return True
+        except:
+            return False
+
+    def variable_exists(self, v):
+        """
+
+        :param v:
+        :return:
+        """
+        try:
+            result = self._edit_session.query(Variables).filter_by(code=v.code,
+                                                                  name=v.name, speciation=v.speciation,
+                                                                  variable_unit_id=v.variable_unit_id,
+                                                                  sample_medium=v.sample_medium,
+                                                                  value_type=v.value_type, is_regular=v.is_regular,
+                                                                  time_support=v.time_support,
+                                                                  time_unit_id=v.time_unit_id, data_type=v.data_type,
+                                                                  general_category=v.general_category,
+                                                                  no_data_value=v.no_data_value).one()
+            return result
+        except:
+            return None
+>>>>>>> origin/update_cvs

@@ -292,7 +292,7 @@ class SeriesPlotInfo(object):
         series = self.getSeriesById(seriesID)
 
         if not series:
-            message = "Please check your database connection. Unable to retrieve series %d from the database" % seriesID
+            message = "Please check your database connection. Unable to retrieve series_service %d from the database" % seriesID
             wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
             return
 
@@ -336,7 +336,7 @@ class SeriesPlotInfo(object):
                 self.currentStart = startDate
                 self.currentEnd = endDate
             else:
-                #this returns the series to its full daterange
+                #this returns the series_service to its full daterange
                 data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate,
                                                         seriesInfo.endDate)
                 self.isSubsetted = False

@@ -151,7 +151,7 @@ class frmFlagValues(wx.Dialog):
             q.description = desc
             '''
 
-            q=self.series_service.create_qualifier(code, desc)
+            q=self.series_service.create_annotation(code, desc)
             self.qid = q.id
             self.selectedValue = q.code + '-' + q.description
 
