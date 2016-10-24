@@ -495,7 +495,7 @@ class plotTimeSeries(wx.Panel):
                         elif len(self.axislist) < 1:
                             currentAxis = None
                         self.configureCursor(currentAxis=currentAxis)
-            elif deselectedObject:
+            else:#elif deselectedObject:
                 """
                 Deactivate Cursor. This happens when the plot is deselected
                 """

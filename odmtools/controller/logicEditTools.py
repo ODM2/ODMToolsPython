@@ -50,13 +50,25 @@ class EditTools():
         else:
             return "Cannot filter: %s" % (self._edit_error)
 
+
+    def fill_gap(self, gap, fill):
+        self._edit_service.fill_gap(gap , fill)
+
+        self.refresh_edit()
+        if self._record:
+            self._script("edit_service.fill_gap(gap = %s, fill= %s)\n" % (gap, fill), 'black')
+            Publisher.sendMessage("scroll")
+
+
+
+
+
     def data_gaps(self, value, time_period):
         self._edit_service.data_gaps(value, time_period)
         self.refresh_selection()
         if self._record:
             self._script("edit_service.data_gaps(%s, '%s')\n" % (value, time_period), 'black')
             Publisher.sendMessage("scroll")
-
 
     def value_change_threshold(self, value, operator):
         self._edit_service.change_value_threshold(value, operator)
@@ -184,10 +196,11 @@ class EditTools():
 
     def drift_correction(self, gap_width):
         ret = self._edit_service.drift_correction(gap_width)
-        self.refresh_edit()
-        if self._record:
-            self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
-            Publisher.sendMessage("scroll")
+        if ret:
+            self.refresh_edit()
+            if self._record:
+                self._script("edit_service.drift_correction(%s)\n" % (gap_width), 'black')
+                Publisher.sendMessage("scroll")
         return ret
 
     def reset_filter(self):

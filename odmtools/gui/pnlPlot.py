@@ -81,6 +81,7 @@ class pnlPlot(fnb.FlatNotebook):
         Publisher.subscribe(self.onShowLegend, "onShowLegend")
         Publisher.subscribe(self.onNumBins, "onNumBins")
         Publisher.subscribe(self.onRemovePlot, "removePlot")
+        Publisher.subscribe(self.onRemovePlots, "removeMultPlot")
         Publisher.subscribe(self.onChangeSelection, "changePlotSelection")
         Publisher.subscribe(self.onUpdateValues, "updateValues")
         Publisher.subscribe(self.clear, "clearPlot")
@@ -152,6 +153,11 @@ class pnlPlot(fnb.FlatNotebook):
 
     def onRemovePlot(self, seriesID):
         self._seriesPlotInfo.update(seriesID, False)
+        self.redrawPlots()
+
+    def onRemovePlots(self, seriesIDs):
+        for series in seriesIDs:
+            self._seriesPlotInfo.update(series.ResultID, False)
         self.redrawPlots()
 
     def redrawPlots(self):

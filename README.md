@@ -11,7 +11,7 @@ If you want to try ODM Tools, we have created a couple of [testing databases](ht
 
 ##ODM Compatibility
 
-ODM Tools Python is currenlty fully compatible with ODM Version 1.1.1. We are working on ODM2 compatibility, and should have it worked out this summer.
+ODM Tools Python is currenlty fully compatible with ODM Version 1.1.1. We are working on ODM2 compatibility, and should have it worked out this winter.
 
 ##Releases
 
@@ -19,10 +19,10 @@ To make running ODMTools easier we have included installers. Please select the o
 
 ####Windows
 Recommended Release:
-+   [Window v1.2.5-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.5_beta/ODMTools_1.2.5_Beta_Win_Installer.exe)
++   [Window v1.2.8-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.8_beta/ODMTools_v1.2.8-beta_Installer.exe)
 
 ####Mac
-+   [Mac v1.2.5-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.5_beta/ODMTools_v1.2.5-beta_Mac_installer.pkg.zip)
++   [Mac v1.2.8-beta](https://github.com/ODM2/ODMToolsPython/releases/download/v1.2.8_beta/ODMTools_v1.2.8-beta_Mac_installer.pkg.zip)
 
 ####Linux
 +   *Please run from source*
@@ -30,15 +30,17 @@ Recommended Release:
 Running From Source
 -------------------
 
-+	[Matplotlib-1.4.3](https://github.com/matplotlib/matplotlib/releases/tag/v1.4.3)
-+	[Pandas-0.16.0](https://github.com/pydata/pandas/releases)
++	[Matplotlib](https://github.com/matplotlib/matplotlib/releases/)
++	[Pandas](https://github.com/pydata/pandas/releases)
 +	[Pip](http://docs.python-guide.org/en/latest/starting/install/win.html)
 +	[PyMySQL](https://github.com/petehunt/PyMySQL/)
-+	[Pyodbc-3.0.7](https://code.google.com/p/pyodbc/downloads/detail?name=pyodbc-3.0.7.win-amd64-py2.7.exe)
++	[Pyodbc](https://code.google.com/p/pyodbc/downloads/)
 +	[Python-2.7.9 x64/x32](http://www.python.org/download/releases/2.7.9/) (Python 3 version isn't available)
-+	[Psycopg2-2.4.6](http://initd.org/psycopg/docs/install.html)
-+	[Sqlalchemy-1.0.0] (http://pypi.python.org/pypi/SQLAlchemy/1.0.0)
-+	[wxpython-3.0.0](http://www.wxpython.org/download.php)
++	[Psycopg2](http://initd.org/psycopg/docs/install.html)
++	[Sqlalchemy] (http://pypi.python.org/pypi/SQLAlchemy/)
++	[wxpython](http://www.wxpython.org/download.php)
++	[Numpy](http://www.scipy.org/scipylib/download.html)
++	[Scipy](https://www.scipy.org/scipylib/download.html)
 
 Install the following software/libraries.
 It is recommended to create an environment using 'Conda'.
@@ -46,7 +48,7 @@ It is recommended to create an environment using 'Conda'.
 
 Example environment creation:
 
-+   conda create -n odmtools python=2.7.8 wxpython matplotlib pandas pyodbc sqlalchemy pip psycopg2
++   conda create -n odmtools python=2.7.8 wxpython matplotlib pandas numpy scipy pyodbc sqlalchemy pip psycopg2
 
 +   pip install pymysql
 
