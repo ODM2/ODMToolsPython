@@ -124,31 +124,35 @@ class SeriesService(serviceBase):
 
 # Series Catalog methods
 
-#
-#     def get_series_by_site(self , site_id):
-#         """
-#
-#         :param site_id: int
-#         :return: List[Series]
-#         """
-#         try:
-#             selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
-#             return selectedSeries
-#         except:
-#             return None
+
+    def get_series_by_site(self , site_id):
+        """
+
+        :param site_id: int
+        :return: List[Series]
+        """
+        # try:
+        #     selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
+        #     return selectedSeries
+        # except:
+        #     return None
+
+        return self.read.getResult(type="site", ids = [site_id])[0]
+    ##TODO : check is this the right way to get the series??
 
 
 
-#
-#     # Site methods
-#     def get_all_sites(self):
-#         """
-#
-#         :return: List[Sites]
-#         """
-#         return self._edit_session.query(Site).order_by(Site.code).all()
-#
-#
+
+    # Site methods
+    def get_all_sites(self):
+        """
+
+        :return: List[Sites]
+        """
+        #return self._edit_session.query(Site).order_by(Site.code).all()
+        return self.read.getResults(type="site")
+
+
 #
     def get_site_by_id(self, site_id):
         """
@@ -166,12 +170,13 @@ class SeriesService(serviceBase):
 #
 
 #
-#     def get_all_variables(self):
-#         """
-#
-#         :return: List[Variables]
-#         """
-#         return self._edit_session.query(Variable).all()
+    def get_all_variables(self):
+        """
+
+        :return: List[Variables]
+        """
+        #return self._edit_session.query(Variable).all()
+        return self.read.getVariables()
 #
     def get_variable_by_id(self, variable_id):
         """
