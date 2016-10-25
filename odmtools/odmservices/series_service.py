@@ -211,7 +211,6 @@ class SeriesService(serviceBase):
 #
     def get_unit_by_name(self, unit_name):
         """
-
         :param unit_name: str
         :return: Units
         """
@@ -221,17 +220,18 @@ class SeriesService(serviceBase):
         #     return None
         return self.read.getUnits(name = [unit_name])[0]
 #
-#     def get_unit_by_id(self, unit_id):
-#         """
-#
-#         :param unit_id: int
-#         :return: Units
-#         """
-#         try:
-#             return self._edit_session.query(Unit).filter_by(id=unit_id).first()
-#         except:
-#             return None
-#
+    def get_unit_by_id(self, unit_id):
+        """
+
+        :param unit_id: int
+        :return: Units
+        """
+        # try:
+        #     return self._edit_session.query(Unit).filter_by(id=unit_id).first()
+        # except:
+        #     return None
+        return self.read.getUnits(ids = [unit_id])[0]
+
 #
 #     def get_all_qualifiers(self):
 #         """
