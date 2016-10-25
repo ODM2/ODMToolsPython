@@ -134,7 +134,9 @@ class MethodPage(wiz.WizardPageSimple):
         index = 0
         for m, i in zip(meth, range(len(meth))):
             num_items = self.panel.lstMethods.GetItemCount()
-            self.panel.lstMethods.InsertStringItem(num_items, str(m.description))
+            print (m.description)
+            #124
+            self.panel.lstMethods.InsertStringItem(num_items, m.description)
             self.panel.lstMethods.SetStringItem(num_items, 1, str(m.link))
             self.panel.lstMethods.SetStringItem(num_items, 2, str(m.id))
 
