@@ -186,37 +186,40 @@ class SeriesService(serviceBase):
 #             return None
         return self.read.getVariables(ids = [variable_id])[0]
 #
-#     def get_variable_by_code(self, variable_code):
-#         """
-#
-#         :param variable_code:  str
-#         :return: Variables
-#         """
-#         try:
-#             return self._edit_session.query(Variable).filter_by(code=variable_code).first()
-#         except:
-#             return None
+    def get_variable_by_code(self, variable_code):
+        """
+
+        :param variable_code:  str
+        :return: Variables
+        """
+        # try:
+        #     return self._edit_session.query(Variable).filter_by(code=variable_code).first()
+        # except:
+        #     return None
+        return self.read.getVariables(codes = [variable_code])[0]
 #
 
 #
-#     # Unit methods
-#     def get_all_units(self):
-#         """
+    # Unit methods
+    def get_all_units(self):
+        """
+
+        :return: List[Units]
+        """
+        # return self._edit_session.query(Unit).all()
+        return self.read.getUnits()
 #
-#         :return: List[Units]
-#         """
-#         return self._edit_session.query(Unit).all()
-#
-#     def get_unit_by_name(self, unit_name):
-#         """
-#
-#         :param unit_name: str
-#         :return: Units
-#         """
-#         try:
-#             return self._edit_session.query(Unit).filter_by(name=unit_name).first()
-#         except:
-#             return None
+    def get_unit_by_name(self, unit_name):
+        """
+
+        :param unit_name: str
+        :return: Units
+        """
+        # try:
+        #     return self._edit_session.query(Unit).filter_by(name=unit_name).first()
+        # except:
+        #     return None
+        return self.read.getUnits(name = [unit_name])[0]
 #
 #     def get_unit_by_id(self, unit_id):
 #         """
