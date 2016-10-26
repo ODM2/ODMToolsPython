@@ -233,21 +233,23 @@ class SeriesService(serviceBase):
         return self.read.getUnits(ids = [unit_id])[0]
 
 #
-#     def get_all_qualifiers(self):
-#         """
+    def get_all_qualifiers(self):
+        """
+
+        :return: List[Qualifiers]
+        """
+        # result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
+        # return result
+        return self.read.getAnnotations()
 #
-#         :return: List[Qualifiers]
-#         """
-#         result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
-#         return result
-#
-#     def get_qualifier_by_code(self, code):
-#         """
-#
-#         :return: Qualifiers
-#         """
-#         result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
-#         return result
+    def get_qualifier_by_code(self, code):
+        """
+
+        :return: Qualifiers
+        # """
+        # result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
+        # return result
+        return self.read.getAnnotations() ##todo: CHECK ON THIS
 #
 #     def get_qualifiers_by_series_id(self, series_id):
 #         """
