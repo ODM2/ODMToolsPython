@@ -271,7 +271,6 @@ class EditService():
         #self.filtered_dataframe= df[df.index.get_duplicates()]
         self.filtered_dataframe= df[df.index.isin(df.index.get_duplicates())]
         #self.filtered_dataframe = df[df['DataValue'] < value]
-        print "dup value worked"
 
 
     def select_points_tf(self, tf_list):
@@ -410,7 +409,6 @@ class EditService():
 
 
     def drift_correction(self, gap_width):
-
 
         if self.isOneGroup():
             tmp_filter_list =self.get_filtered_points()
