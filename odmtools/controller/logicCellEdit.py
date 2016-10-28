@@ -412,6 +412,14 @@ class CellEdit():
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
+    def valueDateTimeEditor(self, olv, rowIndex, subItemIndex):
+        odcb = DatePicker(olv)
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return odcb
+
+
+
+
 class DatePicker(wx.DatePickerCtrl):
     """
     This control uses standard datetime.

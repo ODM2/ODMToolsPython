@@ -1,26 +1,13 @@
-"""
-    Object List View Control used in Add Point Form
-"""
 import wx
 import wx.lib.newevent
 from datetime import datetime
 from odmtools.common.icons import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
 from odmtools.controller.logicCellEdit import CellEdit, NULL
-
-
+from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 
 
-__author__ = 'Jacob'
-
-from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
-
-
 class Points(object):
-    """
-
-    """
-
     def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
                  censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL", offSetType="NULL", qualifierCode="NULL",
                  labSampleCode="NULL"):
@@ -37,9 +24,10 @@ class Points(object):
             self.time = time
 
         self.date = str(date)
+        self.valueDateTime = self.date
 
         self.utcOffSet = str(utcOffSet)
-        #self.dateTimeUTC = dateTimeUTC
+        self.valueDateTimeUTFOffset = -1
         self.offSetValue = offSetValue
         self.offSetType = offSetType
         self.censorCode = censorCode
@@ -57,28 +45,10 @@ class Points(object):
         self.validOffSetType = False
         self.validQualifierCode = False
         self.validLabSampleCode = False
-    def __repr__(self):
-        """
-
-        :return:
-        """
-
-        return "<Point('%s', '%s, '%s', '%s', '%s')>" \
-               % (self.dataValue, self.date, self.time, self.utcOffSet, self.censorCode)
 
 
 class OLVAddPoint(FastObjectListView):
-    """
-
-    """
     def __init__(self, *args, **kwargs):
-        """
-
-        :param args:
-        :param kwargs:
-        :return:
-        """
-
         try:
             self.serviceManager = kwargs.pop("serviceManager")
         except:
@@ -87,7 +57,6 @@ class OLVAddPoint(FastObjectListView):
             self.recordService = kwargs.pop("recordService")
         except:
             self.recordService = None
-
 
         FastObjectListView.__init__(self, *args, **kwargs)
 
@@ -127,6 +96,8 @@ class OLVAddPoint(FastObjectListView):
         self.offSetTypeEditor = cellEdit.offSetTypeEditor
         self.qualifierCodeEditor = cellEdit.qualifierCodeEditor
         self.labSampleEditor = cellEdit.labSampleCodeEditor
+        self.valueDateTimeEditorCreator = cellEdit.valueDateTimeEditor
+        # self.valueDateTimeUTFOffset = cellEdit.valueDateTimeUTFOffsetCreator
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
@@ -141,8 +112,6 @@ class OLVAddPoint(FastObjectListView):
 
     def buildOlv(self):
         columns = [
-            ## TODO This is needed for the windows version
-            #ColumnDefn("", "left", -1, valueSetter=self.emptyCol),
             ColumnDefn("DataValue", "left", -1, minimumWidth=100,
                        valueGetter='dataValue',
                        valueSetter=self.valueSetterDataValue,
@@ -160,18 +129,19 @@ class OLVAddPoint(FastObjectListView):
                        cellEditorCreator=self.timeEditor,
                        stringConverter=self.localtime2Str,
                        headerImage="star"),
-            ColumnDefn("UTCOffset", "left", -1, minimumWidth=100,
-                       valueGetter="utcOffSet",
-                       #valueSetter=self.valueSetterUTCOffset,
-                       #stringConverter=self.utcOffSet2Str,
-                       imageGetter=self.imgGetterUTCOffset,
-                       headerImage="star"),
+            ColumnDefn("UTCOffset", "left", -1, minimumWidth=100, valueGetter="utcOffSet",
+                       imageGetter=self.imgGetterUTCOffset, headerImage="star"),
+
             ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=110,
-                       cellEditorCreator=self.censorEditor,
-                       imageGetter=self.imgGetterCensorCode,
-                       headerImage="star"),
-            ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=100,
-                       imageGetter=self.imgGetterValueAcc),
+                       cellEditorCreator=self.censorEditor, imageGetter=self.imgGetterCensorCode, headerImage="star"),
+
+            # valueGetter needs to be created in the Points class
+            ColumnDefn(title="ValueDateTime", align="left", valueGetter="valueDateTime",
+                       minimumWidth=123, cellEditorCreator=self.valueDateTimeEditorCreator, headerImage="star"),
+
+            ColumnDefn(title="ValueDateTimeUTFOffset", align="left", valueGetter="valueDateTimeUTFOffset",
+                       minimumWidth=130, headerImage="star"),
+
             ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100,
                        stringConverter=self.offSetValue2Str,
                        imageGetter=self.imgGetterOffSetValue),
@@ -202,6 +172,7 @@ class OLVAddPoint(FastObjectListView):
             listItem.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
 
         self.rowFormatter = rowFormatter
+        self.AutoSizeColumns()
 
     def isCorrect(self, point):
         validators = [
