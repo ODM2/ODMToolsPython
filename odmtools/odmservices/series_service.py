@@ -278,23 +278,26 @@ class SeriesService(serviceBase):
 #             return None
 #
 #     # Method methods
-#     def get_all_methods(self):
-#         return self._edit_session.query(Method).all()
+    def get_all_methods(self):
+        #return self._edit_session.query(Method).all()
+        return self.read.getMethods()
 #
-#     def get_method_by_id(self, method_id):
-#         try:
-#             result = self._edit_session.query(Method).filter_by(id=method_id).first()
-#         except:
-#             result = None
-#         return result
+    def get_method_by_id(self, method_id):
+        return self.read.getMethods(ids=[method_id])[0]
+        # try:
+        #     result = self._edit_session.query(Method).filter_by(id=method_id).first()
+        # except:
+        #     result = None
+        # return result
 #
-#     def get_method_by_description(self, method_code):
-#         try:
-#             result = self._edit_session.query(Method).filter_by(description=method_code).first()
-#         except:
-#             result = None
-#             logger.error("method not found")
-#         return result
+    def get_method_by_description(self, method_code):
+        return self.read.getMethods(codes=[method_code])[0]
+        # try:
+        #     result = self._edit_session.query(Method).filter_by(description=method_code).first()
+        # except:
+        #     result = None
+        #     logger.error("method not found")
+        # return result
 #
 #     def get_offset_types_by_series_id(self, series_id):
 #         """
