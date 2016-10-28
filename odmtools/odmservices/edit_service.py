@@ -466,6 +466,21 @@ class EditService():
         '''
         self.memDB.updateFlag(filtered_points.index.tolist(), qualifier_id)
 
+    def updateValues(self, values):
+        """
+
+        :param values: pandas Dataframe - must contain a "datavalues" column and a date time as the index
+        :return:
+        """
+
+        update_list = [{"value": row["DataValue"], "id": index} for index, row in values.iterrows()]
+
+        ids = values.index.tolist()
+        self.memDB.update(update_list)
+        self._populate_series()
+
+        self.filtered_dataframe = self._series_points_df[self._series_points_df.index.isin(ids)]
+
     ###################
     # Save/Restore
     ###################
