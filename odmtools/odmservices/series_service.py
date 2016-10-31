@@ -1,20 +1,15 @@
-
 import logging
-
-
+from sqlalchemy import not_
 from sqlalchemy import distinct, func
-
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
 from odmtools.common.logger import LoggerTool
 import pandas as pd
-
-
 logger =logging.getLogger('main')
 
-class SeriesService(serviceBase):
 
+class SeriesService(serviceBase):
     # Accepts a string for creating a SessionFactory, default uses odmdata/connection.cfg
     def __init__(self, connection, debug=False):
 
@@ -218,7 +213,7 @@ class SeriesService(serviceBase):
         #     return self._edit_session.query(Unit).filter_by(name=unit_name).first()
         # except:
         #     return None
-        return self.read.getUnits(name = [unit_name])[0]
+        return self.read.getUnits(name=[unit_name])[0]
 #
     def get_unit_by_id(self, unit_id):
         """
@@ -230,7 +225,7 @@ class SeriesService(serviceBase):
         #     return self._edit_session.query(Unit).filter_by(id=unit_id).first()
         # except:
         #     return None
-        return self.read.getUnits(ids = [unit_id])[0]
+        return self.read.getUnits(ids=[unit_id])[0]
 
 #
     def get_all_qualifiers(self):
@@ -900,3 +895,62 @@ class SeriesService(serviceBase):
 #             return result
 #         except:
 #             return None
+
+    def get_vertical_datum_cvs(self):
+        return self.read.getCVs(type="Elevation Datum")
+
+    def get_samples(self):
+        return self.read.getSamplingFeatures(ids=None, codes=None, uuids=None, type=None, wkt=None)
+
+    def get_site_type_cvs(self):
+        return self.read.getCVs(
+            type="Site Type")  # OR return self.read.getCVs(type="Sampling Feature Type")
+
+    def get_variable_name_cvs(self):
+        return self.read.getCVs(type="Variable Name")
+
+    def get_offset_type_cvs(self):
+        return self.read.getCVs(type="Spatial Offset Type")
+
+    def get_speciation_cvs(self):
+        return self.read.getCVs(type="Speciation")
+
+    def get_sample_medium_cvs(self):
+        return self.read.getCVs(type="Medium")
+
+    def get_value_type_cvs(self):
+        return self.read.getCVs(type="Result Type")
+
+    def get_data_type_cvs(self):
+        return self.read.getCVs(type="dataset type")
+
+    def get_general_category_cvs(self):
+        return self.read.getAnnotations(type="categoricalresultvalue")
+
+    def get_censor_code_cvs(self):
+        return self.read.getCVs(type="censorcode")
+
+    def get_sample_type_cvs(self):
+        return self.read.getCVs(type="Sampling Feature Type")
+
+    def get_units(self):
+        return self.read.getUnits(ids=None, name=None, type=None)
+
+    def get_units_not_uni(self):
+        result = self._session.query(Units).filter(not_(Units.name.contains('angstrom'))).all()
+        return result
+
+    def get_units_names(self):
+        result = self._session.query(Units.name).all()
+        return result
+
+    def get_quality_code(self):
+        return self.read.getCVs(type="Quality Code")
+
+
+    def get_annotation_by_code(self, code):
+        return self.read.getAnnotations(type=code)
+
+
+    def get_all_annotations(self):
+        return self.read.getAnnotations(type=None)

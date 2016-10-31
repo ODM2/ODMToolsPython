@@ -21,9 +21,9 @@ class CellEdit():
     def __init__(self, parent, serviceManager, recordService):
         self.parent = parent
         self.recordService = recordService
-        if serviceManager:
-            self.serviceManager = serviceManager
-            self.cv_service = serviceManager.get_cv_service()
+        self.serviceManager = serviceManager
+        if self.serviceManager:
+            self.cv_service = self.serviceManager.get_cv_service()
             self.series_service = serviceManager.get_series_service()
             offsetChoices = OrderedDict((x.description, x.id) for x in
                                         self.cv_service.get_offset_type_cvs())
@@ -43,6 +43,18 @@ class CellEdit():
             self.labSampleChoices = [NULL] + ['SampleLabSample1'] + ['SampleLabSample2'] + ['SampleLabSample3']
             self.offSetTypeChoices = [NULL] + ['SampleOffsetType1'] + ['SampleOffsetType2'] + ['SampleOffsetType3']
             self.qualifierCodeChoices = [NULL] + ['SampleQualifierCode1'] + ['SampleQualifierCode2'] + ['SampleQualifierCode3']
+
+        self.qualityCodeChoices = self.fetchQualityCodeChoices()
+        self.timeAggregationInterval = -1
+
+    def fetchQualityCodeChoices(self):
+        """
+        :return: type(list
+        """
+        if not self.serviceManager:
+            return [NULL]
+
+        self.serviceManager.get_cv_service()
 
     """
         --------------------
@@ -334,16 +346,7 @@ class CellEdit():
         return odcb
 
     def offSetTypeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-
         odcb = CustomComboBox(olv, choices=self.offSetTypeChoices, style=wx.CB_READONLY)
-        # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
@@ -417,7 +420,10 @@ class CellEdit():
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
-
+    def setComboForQualityCodeColumn(self, olv, rowIndex, subItemIndex):
+        odcb = CustomComboBox(olv, choices=self.qualityCodeChoices, style=wx.CB_READONLY)
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return odcb
 
 
 class DatePicker(wx.DatePickerCtrl):

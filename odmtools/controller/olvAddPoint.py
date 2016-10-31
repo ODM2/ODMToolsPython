@@ -33,6 +33,8 @@ class Points(object):
         self.censorCode = censorCode
         self.qualifierCode = qualifierCode
         self.labSampleCode = labSampleCode
+        self.qualityCodeCV = "NULL"
+        self.timeAggInterval = -1
 
         ## determines whether a row is in correct format or now
         self.validDataValue = False
@@ -97,7 +99,7 @@ class OLVAddPoint(FastObjectListView):
         self.qualifierCodeEditor = cellEdit.qualifierCodeEditor
         self.labSampleEditor = cellEdit.labSampleCodeEditor
         self.valueDateTimeEditorCreator = cellEdit.valueDateTimeEditor
-        # self.valueDateTimeUTFOffset = cellEdit.valueDateTimeUTFOffsetCreator
+        self.qualityCodeCreator = cellEdit.setComboForQualityCodeColumn
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
@@ -142,12 +144,12 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn(title="ValueDateTimeUTFOffset", align="left", valueGetter="valueDateTimeUTFOffset",
                        minimumWidth=130, headerImage="star"),
 
-            ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100,
-                       stringConverter=self.offSetValue2Str,
-                       imageGetter=self.imgGetterOffSetValue),
-            ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
-                       imageGetter=self.imgGetterOffSetType,
-                       cellEditorCreator=self.offSetTypeEditor),
+            ColumnDefn(title="Quality CodeCV", align="left", valueGetter="qualityCodeCV",
+                       minimumWidth=130, cellEditorCreator=self.qualityCodeCreator, imageGetter="star"),
+
+            ColumnDefn(title="TimeAggregationInterval", align="left", minimumWidth=130,
+                       valueGetter="timeAggInterval", headerImage="star"),
+
             ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=130,
                        imageGetter=self.imgGetterQualifier,
                        cellEditorCreator=self.qualifierCodeEditor),
@@ -159,7 +161,6 @@ class OLVAddPoint(FastObjectListView):
 
         self.SetColumns(columns)
 
-        # self.CreateCheckStateColumn()
         self.SetObjects(None)
 
         def rowFormatter(listItem, point):

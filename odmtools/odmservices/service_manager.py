@@ -125,7 +125,6 @@ class ServiceManager():
     def delete_connection(self, conn_dict):
         self._conn_dicts[:] = [x for x in self._conn_dicts if x != conn_dict]
 
-
     def get_series_service(self, conn_dict=None, conn_string=""):
         if not conn_dict:
             conn_dict = self.get_current_conn_dict()
@@ -152,15 +151,10 @@ class ServiceManager():
         ss= SeriesService(conn)
         return ss
 
-    def get_cv_service(self):
-        conn_string = self._build_connection_string(self._current_conn_dict)
-        return ReadService(conn_string, self.debug)
-
-
     def get_edit_service(self, series_id, connection):
         return EditService(series_id, connection=connection,  debug=self.debug)
 
-
+    # todo: Not using build_connection_string. Need to update this
     def get_record_service(self, script, series_id, connection):
         return EditTools(self, script, self.get_edit_service(series_id, connection),
                              self._build_connection_string(self.is_valid_connection()))
