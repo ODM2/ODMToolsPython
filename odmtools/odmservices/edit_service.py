@@ -474,7 +474,9 @@ class EditService():
         :param values: pandas Dataframe - must contain a "datavalues" column and a date time as the index
         :return:
         """
-
+        if values is None:
+            print("please send in a valid DataFrame object")
+            return
         update_list = [{"value": row["DataValue"], "id": index} for index, row in values.iterrows()]
 
         ids = values.index.tolist()
