@@ -22,7 +22,7 @@ logger =logging.getLogger('main')
 
 
 class ServiceManager():
-    def __init__(self, debug=False, conn_dict = None):
+    def __init__(self, debug=False, conn_dict=None):
         self.debug = debug
         f = self._get_file('r')
         self._conn_dicts = []

@@ -4,13 +4,13 @@ from datetime import datetime
 from odmtools.common.icons import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
 from odmtools.controller.logicCellEdit import CellEdit, NULL
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
+from odmtools.odmservices.service_manager import ServiceManager
 OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 
 
 class Points(object):
     def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
-                 censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL", offSetType="NULL", qualifierCode="NULL",
-                 labSampleCode="NULL"):
+                 censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL"):
         try:
             self.dataValue = str(dataValue)
         except:
@@ -29,12 +29,11 @@ class Points(object):
         self.utcOffSet = str(utcOffSet)
         self.valueDateTimeUTFOffset = -1
         self.offSetValue = offSetValue
-        self.offSetType = offSetType
         self.censorCode = censorCode
-        self.qualifierCode = qualifierCode
-        self.labSampleCode = labSampleCode
         self.qualityCodeCV = "NULL"
         self.timeAggInterval = -1
+        self.timeAggregationUnitID = "NULL"
+        self.annotation = "NULL"
 
         ## determines whether a row is in correct format or now
         self.validDataValue = False
@@ -51,10 +50,14 @@ class Points(object):
 
 class OLVAddPoint(FastObjectListView):
     def __init__(self, *args, **kwargs):
-        try:
+        if "serviceManager" in kwargs:
             self.serviceManager = kwargs.pop("serviceManager")
-        except:
-            self.serviceManager = None
+        else:
+            try:
+                self.serviceManager = ServiceManager()
+            except:
+                self.serviceManager = None
+
         try:
             self.recordService = kwargs.pop("recordService")
         except:
@@ -73,7 +76,6 @@ class OLVAddPoint(FastObjectListView):
         self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
         self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
         self.imgGetterValueAcc = cellEdit.imgGetterValueAcc
-        self.imgGetterlabSample = cellEdit.imgGetterLabSampleCode
         self.imgGetterQualifier = cellEdit.imgGetterQualifierCode
         self.imgGetterOffSetType = cellEdit.imgGetterOffSetType
         self.imgGetterOffSetValue = cellEdit.imgGetterOffSetValue
@@ -95,11 +97,10 @@ class OLVAddPoint(FastObjectListView):
         self.dateEditor = cellEdit.dateEditor
         self.timeEditor = cellEdit.localTimeEditor
         self.censorEditor = cellEdit.censorCodeEditor
-        self.offSetTypeEditor = cellEdit.offSetTypeEditor
-        self.qualifierCodeEditor = cellEdit.qualifierCodeEditor
-        self.labSampleEditor = cellEdit.labSampleCodeEditor
         self.valueDateTimeEditorCreator = cellEdit.valueDateTimeEditor
         self.qualityCodeCreator = cellEdit.setComboForQualityCodeColumn
+        self.timeAggregationUnitIDCreator = cellEdit.setComboForTimeAggregationUnitIDCreator
+        self.annotationCreator = cellEdit.setComboForAnnotation
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
@@ -150,13 +151,12 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn(title="TimeAggregationInterval", align="left", minimumWidth=130,
                        valueGetter="timeAggInterval", headerImage="star"),
 
-            ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=130,
-                       imageGetter=self.imgGetterQualifier,
-                       cellEditorCreator=self.qualifierCodeEditor),
-            ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=130,
-                       imageGetter=self.imgGetterlabSample,
-                       cellEditorCreator=self.labSampleEditor
-                       ),
+            ColumnDefn(title="TimeAggregationUnitID", align="left", minimumWidth=130,
+                       valueGetter="timeAggregationUnitID", cellEditorCreator=self.timeAggregationUnitIDCreator, headerImage="star"),
+
+            ColumnDefn(title="Annotation", align="left", minimumWidth=130,
+                       valueGetter="annotation", cellEditorCreator=self.annotationCreator, headerImage="star")
+
         ]
 
         self.SetColumns(columns)

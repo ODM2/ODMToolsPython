@@ -947,10 +947,11 @@ class SeriesService(serviceBase):
     def get_quality_code(self):
         return self.read.getCVs(type="Quality Code")
 
-
     def get_annotation_by_code(self, code):
         return self.read.getAnnotations(type=code)
 
-
     def get_all_annotations(self):
         return self.read.getAnnotations(type=None)
+
+    def get_aggregation_statistic(self):
+        return self.read.getCVs(type="aggregationstatistic")

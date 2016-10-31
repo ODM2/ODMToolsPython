@@ -23,17 +23,7 @@ class CellEdit():
         self.recordService = recordService
         self.serviceManager = serviceManager
         if self.serviceManager:
-            self.cv_service = self.serviceManager.get_cv_service()
-            self.series_service = serviceManager.get_series_service()
-            offsetChoices = OrderedDict((x.description, x.id) for x in
-                                        self.cv_service.get_offset_type_cvs())
-            self.offSetTypeChoices = [NULL] + offsetChoices.keys()
-
-            labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cv_service.get_samples())
-
-            self.censorCodeChoices = [NULL] + [x.term for x in self.cv_service.get_censor_code_cvs()]
-            self.labSampleChoices = [NULL] + labChoices.keys()
-
+            self.series_service = self.serviceManager.get_series_service()
             self.qualifierChoices = OrderedDict((x.code + ':' + x.description, x.id)
                                            for x in self.series_service.get_all_qualifiers() if x.code and x.description)
             self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
@@ -45,7 +35,17 @@ class CellEdit():
             self.qualifierCodeChoices = [NULL] + ['SampleQualifierCode1'] + ['SampleQualifierCode2'] + ['SampleQualifierCode3']
 
         self.qualityCodeChoices = self.fetchQualityCodeChoices()
+        self.censorCodeChoices = self.fetchCensorCodeChoices()
         self.timeAggregationInterval = -1
+        self.timeAggretaionUnitChoices = self.fetchTimeUnitChoices()
+        self.annotationChoices = [NULL]
+
+    def fetchCensorCodeChoices(self):
+        if not self.serviceManager:
+            return [NULL]
+
+        series_service = self.serviceManager.get_series_service()
+        return [NULL] + [x.Term for x in series_service.get_censor_code_cvs()]
 
     def fetchQualityCodeChoices(self):
         """
@@ -54,7 +54,14 @@ class CellEdit():
         if not self.serviceManager:
             return [NULL]
 
-        self.serviceManager.get_cv_service()
+        series_service = self.serviceManager.get_series_service()
+        return [NULL] + [x.Term for x in series_service.get_quality_code()]
+
+    def fetchTimeUnitChoices(self):
+        if not self.serviceManager:
+            return [NULL]
+        a = self.series_service.read.getCVs("aggregationstatistic")
+        return [NULL] + [x.Term for x in self.series_service.get_aggregation_statistic()]
 
     """
         --------------------
@@ -239,16 +246,6 @@ class CellEdit():
         point.validQualifierCode = True
         return "check"
 
-    def imgGetterLabSampleCode(self, point):
-        """
-        """
-
-        point.validLabSampleCode = False
-        if not point.labSampleCode in self.labSampleChoices:
-            return "error"
-        point.validLabSampleCode = True
-        return "check"
-
     """
         --------------------
         Custom Value Setters
@@ -281,32 +278,18 @@ class CellEdit():
         ------------------------
     """
     def strConverterDataValue(self, value):
-        """
-        """
-
         try:
             return str(value)
         except Exception as e:
             return str(NULL)
 
     def strConverterLocalTime(self, time):
-        """Required Element
-
-        :param time:
-        :return:
-        """
-
         return unicode(time)
 
     def strConverterUTCOffset(self, value):
-        """
-        """
-
         return str(value)
 
     def strConverterOffSetValue(self, value):
-        """
-        """
         try:
             return str(value)
         except UnicodeEncodeError:
@@ -319,28 +302,12 @@ class CellEdit():
     """
 
     def localTimeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-
-        # odcb = masked.TimeCtrl(olv, fmt24hr=True)
         odcb = TimePicker(olv)
 
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
     def dateEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
         odcb = DatePicker(olv)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
@@ -350,68 +317,9 @@ class CellEdit():
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
-    def qualifierCodeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-        def cbHandler(event):
-            """
-            :param event:
-                :type wx.EVT_COMBOBOX:
-            """
-
-            if event.GetEventObject().Value == NEW:
-                dlg = frmFlagValues(self.parent, self.cv_service, self.qualifierChoices, isNew=True)
-
-                value = dlg.ShowModal()
-                if value == wx.ID_OK and dlg.selectedValue:
-                    self.qualifierCodeChoices.insert(0, dlg.selectedValue)
-                    event.GetEventObject().SetItems(self.qualifierCodeChoices)
-                    print event.GetEventObject().GetValue()
-                    print type(event.GetEventObject())
-                    event.GetEventObject().SetValue(dlg.selectedValue)
-                    print event.GetEventObject().GetValue()
-                #dlg.Destroy()
-
-        try:
-            self.qualifierChoices = OrderedDict((x.code + ':' + x.description, x.id)
-                                               for x in self.cv_service.get_all_qualifiers() if x.code and x.description)
-            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
-        except:
-            pass
-        odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)
-        # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
-        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
-        odcb.Bind(wx.EVT_COMBOBOX, cbHandler)
-        return odcb
-
     def censorCodeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
         odcb = CustomComboBox(olv, choices=self.censorCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
-        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
-        return odcb
-
-    def labSampleCodeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-
-        odcb = CustomComboBox(olv, choices=self.labSampleChoices, style=wx.CB_READONLY)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
@@ -424,6 +332,16 @@ class CellEdit():
         odcb = CustomComboBox(olv, choices=self.qualityCodeChoices, style=wx.CB_READONLY)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
+
+    def setComboForTimeAggregationUnitIDCreator(self, olv, rowIndex, subItemIndex):
+        customCombo = CustomComboBox(olv, choices=self.timeAggretaionUnitChoices, style=wx.CB_READONLY)
+        customCombo.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return customCombo
+
+    def setComboForAnnotation(self, olv, rowIndex, subItemIndex):
+        customCombo = CustomComboBox(olv, choices=self.annotationChoices, style=wx.CB_READONLY)
+        customCombo.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return customCombo
 
 
 class DatePicker(wx.DatePickerCtrl):

@@ -32,7 +32,12 @@ class AddPoints(clsAddPoints.AddPoints):
         """
         self.checkIfEditing()
         self.olv.AddObject(self.olv.sampleRow())
+        self.auto_size_table()
         event.Skip()
+
+    def auto_size_table(self):
+        for i in range(self.olv.GetColumnCount()):
+            self.olv.SetColumnWidth(col=i, width=wx.LIST_AUTOSIZE_USEHEADER)
 
     def onClearAllBtn(self, event):
         """
