@@ -917,6 +917,117 @@ class SeriesService(serviceBase):
 #         except:
 #             return None
 
+
+    def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
+        """
+        series_service -> Result in ODM2
+        :param data_values:
+        :param site_id:
+        :param variable_id:
+        :param method_id:
+        :param source_id:
+        :param qcl_id:
+        :return:
+        """
+        self.update_dvs(data_values)
+        series = Series()
+        series.site_id = site_id
+        series.variable_id = variable_id
+        series.method_id = method_id
+        series.source_id = source_id
+        series.quality_control_level_id = qcl_id
+
+        return self.create_service.createResult(series)
+
+    def create_method(self, description, link):
+        """
+        :param description:
+        :param link:
+        :return:
+        """
+        method = Methods()
+        method.MethodDescription = description
+        if link is not None:
+            method.MethodLink = link
+
+        return self.create_service.createMethod(method=method)
+
+    def create_variable_by_var(self, var):
+        """
+        :param var:  Variable Object
+        :return:
+        """
+        return self.create_service.createVariable(var=var)
+
+    def create_variable(
+            self, code, name, speciation, variable_unit_id, sample_medium,
+            value_type, is_regular, time_support, time_unit_id, data_type,
+            general_category, no_data_value):
+        """
+        :param code:
+        :param name:
+        :param speciation:
+        :param variable_unit_id:
+        :param sample_medium:
+        :param value_type:
+        :param is_regular:
+        :param time_support:
+        :param time_unit_id:
+        :param data_type:
+        :param general_category:
+        :param no_data_value:
+        :return:
+        """
+        # var = Variable()
+        variable = Variables()
+        variable.VariableCode = code
+        variable.VariableNameCV = name
+        variable.SpeciationCV = speciation
+        # Commented lines indicate that Variables does not have such attributes
+        # var.variable_unit_id = variable_unit_id
+        # var.sample_medium = sample_medium
+        # var.value_type = value_type
+        # var.is_regular = is_regular
+        # var.time_support = time_support
+        # var.time_unit_id = time_unit_id
+        # var.data_type = data_type
+        # var.general_category = general_category
+        variable.NoDataValue = no_data_value
+
+        return self.create.createVariable(var=variable)
+
+    def create_processing_level(self, code, definition, explanation):
+        """
+        qcl -> Processing Level in ODM2
+        :param code:
+        :param definition:
+        :param explanation:
+        :return:
+        """
+        procLevel = ProcessingLevels()
+        procLevel.ProcessingLevelCode = code
+        procLevel.Definition = definition
+        procLevel.Explanation = explanation
+        return self.create.createProcessingLevel(proclevel=procLevel)
+
+    def create_annotation_by_anno(self, annotation):
+        return self.create.createAnnotations(annotation)
+
+    def create_annotation(self, code, description):
+        """
+        :param code:
+        :param description:
+        :return:
+        """
+        annotation = Annotations()
+        annotation.AnnotationCode = code
+        annotation.AnnotationText = description
+        annotation.AnnotationTypeCV = "timeSeriesResultValueAnnotation"
+
+        return self.create_annotation_by_anno(annotation)
+
+
+
     def get_vertical_datum_cvs(self):
         return self.read.getCVs(type="Elevation Datum")
 
