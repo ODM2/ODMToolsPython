@@ -338,16 +338,10 @@ class SeriesService(serviceBase):
 #         return self._edit_session.query(Sample).join(subquery).distinct().all()
 #
 #     # Series Catalog methods
-    def get_all_series(self):
-        """
-        Returns all series as a modelObject
-        :return: List[Series]
-        """
-        return self.read.getResults(type="timeSeries")
+
 #
-#         #logger.debug("%s" % self._edit_session.query(Series).order_by(Series.id).all())
-#         return self._edit_session.query(Series).order_by(Series.id).all()
-#
+
+    #TODO siteid should actually be joined through featureaction and filtered that way
     def get_series_by_site(self , site_id):
         """
 
