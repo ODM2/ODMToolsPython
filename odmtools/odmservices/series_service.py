@@ -306,38 +306,42 @@ class SeriesService(serviceBase):
 #         return self._edit_session.query(Sample).join(subquery).distinct().all()
 #
 #     # Series Catalog methods
-#     def get_all_series(self):
-#         """
-#         Returns all series as a modelObject
-#         :return: List[Series]
-#         """
+    def get_all_series(self):
+        """
+        Returns all series as a modelObject
+        :return: List[Series]
+        """
+        return self.read.getResults(type="timeSeries")
 #
 #         #logger.debug("%s" % self._edit_session.query(Series).order_by(Series.id).all())
 #         return self._edit_session.query(Series).order_by(Series.id).all()
 #
-#     def get_series_by_site(self , site_id):
-#         """
-#
-#         :param site_id: int
-#         :return: List[Series]
-#         """
-#         try:
-#             selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
-#             return selectedSeries
-#         except:
-#             return None
-#
-#     def get_series_by_id(self, series_id):
-#         """
-#
-#         :param series_id: int
-#         :return: Series
-#         """
-#         try:
-#             return self._edit_session.query(Series).filter_by(id=series_id).first()
-#         except Exception as e:
-#             print e
-#             return None
+    def get_series_by_site(self , site_id):
+        """
+
+        :param site_id: int
+        :return: List[Series]
+        # """
+        # try:
+        #     selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
+        #     return selectedSeries
+        # except:
+        #     return None
+        return self.read.getResults(type="timeSeries", ids=[site_id])[0]
+
+
+    def get_series_by_id(self, series_id):
+        """
+
+        :param series_id: int
+        :return: Series
+        """
+        # try:
+        #     return self._edit_session.query(Series).filter_by(id=series_id).first()
+        # except Exception as e:
+        #     print e
+        #     return None
+        return self.read.getResults(type="timeSeries", ids=[series_id])[0]
 #
 #     def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
 #         """
