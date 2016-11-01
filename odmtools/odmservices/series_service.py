@@ -294,15 +294,6 @@ class SeriesService(serviceBase):
         #     logger.error("method not found")
         # return result
 #
-#     def get_offset_types_by_series_id(self, series_id):
-#         """
-#
-#         :param series_id:
-#         :return:
-#         """
-#         subquery = self._edit_session.query(DataValue.offset_type_id).outerjoin(
-#             Series.data_values).filter(Series.id == series_id, DataValue.offset_type_id != None).distinct().subquery()
-#         return self._edit_session.query(OffsetType).join(subquery).distinct().all()
 #
 #     def get_samples_by_series_id(self, series_id):
 #         """
