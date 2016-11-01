@@ -131,7 +131,7 @@ class ServiceManager():
 
         if conn_string:
             #todo how to get version from a connection string
-            conn = dbconnection.createConnectionFromString(conn_string, float(self.get_current_conn_dict()["version"]))
+            conn = dbconnection.createConnectionFromString(conn_string, 2.0)#float(self.get_current_conn_dict()["version"]))
         else:
             conn = dbconnection.createConnection(conn_dict['engine'], conn_dict['address'], conn_dict['db'], conn_dict['user'],
                                       conn_dict['password'], conn_dict['version'])

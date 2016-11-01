@@ -423,8 +423,8 @@ class EditService():
             # f = lambda row :  row["datavalue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
             # tmp_filter_list["datavalue"]=tmp_filter_list.apply(f, axis = 1)
 
-            f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l)) if row["DataValue"] != nodv else row["DataValue"]
-            tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
+            f = lambda row :  row["datavalue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l)) if row["datavalue"] != nodv else row["datavalue"]
+            tmp_filter_list["datavalue"]=tmp_filter_list.apply(f, axis = 1)
 
             update_list = [{"value": row["datavalue"], "id":index} for index, row in tmp_filter_list.iterrows()]
 

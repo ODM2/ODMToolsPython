@@ -23,7 +23,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename={#MyAppName}_{#MyAppVersion}_Installer
-SetupIconFile={#MyAppDir}\odmtools\common\icons\ODMTools.ico
+SetupIconFile=D:\DEV\Releases\ODMTools\odmtools_beta_source_code\odmtools\common\icons\ODMTools.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -40,7 +40,7 @@ Source: "D:\DEV\Releases\ODMTools\*"; DestDir: "{app}"; Flags: ignoreversion rec
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\run.bat"; WorkingDir: "{app}";
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\run.bat"; Tasks: desktopicon
 
 [Dirs]
 Name: "{localappdata}\{#OrgName}\{#MyAppName}"

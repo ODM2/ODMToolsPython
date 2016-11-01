@@ -116,10 +116,43 @@ class SeriesService(serviceBase):
         q = self._session.query(Variables).filter(Variables.VariableID.in_(var_ids))
         return q.all()
 
+        # Data Value Methods
+        def get_values(self, series_id=None):
+            '''
+
+            :param series_id:  Series id
+            :return: pandas dataframe
+            '''
+            # series= self.get_series_by_id(series_id)
+            # if series:
+            #     q = self._edit_session.query(DataValue).filter_by(
+            #             site_id=series.site_id,
+            #             variable_id=series.variable_id,
+            #             method_id=series.method_id,
+            #             source_id=series.source_id,
+            #             quality_control_level_id=series.quality_control_level_id)
+            #
+            #     query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+            #     data= pd.read_sql_query(sql= query,
+            #                       con = self._session_factory.engine,
+            #                       params = query.params )
+            #     #return data.set_index(data['LocalDateTime'])
+            #     return data
+            # else:
+            #     return None
+
+            q = self.read._session.query(TimeSeriesResultValues)
+            if series_id:
+                q = q.filter_by(ResultID=series_id)
+            q = q.order_by(TimeSeriesResultValues.ValueDateTime)
+            query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+            data = pd.read_sql_query(sql=query,
+                                     con=self._session_factory.engine,
+                                     params=query.params)
+            data.set_index(data['valuedatetime'], inplace=True)
+            return data
 
 # Series Catalog methods
-
-
     def get_series_by_site(self , site_id):
         """
         :param site_id: int
@@ -161,7 +194,6 @@ class SeriesService(serviceBase):
         return self.read.getSampling(ids = [site_id])[0]
 
 #
-
 #
     def get_all_variables(self):
         """
