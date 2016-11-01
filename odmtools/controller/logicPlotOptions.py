@@ -188,9 +188,9 @@ class SeriesPlotInfo(object):
 
     def getUpdatedData(self, key):
             results = self.taskserver.getCompletedTasks()
-            self._seriesInfos[key].Probability = results['Probability']
             self._seriesInfos[key].Statistics = results['Summary']
             self._seriesInfos[key].BoxWhisker = results['BoxWhisker']
+            self._seriesInfos[key].Probability = results['Probability']
 
     def setBoxInterval(self, title):
 
@@ -211,7 +211,7 @@ class SeriesPlotInfo(object):
 
     def getSeriesById(self, seriesID):
         try:
-            series = self.memDB.series_service.get_series_by_id(seriesID)
+            series = self.memDB.series_service.get_series(series=seriesID)
             self.memDB.series_service.reset_session()
             return series
 
@@ -292,7 +292,7 @@ class SeriesPlotInfo(object):
         series = self.getSeriesById(seriesID)
 
         if not series:
-            message = "Please check your database connection. Unable to retrieve series_service %d from the database" % seriesID
+            message = "Please check your database connection. Unable to retrieve series %d from the database" % seriesID
             wx.MessageBox(message, 'ODMTool Python', wx.OK | wx.ICON_EXCLAMATION)
             return
 
@@ -336,7 +336,7 @@ class SeriesPlotInfo(object):
                 self.currentStart = startDate
                 self.currentEnd = endDate
             else:
-                #this returns the series_service to its full daterange
+                #this returns the series to its full daterange
                 data = self.memDB.getDataValuesforGraph(key, seriesInfo.noDataValue, seriesInfo.startDate,
                                                         seriesInfo.endDate)
                 self.isSubsetted = False
@@ -578,7 +578,6 @@ def numToSeason(date):
         4: 'Fall'
 
     }[date]
-
 
 
 

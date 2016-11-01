@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#TODO remove variable and series access here
 from odmtools.odmdata import SessionFactory, variable, series
 from odmtools.odmservices import SeriesService
 from tests import test_util

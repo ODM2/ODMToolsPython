@@ -1,6 +1,5 @@
 
 
-#from odm2api.ODM1_1_1.services import SeriesService#, refreshDB
 
 from odm2api.ODMconnection import SessionFactory,  dbconnection
 from odm2api.ODM2.models import _changeSchema as change_schema

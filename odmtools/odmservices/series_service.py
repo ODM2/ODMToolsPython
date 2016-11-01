@@ -77,7 +77,7 @@ class SeriesService(serviceBase):
         """
         return self.read.getDetailedResultInfo('Time Series Coverage')
 
-    def get_series_by_id(self, series_id):
+    def get_series(self, series_id=None):
         """
         :param series_id: int
         :return: Series
@@ -355,19 +355,6 @@ class SeriesService(serviceBase):
         #     return None
         return self.read.getResults(type="timeSeries", ids=[site_id])[0]
 
-
-    def get_series_by_id(self, series_id):
-        """
-
-        :param series_id: int
-        :return: Series
-        """
-        # try:
-        #     return self._edit_session.query(Series).filter_by(id=series_id).first()
-        # except Exception as e:
-        #     print e
-        #     return None
-        return self.read.getResults(type="timeSeries", ids=[series_id])[0]
 #
 #     def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
 #         """

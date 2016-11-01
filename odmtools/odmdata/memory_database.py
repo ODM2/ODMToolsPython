@@ -213,7 +213,7 @@ class MemoryDatabase(object):
         if not self.editLoaded:
 
             logger.debug("Load series from db")
-            self.series = self.series_service.get_series_by_id(seriesID)
+            self.series = self.series_service.get_series(seriesID)
             self.df = self.series_service.get_values(series_id= seriesID)
 
             self.editLoaded = True
@@ -230,7 +230,7 @@ class MemoryDatabase(object):
                 logger.debug("no data in series")
             else:
 
-                self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
+                self.df.to_sql(name="odm2.timeseriesresultvalues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
 

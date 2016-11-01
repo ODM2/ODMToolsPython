@@ -6,7 +6,9 @@ import urllib
 
 
 from sqlalchemy.exc import SQLAlchemyError
-from odmtools.odmservices import SeriesService, EditService, ExportService
+from series_service import  SeriesService
+from edit_service import EditService
+from export_service import ExportService
 
 
 from odmtools.controller import EditTools
