@@ -299,10 +299,10 @@ class AddPoints(clsAddPoints.AddPoints):
 class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
         wx.Frame.__init__(self, parent, *args, **kwargs)
-        edit_service = EditService(series_id=2, connection_string="pymysql+mysql://ODM:ODM123!!@jws.uwrl.usu.edu/odm2" )
-        edit_tool = EditTools(script="", edit_service=edit_service, connection_string="abc123")
-
-        kwargs["record_service"] = edit_tool
+        # edit_service = EditService(series_id=2, connection_string="pymysql+mysql://ODM:ODM123!!@jws.uwrl.usu.edu/odm2" )
+        # edit_tool = EditTools(script="", edit_service=edit_service, connection_string="abc123")
+        #
+        # kwargs["record_service"] = edit_tool
 
         m = AddPoints(parent)
         m.Show()

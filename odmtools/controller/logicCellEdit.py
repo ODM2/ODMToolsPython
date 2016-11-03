@@ -60,8 +60,8 @@ class CellEdit():
     def fetchTimeUnitChoices(self):
         if not self.serviceManager:
             return [NULL]
-        a = self.series_service.read.getCVs("aggregationstatistic")
-        return [NULL] + [x.Term for x in self.series_service.get_aggregation_statistic()]
+        units = self.series_service.read.getUnits()
+        return [NULL] + [unit.UnitsName for unit in units]
 
     """
         --------------------
