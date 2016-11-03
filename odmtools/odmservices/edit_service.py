@@ -48,12 +48,13 @@ class EditService():
         self._filter_from_selection = False
         self._debug = debug
 
-        if connection_string is  "" and connection is not None:
-            self.memDB= connection
+        if connection_string is "" and connection is not None:
+            self.memDB = connection
 
         elif connection_string is not "" and connection is None:
             from odmtools.odmdata import MemoryDatabase
-            self.memDB= MemoryDatabase()
+            self.memDB = MemoryDatabase()
+            # todo Stephanie: does not accept a string for the connection anymore
             self.memDB.set_series_service(SeriesService(connection_string, False))
 
 

@@ -11,13 +11,13 @@ logger =logging.getLogger('main')
 
 class EditTools():
     # Script header (imports etc.) will be set up in Main when record is clicked.
-    def __init__(self, parent, script, edit_service, connection_string,  record=False):
+    def __init__(self, script, edit_service, connection_string, record=False):
         self._script = script
         # logger.debug(dir(self._script))sr
         self._edit_service = edit_service
         self._connection_string = connection_string
         self._record = record
-        self._serv_man = parent
+        # self._serv_man = parent
 
         self._edit_error = "no series_service selected for editing"
         self._add_point_req_error = "A required field was left empty"

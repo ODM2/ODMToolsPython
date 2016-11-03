@@ -8,6 +8,9 @@ try:
 except ImportError:
     import wx.lib.agw.genericmessagedialog as GMD
 import logging
+from odmtools.odmservices.edit_service import EditService
+from odmtools.controller.logicEditTools import EditTools
+
 logger =logging.getLogger('main')
 
 # Implementing AddPoints
@@ -227,11 +230,6 @@ class AddPoints(clsAddPoints.AddPoints):
         event.Skip()
 
     def parseTable(self):
-        """
-
-        :return:
-        """
-
         series = self.recordService.get_series()
 
         objects = self.olv.GetObjects()
@@ -301,6 +299,11 @@ class AddPoints(clsAddPoints.AddPoints):
 class Example(wx.Frame):
     def __init__(self, parent, *args, **kwargs):
         wx.Frame.__init__(self, parent, *args, **kwargs)
+        edit_service = EditService(series_id=2, connection_string="pymysql+mysql://ODM:ODM123!!@jws.uwrl.usu.edu/odm2" )
+        edit_tool = EditTools(script="", edit_service=edit_service, connection_string="abc123")
+
+        kwargs["record_service"] = edit_tool
+
         m = AddPoints(parent)
         m.Show()
 
