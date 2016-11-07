@@ -487,7 +487,7 @@ class SeriesService(serviceBase):
 #         data["Season"] = data.apply(self.calcSeason, axis=1)
 #         return data.set_index(data['LocalDateTime'])
 #
-    def get_plot_values(self, seriesID, noDataValue, startDate = None, endDate = None ):
+    def get_plot_values(self, seriesID=None, noDataValue=None, startDate = None, endDate = None ):
         """
         :param seriesID:
         :param noDataValue:
@@ -510,14 +510,27 @@ class SeriesService(serviceBase):
         # return data
 
 
-        Values = self.get_values(seriesID)
+        Values = []
+        if seriesID:
+            Values = self.get_values(seriesID)
+        else:
+            Values = self.get_values()
+
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
         # data = data[data['datavalue'] != noDataValue]
-        data = data[(data['datavalue'] != noDataValue) & (data['valuedatetime'] >= startDate) & (
-        data['valuedatetime'] <= endDate)]
+        if startDate:
+            data = data[data['valuedatetime'] >= startDate]
+        if endDate:
+            data = data[data['valuedatetime'] <= endDate]
+        if noDataValue:
+            data = data[(data['datavalue'] != noDataValue)]
+
+        # data = data[(data['datavalue'] != noDataValue) & (data['valuedatetime'] >= startDate) & (
+        # data['valuedatetime'] <= endDate)]
 
 
         #data.set_index(data['LocalDateTime'], inplace=True)
+
         data["month"] = data['valuedatetime'].apply(lambda x: x.month)
         data["year"] = data['valuedatetime'].apply(lambda x: x.year)
         data["season"] = data.apply(self.calcSeason, axis=1)

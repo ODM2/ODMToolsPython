@@ -94,7 +94,7 @@ class MemoryDatabase(object):
         return self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
 
     def getEditDataValuesforGraph(self):
-        return self.mem_service.get_all_plot_values()
+        return self.mem_service.get_plot_values()
 
     def commit(self):
         self.mem_service._session.commit()
