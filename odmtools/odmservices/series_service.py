@@ -278,9 +278,10 @@ class SeriesService(serviceBase):
         # """
         # result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
         # return result
-        return self.read.getAnnotations() ##todo: CHECK ON THIS
+        return self.read.getAnnotations(codes=[code])[0] ##todo: CHECK ON THIS
 #
-#     def get_qualifiers_by_series_id(self, series_id):
+    def get_qualifiers_by_series_id(self, series_id):
+        return self.read.getAnnotations(ids=[series_id])[0] ##todo: check on this
 #         """
 #
 #         :param series_id:
@@ -328,16 +329,18 @@ class SeriesService(serviceBase):
         #     logger.error("method not found")
         # return result
 #
-#
-#     def get_samples_by_series_id(self, series_id):
-#         """
-#
-#         :param series_id:
-#         :return:
-#         """
-#         subquery = self._edit_session.query(DataValue.sample_id).outerjoin(
-#             Series.data_values).filter(Series.id == series_id, DataValue.sample_id != None).distinct().subquery()
-#         return self._edit_session.query(Sample).join(subquery).distinct().all()
+
+#todo: Take another look at this
+    # def get_samples_by_series_id(self, series_id):
+    #     # """
+    #     #
+    #     # :param series_id:
+    #     # :return:
+    #     # # """
+    #     # subquery = self._edit_session.query(DataValue.sample_id).outerjoin(
+    #     #     Series.data_values).filter(Series.id == series_id, DataValue.sample_id != None).distinct().subquery()
+    #     # return self._edit_session.query(Sample).join(subquery).distinct().all()
+
 #
 #     # Series Catalog methods
 
