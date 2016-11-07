@@ -27,7 +27,7 @@ class Points(object):
         self.valueDateTime = self.date
 
         self.utcOffSet = str(utcOffSet)
-        self.valueDateTimeUTFOffset = -1
+        self.utfOffset = -1
         self.offSetValue = offSetValue
         self.censorCode = censorCode
         self.qualityCodeCV = "NULL"
@@ -142,7 +142,7 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn(title="ValueDateTime", align="left", valueGetter="valueDateTime",
                        minimumWidth=123, cellEditorCreator=self.valueDateTimeEditorCreator, headerImage="star"),
 
-            ColumnDefn(title="ValueDateTimeUTFOffset", align="left", valueGetter="valueDateTimeUTFOffset",
+            ColumnDefn(title="UTFOffset", align="left", valueGetter="utfOffset",
                        minimumWidth=130, headerImage="star"),
 
             ColumnDefn(title="Quality CodeCV", align="left", valueGetter="qualityCodeCV",
