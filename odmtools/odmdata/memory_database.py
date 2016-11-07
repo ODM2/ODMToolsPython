@@ -9,6 +9,7 @@ from odmtools.odmservices import ServiceManager, SeriesService
 # from odmtools.odmdata import SeriesService#ODM
 # ODM = SeriesService.ODM
 from odm2api.ODM2.models import TimeSeriesResultValues as DataValue
+from odm2api.ODM2.models import setSchema
 
 
 logger =logging.getLogger('main')
@@ -27,6 +28,7 @@ class MemoryDatabase(object):
         # Memory_service handles in memory database
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+        setSchema(self.mem_service._session_factory.engine)
 
         # TODO clean up closing of program
         # if taskserver is None:
@@ -35,10 +37,14 @@ class MemoryDatabase(object):
         #else:
 
         self.taskserver = taskserver
+        #send in engine
+
+
 
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+        setSchema(self.mem_service._session_factory.engine)
 
 
     def set_series_service(self, service):
@@ -88,7 +94,7 @@ class MemoryDatabase(object):
         return self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
 
     def getEditDataValuesforGraph(self):
-        return self.mem_service.get_all_plot_values()
+        return self.mem_service.get_plot_values()
 
     def commit(self):
         self.mem_service._session.commit()
@@ -229,8 +235,8 @@ class MemoryDatabase(object):
             if self.df is not None and len(self.df)<=0:
                 logger.debug("no data in series")
             else:
-
-                self.df.to_sql(name="odm2.timeseriesresultvalues", if_exists='replace', con=self.mem_service._session_factory.engine,
+                setSchema(self.mem_service._session_factory.engine)
+                self.df.to_sql(name="timeseriesresultvalues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
 

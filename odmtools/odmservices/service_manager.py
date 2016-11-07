@@ -150,16 +150,19 @@ class ServiceManager():
         #     version = float(self._current_conn_dict['version'])
         #
         # sf = SessionFactory(conn_string, self.debug, version = version)
-        ss= SeriesService(conn)
-        return ss
+        self.series_service= SeriesService(conn)
+        return self.series_service
 
     def get_edit_service(self, series_id, connection):
         return EditService(series_id, connection=connection,  debug=self.debug)
 
     # todo: Not using build_connection_string. Need to update this
     def get_record_service(self, script, series_id, connection):
-        return EditTools(self, script, self.get_edit_service(series_id, connection),
-                             self._build_connection_string(self.is_valid_connection()))
+
+        # return EditTools(self, script, self.get_edit_service(series_id, connection),
+        #                      connection)
+        return EditTools(script, self.get_edit_service(series_id, connection), connection_string=connection)
+
 
     def get_export_service(self):
         return ExportService(self.get_series_service())
