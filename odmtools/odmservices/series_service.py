@@ -18,6 +18,8 @@ class SeriesService(serviceBase):
         self.update = UpdateODM2(self._session_factory)
         self.delete = DeleteODM2(self._session_factory)
         self.create = CreateODM2(self._session_factory)
+        #send in engine
+        setSchema(self._session_factory.engine)
 
 
     def reset_session(self):

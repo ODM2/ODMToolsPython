@@ -30,6 +30,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.memDB = kwargs.pop("memdb")
         self.pnlPlot = kwargs.pop("plot")
 
+
         clsSeriesSelector.ClsSeriesSelector.__init__(self, *args, **kwargs)
 
     def initPubSub(self):

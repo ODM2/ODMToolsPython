@@ -159,7 +159,7 @@ class ServiceManager():
     # todo: Not using build_connection_string. Need to update this
     def get_record_service(self, script, series_id, connection):
         return EditTools(self, script, self.get_edit_service(series_id, connection),
-                             self._build_connection_string(self.is_valid_connection()))
+                             connection)
 
     def get_export_service(self):
         return ExportService(self.get_series_service())

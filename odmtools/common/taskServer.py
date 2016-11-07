@@ -130,9 +130,11 @@ class TaskServerMP:
                 result = Statistics(task)
             if task_type == "InitEditValues":
                 connection = SeriesService("sqlite:///:memory:")
+                # connection._
                 df = task[1]
                 logger.debug("Load series from db")
-                df.to_sql(name="odm2.timeseriesresultvalues", con=connection._connection.engine, flavor='sqlite', index = False, chunksize = 10000)
+                #setSchema(self.mem_service._session_factory.engine)
+                df.to_sql(name="timeseriesresultvalues", con=connection._connection.engine, flavor='sqlite', index = False, chunksize = 10000)
 
                 logger.debug("done loading database")
                 result = connection

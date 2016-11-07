@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #TODO remove variable and series access here
-from odmtools.odmdata import SessionFactory, variable, series
+from odmtools.odmdata import SessionFactory
+from odm2api.ODM2.models import Variables as variable
+from odm2api.ODM2.models import Results as series
 from odmtools.odmservices import SeriesService
 from tests import test_util
 import sys
