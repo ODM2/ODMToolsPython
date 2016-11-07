@@ -150,8 +150,8 @@ class ServiceManager():
         #     version = float(self._current_conn_dict['version'])
         #
         # sf = SessionFactory(conn_string, self.debug, version = version)
-        ss= SeriesService(conn)
-        return ss
+        self.series_service= SeriesService(conn)
+        return self.series_service
 
     def get_edit_service(self, series_id, connection):
         return EditService(series_id, connection=connection,  debug=self.debug)

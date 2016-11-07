@@ -211,7 +211,7 @@ class SeriesPlotInfo(object):
 
     def getSeriesById(self, seriesID):
         try:
-            series = self.memDB.series_service.get_series(series=seriesID)
+            series = self.memDB.series_service.get_series(seriesID)
             self.memDB.series_service.reset_session()
             return series
 
