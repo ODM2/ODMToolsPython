@@ -466,28 +466,7 @@ class SeriesService(serviceBase):
         elif month in [10, 11, 12]:
             return 4
 
-#
-#     def get_all_plot_values(self):
-#         """
-#
-#         :return:
-#         """
-#         q = self._edit_session.query(DataValue.data_value.label('DataValue'),
-#                                    DataValue.local_date_time.label('LocalDateTime'),
-#                                    DataValue.censor_code.label('CensorCode'),
-#                                    func.strftime('%m', DataValue.local_date_time).label('Month'),
-#                                    func.strftime('%Y', DataValue.local_date_time).label('Year')
-#                                    #DataValue.local_date_time.strftime('%m'),
-#                                    #DataValue.local_date_time.strftime('%Y'))
-#         ).order_by(DataValue.local_date_time)
-#         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
-#         data = pd.read_sql_query(sql=query,
-#                                  con=self._session_factory.engine,
-#                                  params=query.params)
-#         data["Season"] = data.apply(self.calcSeason, axis=1)
-#         return data.set_index(data['LocalDateTime'])
-#
-    def get_plot_values(self, seriesID=None, noDataValue=None, startDate = None, endDate = None ):
+    def get_plot_values(self, seriesID, noDataValue, startDate=None, endDate=None):
         """
         :param seriesID:
         :param noDataValue:
@@ -496,44 +475,38 @@ class SeriesService(serviceBase):
         :return:
         """
 
-        #series = self.get_series_by_id(seriesID)
-        #
-        # DataValues = [
-        #     (dv.data_value, dv.local_date_time, dv.censor_code, dv.local_date_time.strftime('%m'),
-        #         dv.local_date_time.strftime('%Y'))
-        #     for dv in series.data_values
-        #     if dv.data_value != noDataValue if dv.local_date_time >= startDate if dv.local_date_time <= endDate
-        # ]
-        # data = pd.DataFrame(DataValues, columns=["DataValue", "LocalDateTime", "CensorCode", "Month", "Year"])
-        # data.set_index(data['LocalDateTime'], inplace=True)
-        # data["Season"] = data.apply(self.calcSeason, axis=1)
-        # return data
-
-
-        Values = []
-        if seriesID:
-            Values = self.get_values(seriesID)
-        else:
-            Values = self.get_values()
-
+        Values = self.get_values(seriesID)
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
         # data = data[data['datavalue'] != noDataValue]
-        if startDate:
-            data = data[data['valuedatetime'] >= startDate]
-        if endDate:
-            data = data[data['valuedatetime'] <= endDate]
-        if noDataValue:
-            data = data[(data['datavalue'] != noDataValue)]
-
-        # data = data[(data['datavalue'] != noDataValue) & (data['valuedatetime'] >= startDate) & (
-        # data['valuedatetime'] <= endDate)]
-
-
-        #data.set_index(data['LocalDateTime'], inplace=True)
+        data = data[(data['datavalue'] != noDataValue) & (data['valuedatetime'] >= startDate) & (
+            data['valuedatetime'] <= endDate)]
 
         data["month"] = data['valuedatetime'].apply(lambda x: x.month)
         data["year"] = data['valuedatetime'].apply(lambda x: x.year)
         data["season"] = data.apply(self.calcSeason, axis=1)
+        # data.set_index(data['valuedatetime'], inplace=True)
+        return data
+
+    def get_all_plot_values(self):
+        """
+        :param seriesID:
+        :param noDataValue:
+        :param startDate:
+        :param endDate:
+        :return:
+        """
+
+
+
+        Values = self.get_values()
+        data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
+        # data = data[data['datavalue'] != noDataValue]
+
+
+        data["month"] = data['valuedatetime'].apply(lambda x: x.month)
+        data["year"] = data['valuedatetime'].apply(lambda x: x.year)
+        data["season"] = data.apply(self.calcSeason, axis=1)
+        #data.set_index(data['valuedatetime'], inplace=True)
         return data
 
 
