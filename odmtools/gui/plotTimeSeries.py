@@ -123,7 +123,7 @@ class plotTimeSeries(wx.Panel):
 
         if isinstance(filtered_datetime, list):
             df = self.editCurve.dataTable
-            result = df[df['LocalDateTime'].isin(filtered_datetime)].astype(datetime.datetime)
+            result = df[df['valuedatetime'].isin(filtered_datetime)].astype(datetime.datetime)
 
         if isinstance(result, pd.DataFrame):
             if result.empty:
@@ -134,7 +134,7 @@ class plotTimeSeries(wx.Panel):
                 self.canvas.draw()
                 return
 
-        values = result['DataValue'].values.tolist()
+        values = result['datavalue'].values.tolist()
         dates = result.index.astype(datetime.datetime)
         self.selplot = self.axislist[self.editSeries.axisTitle].scatter(
             dates, values, s=35, c='red', edgecolors='none', zorder=12, marker='s', alpha=1)

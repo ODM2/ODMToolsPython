@@ -769,12 +769,20 @@ class SeriesService(serviceBase):
 #             raise e
 #
 #
-#     def delete_values_by_series(self, series, startdate = None):
-#         """
-#
-#         :param series:
-#         :return:
-#         """
+    def delete_values_by_series(self, series, startdate = None):
+        """
+
+        :param series:
+        :return:
+        """
+       #todo stephanie: add startdate stuff
+        try:
+            self.delete.deleteTSRValues(ids = [series.id])
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
 #         try:
 #             q= self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
 #                                                                  variable_id = series.variable_id,
@@ -793,20 +801,21 @@ class SeriesService(serviceBase):
 #             logger.error(message)
 #             raise ex
 #
-#     def delete_dvs(self, id_list):
-#         """
-#
-#         :param id_list: list of datetimes
-#         :return:
-#         """
-#         try:
-#             self._edit_session.query(DataValue).filter(DataValue.local_date_time.in_(id_list)).delete(False)
-#         except Exception as ex:
-#             message = "Values were not successfully deleted: %s" % ex
-#             print message
-#             logger.error(message)
-#             raise ex
-#
+    def delete_dvs(self, id_list):
+        """
+
+        :param id_list: list of datetimes
+        :return:
+        """
+        try:
+            self.delete.deleteTSRValues(dates = id_list)
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
+
+
 # #####################
 # #
 # #Exist functions
