@@ -616,7 +616,7 @@ class SeriesService(serviceBase):
         :param values: pandas dataframe
         :return:
         """
-        #values.to_sql(name="timeseriesresultvalues", if_exists='append', con=self._session_factory.engine, index=False)
+        values.to_sql(name="timeseriesresultvalues", if_exists='append', con=self._session_factory.engine, index=False)
 #
 #     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
 #         """
@@ -641,7 +641,8 @@ class SeriesService(serviceBase):
 #         self._edit_session.commit()
 #         return series
 #
-#     def create_method(self, description, link):
+    def create_method(self, description, link):
+           self.create.createMethod(description, link) #todo: update api to reflect this
 #         """
 #
 #         :param description:
@@ -656,7 +657,7 @@ class SeriesService(serviceBase):
 #         self._edit_session.add(meth)
 #         self._edit_session.commit()
 #         return meth
-#
+# #
 #     def create_variable_by_var(self, var):
 #         """
 #
