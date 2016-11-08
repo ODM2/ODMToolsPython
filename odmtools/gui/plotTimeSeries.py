@@ -239,7 +239,7 @@ class plotTimeSeries(wx.Panel):
         dates = data.index.astype(datetime.datetime)
         curraxis = self.axislist[oneSeries.axisTitle]
 
-        curraxis.plot_date(dates, data['DataValue'], "-s",
+        curraxis.plot_date(dates, data['datavalue'], "-s",
                  color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
                  picker=5.0, pickradius=5.0, markersize=4.5)
         curraxis.set_xlabel('Date')
@@ -250,7 +250,7 @@ class plotTimeSeries(wx.Panel):
         # scale = 1.5
         # f = zoom_factory(curraxis , base_scale = scale)
 
-        self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
+        self.xys = zip(convertedDates, oneSeries.dataTable['datavalue'])
         self.toolbar.editSeries(self.xys, self.editCurve)
         # self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.editSeries = oneSeries

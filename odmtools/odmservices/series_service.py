@@ -77,6 +77,7 @@ class SeriesService(serviceBase):
         Returns all series as a modelObject
         :return: List[Series]
         """
+        setSchema(self._session_factory.engine)
         return self.read.getDetailedResultInfo('Time Series Coverage')
 
     def get_series(self, series_id=None):
@@ -89,6 +90,7 @@ class SeriesService(serviceBase):
         # except Exception as e:
         #     print e
         #     return None
+        setSchema(self._session_factory.engine)
         return self.read.getResults(ids=[series_id])[0]
 
     # Query result objects for data purposes
@@ -142,7 +144,7 @@ class SeriesService(serviceBase):
             #     return data
             # else:
             #     return None
-
+            setSchema(self._session_factory.engine)
             q = self.read._session.query(TimeSeriesResultValues)
             if series_id:
                 q = q.filter_by(ResultID=series_id)
@@ -499,8 +501,7 @@ class SeriesService(serviceBase):
         :return:
         """
 
-
-
+        setSchema(self._session_factory.engine)
         Values = self.get_values()
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
         # data = data[data['datavalue'] != noDataValue]
