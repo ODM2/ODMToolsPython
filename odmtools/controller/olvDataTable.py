@@ -30,7 +30,7 @@ class OLVDataTable(VirtualObjectListView):
         self.oddRowsBackColor = wx.Colour(191, 217, 217)
         self.SetColumns(columns)
         self.dataframe = self.memDB.getDataValuesDF()
-        sort_by_index = list(self.dataframe.columns).index("LocalDateTime")
+        sort_by_index = list(self.dataframe.columns).index("valuedatetime")
         self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
         self.dataObjects = self.dataframe.values.tolist()
 

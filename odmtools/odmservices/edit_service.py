@@ -309,7 +309,7 @@ class EditService():
     # Gets
     ###################
     def get_series(self):
-        return self.memDB.series_service.get_series_by_id(self._series_id)
+        return self.memDB.series_service.get_series(self._series_id)
 
     def get_series_points(self):
         # all point in the series_service

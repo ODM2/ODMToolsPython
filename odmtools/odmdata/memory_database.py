@@ -80,12 +80,12 @@ class MemoryDatabase(object):
     def getEditColumns(self):
         columns = []
         tmp_columns = self.df.columns.tolist()
-        tmp_columns.remove('DataValue')
-        tmp_columns.remove('LocalDateTime')
-        tmp_columns.remove('QualifierID')
-        columns.append('DataValue')
-        columns.append('LocalDateTime')
-        columns.append('QualifierID')
+        tmp_columns.remove('datavalue')
+        tmp_columns.remove('valuedatetime')
+        #tmp_columns.remove('QualifierID')
+        columns.append('datavalue')
+        columns.append('valuedatetime')
+        #columns.append('QualifierID')
         columns.extend(tmp_columns)
         return [(x, i) for (i, x) in enumerate(columns)]
         # return [(x, i) for (i, x) in enumerate(self.df.columns)]
@@ -219,6 +219,7 @@ class MemoryDatabase(object):
         if not self.editLoaded:
 
             logger.debug("Load series from db")
+
             self.series = self.series_service.get_series(seriesID)
             self.df = self.series_service.get_values(series_id= seriesID)
 
