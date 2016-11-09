@@ -121,55 +121,56 @@ class SeriesService(serviceBase):
         return q.all()
 
         # Data Value Methods
-        def get_values(self, series_id=None):
-            '''
+    def get_values(self, series_id=None):
+        '''
 
-            :param series_id:  Series id
-            :return: pandas dataframe
-            '''
-            # series= self.get_series_by_id(series_id)
-            # if series:
-            #     q = self._edit_session.query(DataValue).filter_by(
-            #             site_id=series.site_id,
-            #             variable_id=series.variable_id,
-            #             method_id=series.method_id,
-            #             source_id=series.source_id,
-            #             quality_control_level_id=series.quality_control_level_id)
-            #
-            #     query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-            #     data= pd.read_sql_query(sql= query,
-            #                       con = self._session_factory.engine,
-            #                       params = query.params )
-            #     #return data.set_index(data['LocalDateTime'])
-            #     return data
-            # else:
-            #     return None
-            setSchema(self._session_factory.engine)
-            q = self.read._session.query(TimeSeriesResultValues)
-            if series_id:
-                q = q.filter_by(ResultID=series_id)
-            q = q.order_by(TimeSeriesResultValues.ValueDateTime)
-            query = q.statement.compile(dialect=self._session_factory.engine.dialect)
-            data = pd.read_sql_query(sql=query,
-                                     con=self._session_factory.engine,
-                                     params=query.params)
-            data.set_index(data['valuedatetime'], inplace=True)
-            return data
+        :param series_id:  Series id
+        :return: pandas dataframe
+        '''
+        # series= self.get_series_by_id(series_id)
+        # if series:
+        #     q = self._edit_session.query(DataValue).filter_by(
+        #             site_id=series.site_id,
+        #             variable_id=series.variable_id,
+        #             method_id=series.method_id,
+        #             source_id=series.source_id,
+        #             quality_control_level_id=series.quality_control_level_id)
+        #
+        #     query=q.statement.compile(dialect=self._session_factory.engine.dialect)
+        #     data= pd.read_sql_query(sql= query,
+        #                       con = self._session_factory.engine,
+        #                       params = query.params )
+        #     #return data.set_index(data['LocalDateTime'])
+        #     return data
+        # else:
+        #     return None
+        setSchema(self._session_factory.engine)
+        q = self.read._session.query(TimeSeriesResultValues)
+        if series_id:
+            q = q.filter_by(ResultID=series_id)
+        q = q.order_by(TimeSeriesResultValues.ValueDateTime)
+        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql=query,
+                                 con=self._session_factory.engine,
+                                 params=query.params)
+        data.set_index(data['valuedatetime'], inplace=True)
+        return data
 
 # Series Catalog methods
     def get_series_by_site(self , site_id):
-        """
-        :param site_id: int
-        :return: List[Series]
-        """
         # try:
         #     selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
         #     return selectedSeries
         # except:
         #     return None
+        """
+        :param site_id: type(Int)
+        :return: list[Series]
+        """
 
-        return self.read.getResult(type="site", ids = [site_id])[0]
-    ##TODO : check is this the right way to get the series??
+        # return self.read.getResults(type="timeSeries", ids=[site_id])
+        # return self.read.getResults(type="site", ids= [site_id])[0]
+        return self.read.getResults(ids=[site_id])
 
 
 
@@ -284,6 +285,10 @@ class SeriesService(serviceBase):
 #
     def get_qualifiers_by_series_id(self, series_id):
         return self.read.getAnnotations(ids=[series_id])[0] ##todo: check on this
+
+    def get_all_processing_levels(self):
+        return self.read.getProcessingLevels(ids=None, codes=None)
+
 #         """
 #
 #         :param series_id:
@@ -345,24 +350,6 @@ class SeriesService(serviceBase):
 
 #
 #     # Series Catalog methods
-
-#
-
-    #TODO siteid should actually be joined through featureaction and filtered that way
-    def get_series_by_site(self , site_id):
-        """
-
-        :param site_id: int
-        :return: List[Series]
-        # """
-        # try:
-        #     selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
-        #     return selectedSeries
-        # except:
-        #     return None
-        return self.read.getResults(type="timeSeries", ids=[site_id])[0]
-
-#
 #     def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
 #         """
 #
@@ -493,14 +480,6 @@ class SeriesService(serviceBase):
         return data
 
     def get_all_plot_values(self):
-        """
-        :param seriesID:
-        :param noDataValue:
-        :param startDate:
-        :param endDate:
-        :return:
-        """
-
         setSchema(self._session_factory.engine)
         Values = self.get_values()
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
@@ -1058,12 +1037,10 @@ class SeriesService(serviceBase):
         return self.read.getUnits(ids=None, name=None, type=None)
 
     def get_units_not_uni(self):
-        result = self._session.query(Units).filter(not_(Units.name.contains('angstrom'))).all()
-        return result
+        return self._session.query(Units).filter(not_(Units.UnitsName.contains('angstrom'))).all()
 
     def get_units_names(self):
-        result = self._session.query(Units.name).all()
-        return result
+        return self._session.query(Units.UnitsName).all()
 
     def get_quality_code(self):
         return self.read.getCVs(type="Quality Code")

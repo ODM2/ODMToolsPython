@@ -1,8 +1,8 @@
 import wx
 from odmtools.view.WizardVariableView import WizardVariableView
 from wx.wizard import WizardPageSimple
-# from odmtools.odmdata import Variable
 from odm2api.ODM2.models import Variables as Variable
+
 
 class WizardVariableController(WizardPageSimple):
     def __init__(self, parent, service_manager, current_variable):
@@ -15,9 +15,7 @@ class WizardVariableController(WizardPageSimple):
         main_sizer.Add(self.variable_view, 1, wx.EXPAND | wx.RIGHT, -16)
         self.SetSizer(main_sizer)
 
-        table_columns = ["Code", "Name", "Speciation", "Units",
-                         "Sample Medium", "Value Type", "IsRegular", "Time Support",
-                         "Time Units", "DataType", "Genaral Category", "NoDataValue", "ID"]
+        table_columns = ["Code", "Name", "Speciation", "DataType", "NoDataValue", "ID"]
         self.variable_view.variable_table.set_columns(table_columns)
         self.on_current_radio(None)
 
@@ -52,10 +50,10 @@ class WizardVariableController(WizardPageSimple):
     def __fetch_data(self):
         self.__populate_variable_table()
 
-        cv_service = self.service_manager.get_cv_service()
-        name_list = [x.term for x in cv_service.get_variable_name_cvs()]
-        var_unit = [x.name for x in cv_service.get_units_names()]
-        spec_list = [x.term for x in cv_service.get_speciation_cvs()]
+        series_service = self.service_manager.get_series_service()
+        name_list = [x.Term for x in series_service.get_variable_name_cvs()]
+        var_unit = [x.UnitsName for x in series_service.get_units()]
+        spec_list = [x.Term for x in series_service.get_speciation_cvs()]
 
         self.variable_view.variable_name_combo.AppendItems(name_list)
         self.variable_view.speciation_combo.AppendItems(spec_list)
@@ -66,19 +64,12 @@ class WizardVariableController(WizardPageSimple):
         variables = series_serivce.get_all_variables()
         data = []
         for var in variables:
-            data.append([var.code,
-                         var.name,
-                         var.speciation,
-                         var.variable_unit.name,
-                         var.sample_medium,
-                         var.value_type,
-                         var.is_regular,
-                         var.time_support,
-                         var.time_unit.name,
-                         var.data_type,
-                         var.general_category,
-                         var.no_data_value,
-                         var.id])
+            data.append([var.VariableCode,
+                         var.VariableNameCV,
+                         var.SpeciationCV,
+                         var.VariableTypeCV,
+                         var.NoDataValue,
+                         var.VariableID])
 
         self.variable_view.variable_table.set_table_content(data=data)
 

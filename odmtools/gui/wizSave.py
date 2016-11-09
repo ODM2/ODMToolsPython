@@ -273,8 +273,9 @@ class wizSave(wx.wizard.Wizard):
         self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager)
         # self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
         self.pgVariable = WizardVariableController(self, service_manager=service_manager,
-                                                   current_variable=self.currSeries.variable)
-        self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
+                                                   current_variable=self.currSeries.VariableObj)
+        self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service,
+                                                    self.currSeries.FeatureActionObj.SamplingFeatureObj)
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
         self.FitToPage(self.pgIntro)
