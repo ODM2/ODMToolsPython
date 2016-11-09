@@ -45,10 +45,10 @@ class WizardProcessLevelController(WizardPageSimple):
         data = []
         for proc in processes:
             data.append([
-                proc.code,
-                proc.definition,
-                proc.explanation,
-                proc.id
+                proc.ProcessingLevelCode,
+                proc.Definition,
+                proc.Explanation,
+                proc.ProcessingLevelID
             ])
 
         self.processing_level_view.existing_process_table.set_table_content(data=data)

@@ -53,9 +53,9 @@ class WizardMethodController(WizardPageSimple):
         data = []
         for meth in methods:
             data.append([
-                meth.description,
-                meth.link,
-                meth.id
+                meth.MethodDescription,
+                meth.MethodLink,
+                meth.MethodID
             ])
 
         self.method_view.existing_method_table.set_table_content(data=data)
