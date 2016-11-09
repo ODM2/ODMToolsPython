@@ -136,7 +136,9 @@ class plotProb(wx.Panel):
                 xValues = oneSeries.Probability.xAxis.sort_values().values
                 yValues = oneSeries.Probability.yAxis.sort_values().values
 
-                ax = self.plots.plot(xValues, yValues, 'bs', color=oneSeries.color, label=oneSeries.plotTitle)
+                ax = self.plots.plot(xValues, yValues, 'bs', color=oneSeries.color,
+                                   label=oneSeries.plotTitle)
+
                 self.axislist[oneSeries.axisTitle] = ax[0]
 
         self.setXaxis()
