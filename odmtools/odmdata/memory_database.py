@@ -8,7 +8,7 @@ from odmtools.odmservices import ServiceManager, SeriesService
 
 # from odmtools.odmdata import SeriesService#ODM
 # ODM = SeriesService.ODM
-from odm2api.ODM2.models import TimeSeriesResultValues as DataValue
+from odm2api.ODM2.models import TimeSeriesResultValues as TSRV
 from odm2api.ODM2.models import setSchema
 
 
@@ -114,12 +114,13 @@ class MemoryDatabase(object):
         updates : list of dictionary that contains 2 items, id and value
         '''
 
-        stmt = (DataValue.__table__.update().
-                where(DataValue.ValueDateTime == bindparam('id')).
+        stmt = (TSRV.__table__.update().
+                where(TSRV.ValueDateTime == bindparam('id')).
                 values(DataValue=bindparam('value'))
-        )
+                )
 
         self.mem_service._session.execute(stmt, updates)
+        #self.mem_service._session.query(TSRV).filter_by
 
         # self.updateDF()
 
@@ -127,20 +128,21 @@ class MemoryDatabase(object):
     def updateValue(self, ids, operator, value):
         # query = DataValue.data_value+value
         if operator == '+':
-            query = DataValue.DataValue + value
+            query = TSRV.DataValue + value
         elif operator == '-':
-            query = DataValue.DataValue - value
+            query = TSRV.DataValue - value
         elif operator == '*':
-            query = DataValue.DataValue * value
+            query = TSRV.DataValue * value
         elif operator == '=':
             query = value
 
 
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
         chunks=self.chunking(ids)
+        setSchema(self.mem_service._session_factory.engine)
         for c in chunks:
-            q=self.mem_service._session.query(DataValue).filter(DataValue.ValueDateTime.in_(c))
-            q.update({DataValue.DataValue: query}, False)
+            q=self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))
+            q.update({TSRV.DataValue: query}, False)
 
         #self.updateDF()
 
@@ -156,8 +158,8 @@ class MemoryDatabase(object):
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)
         for c in chunks:
-            self.mem_service._session.query(DataValue).filter(DataValue.ValueDateTime.in_(c))\
-                .update({DataValue.qualifier_id: value}, False)
+            self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
+                .update({TSRV.qualifier_id: value}, False)
 
 
     def delete(self, ids):
@@ -171,7 +173,7 @@ class MemoryDatabase(object):
         """
         Takes in a list of points and loads each point into the database
         """
-        stmt = DataValue.__table__.insert()
+        stmt = TSRV.__table__.insert()
 
         if not isinstance(points, list):
             points = [points]
@@ -243,8 +245,8 @@ class MemoryDatabase(object):
 
 
 
-#TODO: update to work with ODM2
-    def changeSeriesIDs(self, var=None, qcl=None, method=None):
+
+    def changeSeriesIDs(self, result):
         """
 
         :param var:
@@ -253,17 +255,20 @@ class MemoryDatabase(object):
         :return:
         """
 
-        query = self.mem_service._session.query(DataValue)
-        if var is not None:
-            logger.debug(var)
-            query.update({DataValue.variable_id: var})
+        query = self.mem_service._session.query(TSRV)
+        # if var is not None:
+        #     logger.debug(var)
+        #     query.update({DataValue.variable_id: var})
+        #
+        # if method is not None:
+        #     logger.debug(method)
+        #     query.update({DataValue.method_id: method})
+        # # check that the code is not zero
+        # # if qcl is not None and qcl.code != 0:
+        # if qcl is not None:
+        #     logger.debug(qcl)
+        #     query.update({DataValue.quality_control_level_id: qcl})
+        logger.debug(result)
+        query.update({TSRV.ResultID:result})
 
-        if method is not None:
-            logger.debug(method)
-            query.update({DataValue.method_id: method})
-        # check that the code is not zero
-        # if qcl is not None and qcl.code != 0:
-        if qcl is not None:
-            logger.debug(qcl)
-            query.update({DataValue.quality_control_level_id: qcl})
 

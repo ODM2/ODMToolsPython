@@ -483,7 +483,7 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
-    def updateSeries(self, var=None, method=None, qcl=None, is_new_series=False, overwrite = True, append = False):
+    def updateSeries(self, result = None, is_new_series=False, overwrite = True, append = False):
         """
 
         :param var:
@@ -493,18 +493,12 @@ class EditService():
         :return:
         """
 
-        var_id = var.id if var is not None else None
-        method_id = method.id if method is not None else None
-        qcl_id = qcl.id if qcl is not None else None
+        result_id = result.ResultID if result is not None else None
+
         #self.memDB.changeSeriesIDs(var_id, method_id, qcl_id)
         dvs = self.memDB.getDataValuesDF()
-        if var_id is not None:
-            dvs["VariableID"] = var_id
-        if method_id is not None:
-            dvs["MethodID"] = method_id
-        if qcl_id is not None:
-            dvs["QualityControlLevelID"] = qcl_id
-
+        if result_id is not None:
+            dvs["ResultID"] = result_id
 
 
         #if is new series_service remove valueids
@@ -518,14 +512,9 @@ class EditService():
         series = self.memDB.series_service.get_series_by_id(self._series_id)
         logger.debug("original editing series_service id: %s" % str(series.id))
 
-        if (var or method or qcl ):
-            tseries = self.memDB.series_service.get_series_by_id_quint(site_id=int(series.site_id),
-                                                                  var_id=var_id if var else int(series.variable_id),
-                                                                  method_id=method_id if method else int(
-                                                                      series.method_id),
-                                                                  source_id=series.source_id,
-                                                                  qcl_id=qcl_id if qcl else int(
-                                                                      series.quality_control_level_id))
+        if (result):
+            tseries = self.memDB.series_service.get_series(result_id)
+
             if tseries:
                 logger.debug("Save existing series_service ID: %s" % str(tseries.id))
                 series = tseries
