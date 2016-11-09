@@ -271,7 +271,8 @@ class SeriesService(serviceBase):
         """
         # result = self._edit_session.query(Qualifier).order_by(Qualifier.code).all()
         # return result
-        return self.read.getAnnotations()
+        ann= self.read.getAnnotations()
+        return ann
 #
     def get_qualifier_by_code(self, code):
         """

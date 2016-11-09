@@ -395,7 +395,7 @@ class mnuRibbon(RB.RibbonBar):
         data_filter = frmDataFilter(self.parent, self.parent.getRecordService())
 
         if data_filter.Show() == wx.OK:
-            print "OK"
+            # print "OK"
             data_filter.Destroy()
 
         event.Skip()
@@ -439,8 +439,8 @@ class mnuRibbon(RB.RibbonBar):
 
         serviceManager = self.parent.getDBService()
         series_service = serviceManager.get_series_service()
-        qualifierChoices = OrderedDict((x.code + '-' + x.description, x.id) for x in series_service.get_all_qualifiers()
-                                       if x.code and x.description)
+        qualifierChoices = OrderedDict((x.AnnotationCode + '-' + x.AnnotationText, x.AnnotationID) for x in series_service.get_all_qualifiers()
+                                       if x.AnnotationCode and x.AnnotationText)
         add_flag = frmFlagValues(self.parent, series_service, qualifierChoices)
         val = add_flag.ShowModal()
 

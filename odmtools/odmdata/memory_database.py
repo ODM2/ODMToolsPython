@@ -158,8 +158,11 @@ class MemoryDatabase(object):
     def updateFlag(self, ids, value):
         chunks=self.chunking(ids)
         for c in chunks:
+            # add entry in the Timeseriesresultvalueannotations table
             self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
                 .update({TSRV.qualifier_id: value}, False)
+
+            
 
 
     def delete(self, ids):
