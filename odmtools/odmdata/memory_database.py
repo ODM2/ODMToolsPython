@@ -213,7 +213,6 @@ class MemoryDatabase(object):
         else:
         '''
         self.df = self.mem_service.get_values()
-        print self.mem_service._version
 
 
     def initEditValues(self, seriesID):

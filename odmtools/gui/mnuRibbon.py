@@ -428,7 +428,12 @@ class mnuRibbon(RB.RibbonBar):
             "You have chosen to interpolate the %s selected points.\nDo you want to continue?" % len(dataframe),
             'Interpolation', wx.YES_NO | wx.ICON_QUESTION | wx.CENTRE, parent=self.parent)
         if val == 2:  # wx.ID_YES:
-            self.parent.getRecordService().interpolate()
+            try:
+                self.parent.getRecordService().interpolate()
+            except Exception as e:
+                dial = wx.MessageDialog(None, "Unable perform interplation %s" % e, "Bad Input",
+                                        wx.OK | wx.ICON_ERROR)
+                dial.ShowModal()
 
         event.Skip()
 

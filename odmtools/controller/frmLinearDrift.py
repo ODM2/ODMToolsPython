@@ -17,8 +17,12 @@ class frmLinearDrift(clsLinearDrift):
             if not result:
                 dial = wx.MessageDialog( None, "Linear drift can only be performed on one continuous data selection. \nPlease modify your selection and try again.", "Bad Input", wx.OK)
                 dial.ShowModal()
-        except Exception as e:
+        except ValueError as e:
             dial = wx.MessageDialog(None, "Unable to convert value to float %s" % e, "Bad Input",
+                wx.OK | wx.ICON_ERROR)
+            dial.ShowModal()
+        except Exception as e:
+            dial = wx.MessageDialog(None, "Unable perform linear drift %s" % e, "Bad Input",
                 wx.OK | wx.ICON_ERROR)
             dial.ShowModal()
         self.Close()

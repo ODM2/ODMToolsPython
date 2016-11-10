@@ -417,12 +417,12 @@ class EditService():
             tmp_filter_list =self.get_filtered_points()
             startdate =tmp_filter_list.index[0]
             x_l = (tmp_filter_list.index[-1]-startdate).total_seconds()
-            #nodv= self.memDB.series_service.get_variable_by_id(self.memDB.df["VariableID"][0])
-            nodv = self.memDB.series.variable.no_data_value
-            # y_n = y_0 + G(x_i / x_l)
 
+            nodv = self.memDB.series.VariableObj.NoDataValue
+
+            # y_n = y_0 + G(x_i / x_l)
             # f = lambda row :  row["datavalue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
-            # tmp_filter_list["datavalue"]=tmp_filter_list.apply(f, axis = 1)
+
 
             f = lambda row :  row["datavalue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l)) if row["datavalue"] != nodv else row["datavalue"]
             tmp_filter_list["datavalue"]=tmp_filter_list.apply(f, axis = 1)
