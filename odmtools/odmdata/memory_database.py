@@ -113,10 +113,10 @@ class MemoryDatabase(object):
         '''
         updates : list of dictionary that contains 2 items, id and value
         '''
-
+        setSchema(self.mem_service._session_factory.engine)
         stmt = (TSRV.__table__.update().
                 where(TSRV.ValueDateTime == bindparam('id')).
-                values(DataValue=bindparam('value'))
+                values(datavalue=bindparam('value'))
                 )
 
         self.mem_service._session.execute(stmt, updates)
