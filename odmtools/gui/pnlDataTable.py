@@ -87,7 +87,9 @@ class pnlDataTable(wx.Panel):
         self.memDB = memDB
 
         columns = [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
-                              stringConverter='%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
+                              stringConverter= "%s" if "date" in x.lower() and "utc" not in x.lower() else '%s')
+
+                  #'%Y-%m-%d %H:%M:%S'
                    for x, i in self.memDB.getEditColumns()]
 
         self.myOlv.useAlternateBackColors = True

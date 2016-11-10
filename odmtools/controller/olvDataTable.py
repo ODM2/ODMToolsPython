@@ -23,9 +23,12 @@ class OLVDataTable(VirtualObjectListView):
 
     def init(self, memDB):
         self.memDB = memDB
-        columns = [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
+        columns = \
+            [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
                               stringConverter='%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
                    for x, i in self.memDB.getEditColumns()]
+        print columns
+
         self.useAlternateBackColors = True
         self.oddRowsBackColor = wx.Colour(191, 217, 217)
         self.SetColumns(columns)
