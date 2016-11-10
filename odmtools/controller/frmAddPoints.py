@@ -152,19 +152,9 @@ class AddPoints(clsAddPoints.AddPoints):
         event.Skip()
 
     def onFinishedBtn(self, event):
-        """
-
-        :param event:
-        :return:
-        """
         self.checkIfEditing()
 
-        #try:
         points, isIncorrect = self.parseTable()
-        #except:
-        #    return
-
-        message = ""
 
         if not points and not isIncorrect:
             #print "Leaving..."
@@ -232,42 +222,34 @@ class AddPoints(clsAddPoints.AddPoints):
     def parseTable(self):
         series = self.recordService.get_series()
 
+        site_id = series.FeatureActionObj.SamplingFeatureID
+        variable_id = series.VariableID
+        method_id = series.FeatureActionObj.ActionObj.MethodID
+        organization_id = series.FeatureActionObj.ActionObj.MethodObj.OrganizationID
+        process_id = series.ProcessingLevelID
+
         objects = self.olv.GetObjects()
 
         isIncorrect = False
         points = []
 
-        for i in objects:
-            if self.olv.isCorrect(i):
-                row = [None] * 10
-                if i.valueAccuracy != "NULL":
-                    row[1] = i.valueAccuracy
-                if i.offSetType != "NULL":
-                    row[6] = i.offSetType
-                if i.qualifierCode != "NULL":
-                    code = i.qualifierCode.split(':')[0]
-                    q=self.recordService._edit_service.memDB.series_service.get_qualifier_by_code(code=code)
-                    row[8] = q.id
-                if i.labSampleCode != "NULL":
-                    row[9] = i.labSampleCode
+        for point in objects:
+            if self.olv.isCorrect(point):
+                row = [None] * self.olv.GetColumnCount()
+                row[0] = point.dataValue
+                dt = self.combineDateTime(point.date, point.time)
+                row[1] = dt
+                row[2] = dt - datetime.timedelta(hours=int(point.utcOffSet))  # Calculates the time offset
+                row[3] = point.utcOffSet
+                row[4] = point.censorCode
+                row[5] = point.qualityCodeCV
+                row[6] = point.timeAggInterval
+                row[7] = point.timeAggregationUnitID
+                row[8] = point.annotation
 
-                row[0] = i.dataValue
+                row.extend([site_id, variable_id, method_id, organization_id, process_id])
 
-                dt = self.combineDateTime(i.date, i.time)
-                row[2] = dt
-                ## UTC Offset
-                row[3] = i.utcOffSet
-                ## Calculate UTC time based off the localdatetime and utcOffSet
-                row[4] = dt - datetime.timedelta(hours=int(i.utcOffSet))
-                row[7] = i.censorCode
-
-                row.extend([
-                    series.site_id, series.variable_id, series.method_id,
-                    series.source_id, series.quality_control_level_id
-                    ]
-                )
-
-                points.append(tuple(row))
+                points.append(row)
             else:
                 isIncorrect = True
 

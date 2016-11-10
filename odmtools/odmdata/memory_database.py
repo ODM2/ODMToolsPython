@@ -182,14 +182,16 @@ class MemoryDatabase(object):
             points = [points]
 
         for point in points:
-            vals = {"DataValue": point[0], "ValueAccuracy": point[1],
-                    "LocalDateTime": point[2], "UTCOffset": point[3],
-                    "DateTimeUTC": point[4], "OffsetValue": point[5],
-                    "OffsetTypeID": point[6], "CensorCode": point[7],
-                    "QualifierID": point[8], "SampleID": point[9],
-                    "SiteID": point[10], "VariableID": point[11],
-                    "MethodID": point[12], "SourceID": point[13],
-                    "QualityControlLevelID": point[14]}
+            vals = {"DataValue": point[0], "LocalDateTime": point[1],
+                    "DateTimeUTC": point[2], "UTCOffset": point[3],
+                    "CensorCode": point[4], "QualityCode": point[5],
+                    "TimeAggregationInterval": point[6], "TImeAggregationUnitID": point[7],
+                    "Annotation": point[8], "SiteID": point[9],
+                    "VariableID": point[10], "MethodID": point[11],
+                    "OrganizationID": point[12], "ProcessID": point[13]
+                    }
+
+            setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)
 
 

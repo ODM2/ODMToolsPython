@@ -10,14 +10,11 @@ OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 
 class Points(object):
     def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
-                 censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL"):
+                 censorCode="NULL", offSetValue="NULL"):
         try:
             self.dataValue = str(dataValue)
         except:
             self.dataValue = dataValue
-
-        self.valueAccuracy = valueAccuracy
-
         try:
             self.time = str(time)
         except:
@@ -27,7 +24,6 @@ class Points(object):
         self.valueDateTime = self.date
 
         self.utcOffSet = str(utcOffSet)
-        self.utfOffset = -1
         self.offSetValue = offSetValue
         self.censorCode = censorCode
         self.qualityCodeCV = "NULL"
@@ -44,8 +40,6 @@ class Points(object):
         self.validValueAcc = False
         self.validOffSetValue = False
         self.validOffSetType = False
-        self.validQualifierCode = False
-        self.validLabSampleCode = False
 
 
 class OLVAddPoint(FastObjectListView):
@@ -75,9 +69,6 @@ class OLVAddPoint(FastObjectListView):
         self.imgGetterTime = cellEdit.imgGetterTime
         self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
         self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
-        self.imgGetterValueAcc = cellEdit.imgGetterValueAcc
-        self.imgGetterQualifier = cellEdit.imgGetterQualifierCode
-        self.imgGetterOffSetType = cellEdit.imgGetterOffSetType
         self.imgGetterOffSetValue = cellEdit.imgGetterOffSetValue
 
         ## Custom Value Setters
@@ -138,13 +129,6 @@ class OLVAddPoint(FastObjectListView):
             ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=110,
                        cellEditorCreator=self.censorEditor, imageGetter=self.imgGetterCensorCode, headerImage="star"),
 
-            # valueGetter needs to be created in the Points class
-            ColumnDefn(title="ValueDateTime", align="left", valueGetter="valueDateTime",
-                       minimumWidth=123, cellEditorCreator=self.valueDateTimeEditorCreator, headerImage="star"),
-
-            ColumnDefn(title="UTFOffset", align="left", valueGetter="utfOffset",
-                       minimumWidth=130, headerImage="star"),
-
             ColumnDefn(title="Quality CodeCV", align="left", valueGetter="qualityCodeCV",
                        minimumWidth=130, cellEditorCreator=self.qualityCodeCreator, imageGetter="star"),
 
@@ -156,7 +140,6 @@ class OLVAddPoint(FastObjectListView):
 
             ColumnDefn(title="Annotation", align="left", minimumWidth=130,
                        valueGetter="annotation", cellEditorCreator=self.annotationCreator, headerImage="star")
-
         ]
 
         self.SetColumns(columns)
@@ -173,13 +156,11 @@ class OLVAddPoint(FastObjectListView):
             listItem.SetFont(wx.Font(11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
 
         self.rowFormatter = rowFormatter
-        self.AutoSizeColumns()
 
     def isCorrect(self, point):
         validators = [
             self.imgGetterDataValue, self.imgGetterDate, self.imgGetterTime, self.imgGetterCensorCode,
-            self.imgGetterUTCOffset, self.imgGetterValueAcc, self.imgGetterlabSample,
-            self.imgGetterQualifier, self.imgGetterOffSetType, self.imgGetterOffSetValue
+            self.imgGetterUTCOffset, self.imgGetterOffSetValue
         ]
 
         isCorrect = True
