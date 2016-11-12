@@ -110,7 +110,7 @@ class plotSummary(wx.Panel):
     def clear(self):
         self.btnExport.Enable(False)
         if self.grdSummary.GetNumberCols() > 0:
-            # for col in range(self.grdSummary.GetNumberCols())
+            # for columns in range(self.grdSummary.GetNumberCols())
             self.grdSummary.DeleteCols(pos=0, numCols=self.grdSummary.GetNumberCols(), updateLabels=True)
 
 
@@ -149,7 +149,7 @@ class plotSummary(wx.Panel):
         self.grdSummary.AppendCols(numCols=1, updateLabels=True)
         col = self.grdSummary.GetNumberCols() - 1
         self.setColLabel(col, series.siteName + "- " + series.variableName)
-        #self.grdSummary.AutoSizeColLabelSize(col)
+        #self.grdSummary.AutoSizeColLabelSize(columns)
 
         stats = series.Statistics
         count = stats.NumberofObservations

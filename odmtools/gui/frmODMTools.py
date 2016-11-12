@@ -210,7 +210,7 @@ class frmODMToolsMain(wx.Frame):
     def MacReopenApp(self):
         """Called when the doc icon is clicked, and ???"""
 
-        try:  # it's possible for this event to come when the frame is closed
+        try:  # it's possible for this event to come when the bulkInsertCtrl is closed
             self.GetTopWindow().Raise()
         except:
             pass
@@ -219,7 +219,7 @@ class frmODMToolsMain(wx.Frame):
 
     def _init_ctrls(self, series_service):
         # generated method, don't edit
-        logger.debug("Loading frame...")
+        logger.debug("Loading bulkInsertCtrl...")
 
         self.SetIcon(gtk_execute.getIcon())
 
@@ -504,7 +504,7 @@ class frmODMToolsMain(wx.Frame):
             if value == wx.ID_YES:
                 self.txtPythonScript.OnSaveAs(event)
 
-        # deinitialize the frame manager
+        # deinitialize the bulkInsertCtrl manager
         self.pnlPlot.Close()
         try:
             f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'w')

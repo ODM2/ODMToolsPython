@@ -13,13 +13,12 @@ logger =logging.getLogger('main')
 __author__ = 'Jacob'
 
 
-class BulkInsert(clsBulkInsert.BulkInsert):
+class BulkInsertController(clsBulkInsert.BulkInsertView):
     def __init__(self, parent):
-        clsBulkInsert.BulkInsert.__init__(self, parent)
+        clsBulkInsert.BulkInsertView.__init__(self, parent)
         self.parent = parent
 
-        self.col = ['DataValue', 'Date', 'Time', 'UTCOffSet', 'CensorCode', 'ValueAccuracy', 'OffSetValue',
-               'OffSetType', 'QualifierCode', 'LabSampleCode']
+        self.columns = ["DataValue", "Date", "Time", "UTFOffset", "CensorCode", "QualityCode", "TimeAggregationInterval", "TimeAggregationUnitID", "Annotation"]
 
     def obtainFilePath(self):
         ## Obtain CSV filepath
@@ -61,8 +60,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                 5: str.strip,
                                 6: str.strip,
                                 7: str.strip,
-                                8: str.strip,
-                                9: str.strip})
+                                8: str.strip})
         except CParserError as e:
             message = "There was an issue trying to parse your file. "\
                                          "Please compare your csv with the template version as the file"\
@@ -112,6 +110,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
 
         dlg.Destroy()
         return pointList
+
     def onUpload(self, event):
         """Reads csv into pandas object
 
@@ -143,7 +142,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         self.parent.Raise()
         event.Skip()
 
-    def onTemplate(self, event):
+    def onDownloadTemplateButton(self, event):
         """
                 DataValues: Floats or -9999 (No data value)
                 Date: --+ String
@@ -160,28 +159,25 @@ class BulkInsert(clsBulkInsert.BulkInsert):
         :param event:
         :return:
         """
-        saveFileDialog = wx.FileDialog(self, "Save Bulk Insert Template", "", "", "CSV files (*.csv)|*.csv", wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
-        value = saveFileDialog.ShowModal()
+
+        file_dialog = wx.FileDialog(self, "Save Bulk Insert Template", "", "", "CSV files (*.csv)|*.csv", wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
+        value = file_dialog.ShowModal()
         if value == wx.ID_CANCEL:
             return
-        filepath = saveFileDialog.GetPath()
-        df = pd.DataFrame(columns=self.col)
+        filepath = file_dialog.GetPath()
+        df = pd.DataFrame(columns=self.columns)
         df.loc[0] = ['FLOAT|INT', 'YYYY-MM-DD', 'HH:MM:SS', 'INT', 'gt|nc|lt|nd|pnq', 'FLOAT', 'FLOAT',
-                     'String', 'String', 'String']
-        df.loc[1] = ['-9999', '2005-06-29', '14:20:15', '-7', 'nc', "1.2", "1", "NULL", "NULL", "NULL"]
+                     'String', 'String']
+        df.loc[1] = ['-9999', '2005-06-29', '14:20:15', '-7', 'nc', "1.2", "1", "NULL", "NULL"]
         df.to_csv(filepath, index=False)
-
-        self.EndModal(0) # Denver
-        #self.Hide()
-        self.parent.Raise()
+        self.onClose(None)
 
     def onClose(self, event):
-        self.EndModal(0) # Denver
-        #self.Hide()
+        self.EndModal(0)
         self.parent.Raise()
 
 if __name__ == '__main__':
     app = wx.App(useBestVisual=True)
-    m = BulkInsert(None)
+    m = BulkInsertController(None)
     m.Show()
     app.MainLoop()

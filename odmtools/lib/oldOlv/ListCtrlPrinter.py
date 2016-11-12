@@ -1658,7 +1658,7 @@ class CellBlock(Block):
                 right = RectUtils.Right(x.cell)
                 dc.DrawLine(right, top, right, bottom)
 
-            # Draw the surrounding frame
+            # Draw the surrounding bulkInsertCtrl
             left = RectUtils.Left(combined[0].cell)
             right = RectUtils.Right(combined[-1].cell)
             dc.DrawRectangle(left, top, right-left, bottom-top)
@@ -2369,7 +2369,7 @@ class RectangleDecoration(Decoration):
     A RectangleDecoration draw a rectangle around or on the side of a block.
 
     The rectangle can be hollow, solid filled or gradient-filled. It can have
-    a frame drawn as well.
+    a bulkInsertCtrl drawn as well.
 
     """
 

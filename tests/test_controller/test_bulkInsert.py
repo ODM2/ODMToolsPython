@@ -1,11 +1,11 @@
 import wx
 import os
-from odmtools.controller.frmBulkInsert import BulkInsert
+from odmtools.controller.frmBulkInsert import BulkInsertController
 
 class TestBulkInsert:
     def setup(self):
         self.app = wx.App()
-        self.BulkInsert = BulkInsert(None)
+        self.BulkInsert = BulkInsertController(None)
         path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         self.CSVPath = os.path.join(path, 'example_files', 'exampleBulkInsert.csv')
         self.CSVPath2 =os.path.join(path, 'example_files', 'exampleBulkInsert_win.csv')
@@ -39,7 +39,7 @@ class TestBulkInsert:
 
     def test_onUpload(self):
         assert self.BulkInsert
-        assert isinstance(self.BulkInsert.col, list)
+        assert isinstance(self.BulkInsert.columns, list)
         assert self.CSVPath
 
 

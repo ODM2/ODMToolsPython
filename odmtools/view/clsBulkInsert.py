@@ -22,7 +22,7 @@ from odmtools.common.icons.icons4addpoint import *
 ## Class BulkInsert
 ###########################################################################
 
-class BulkInsert(wx.Dialog):
+class BulkInsertView(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title="- ODMTools Bulk Insert -",
                               size=(400, 600))
@@ -30,12 +30,12 @@ class BulkInsert(wx.Dialog):
         self.SetSizeHintsSz(wx.DefaultSize, wx.DefaultSize)
 
         self.uploadBtn = GB.GradientButton(mainPanel, wx.ID_ANY, upload_2_32.GetBitmap(), ' Upload')
-        self.templateBtn = GB.GradientButton(mainPanel, wx.ID_ANY, downloading_updates_32.GetBitmap(), ' Download')
+        self.downloadTemplateButton = GB.GradientButton(mainPanel, wx.ID_ANY, downloading_updates_32.GetBitmap(), ' Download')
         self.closeBtn = GB.GradientButton(mainPanel, wx.ID_ANY, close_window_32.GetBitmap(), " Close")
         self._initSizers(mainPanel)
 
         self.Bind(wx.EVT_BUTTON, self.onUpload, self.uploadBtn)
-        self.Bind(wx.EVT_BUTTON, self.onTemplate, self.templateBtn)
+        self.Bind(wx.EVT_BUTTON, self.onDownloadTemplateButton, self.downloadTemplateButton)
         self.Bind(wx.EVT_BUTTON, self.onClose, self.closeBtn)
 
     def _initSizers(self, mainPanel):
@@ -54,7 +54,7 @@ class BulkInsert(wx.Dialog):
         sbTemplateSizer = wx.StaticBoxSizer(wx.StaticBox(mainPanel, wx.ID_ANY, u"Download CSV Template"), wx.VERTICAL)
         fgTemplateSizer = wx.FlexGridSizer(0, 2, 0, 0)
         fgTemplateSizer.SetFlexibleDirection(wx.VERTICAL)
-        fgTemplateSizer.Add(self.templateBtn, 0, wx.ALL, 5)
+        fgTemplateSizer.Add(self.downloadTemplateButton, 0, wx.ALL, 5)
 
         sbTemplateSizer.Add(fgTemplateSizer, 1, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
@@ -78,7 +78,7 @@ class BulkInsert(wx.Dialog):
     ## Virtual event handlers, overridden in inherited class
     def onUpload(self, event):
         event.Skip()
-    def onTemplate(self, event):
+    def onDownloadTemplateButton(self, event):
         event.Skip()
     def onClose(self, event):
         event.Skip()
