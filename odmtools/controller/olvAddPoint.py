@@ -9,12 +9,12 @@ OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 
 
 class Points(object):
-    def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
-                 censorCode="NULL", offSetValue="NULL"):
+    def __init__(self, data_value="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
+                 censor_code="NULL", quality_code="NULL", time_agg_interval="NULL", time_agg_unit="NULL", annotation="NULL"):
         try:
-            self.dataValue = str(dataValue)
+            self.dataValue = str(data_value)
         except:
-            self.dataValue = dataValue
+            self.dataValue = data_value
         try:
             self.time = str(time)
         except:
@@ -24,12 +24,11 @@ class Points(object):
         self.valueDateTime = self.date
 
         self.utcOffSet = str(utcOffSet)
-        self.offSetValue = offSetValue
-        self.censorCode = censorCode
-        self.qualityCodeCV = "NULL"
-        self.timeAggInterval = -1
-        self.timeAggregationUnitID = "NULL"
-        self.annotation = "NULL"
+        self.censorCode = censor_code
+        self.qualityCodeCV = quality_code
+        self.timeAggInterval = time_agg_interval
+        self.timeAggregationUnitID = time_agg_unit
+        self.annotation = annotation
 
         ## determines whether a row is in correct format or now
         self.validDataValue = False
@@ -38,7 +37,6 @@ class Points(object):
         self.validUTCOffSet = False
         self.validCensorCode = False
         self.validValueAcc = False
-        self.validOffSetValue = False
         self.validOffSetType = False
 
 
@@ -69,7 +67,7 @@ class OLVAddPoint(FastObjectListView):
         self.imgGetterTime = cellEdit.imgGetterTime
         self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
         self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
-        self.imgGetterOffSetValue = cellEdit.imgGetterOffSetValue
+        # self.imgGetterOffSetValue = cellEdit.imgGetterOffSetValue
 
         ## Custom Value Setters
         ## Sets the value, can modify rules for setting value
@@ -81,7 +79,7 @@ class OLVAddPoint(FastObjectListView):
         self.localtime2Str = cellEdit.strConverterLocalTime
         self.str2DataValue = cellEdit.strConverterDataValue
         self.utcOffSet2Str = cellEdit.strConverterUTCOffset
-        self.offSetValue2Str = cellEdit.strConverterOffSetValue
+        # self.offSetValue2Str = cellEdit.strConverterOffSetValue
 
         ## Custom CellEditors
         ## Custom cell editors for each cell
@@ -160,7 +158,7 @@ class OLVAddPoint(FastObjectListView):
     def isCorrect(self, point):
         validators = [
             self.imgGetterDataValue, self.imgGetterDate, self.imgGetterTime, self.imgGetterCensorCode,
-            self.imgGetterUTCOffset, self.imgGetterOffSetValue
+            self.imgGetterUTCOffset
         ]
 
         isCorrect = True

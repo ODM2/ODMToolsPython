@@ -1,6 +1,6 @@
 import wx
 import os
-from odmtools.controller.frmBulkInsert import BulkInsertController
+from odmtools.controller.BulkInsertController import BulkInsertController
 
 class TestBulkInsert:
     def setup(self):
