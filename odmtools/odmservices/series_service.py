@@ -693,41 +693,44 @@ class SeriesService(serviceBase):
 #         self._edit_session.commit()
 #         return var
 #
-#     def create_qcl(self, code, definition, explanation):
-#         """
+    def create_qcl(self, code, definition, explanation):
+        """
+
+        :param code:
+        :param definition:
+        :param explanation:
+        :return:
+        """
+        qcl = QualityControlLevel()
+        qcl.code = code
+        qcl.definition = definition
+        qcl.explanation = explanation
+
+        return self.create.createProcessingLevel(qcl)
+        # self._edit_session.add(qcl)
+        # self._edit_session.commit()
+        # return qcl
 #
-#         :param code:
-#         :param definition:
-#         :param explanation:
-#         :return:
-#         """
-#         qcl = QualityControlLevel()
-#         qcl.code = code
-#         qcl.definition = definition
-#         qcl.explanation = explanation
 #
-#         self._edit_session.add(qcl)
-#         self._edit_session.commit()
-#         return qcl
+    def create_qualifier_by_qual(self, qualifier):
+        # self._edit_session.add(qualifier)
+        # self._edit_session.commit()
+        # return qualifier
+        return self.create.createAnnotations(qualifier)
 #
-#
-#     def create_qualifier_by_qual(self, qualifier):
-#         self._edit_session.add(qualifier)
-#         self._edit_session.commit()
-#         return qualifier
-#
-#     def create_qualifier(self,  code, description):
-#         """
-#
-#         :param code:
-#         :param description:
-#         :return:
-#         """
-#         qual = Qualifier()
-#         qual.code = code
-#         qual.description = description
-#
-#         return self.create_qualifier_by_qual(qual)
+    def create_qualifier(self,  code, description):
+        # """
+        #
+        # :param code:
+        # :param description:
+        # :return:
+        # """
+        qual = Qualifier()
+        qual.code = code
+        qual.description = description
+        #
+        # return self.create_qualifier_by_qual(qual)
+        return self.create.createAnnotations(qual);
 #
 # #####################
 # #
