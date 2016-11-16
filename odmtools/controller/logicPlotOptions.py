@@ -537,7 +537,7 @@ class Probability(object):
         #PrbExc = ranks/(length(sorted)+1)*100
 
         #Here I plot the probability of exceedance (PrbExc) against the sorted initial values (sorted).
-        #plot(PrbExc, sorted, type='n', col='white', font.lab=1.5, xlab="Frequency of Exceedance, percent", ylab="TSS, mg/L",log="y")
+        #plot(PrbExc, sorted, type='n', columns='white', font.lab=1.5, xlab="Frequency of Exceedance, percent", ylab="TSS, mg/L",log="y")
 
 
         :param data:

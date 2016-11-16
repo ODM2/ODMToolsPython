@@ -183,7 +183,7 @@ class ExampleOlv(wx.Frame):
             # each column consecutively until found.
 
             if left_pxl_col <= x <= right_pxl_col:
-                # Mouse was clicked in the current column "col"; done
+                # Mouse was clicked in the current column "columns"; done
 
                 col_selected = col
                 break

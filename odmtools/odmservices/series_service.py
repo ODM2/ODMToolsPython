@@ -638,24 +638,28 @@ class SeriesService(serviceBase):
 #         self._edit_session.commit()
 #         return meth
 # #
-#     def create_variable_by_var(self, var):
-#         """
+    def create_variable_by_var(self, var):
+        try:
+            return self.create.createVariable(var)
+        except:
+            return None
+        # """
+        #
+        # :param var:  Variable Object
+        # :return:
+        # """
+        # try:
+        #     self._edit_session.add(var)
+        #     self._edit_session.commit()
+        #     return var
+        # except:
+        #     return None
 #
-#         :param var:  Variable Object
-#         :return:
-#         """
-#         try:
-#             self._edit_session.add(var)
-#             self._edit_session.commit()
-#             return var
-#         except:
-#             return None
-#
-#     def create_variable(
-#             self, code, name, speciation, variable_unit_id, sample_medium,
-#             value_type, is_regular, time_support, time_unit_id, data_type,
-#             general_category, no_data_value):
-#         """
+    def create_variable(
+            self, code, name, speciation, variable_unit_id, sample_medium,
+            value_type, is_regular, time_support, time_unit_id, data_type,
+            general_category, no_data_value):
+        """
 #
 #         :param code:
 #         :param name:
@@ -671,20 +675,20 @@ class SeriesService(serviceBase):
 #         :param no_data_value:
 #         :return:
 #         """
-#         var = Variable()
-#         var.code = code
-#         var.name = name
-#         var.speciation = speciation
-#         var.variable_unit_id = variable_unit_id
-#         var.sample_medium = sample_medium
-#         var.value_type = value_type
-#         var.is_regular = is_regular
-#         var.time_support = time_support
-#         var.time_unit_id = time_unit_id
-#         var.data_type = data_type
-#         var.general_category = general_category
-#         var.no_data_value = no_data_value
-#
+        var = Variable()
+        var.code = code
+        var.name = name
+        var.speciation = speciation
+        var.variable_unit_id = variable_unit_id
+        var.sample_medium = sample_medium
+        var.value_type = value_type
+        var.is_regular = is_regular
+        var.time_support = time_support
+        var.time_unit_id = time_unit_id
+        var.data_type = data_type
+        var.general_category = general_category
+        var.no_data_value = no_data_value
+        self.create.createVariable(var)
 #         self._edit_session.add(var)
 #         self._edit_session.commit()
 #         return var

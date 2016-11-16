@@ -39,7 +39,7 @@ class TestWizSave:
         self.wizard = wizSave(self.frame,self.sm, self.sm.get_edit_service(self.series.id, self.memory_database))
 #TODO get wizard tests working
     # def test___init__(self):
-    #     assert self.frame
+    #     assert self.bulkInsertCtrl
     #     assert self.wizard
     #     self.wizard.init(self, self.sm, self.memory_database)
     #

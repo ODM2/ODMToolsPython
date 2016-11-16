@@ -144,7 +144,7 @@ class AddPoints(wx.Dialog):
         #print "Finished Editing Cell!", event.subItemIndex
 
     def onColClick(self, event):
-        ## Ignore col clicking
+        ## Ignore columns clicking
         pass
 
     def __del__(self):
