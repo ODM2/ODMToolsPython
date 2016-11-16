@@ -178,8 +178,6 @@ class CellEdit():
         return "error"
 
     def imgGetterValueAcc(self, point):
-        """
-        """
         value = point.valueAccuracy
         point.validValueAcc = False
         if not value:
@@ -201,8 +199,6 @@ class CellEdit():
         return "error"
 
     def imgGetterOffSetType(self, point):
-        """
-        """
         point.validOffSetType = False
         if not point.offSetType in self.offSetTypeChoices:
             return "error"
@@ -210,9 +206,6 @@ class CellEdit():
         return "check"
 
     def imgGetterOffSetValue(self, point):
-        """
-        """
-
         point.validOffSetValue = False
         if point.offSetValue == NULL:
             point.validOffSetValue = True
@@ -235,15 +228,30 @@ class CellEdit():
             return "check"
         return "error"
 
-
-    def imgGetterQualifierCode(self, point):
-        """
-        """
-
-        point.validQualifierCode = False
-        if not point.qualifierCode in self.qualifierCodeChoices:
+    def imgGetterQualityCode(self, point):
+        point.validQualityCode = False
+        if not point.qualityCodeCV in self.qualityCodeChoices or point.qualityCodeCV == NULL:
             return "error"
-        point.validQualifierCode = True
+        point.validQualityCode = True
+        return "check"
+
+    def imgGetterTimeAggregationInterval(self, point):
+        point.validTimeAggInterval = False
+
+        if point.timeAggInterval == NULL:
+            return "error"
+
+        point.validTimeAggInterval = True
+        return "check"
+
+    def imgGetterTimeAggregationUnit(self, point):
+        point.validTimeAggUnit = False
+
+        if not point.timeAggregationUnitID in self.timeAggretaionUnitChoices or point.timeAggregationUnitID == NULL:
+            return "error"
+
+        point.validTimeAggUnit = True
+
         return "check"
 
     """
@@ -270,7 +278,6 @@ class CellEdit():
             return
 
         point.utcOffSet = newValue
-
 
     """
         ------------------------

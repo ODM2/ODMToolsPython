@@ -38,6 +38,9 @@ class Points(object):
         self.validCensorCode = False
         self.validValueAcc = False
         self.validOffSetType = False
+        self.validQualityCode = False
+        self.validTimeAggInterval = False
+        self.validTimeAggUnit = False
 
 
 class OLVAddPoint(FastObjectListView):
@@ -67,7 +70,9 @@ class OLVAddPoint(FastObjectListView):
         self.imgGetterTime = cellEdit.imgGetterTime
         self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
         self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
-        # self.imgGetterOffSetValue = cellEdit.imgGetterOffSetValue
+        self.imgGetterQualityCode = cellEdit.imgGetterQualityCode
+        self.imgGetterTimeAggInterval = cellEdit.imgGetterTimeAggregationInterval
+        self.imgGetterTimeAggUnit = cellEdit.imgGetterTimeAggregationUnit
 
         ## Custom Value Setters
         ## Sets the value, can modify rules for setting value
@@ -104,44 +109,66 @@ class OLVAddPoint(FastObjectListView):
 
     def buildOlv(self):
         columns = [
-            ColumnDefn("DataValue", "left", -1, minimumWidth=100,
+            ColumnDefn(title="DataValue",
+                       minimumWidth=100,
                        valueGetter='dataValue',
                        valueSetter=self.valueSetterDataValue,
                        imageGetter=self.imgGetterDataValue,
                        stringConverter=self.str2DataValue,
                        headerImage="star"),
-            ColumnDefn("Date", "left", -1, minimumWidth=120,
+
+            ColumnDefn(title="Date", minimumWidth=120,
                        valueGetter="date",
                        imageGetter=self.imgGetterDate,
                        cellEditorCreator=self.dateEditor,
                        headerImage="star"),
-            ColumnDefn("Time", "left", -1, minimumWidth=100,
+
+            ColumnDefn(title="Time", minimumWidth=100,
                        valueGetter="time",
                        imageGetter=self.imgGetterTime,
                        cellEditorCreator=self.timeEditor,
                        stringConverter=self.localtime2Str,
                        headerImage="star"),
-            ColumnDefn("UTCOffset", "left", -1, minimumWidth=100, valueGetter="utcOffSet",
-                       imageGetter=self.imgGetterUTCOffset, headerImage="star"),
 
-            ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=110,
-                       cellEditorCreator=self.censorEditor, imageGetter=self.imgGetterCensorCode, headerImage="star"),
+            ColumnDefn(title="UTCOffset",
+                       minimumWidth=100,
+                       valueGetter="utcOffSet",
+                       imageGetter=self.imgGetterUTCOffset,
+                       headerImage="star"),
 
-            ColumnDefn(title="Quality CodeCV", align="left", valueGetter="qualityCodeCV",
-                       minimumWidth=130, cellEditorCreator=self.qualityCodeCreator, imageGetter="star"),
+            ColumnDefn(title="CensorCode",
+                       valueGetter="censorCode",
+                       minimumWidth=110,
+                       cellEditorCreator=self.censorEditor,
+                       imageGetter=self.imgGetterCensorCode,
+                       headerImage="star"),
 
-            ColumnDefn(title="TimeAggregationInterval", align="left", minimumWidth=130,
-                       valueGetter="timeAggInterval", headerImage="star"),
+            ColumnDefn(title="Quality CodeCV",
+                       valueGetter="qualityCodeCV",
+                       minimumWidth=130,
+                       cellEditorCreator=self.qualityCodeCreator,
+                       imageGetter=self.imgGetterQualityCode,
+                       headerImage="star"),
 
-            ColumnDefn(title="TimeAggregationUnitID", align="left", minimumWidth=130,
-                       valueGetter="timeAggregationUnitID", cellEditorCreator=self.timeAggregationUnitIDCreator, headerImage="star"),
+            ColumnDefn(title="TimeAggregationInterval",
+                       minimumWidth=130,
+                       valueGetter="timeAggInterval",
+                       imageGetter=self.imgGetterTimeAggInterval,
+                       headerImage="star"),
 
-            ColumnDefn(title="Annotation", align="left", minimumWidth=130,
-                       valueGetter="annotation", cellEditorCreator=self.annotationCreator, headerImage="star")
+            ColumnDefn(title="TimeAggregationUnitID",
+                       minimumWidth=130,
+                       valueGetter="timeAggregationUnitID",
+                       cellEditorCreator=self.timeAggregationUnitIDCreator,
+                       imageGetter=self.imgGetterTimeAggUnit, headerImage="star"),
+
+            ColumnDefn(title="Annotation",
+                       minimumWidth=130,
+                       valueGetter="annotation",
+                       cellEditorCreator=self.annotationCreator)
         ]
 
         self.SetColumns(columns)
-
         self.SetObjects(None)
 
         def rowFormatter(listItem, point):
