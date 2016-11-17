@@ -1,6 +1,6 @@
 from odmtools.controller.frmDataTable import FrmDataTable
 from odmtools.odmdata import MemoryDatabase, DataValue
-from odmtools.gui.pnlDataTable import pnlDataTable
+
 from odmtools.odmdata import SessionFactory
 from odmtools.odmservices import SeriesService
 from tests import test_util

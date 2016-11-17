@@ -2,7 +2,7 @@ import logging
 
 import wx
 import wx.lib.newevent
-# from ObjectListView.ObjectListView import FastObjectListView, ColumnDefn
+
 from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
 
 

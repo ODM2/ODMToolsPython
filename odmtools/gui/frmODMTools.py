@@ -13,7 +13,7 @@ from odmtools.controller.frmDataTable import FrmDataTable
 import mnuRibbon
 import pnlPlot
 import pnlPlot
-import pnlDataTable
+# import pnlDataTable
 import wx.lib.agw.aui as aui
 import wx.py.crust
 import wx.stc

@@ -2,7 +2,7 @@
     Bulk Insert of points
 """
 import wx
-import odmtools.view.clsBulkInsert as clsBulkInsert
+import odmtools.view.BulkInsertView as clsBulkInsert
 import odmtools.controller.olvAddPoint as olv
 import pandas as pd
 from pandas.parser import CParserError
@@ -52,15 +52,10 @@ class BulkInsertController(clsBulkInsert.BulkInsertView):
         
         try:
             #data = pd.read_csv(filepath, skiprows=[1], engine='c', lineterminator='\n')
-            data = pd.read_csv(csv_data, skiprows=[1], engine='c', converters={0: str.strip,
-                                1: str.strip,
-                                2: str.strip,
-                                3: str.strip,
-                                4: str.strip,
-                                5: str.strip,
-                                6: str.strip,
-                                7: str.strip,
-                                8: str.strip})
+            data = pd.read_csv(csv_data, skiprows=[1], engine='c', converters={
+                0: str.strip, 1: str.strip, 2: str.strip, 3: str.strip,
+                4: str.strip, 5: str.strip, 6: str.strip, 7: str.strip,
+                8: str.strip})
         except CParserError as e:
             message = "There was an issue trying to parse your file. "\
                                          "Please compare your csv with the template version as the file"\
