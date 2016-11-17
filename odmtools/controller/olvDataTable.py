@@ -25,9 +25,8 @@ class OLVDataTable(VirtualObjectListView):
         self.memDB = memDB
         columns = \
             [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
-                              stringConverter='%Y-%m-%d %H:%M:%S' if "date" in x.lower() else '%s')
+                              stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
                    for x, i in self.memDB.getEditColumns()]
-        print columns
 
         self.useAlternateBackColors = True
         self.oddRowsBackColor = wx.Colour(191, 217, 217)
