@@ -185,7 +185,7 @@ class OLVAddPoint(FastObjectListView):
     def isCorrect(self, point):
         validators = [
             self.imgGetterDataValue, self.imgGetterDate, self.imgGetterTime, self.imgGetterCensorCode,
-            self.imgGetterUTCOffset
+            self.imgGetterUTCOffset, self.imgGetterQualityCode, self.imgGetterTimeAggInterval, self.imgGetterTimeAggUnit
         ]
 
         isCorrect = True
