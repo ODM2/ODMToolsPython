@@ -408,42 +408,42 @@ class SeriesService(serviceBase):
         data.set_index(data['valuedatetime'], inplace=True)
         return data
 
-    # def get_all_values_df(self):
+    def get_all_values_df(self):
 
-    #     """
-    #
-    #     :return: Pandas DataFrame object
-    #     """
-#         q = self._edit_session.query(DataValue).order_by(DataValue.local_date_time)
-#         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
-#         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
-#                           params=query.params)
-#         columns = list(data)
-#
-#         columns.insert(0, columns.pop(columns.index("DataValue")))
-#         columns.insert(1, columns.pop(columns.index("LocalDateTime")))
-#         columns.insert(2, columns.pop(columns.index("QualifierID")))
-#
-#         data = data.ix[:, columns]
-#         return data.set_index(data['LocalDateTime'])
-#         q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
-#         query = q.statement.compile(dialect = self._session_factory.engine.dialect)
-#         data = pd.read_sql_query(sql= query,
-#                                  con= self._session_factory.engine,
-#                                  params=query.params)
+        """
+
+        :return: Pandas DataFrame object
+        """
+        q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
+        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
+                          params=query.params)
+        columns = list(data)
+
+        # columns.insert(0, columns.pop(columns.index("DataValue")))
+        # columns.insert(1, columns.pop(columns.index("ValueDateTime")))
+        #columns.insert(2, columns.pop(columns.index("QualifierID")))
+
+        data = data.ix[:, columns]
+        return data.set_index(data['ValueDateTime'])
+        # q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
+        # query = q.statement.compile(dialect = self._session_factory.engine.dialect)
+        # data = pd.read_sql_query(sql= query,
+        #                          con= self._session_factory.engine,
+        #                          params=query.params)
 #
 
-#
-#     def get_all_values_list(self):
-#         """
-#
-#         :return:
-#         """
-#         result = self._edit_session.query(DataValue).order_by(DataValue.local_date_time).all()
-#         return [x.list_repr() for x in result]
-#
-#     def get_all_values(self):
-#         return self._edit_session.query(DataValue).order_by(DataValue.local_date_time).all()
+
+    def get_all_values_list(self):
+        """
+
+        :return:
+        """
+        result = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
+        return [x.list_repr() for x in result]
+
+    def get_all_values(self):
+        return self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
 #
     @staticmethod
     def calcSeason(row):
