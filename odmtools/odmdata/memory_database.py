@@ -80,11 +80,11 @@ class MemoryDatabase(object):
     def getEditColumns(self):
         columns = []
         tmp_columns = self.df.columns.tolist()
-        tmp_columns.remove('datavalue')
-        tmp_columns.remove('valuedatetime')
+        # tmp_columns.remove('datavalue')
+        # tmp_columns.remove('valuedatetime')
         #tmp_columns.remove('QualifierID')
-        columns.append('datavalue')
-        columns.append('valuedatetime')
+        # columns.append('datavalue')
+        # columns.append('valuedatetime')
         #columns.append('QualifierID')
         columns.extend(tmp_columns)
         return [(x, i) for (i, x) in enumerate(columns)]

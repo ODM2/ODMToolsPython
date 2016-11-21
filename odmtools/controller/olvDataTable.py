@@ -23,18 +23,20 @@ class OLVDataTable(VirtualObjectListView):
 
     def init(self, memDB):
         self.memDB = memDB
-        columns = \
-            [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
-                              stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
-                   for x, i in self.memDB.getEditColumns()]
 
         self.useAlternateBackColors = True
         self.oddRowsBackColor = wx.Colour(191, 217, 217)
-        self.SetColumns(columns)
+
         self.dataframe = self.memDB.getDataValuesDF()
         sort_by_index = list(self.dataframe.columns).index("valuedatetime")
         self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
         self.dataObjects = self.dataframe.values.tolist()
+        columns = \
+            [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
+                              stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
+                   for x, i in self.memDB.getEditColumns()]
+        self.SetColumns(columns)
+
 
         self.SetObjectGetter(self.ObjectGetter)
         self.SetItemCount(len(self.dataframe))
@@ -73,10 +75,10 @@ class OLVDataTable(VirtualObjectListView):
         self.sortedColumnIndex = selected_column
         ascending = self.sortAscending
         if ascending:
-            self.dataframe.sort(self.dataframe.columns[selected_column], inplace=True)
+            self.dataframe.sort_values(self.dataframe.columns[selected_column], inplace=True)
             self.sortAscending = False
         elif not ascending:
-            self.dataframe.sort(self.dataframe.columns[selected_column], ascending=False, inplace=True)
+            self.dataframe.sort_values(self.dataframe.columns[selected_column], ascending=False, inplace=True)
             self.sortAscending = True
 
         self._UpdateColumnSortIndicators(selected_column, oldSortColumnIndex)
