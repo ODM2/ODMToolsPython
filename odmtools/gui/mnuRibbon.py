@@ -11,7 +11,8 @@ from odmtools.controller.frmAddPoints import AddPoints
 
 from odmtools.controller.frmDataFilters import frmDataFilter
 from odmtools.controller.frmChangeValue import frmChangeValue
-from frmFlagValues import frmFlagValues
+# from frmFlagValues import frmFlagValues
+from odmtools.controller.NewFlagValuesController import NewFlagValuesController
 from odmtools.controller.frmLinearDrift import frmLinearDrift
 from odmtools.controller.frmAbout import frmAbout
 from odmtools.controller.frmGapFill import frmGapFill
@@ -446,13 +447,15 @@ class mnuRibbon(RB.RibbonBar):
         series_service = serviceManager.get_series_service()
         qualifierChoices = OrderedDict((x.AnnotationCode + '-' + x.AnnotationText, x.AnnotationID) for x in series_service.get_all_qualifiers()
                                        if x.AnnotationCode and x.AnnotationText)
-        add_flag = frmFlagValues(self.parent, series_service, qualifierChoices)
-        val = add_flag.ShowModal()
+        # add_flag = frmFlagValues(self.parent, series_service, qualifierChoices)
+        add_flag_controller = NewFlagValuesController(self, series_service, qualifierChoices, self.parent.getRecordService())
+        # val = add_flag.ShowModal()
+        add_flag_controller.Show()
 
-        if val == wx.ID_OK:
-            logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
-            self.parent.getRecordService().flag(add_flag.GetValue())
-        add_flag.Destroy()
+        # if val == wx.ID_OK:
+        #     logger.debug("FLAG Value: %s, type: %s" % (val, type(val)))
+        #     self.parent.getRecordService().flag(add_flag.GetValue())
+        # add_flag.Destroy()
         event.Skip()
 
     # ###################################

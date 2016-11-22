@@ -4,6 +4,7 @@ from sqlalchemy import distinct, func
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
+import datetime
 from odmtools.common.logger import LoggerTool
 import pandas as pd
 logger =logging.getLogger('main')
@@ -992,16 +993,24 @@ class SeriesService(serviceBase):
     def create_annotation_by_anno(self, annotation):
         return self.create.createAnnotations(annotation)
 
-    def create_annotation(self, code, description):
+    def create_annotation(self, code, text, link=None):
         """
         :param code:
-        :param description:
+        :param text:
         :return:
         """
         annotation = Annotations()
         annotation.AnnotationCode = code
-        annotation.AnnotationText = description
-        annotation.AnnotationTypeCV = "timeSeriesResultValueAnnotation"
+        annotation.AnnotationText = text
+        annotation.AnnotationTypeCV = "Time series result value annotation"
+        current_time = datetime.datetime.now()
+        utc_time = datetime.datetime.utcnow()
+        annotation.AnnotationDateTime = current_time
+
+        difference_in_timezone = utc_time - current_time
+        offset_in_hours = difference_in_timezone.seconds / 3600
+        annotation.AnnotationUTCOffset = offset_in_hours
+        annotation.AnnotationLink = link
 
         return self.create_annotation_by_anno(annotation)
 
