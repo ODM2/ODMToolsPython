@@ -212,9 +212,9 @@ class ExportService():
         local_y = ET.SubElement(local_coords, "LocalY")
         local_y.text = str(site.local_y)
         local_srs_id = ET.SubElement(local_coords, "SRSID")
-        local_srs_id.text = str(site.local_spatial_ref.srs_id)
-        local_srs_name = ET.SubElement(local_coords, "SRSName")
-        local_srs_name.text = site.local_spatial_ref.srs_name
+#        local_srs_id.text = str(site.local_spatial_ref.srs_id)
+ #       local_srs_name = ET.SubElement(local_coords, "SRSName")
+  #      local_srs_name.text = site.local_spatial_ref.srs_name
         local_is_geo = ET.SubElement(local_coords, "IsGeographic")
         local_is_geo.text = str(site.local_spatial_ref.is_geographic)
         local_notes = ET.SubElement(local_coords, "Notes")
