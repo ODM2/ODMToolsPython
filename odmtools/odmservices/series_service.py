@@ -300,20 +300,23 @@ class SeriesService(serviceBase):
 #         return self._edit_session.query(Qualifier).join(subquery).distinct().all()
 #
 #     #QCL methods
-#     def get_all_qcls(self):
-#         return self._edit_session.query(QualityControlLevel).all()
+    def get_all_qcls(self):
+        return self.read.getProcessingLevels();
+#        return self._edit_session.query(QualityControlLevel).all()
 #
-#     def get_qcl_by_id(self, qcl_id):
-#         try:
-#             return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
-#         except:
-#             return None
+    def get_qcl_by_id(self, qcl_id):
+        try:
+            return self.read.getProcessingLevels(ids = [qcl_id])[0]
+            #return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
+        except:
+            return None
 #
-#     def get_qcl_by_code(self, qcl_code):
-#         try:
-#             return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).first()
-#         except:
-#             return None
+    def get_qcl_by_code(self, qcl_code):
+        try:
+            return self.read.getProcessingLevels(codes=[qcl_code])[0]
+            #return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).first()
+        except:
+            return None
 #
 #     # Method methods
     def get_all_methods(self):
