@@ -9,7 +9,7 @@ __author__ = 'Jacob'
 #### Options ####
 utcOffSetBounds = (-12, 12)
 NULL = "NULL"
-NEW = "[New Qualifier]"
+NEW = "[New Annotation]"
 
 class CellEdit():
     def __init__(self, parent, serviceManager, recordService):
@@ -18,21 +18,22 @@ class CellEdit():
         self.serviceManager = serviceManager
         if self.serviceManager:
             self.series_service = self.serviceManager.get_series_service()
-            self.qualifierChoices = OrderedDict((x.code + ':' + x.description, x.id)
-                                           for x in self.series_service.get_all_qualifiers() if x.code and x.description)
-            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
-
+            self.annotationChoices = self.fetch_annotations()
+            self.censorCodeChoices = self.fetchCensorCodeChoices()
+            self.qualityCodeChoices = self.fetchQualityCodeChoices()
+            self.timeAggregationInterval = -1
+            self.timeAggretaionUnitChoices = self.fetchTimeUnitChoices()
         else:
             self.censorCodeChoices = [NULL] + ['SampleCensorCode1'] + ['SampleCensorCode2'] + ['SampleCensorCode3']
             self.labSampleChoices = [NULL] + ['SampleLabSample1'] + ['SampleLabSample2'] + ['SampleLabSample3']
             self.offSetTypeChoices = [NULL] + ['SampleOffsetType1'] + ['SampleOffsetType2'] + ['SampleOffsetType3']
-            self.qualifierCodeChoices = [NULL] + ['SampleQualifierCode1'] + ['SampleQualifierCode2'] + ['SampleQualifierCode3']
+            self.annotationChoices = [NULL] + ['SampleAnnotation1'] + ['SampleAnnotation2'] + ['SampleAnnotation3']
 
-        self.qualityCodeChoices = self.fetchQualityCodeChoices()
-        self.censorCodeChoices = self.fetchCensorCodeChoices()
-        self.timeAggregationInterval = -1
-        self.timeAggretaionUnitChoices = self.fetchTimeUnitChoices()
-        self.annotationChoices = [NULL]
+    def fetch_annotations(self):
+        qualifierChoices = OrderedDict((x.AnnotationCode + ':' + x.AnnotationText, x.AnnotationID)
+                                       for x in self.series_service.get_all_qualifiers() if x.AnnotationCode and x.AnnotationText)
+        qualifierCodeChoices = [NULL] + qualifierChoices.keys() + [NEW]
+        return qualifierCodeChoices
 
     def fetchCensorCodeChoices(self):
         if not self.serviceManager:

@@ -9,23 +9,25 @@ class NewFlagValuesController(NewFlagValuesView):
         self.series_service = series_service
         self.qualifer_choice = qualifier_choice
         self.record_service = record_service
+        self.__new_annotation = "[New Annontation]"
 
         annotations = self.series_service.get_all_annotations()
         self.append_items_to_annotation(annotations)
         self.annotation_combo.SetSelection(0)
 
         self.cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
+        self.Bind(wx.EVT_CLOSE, self.on_cancel)
         self.ok_button.Bind(wx.EVT_BUTTON, self.on_ok)
         self.MakeModal(True)
 
     def append_items_to_annotation(self, annotations):
-        self.annotation_combo.Append("[New Annontation]")
+        self.annotation_combo.Append(self.__new_annotation)
         if not isinstance(annotations, list):
             print "type(annotations) must be list of annotations"
             return
 
         for item in annotations:
-            self.annotation_combo.Append(item.AnnotationCode + item.AnnotationText)
+            self.annotation_combo.Append(str(item.AnnotationID))
 
     def on_cancel(self, event):
         self.MakeModal(False)
@@ -33,8 +35,12 @@ class NewFlagValuesController(NewFlagValuesView):
         event.Skip()
 
     def on_ok(self, event):
-        code = self.code_textbox.GetValue()
-        text = self.text_textbox.GetValue()
+        selection = self.annotation_combo.GetValue()
+        if selection == self.__new_annotation:
+            code = self.code_textbox.GetValue()
+            text = self.text_textbox.GetValue()
 
-        self.series_service.create_annotation(code, text)
+            annotation = self.series_service.create_annotation(code, text)
+            self.record_service.flag(annotation.AnnotationID)
+
         self.on_cancel(event)
