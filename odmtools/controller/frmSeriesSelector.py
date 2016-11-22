@@ -164,7 +164,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         # build pop-up menu for right-click display
         self.selectedIndex = event.m_itemIndex
         #self.selectedID = self.tableSeries.getColumnText(event.m_itemIndex, 1)
-        self.selectedID = self.tblSeries.GetSelectedObject().resultID
+        self.selectedID = self.tblSeries.GetSelectedObject().ResultID
 
         # print self.selectedID
         popup_edit_series = wx.NewId()
