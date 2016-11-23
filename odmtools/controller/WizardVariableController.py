@@ -83,8 +83,7 @@ class WizardVariableController(WizardPageSimple):
             v = self.service_manager.get_series_service().get_variable_by_code(code)
 
         elif self.variable_view.create_variable_radio.GetValue():
-            # v = self.createdVar
-            v = self.get_new_variable()
+            return self.get_new_variable()
 
         return v
 

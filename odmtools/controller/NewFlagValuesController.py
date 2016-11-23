@@ -27,7 +27,7 @@ class NewFlagValuesController(NewFlagValuesView):
             return
 
         for item in annotations:
-            self.annotation_combo.Append(str(item.AnnotationID))
+            self.annotation_combo.Append(str(item.AnnotationCode + ":" + item.AnnotationText))
 
     def on_cancel(self, event):
         self.MakeModal(False)

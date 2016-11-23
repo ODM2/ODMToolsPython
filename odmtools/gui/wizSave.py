@@ -182,34 +182,34 @@ class SummaryPage(wiz.WizardPageSimple):
 
 
     def fill_summary(self):
-        Site, Variable, Method, Source, QCL = self.parent.get_metadata()
+        sampling_feature, variable, method, source, processing_level = self.parent.get_metadata()
 
         ##        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, "Code: "+ str(QCL.code))
 
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sc, 'Code: ' + str(Site.code))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sn, 'Name: ' + str(Site.name))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sc, 'Code: ' + str(sampling_feature.SamplingFeatureCode))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sn, 'Name: ' + str(sampling_feature.SamplingFeatureName))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vc, 'Code: ' + str(Variable.code))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vn, 'Name: ' + str(Variable.name))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vu, 'Units: ' + str(Variable.variable_unit.name))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vsm, 'Sample Medium: ' + str(Variable.sample_medium))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vvt, 'Value Type: ' + str(Variable.value_type))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vts, 'Time Support: ' + str(Variable.time_support))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vtu, 'Time Units: ' + str(Variable.time_unit.name))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vdt, 'Data Type: ' + str(Variable.data_type))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vc, 'Code: ' + str(variable.VariableCode))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vn, 'Name: ' + str(variable.VariableNameCV))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vu, 'Units: ' + str(variable.variable_unit.name))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vsm, 'Sample Medium: ' + str(variable.sample_medium))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vvt, 'Value Type: ' + str(variable.value_type))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vts, 'Time Support: ' + str(variable.time_support))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vtu, 'Time Units: ' + str(variable.time_unit.name))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vdt, 'Data Type: ' + str(variable.data_type))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.vgc,
-                                           'General Category: ' + str(Variable.general_category))
+                                           'General Category: ' + str(variable.general_category))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(Method.description))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(method.description))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(Source.organization))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(Source.description))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Citation: ' + str(Source.citation))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(source.organization))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(source.description))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Citation: ' + str(source.citation))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(QCL.code))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(QCL.definition))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qe, 'Explanation: ' + str(QCL.explanation))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(processing_level.code))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(processing_level.definition))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qe, 'Explanation: ' + str(processing_level.explanation))
 
         self.panel.treeSummary.ExpandAll()
 
@@ -235,25 +235,29 @@ class wizSave(wx.wizard.Wizard):
         self.Bind(wx.wizard.EVT_WIZARD_FINISHED, self.on_wizard_finished)
 
     def get_metadata(self):
+        method = None
+        variable = None
+        processing_level = None
+        source = None
 
         if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             logger.debug("SaveAs")
             method = self.pgMethod.getMethod()
-            qcl = self.pgQCL.getQCL()
+            processing_level = self.pgQCL.get_processing_level()
             variable = self.pgVariable.get_variable()
         elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
             logger.debug("Save")
-            method = self.currSeries.method
-            qcl = self.currSeries.quality_control_level
+            method = self.currSeries.FeatureActionObj.ActionObj.MethodObj
+            processing_level = self.currSeries.quality_control_level
             variable = self.currSeries.variable
         elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
             logger.debug("Existing")
-            method, qcl, variable = self.pgExisting.getSeries()
-        site = self.currSeries.site
-        source = self.currSeries.source
-        logger.debug("site: %s, variable: %s, method: %s, source: %s, qcl: %s" % (
-        str(site), str(variable), str(method), str(source), str(qcl)))
-        return site, variable, method, source, qcl
+            method, processing_level, variable = self.pgExisting.getSeries()
+        site = self.currSeries.FeatureActionObj.SamplingFeatureObj
+        # source = self.currSeries.source
+        logger.debug("site: %s, variable: %s, method: %s, source: %s, processing_level: %s" % (
+        str(site), str(variable), str(method), str(source), str(processing_level)))
+        return site, variable, method, source, processing_level
 
     def __init__(self, parent, service_manager, record_service):
         self._init_ctrls(parent)

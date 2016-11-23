@@ -41,6 +41,7 @@ class NewFlagValuesView(wx.Frame):
         self.ok_button = wx.Button(bottom_panel, label="OK")
         self.cancel_button = wx.Button(bottom_panel, label="CANCEL")
         static_line = wx.StaticLine(bottom_panel)
+        self.cancel_button.SetDefault()
 
         bottom_panel_sizer = wx.BoxSizer(wx.VERTICAL)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)

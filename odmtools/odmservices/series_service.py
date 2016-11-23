@@ -300,25 +300,24 @@ class SeriesService(serviceBase):
 #             Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
 #         return self._edit_session.query(Qualifier).join(subquery).distinct().all()
 #
-#     #QCL methods
-    def get_all_qcls(self):
-        return self.read.getProcessingLevels();
+    # Processing Level methods
+    def get_all_processing_level_(self):
+        return self.read.getProcessingLevels()
 #        return self._edit_session.query(QualityControlLevel).all()
-#
-    def get_qcl_by_id(self, qcl_id):
+
+    def get_processing_level_by_id(self, qcl_id):
         try:
             return self.read.getProcessingLevels(ids = [qcl_id])[0]
             #return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
         except:
             return None
 #
-    def get_qcl_by_code(self, qcl_code):
+    def get_processing_level_by_code(self, codes):
         try:
-            return self.read.getProcessingLevels(codes=[qcl_code])[0]
-            #return self._edit_session.query(QualityControlLevel).filter_by(code=qcl_code).first()
+            return self.read.getProcessingLevels(codes=[codes])[0]
         except:
             return None
-#
+
 #     # Method methods
     def get_all_methods(self):
         #return self._edit_session.query(Method).all()
@@ -332,8 +331,12 @@ class SeriesService(serviceBase):
         #     result = None
         # return result
 #
-    def get_method_by_description(self, method_code):
-        return self.read.getMethods(codes=[method_code])[0]
+    def get_method_by_code(self, method_code):
+        try:
+            self.read.getMethods(codes=[method_code])[0]
+        except:
+            return None
+
         # try:
         #     result = self._edit_session.query(Method).filter_by(description=method_code).first()
         # except:

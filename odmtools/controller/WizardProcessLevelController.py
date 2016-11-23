@@ -1,8 +1,7 @@
 import wx
 from odmtools.view.WizardProcessLevelView import WizardProcessLevelView
 from wx.wizard import WizardPageSimple
-# from odmtools.odmdata import QualityControlLevel
-from odm2api.ODM2.models import ProcessingLevels as QualityControlLevel
+from odm2api.ODM2.models import ProcessingLevels
 
 
 class WizardProcessLevelController(WizardPageSimple):
@@ -53,16 +52,29 @@ class WizardProcessLevelController(WizardPageSimple):
 
         self.processing_level_view.existing_process_table.set_table_content(data=data)
 
-    def getQCL(self):
-        q = QualityControlLevel()
+    def get_processing_level(self):
         if self.processing_level_view.create_process_level_radio.GetValue():
-            q.code = self.processing_level_view.level_code_text_ctrl.GetValue()
-            q.definition = self.processing_level_view.definition_text_ctrl.GetValue()
-            q.explanation = self.processing_level_view.explanation_text_ctrl.GetValue()
+            return self.__select_existing_processing_level()
 
-        elif self.processing_level_view.existing_process_radio.GetValue():
-            selected_row = self.processing_level_view.existing_process_table.get_selected_row()
-            code = selected_row[0]
-            q = self.service_manager.get_series_service().get_processing_level_by_code(proc_level_code=code)
+        if self.processing_level_view.existing_process_radio.GetValue():
+            return self.__select_existing_processing_level()
 
-        return q
+        return None
+
+    def __select_existing_processing_level(self):
+        selected_row = self.processing_level_view.existing_process_table.get_selected_row()
+        code = selected_row[0]
+        proc_level = self.service_manager.get_series_service().get_processing_level_by_code(codes=code)
+        return proc_level
+
+    def __create_processing_level(self):
+        code = self.processing_level_view.level_code_text_ctrl.GetValue()
+        definition = self.processing_level_view.definition_text_ctrl.GetValue()
+        explanation = self.processing_level_view.explanation_text_ctrl.GetValue()
+
+        proc = ProcessingLevels()
+        proc.ProcessingLevelCode = code
+        proc.Definition = definition
+        proc.Explanation = explanation
+
+        return proc
