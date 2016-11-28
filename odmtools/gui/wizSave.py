@@ -356,7 +356,7 @@ class wizSave(wx.wizard.Wizard):
                                 wx.YES_NO | wx.ICON_QUESTION)
             if val == 2:
                 logger.info("User selected yes to save a level 0 dataset")
-                val_2 = wx.MessageBox("This action cannot be undone.\nAre you sure you are sure?\n",
+                val_2 = wx.MessageBox("This interactive_item cannot be undone.\nAre you sure you are sure?\n",
                                       'Are you REALLY sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
                 if val_2 == 2:
@@ -368,7 +368,7 @@ class wizSave(wx.wizard.Wizard):
             if self.pgExisting.pnlExisting.rbAppend.GetValue():
                 keyword = "append to"
 
-            message = "You are about to " + keyword + " an existing series_service,\nthis action cannot be undone.\nWould you like to continue?\n"
+            message = "You are about to " + keyword + " an existing series_service,\nthis interactive_item cannot be undone.\nWould you like to continue?\n"
             cont = wx.MessageBox(message, 'Are you sure?', wx.YES_NO | wx.ICON_QUESTION)
             if cont == 2:
                 closeSuccessful = True
