@@ -1,30 +1,34 @@
 import wx
+from odmtools.view.CustomCollapsiblePanel import CustomCollapsiblePanel
+from wx.lib.scrolledpanel import ScrolledPanel
 
 
 class NewFlagValuesView(wx.Frame):
     def __init__(self, parent):
-        wx.Frame.__init__(self, parent, title="Flag Values", style=wx.FRAME_FLOAT_ON_PARENT | wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER ^ wx.MAXIMIZE_BOX)
+        wx.Frame.__init__(self, parent, title="Flag Values", style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER ^ wx.MAXIMIZE_BOX)
 
         panel = wx.Panel(self)
-        content_panel = wx.Panel(panel)
+        content_panel = ScrolledPanel(panel)
         bottom_panel = wx.Panel(panel)
 
         ##########################################
         # CONTENT PANEL
         ##########################################
+        content_panel.SetupScrolling()
 
         annotation_title = wx.StaticText(content_panel, label="Annotation")
-        self.annotation_combo = wx.ComboBox(content_panel, style=wx.CB_READONLY | wx.CB_SORT)
-        code_title = wx.StaticText(content_panel, label="Code")
-        self.code_textbox = wx.TextCtrl(content_panel, size=(100, -1))
-        text_title = wx.StaticText(content_panel, label="Text")
-        self.text_textbox = wx.TextCtrl(content_panel)
-        link_text = wx.StaticText(content_panel, label="Link")
-        self.link_textbox = wx.TextCtrl(content_panel)
+        collapsible_panel = CustomCollapsiblePanel(content_panel, title="Panel 1", expand=0, use_combo=True, combo_trigger_item="New Annontation")
+        self.annotation_combo = collapsible_panel.interactive_item
 
+        code_title = wx.StaticText(collapsible_panel, label="Code")
+        self.code_textbox = wx.TextCtrl(collapsible_panel, size=(100, -1))
+        text_title = wx.StaticText(collapsible_panel, label="Text")
+        self.text_textbox = wx.TextCtrl(collapsible_panel)
+        link_text = wx.StaticText(collapsible_panel, label="Link")
+        self.link_textbox = wx.TextCtrl(collapsible_panel)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
         content_panel_sizer = wx.BoxSizer(wx.VERTICAL)
-        content_panel_sizer.Add(annotation_title, 0, wx.EXPAND | wx.ALL ^ wx.BOTTOM, 10)
-        content_panel_sizer.Add(self.annotation_combo, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         content_panel_sizer.Add(code_title, 0, wx.EXPAND | wx.ALL ^ wx.BOTTOM, 10)
         content_panel_sizer.Add(self.code_textbox, 0, wx.LEFT | wx.RIGHT, 10)
         content_panel_sizer.Add(text_title, 0, wx.EXPAND | wx.ALL ^ wx.BOTTOM, 10)
@@ -32,7 +36,11 @@ class NewFlagValuesView(wx.Frame):
         content_panel_sizer.Add(link_text, 0, wx.EXPAND | wx.ALL ^ wx.BOTTOM, 10)
         content_panel_sizer.Add(self.link_textbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        content_panel.SetSizer(content_panel_sizer)
+        collapsible_panel.finish_layout()
+
+        sizer.Add(annotation_title, 0, wx.EXPAND | wx.ALL ^ wx.BOTTOM, 10)
+        sizer.Add(collapsible_panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        content_panel.SetSizer(sizer)
 
         ##########################################
         # BOTTOM PANEL
@@ -41,6 +49,7 @@ class NewFlagValuesView(wx.Frame):
         self.ok_button = wx.Button(bottom_panel, label="OK")
         self.cancel_button = wx.Button(bottom_panel, label="CANCEL")
         static_line = wx.StaticLine(bottom_panel)
+        self.cancel_button.SetDefault()
 
         bottom_panel_sizer = wx.BoxSizer(wx.VERTICAL)
         button_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -59,7 +68,7 @@ class NewFlagValuesView(wx.Frame):
 
         panel.SetSizer(main_sizer)
         main_sizer.Fit(self)
-        self.SetSize((400, 300))
+        self.SetSize((400, 150))
 
 
 

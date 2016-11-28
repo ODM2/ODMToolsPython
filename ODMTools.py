@@ -57,6 +57,7 @@ class MyApp(wx.App):
         kwargs['taskServer'] = self.taskserver
         kwargs['memdb']= self.memdb
         self.frame = frmODMToolsMain(**kwargs)
+        self.frame.CenterOnScreen()
         self.frame.Show(True)
         app= self.frame
         return True

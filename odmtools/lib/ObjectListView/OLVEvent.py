@@ -229,10 +229,10 @@ class GroupCreationEvent(wx.PyCommandEvent):
 
 class ExpandCollapseEvent(VetoableEvent):
     """
-    The user wants to expand or collapse one or more groups, or has just done so.
+    The user wants to is_expanded or collapse one or more groups, or has just done so.
 
     If the handler calls Veto() for a Expanding or Collapsing event,
-    the expand/collapse action will be cancelled.
+    the is_expanded/collapse interactive_item will be cancelled.
 
     Calling Veto() has no effect on a Expanded or Collapsed event
     """

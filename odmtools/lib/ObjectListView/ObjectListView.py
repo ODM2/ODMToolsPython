@@ -161,7 +161,7 @@ class ObjectListView(wx.ListCtrl):
             this is will also put a HTML version into the clipboard)
 
         Left-Arrow, Right-Arrow
-            [GroupListView only] This will collapse/expand all selected groups.
+            [GroupListView only] This will collapse/is_expanded all selected groups.
 
     * oddRowsBackColor
         When `useAlternateBackColors` is true, odd numbered rows will have this
@@ -2620,7 +2620,7 @@ class GroupListView(FastObjectListView):
         * useExpansionColumn
 
             If this is True (the default), the expansion/contraction icon will have its
-            own column at position 0. If this is false, the expand/contract icon will be
+            own column at position 0. If this is false, the is_expanded/contract icon will be
             in the first user specified column. This must be set before SetColumns() is called.
             If it is changed, SetColumns() must be called again.
         """
@@ -3088,7 +3088,7 @@ class GroupListView(FastObjectListView):
             return True
 
         # Find which group (if any) the object belongs to, and
-        # expand it and then try to reveal it again
+        # is_expanded it and then try to reveal it again
         for group in self.groups:
             if not group.isExpanded and modelObject in group.modelObjects:
                 self.Expand(group)
@@ -3197,7 +3197,7 @@ class GroupListView(FastObjectListView):
         """
         Return a list of lists of the string of the aspects of the given objects
         """
-        cols = self.columns[self.GetPrimaryColumnIndex():] # We don't want to copy the expand icon columns
+        cols = self.columns[self.GetPrimaryColumnIndex():] # We don't want to copy the is_expanded icon columns
         objects = [x for x in objects if x is not None and not isinstance(x, ListGroup)]
         return [[column.GetStringValue(x) for column in cols] for x in objects]
 
@@ -3413,7 +3413,7 @@ class ColumnDefn(object):
     * isSpaceFilling
         Is this column a space filler? Space filling columns resize to occupy free
         space within the listview. As the listview is expanded, space filling columns
-        expand as well. Conversely, as the control shrinks these columns shrink too.
+        is_expanded as well. Conversely, as the control shrinks these columns shrink too.
 
         Space filling columns can disappear (i.e. have a width of 0) if the control
         becomes too small. You can set `minimumWidth` to prevent them from
