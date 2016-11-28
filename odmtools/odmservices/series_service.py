@@ -1069,7 +1069,7 @@ class SeriesService(serviceBase):
         return self.read.getCVs(type="Quality Code")
 
     def get_annotation_by_code(self, code):
-        return self.read.getAnnotations(type=code)
+        return self.read.getAnnotations(codes=[code])[0]
 
     def get_all_annotations(self):
         return self.read.getAnnotations(type=None)

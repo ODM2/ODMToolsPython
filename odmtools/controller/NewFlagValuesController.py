@@ -41,7 +41,10 @@ class NewFlagValuesController(NewFlagValuesView):
             text = self.text_textbox.GetValue()
 
             annotation = self.series_service.create_annotation(code, text)
-            self.record_service.flag(annotation.AnnotationID)
+        else:
+            code = selection.split(':')[0]
+            annotation = self.series_service.get_annotation_by_code(code)
+        self.record_service.flag(annotation.AnnotationID)
 
         self.on_cancel(event)
 
