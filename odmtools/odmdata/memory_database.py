@@ -10,6 +10,7 @@ from odmtools.odmservices import ServiceManager, SeriesService
 # ODM = SeriesService.ODM
 from odm2api.ODM2.models import TimeSeriesResultValues as TSRV
 from odm2api.ODM2.models import setSchema
+import pandas as pd
 
 
 logger =logging.getLogger('main')
@@ -37,8 +38,8 @@ class MemoryDatabase(object):
         #else:
 
         self.taskserver = taskserver
+        self.annotation_list = pd.DataFrame[], columns =['ResultID', 'ValueDateTime', 'ValueID', 'AnnotationID']
         #send in engine
-
 
 
     def reset_edit(self):
@@ -150,14 +151,15 @@ class MemoryDatabase(object):
 
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
     #TODO update to work with odm2
-    def updateFlag(self, ids, value):
-        chunks=self.chunking(ids)
-        for c in chunks:
-            # add entry in the Timeseriesresultvalueannotations table
-            self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
-                .update({TSRV.qualifier_id: value}, False)
 
-            
+    def updateFlag(self, ids, value):
+        # chunks=self.chunking(ids)
+        # for c in chunks:
+        #     # add entry in the Timeseriesresultvalueannotations table
+        #     self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
+        #         .update({TSRV.qualifier_id: value}, False)
+        self.annotation_list.append(ids)
+
 
 
     def delete(self, ids):
@@ -241,8 +243,6 @@ class MemoryDatabase(object):
                 self.df.to_sql(name="timeseriesresultvalues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
-
-
 
 
     def changeSeriesIDs(self, result):

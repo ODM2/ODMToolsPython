@@ -60,9 +60,6 @@ class EditTools():
             Publisher.sendMessage("scroll")
 
 
-
-
-
     def data_gaps(self, value, time_period):
         self._edit_service.data_gaps(value, time_period)
         self.refresh_selection()

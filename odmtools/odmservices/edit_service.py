@@ -236,8 +236,6 @@ class EditService():
         self.filtered_dataframe= df[df.index.isin(newdf.drop_duplicates().dropna())]
 
 
-
-
     def change_value_threshold(self, value, operator):
 
         df = self._test_filter_previous()

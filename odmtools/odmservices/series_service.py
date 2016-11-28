@@ -113,7 +113,6 @@ class SeriesService(serviceBase):
                        .filter(Results.FeatureActionID == FeatureActions.FeatureActionID)
                        .filter(FeatureActions.SamplingFeatureID == SamplingFeatures.SamplingFeatureID)
                        .filter(SamplingFeatures.SamplingFeatureCode == site_code).all()
-
             ]
         except:
             var_ids = None
@@ -471,7 +470,7 @@ class SeriesService(serviceBase):
         :param endDate:
         :return:
         """
-
+        setSchema(self._session_factory.engine)
         Values = self.get_values(seriesID)
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
         # data = data[data['datavalue'] != noDataValue]
