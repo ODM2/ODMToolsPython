@@ -14,7 +14,7 @@ class NewFlagValuesView(wx.Frame):
         ##########################################
 
         annotation_title = wx.StaticText(content_panel, label="Annotation")
-        self.annotation_combo = wx.ComboBox(content_panel, style=wx.CB_READONLY | wx.CB_SORT)
+        self.annotation_combo = wx.ComboBox(content_panel, style=wx.CB_READONLY )#| wx.CB_SORT)
         code_title = wx.StaticText(content_panel, label="Code")
         self.code_textbox = wx.TextCtrl(content_panel, size=(100, -1))
         text_title = wx.StaticText(content_panel, label="Text")

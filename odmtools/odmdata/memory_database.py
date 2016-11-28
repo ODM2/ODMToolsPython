@@ -156,11 +156,18 @@ class MemoryDatabase(object):
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
     #TODO update to work with odm2
     def updateFlag(self, ids, value):
-        chunks=self.chunking(ids)
-        for c in chunks:
-            # add entry in the Timeseriesresultvalueannotations table
-            self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
-                .update({TSRV.qualifier_id: value}, False)
+        import pandas as pd
+
+        flags = pd.DataFrame()
+        if "dates" not in flags.columns:
+            flags.dates = ids
+            flags.AnnotationID = value
+
+        # chunks=self.chunking(ids)
+        # for c in chunks:
+        #     # add entry in the Timeseriesresultvalueannotations table
+        #     self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
+        #         .update({TSRV.qualifier_id: value}, False)
 
             
 
