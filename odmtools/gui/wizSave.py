@@ -184,32 +184,21 @@ class SummaryPage(wiz.WizardPageSimple):
     def fill_summary(self):
         sampling_feature, variable, method, source, processing_level = self.parent.get_metadata()
 
-        ##        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, "Code: "+ str(QCL.code))
-
-
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sc, 'Code: ' + str(sampling_feature.SamplingFeatureCode))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sn, 'Name: ' + str(sampling_feature.SamplingFeatureName))
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.vc, 'Code: ' + str(variable.VariableCode))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.vn, 'Name: ' + str(variable.VariableNameCV))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vu, 'Units: ' + str(variable.variable_unit.name))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vsm, 'Sample Medium: ' + str(variable.sample_medium))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vvt, 'Value Type: ' + str(variable.value_type))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vts, 'Time Support: ' + str(variable.time_support))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vtu, 'Time Units: ' + str(variable.time_unit.name))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vdt, 'Data Type: ' + str(variable.data_type))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.vgc,
-                                           'General Category: ' + str(variable.general_category))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(method.description))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(method.MethodDescription))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(source.organization))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(source.description))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Citation: ' + str(source.citation))
+        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(source.organization))
+        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(source.description))
+        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Citation: ' + str(source.citation))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(processing_level.code))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(processing_level.definition))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qe, 'Explanation: ' + str(processing_level.explanation))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(processing_level.ProcessingLevelCode))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(processing_level.Definition))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.qe, 'Explanation: ' + str(processing_level.Explanation))
 
         self.panel.treeSummary.ExpandAll()
 
