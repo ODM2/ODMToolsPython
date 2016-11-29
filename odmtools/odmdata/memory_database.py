@@ -38,7 +38,8 @@ class MemoryDatabase(object):
         #else:
 
         self.taskserver = taskserver
-        self.annotation_list = pd.DataFrame[], columns =['ResultID', 'ValueDateTime', 'ValueID', 'AnnotationID']
+        self.annotation_list = pd.DataFrame()
+        #self.annotation_list = pd.DataFrame() columns =['ResultID', 'ValueDateTime', 'ValueID', 'AnnotationID')
         #send in engine
 
 
@@ -154,18 +155,24 @@ class MemoryDatabase(object):
 
     def updateFlag(self, ids, value):
 
-        flags = pd.DataFrame()
-        if "dates" not in flags.columns:
-            flags.dates = ids
-            flags.AnnotationID = value
 
+        flags = pd.DataFrame(columns = ['AnnotationID', 'DateTime', 'ResultID', 'ValueID'])
+        flags["DateTime"] = ids
+        flags["AnnotationID"] = value
+        flags["ResultID"] = self.series.ResultID
+        flags["ValueID"] = None
+
+
+        #what if the column already exists
         # chunks=self.chunking(ids)
         # for c in chunks:
         #     # add entry in the Timeseriesresultvalueannotations table
         #     self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
         #         .update({TSRV.qualifier_id: value}, False)
-
-        #self.annotation_list.append(ids)
+        
+        frames = [self.annotation_list, flags]
+        self.annotation_list=pd.concat(frames)
+        print self.annotation_list
 
 
 
