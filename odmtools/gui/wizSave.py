@@ -207,6 +207,7 @@ class SummaryPage(wiz.WizardPageSimple):
 from odmtools.controller.WizardMethodController import WizardMethodController
 from odmtools.controller.WizardProcessLevelController import WizardProcessLevelController
 from odmtools.controller.WizardVariableController import WizardVariableController
+from odmtools.controller.WizardActionController import WizardActionController
 
 
 class wizSave(wx.wizard.Wizard):
@@ -269,6 +270,11 @@ class wizSave(wx.wizard.Wizard):
                                                    current_variable=self.currSeries.VariableObj)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service,
                                                     self.currSeries.FeatureActionObj.SamplingFeatureObj)
+
+        affiliations = self.series_service.get_all_affiliations()
+
+        self.action_page = WizardActionController(self, affiliations=affiliations)
+
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
         self.FitToPage(self.pgIntro)
@@ -276,7 +282,6 @@ class wizSave(wx.wizard.Wizard):
         # Set the initial order of the pages
         self.pgIntro.SetNext(self.pgSummary)
         self.pgSummary.SetPrev(self.pgIntro)
-
 
         #SaveAs Pages
         self.pgMethod.SetPrev(self.pgIntro)
@@ -286,7 +291,10 @@ class wizSave(wx.wizard.Wizard):
         self.pgQCL.SetNext(self.pgVariable)
 
         self.pgVariable.SetPrev(self.pgQCL)
-        self.pgVariable.SetNext(self.pgSummary)
+        self.pgVariable.SetNext(self.action_page)
+
+        self.action_page.SetPrev(self.pgVariable)
+        self.action_page.SetNext(self.pgSummary)
 
         #Save existing  page
         self.pgExisting.SetPrev(self.pgIntro)
@@ -308,7 +316,7 @@ class wizSave(wx.wizard.Wizard):
 
         elif self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             self.pgIntro.SetNext(self.pgMethod)
-            self.pgSummary.SetPrev(self.pgVariable)
+            self.pgSummary.SetPrev(self.action_page)
 
         else:
             self.pgIntro.SetNext(self.pgExisting)

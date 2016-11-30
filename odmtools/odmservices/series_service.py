@@ -1075,3 +1075,6 @@ class SeriesService(serviceBase):
 
     def get_aggregation_statistic(self):
         return self.read.getCVs(type="aggregationstatistic")
+
+    def get_all_affiliations(self):
+        return self.read.getAffiliations(ids=None, personfirst=None, personlast=None, orgcode=None)
