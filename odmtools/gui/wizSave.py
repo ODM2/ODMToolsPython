@@ -182,7 +182,7 @@ class SummaryPage(wiz.WizardPageSimple):
 
 
     def fill_summary(self):
-        sampling_feature, variable, method, source, processing_level = self.parent.get_metadata()
+        sampling_feature, variable, method, action, processing_level = self.parent.get_metadata()
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sc, 'Code: ' + str(sampling_feature.SamplingFeatureCode))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sn, 'Name: ' + str(sampling_feature.SamplingFeatureName))
@@ -192,9 +192,9 @@ class SummaryPage(wiz.WizardPageSimple):
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(method.MethodDescription))
 
-        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(source.organization))
-        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(source.description))
-        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Citation: ' + str(source.citation))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Person: ' + str(action.PersonObj.PersonFirstName + " " + action.PersonObj.PersonLastName))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(action.OrganizationObj.OrganizationName))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(action.OrganizationObj.OrganizationDescription))
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(processing_level.ProcessingLevelCode))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(processing_level.Definition))
@@ -228,13 +228,14 @@ class wizSave(wx.wizard.Wizard):
         method = None
         variable = None
         processing_level = None
-        source = None
+        action = None
 
         if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             logger.debug("SaveAs")
             method = self.pgMethod.getMethod()
             processing_level = self.pgQCL.get_processing_level()
             variable = self.pgVariable.get_variable()
+            action = self.action_page.get_action()
         elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
             logger.debug("Save")
             method = self.currSeries.FeatureActionObj.ActionObj.MethodObj
@@ -246,8 +247,8 @@ class wizSave(wx.wizard.Wizard):
         site = self.currSeries.FeatureActionObj.SamplingFeatureObj
         # source = self.currSeries.source
         logger.debug("site: %s, variable: %s, method: %s, source: %s, processing_level: %s" % (
-        str(site), str(variable), str(method), str(source), str(processing_level)))
-        return site, variable, method, source, processing_level
+        str(site), str(variable), str(method), str(action), str(processing_level)))
+        return site, variable, method, action, processing_level
 
     def __init__(self, parent, service_manager, record_service):
         self._init_ctrls(parent)
