@@ -169,7 +169,7 @@ class MemoryDatabase(object):
         #     # add entry in the Timeseriesresultvalueannotations table
         #     self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
         #         .update({TSRV.qualifier_id: value}, False)
-        
+
         frames = [self.annotation_list, flags]
         self.annotation_list=pd.concat(frames)
         print self.annotation_list
@@ -205,6 +205,7 @@ class MemoryDatabase(object):
 
             setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)
+
 
 
     def stopEdit(self):

@@ -4,6 +4,7 @@ from sqlalchemy import distinct, func
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
+from  odmtools.odmservices import to_sql_newrows
 import datetime
 from odmtools.common.logger import LoggerTool
 import pandas as pd
@@ -543,11 +544,13 @@ class SeriesService(serviceBase):
 #         self._edit_session.add_all(merged_dv_list)
 #         self._edit_session.commit()
 #
-# #####################
-# #
-# #Create functions
-# #
-# #####################
+
+#####################
+#
+#Create functions
+#
+#####################
+
 #     def save_series(self, series, dvs):
 #         """ Save to an Existing Series
 #         :param series:
@@ -596,7 +599,15 @@ class SeriesService(serviceBase):
 #         logger.info("A new series was added to the database, series id: "+str(series.id))
 #         return True
 #
-    def save_values(self, values):
+    def insert_annotations(self, annotations):
+        annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
+
+    def upsert_values(self, values):
+        newvals= to_sql_newrows(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+                       filter_categorical_col= "resultdatetime" )
+        pass
+
+    def insert_values(self, values):
         """
 
         :param values: pandas dataframe
@@ -644,263 +655,12 @@ class SeriesService(serviceBase):
 #         self._edit_session.commit()
 #         return meth
 # #
-    def create_variable_by_var(self, var):
-        try:
-            return self.create.createVariable(var)
-        except:
-            return None
-        # """
-        #
-        # :param var:  Variable Object
-        # :return:
-        # """
-        # try:
-        #     self._edit_session.add(var)
-        #     self._edit_session.commit()
-        #     return var
-        # except:
-        #     return None
-#
-    def create_variable(
-            self, code, name, speciation, variable_unit_id, sample_medium,
-            value_type, is_regular, time_support, time_unit_id, data_type,
-            general_category, no_data_value):
-        """
-#
-#         :param code:
-#         :param name:
-#         :param speciation:
-#         :param variable_unit_id:
-#         :param sample_medium:
-#         :param value_type:
-#         :param is_regular:
-#         :param time_support:
-#         :param time_unit_id:
-#         :param data_type:
-#         :param general_category:
-#         :param no_data_value:
-#         :return:
-#         """
-        var = Variable()
-        var.code = code
-        var.name = name
-        var.speciation = speciation
-        var.variable_unit_id = variable_unit_id
-        var.sample_medium = sample_medium
-        var.value_type = value_type
-        var.is_regular = is_regular
-        var.time_support = time_support
-        var.time_unit_id = time_unit_id
-        var.data_type = data_type
-        var.general_category = general_category
-        var.no_data_value = no_data_value
-        self.create.createVariable(var)
-#         self._edit_session.add(var)
-#         self._edit_session.commit()
-#         return var
-#
-    def create_qcl(self, code, definition, explanation):
-        """
-
-        :param code:
-        :param definition:
-        :param explanation:
-        :return:
-        """
-        qcl = QualityControlLevel()
-        qcl.code = code
-        qcl.definition = definition
-        qcl.explanation = explanation
-
-        return self.create.createProcessingLevel(qcl)
-        # self._edit_session.add(qcl)
-        # self._edit_session.commit()
-        # return qcl
-#
-#
-    def create_qualifier_by_qual(self, qualifier):
-        # self._edit_session.add(qualifier)
-        # self._edit_session.commit()
-        # return qualifier
-        return self.create.createAnnotations(qualifier)
-#
-    def create_qualifier(self,  code, description):
-        # """
-        #
-        # :param code:
-        # :param description:
-        # :return:
-        # """
-        qual = Qualifier()
-        qual.code = code
-        qual.description = description
-        #
-        # return self.create_qualifier_by_qual(qual)
-        return self.create.createAnnotations(qual);
-#
-# #####################
-# #
-# # Delete functions
-# #
-# #####################
-#
-#     def delete_series(self, series):
-#         """
-#
-#         :param series:
-#         :return:
-#         """
-#         try:
-#             self.delete_values_by_series(series)
-#
-#             delete_series = self._edit_session.merge(series)
-#             self._edit_session.delete(delete_series)
-#             self._edit_session.commit()
-#         except Exception as e:
-#             message = "series was not successfully deleted: %s" % e
-#             print message
-#             logger.error(message)
-#             raise e
-#
-#
-    def delete_values_by_series(self, series, startdate = None):
-        """
-
-        :param series:
-        :return:
-        """
-       #todo stephanie: add startdate stuff
-        try:
-            self.delete.deleteTSRValues(ids = [series.id])
-        except Exception as ex:
-            message = "Values were not successfully deleted: %s" % ex
-            print message
-            logger.error(message)
-            raise ex
-#         try:
-#             q= self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
-#                                                                  variable_id = series.variable_id,
-#                                                                  method_id = series.method_id,
-#                                                                  source_id = series.source_id,
-#                                                                  quality_control_level_id = series.quality_control_level_id)
-#             if startdate is not None:
-#                 #start date indicates what day you should start deleting values. the values will delete to the end of the series
-#                 return q.filter(DataValue.local_date_time >= startdate).delete()
-#             else:
-#                 return q.delete()
-#
-#         except Exception as ex:
-#             message = "Values were not successfully deleted: %s" % ex
-#             print message
-#             logger.error(message)
-#             raise ex
-#
-    def delete_dvs(self, id_list):
-        """
-
-        :param id_list: list of datetimes
-        :return:
-        """
-        try:
-            self.delete.deleteTSRValues(dates = id_list)
-        except Exception as ex:
-            message = "Values were not successfully deleted: %s" % ex
-            print message
-            logger.error(message)
-            raise ex
 
 
-# #####################
-# #
-# #Exist functions
-# #
-# #####################
-#
-#
-#     def series_exists(self, series):
-#         """
-#
-#         :param series:
-#         :return:
-#         """
-#         return self.series_exists_quint(
-#             series.site_id,
-#             series.variable_id,
-#             series.method_id,
-#             series.source_id,
-#             series.quality_control_level_id
-#         )
-#
-#     def series_exists_quint(self, site_id, var_id, method_id, source_id, qcl_id):
-#         """
-#
-#         :param site_id:
-#         :param var_id:
-#         :param method_id:
-#         :param source_id:
-#         :param qcl_id:
-#         :return:
-#         """
-#         try:
-#             result = self._edit_session.query(Series).filter_by(
-#                 site_id=site_id,
-#                 variable_id=var_id,
-#                 method_id=method_id,
-#                 source_id=source_id,
-#                 quality_control_level_id=qcl_id
-#             ).one()
-#
-#             return True
-#         except:
-#             return False
-#
-#     def qcl_exists(self, q):
-#         """
-#
-#         :param q:
-#         :return:
-#         """
-#         try:
-#             result = self._edit_session.query(QualityControlLevel).filter_by(code=q.code, definition=q.definition).one()
-#             return True
-#         except:
-#
-#             return False
-#
-#     def method_exists(self, m):
-#         """
-#
-#         :param m:
-#         :return:
-#         """
-#         try:
-#             result = self._edit_session.query(Method).filter_by(description=m.description).one()
-#             return True
-#         except:
-#             return False
-#
-#     def variable_exists(self, v):
-#         """
-#
-#         :param v:
-#         :return:
-#         """
-#         try:
-#             result = self._edit_session.query(Variable).filter_by(code=v.code,
-#                                                                   name=v.name, speciation=v.speciation,
-#                                                                   variable_unit_id=v.variable_unit_id,
-#                                                                   sample_medium=v.sample_medium,
-#                                                                   value_type=v.value_type, is_regular=v.is_regular,
-#                                                                   time_support=v.time_support,
-#                                                                   time_unit_id=v.time_unit_id, data_type=v.data_type,
-#                                                                   general_category=v.general_category,
-#                                                                   no_data_value=v.no_data_value).one()
-#             return result
-#         except:
-#             return None
 
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
+        #create a result and an Action object of type derivation
         """
         series_service -> Result in ODM2
         :param data_values:
@@ -912,7 +672,7 @@ class SeriesService(serviceBase):
         :return:
         """
         self.update_dvs(data_values)
-        series = Series()
+        series = Results()
         series.site_id = site_id
         series.variable_id = variable_id
         series.method_id = method_id
@@ -1017,7 +777,6 @@ class SeriesService(serviceBase):
         return self.create_annotation_by_anno(annotation)
 
 
-
     def get_vertical_datum_cvs(self):
         return self.read.getCVs(type="Elevation Datum")
 
@@ -1078,3 +837,75 @@ class SeriesService(serviceBase):
 
     def get_all_affiliations(self):
         return self.read.getAffiliations(ids=None, personfirst=None, personlast=None, orgcode=None)
+
+    # #####################
+    # #
+    # # Delete functions
+    # #
+    # #####################
+    #
+    #     def delete_series(self, series):
+    #         """
+    #
+    #         :param series:
+    #         :return:
+    #         """
+    #         try:
+    #             self.delete_values_by_series(series)
+    #
+    #             delete_series = self._edit_session.merge(series)
+    #             self._edit_session.delete(delete_series)
+    #             self._edit_session.commit()
+    #         except Exception as e:
+    #             message = "series was not successfully deleted: %s" % e
+    #             print message
+    #             logger.error(message)
+    #             raise e
+    #
+    #
+    def delete_values_by_series(self, series, startdate=None):
+        """
+
+        :param series:
+        :return:
+        """
+        # todo stephanie: add startdate stuff
+        try:
+            self.delete.deleteTSRValues(ids=[series.id])
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
+            #         try:
+            #             q= self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
+            #                                                                  variable_id = series.variable_id,
+            #                                                                  method_id = series.method_id,
+            #                                                                  source_id = series.source_id,
+            #                                                                  quality_control_level_id = series.quality_control_level_id)
+            #             if startdate is not None:
+            #                 #start date indicates what day you should start deleting values. the values will delete to the end of the series
+            #                 return q.filter(DataValue.local_date_time >= startdate).delete()
+            #             else:
+            #                 return q.delete()
+            #
+            #         except Exception as ex:
+            #             message = "Values were not successfully deleted: %s" % ex
+            #             print message
+            #             logger.error(message)
+            #             raise ex
+            #
+
+    def delete_dvs(self, id_list):
+        """
+
+        :param id_list: list of datetimes
+        :return:
+        """
+        try:
+            self.delete.deleteTSRValues(dates=id_list)
+        except Exception as ex:
+            message = "Values were not successfully deleted: %s" % ex
+            print message
+            logger.error(message)
+            raise ex
