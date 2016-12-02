@@ -263,12 +263,15 @@ class wizSave(wx.wizard.Wizard):
 
         self.pgIntro = pageIntro.pageIntro(self, "Intro")
         # self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
-        self.pgMethod = WizardMethodController(self, self.series_service)
-        # self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
-        self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager)
-        # self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
-        self.pgVariable = WizardVariableController(self, service_manager=service_manager,
-                                                   current_variable=self.currSeries.VariableObj)
+
+        method_from_series = self.currSeries.FeatureActionObj.ActionObj.MethodObj
+        variable_from_series = self.currSeries.VariableObj
+        processing_level_from_series = self.currSeries.ProcessingLevelObj
+
+        self.pgMethod = WizardMethodController(self, self.series_service, current_method=variable_from_series)
+        self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager, current_processing_level=processing_level_from_series)
+        self.pgVariable = WizardVariableController(self, service_manager=service_manager, current_variable=variable_from_series)
+
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service,
                                                     self.currSeries.FeatureActionObj.SamplingFeatureObj)
 

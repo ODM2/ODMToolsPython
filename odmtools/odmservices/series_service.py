@@ -332,7 +332,7 @@ class SeriesService(serviceBase):
 #
     def get_method_by_code(self, method_code):
         try:
-            self.read.getMethods(codes=[method_code])[0]
+            return self.read.getMethods(codes=[method_code])[0]
         except:
             return None
 

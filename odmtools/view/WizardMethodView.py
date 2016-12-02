@@ -38,7 +38,8 @@ class WizardMethodView(wx.lib.scrolledpanel.ScrolledPanel):
         self.method_type_combo.SetSelection(0)
         self.organization_combo.SetSelection(0)
         self.SetupScrolling()
-        self.auto_method_radio.SetValue(True)
+        self.existing_method_radio.SetValue(True)
+        self.existing_method_table.SetSingleStyle(wx.LC_SINGLE_SEL, add=True)
 
         # Add components to sizer
         table_sizer = wx.BoxSizer()
