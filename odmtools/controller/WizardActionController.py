@@ -4,6 +4,7 @@ from wx.wizard import WizardPageSimple
 from odm2api.ODM2.models import Affiliations
 
 
+# Should we rename this to Affiliations instead of actions? Action is created else where
 class WizardActionController(WizardPageSimple):
     def __init__(self, parent, affiliations):
         WizardPageSimple.__init__(self, parent)
@@ -40,7 +41,7 @@ class WizardActionController(WizardPageSimple):
         self.action_view.affiliations_table.set_columns(columns)
         self.action_view.affiliations_table.set_table_content(data)
 
-    def get_action(self):
+    def get_affiliation(self):
         index = self.action_view.affiliations_table.GetFirstSelected()
         return self.affiliations[index]
 

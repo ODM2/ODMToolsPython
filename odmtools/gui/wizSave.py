@@ -9,6 +9,7 @@ import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
+from odm2api.ODM2.models import Actions
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
  wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,
@@ -250,8 +251,9 @@ class wizSave(wx.wizard.Wizard):
         method = self.__method_from_series
         processing_level = self.__processing_level_from_series
         variable = self.__variable_from_series
-        action = self.action_page.get_action()
+        affiliation = self.action_page.get_affiliation()
         site = self.__site_from_series
+
 
         if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             # Selected a new series
@@ -262,6 +264,12 @@ class wizSave(wx.wizard.Wizard):
         elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
             # selected an existing series
             method, processing_level, variable = self.pgExisting.getSeries()
+
+        # Create action
+        action = Actions()
+        action.MethodObj = method
+        action.ActionDescription = self.action_page.action_view.description_text_box.GetValue()
+        action.ActionFileLink = self.action_page.action_view.action_file_link_text_box.GetValue()
 
         return site, variable, method, action, processing_level
 

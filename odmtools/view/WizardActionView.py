@@ -34,17 +34,17 @@ class WizardActionView(wx.lib.scrolledpanel.ScrolledPanel):
         optional_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Optional Fields"),
                                                       orient=wx.VERTICAL)
         action_file_link_text = wx.StaticText(self, label="Action File Link")
-        action_file_link_text_box = wx.TextCtrl(self)
+        self.action_file_link_text_box = wx.TextCtrl(self)
         description_text = wx.StaticText(self, label="Description")
-        description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         role_description_text = wx.StaticText(self, label="Role Description")
-        role_description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.role_description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
 
         flex_grid_sizer = wx.FlexGridSizer(rows=3, cols=2, vgap=9, hgap=25)
 
-        flex_grid_sizer.AddMany([(action_file_link_text), (action_file_link_text_box, 1, wx.EXPAND),
-                                 (description_text), (description_text_box, 1, wx.EXPAND),
-                                 (role_description_text), (role_description_text_box, 1, wx.EXPAND)
+        flex_grid_sizer.AddMany([(action_file_link_text), (self.action_file_link_text_box, 1, wx.EXPAND),
+                                 (description_text), (self.description_text_box, 1, wx.EXPAND),
+                                 (role_description_text), (self.role_description_text_box, 1, wx.EXPAND)
                                  ])
 
         flex_grid_sizer.AddGrowableRow(1, 1)
