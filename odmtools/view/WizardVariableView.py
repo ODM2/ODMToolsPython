@@ -39,6 +39,7 @@ class WizardVariableView(wx.lib.scrolledpanel.ScrolledPanel):
         self.variable_type_combo.SetSelection(0)
         self.SetupScrolling()
         self.current_variable_radio.SetValue(True)
+        self.variable_table.SetSingleStyle(wx.LC_SINGLE_SEL, add=True)
 
         # Add components to sizer
         table_sizer = wx.BoxSizer()

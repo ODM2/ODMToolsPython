@@ -40,7 +40,6 @@ class WizardMethodController(WizardPageSimple):
             return  # the current method is not in the table
 
         index = self.all_methods.index(self.current_method_in_series)
-        self.method_view.existing_method_table.Focus(index)
         self.method_view.existing_method_table.Select(index)
 
     def on_auto_radio(self, event):
@@ -50,6 +49,7 @@ class WizardMethodController(WizardPageSimple):
     def on_existing_method_radio(self, event):
         self.method_view.existing_method_table.Enable()
         self.enable_create_method_section(False)
+        self.method_view.existing_method_table.SetFocus()
 
     def enable_create_method_section(self, active):
         if not isinstance(active, bool):
@@ -81,7 +81,7 @@ class WizardMethodController(WizardPageSimple):
 
         self.method_view.existing_method_table.set_table_content(data=data)
 
-    def getMethod(self):
+    def get_method(self):
         if self.method_view.auto_method_radio.GetValue():
             return self.__auto_generate_a_method()
 

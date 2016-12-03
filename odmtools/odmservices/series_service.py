@@ -643,8 +643,12 @@ class SeriesService(serviceBase):
 #         self._edit_session.add(meth)
 #         self._edit_session.commit()
 #         return meth
-# #
+#
     def create_variable_by_var(self, var):
+        """
+        :param var:  Variable Object
+        :return:
+        """
         try:
             return self.create.createVariable(var)
         except:
@@ -933,13 +937,6 @@ class SeriesService(serviceBase):
             method.MethodLink = link
 
         return self.create_service.createMethod(method=method)
-
-    def create_variable_by_var(self, var):
-        """
-        :param var:  Variable Object
-        :return:
-        """
-        return self.create_service.createVariable(var=var)
 
     def create_variable(
             self, code, name, speciation, variable_unit_id, sample_medium,

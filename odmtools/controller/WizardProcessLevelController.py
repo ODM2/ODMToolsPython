@@ -28,18 +28,14 @@ class WizardProcessLevelController(WizardPageSimple):
         if self.current_processing_level is None:
             return
 
-        # For some reason this does not work so I'm using a loop to compare ID
-        # if self.current_processing_level not in self.all_processing_level:
-        #     return
-
         index = -1
         for i in range(len(self.all_processing_level)):
             if self.all_processing_level[i].ProcessingLevelID == self.current_processing_level.ProcessingLevelID:
                 index = i
                 break
 
-        self.processing_level_view.existing_process_table.Focus(index)
-        self.processing_level_view.existing_process_table.Select(index)
+        if index >= 0:
+            self.processing_level_view.existing_process_table.Select(index)
 
     def on_create_radio(self, event):
         self.processing_level_view.existing_process_table.Enable(False)
@@ -48,6 +44,7 @@ class WizardProcessLevelController(WizardPageSimple):
     def on_existing_radio(self, event):
         self.processing_level_view.existing_process_table.Enable(True)
         self.__set_create_proces_section(False)
+        self.processing_level_view.existing_process_table.SetFocus()
 
     def __set_create_proces_section(self, active):
         if not isinstance(active, bool):
@@ -74,7 +71,7 @@ class WizardProcessLevelController(WizardPageSimple):
 
     def get_processing_level(self):
         if self.processing_level_view.create_process_level_radio.GetValue():
-            return self.__select_existing_processing_level()
+            return self.__create_processing_level()
 
         if self.processing_level_view.existing_process_radio.GetValue():
             return self.__select_existing_processing_level()
