@@ -261,29 +261,3 @@ class MemoryDatabase(object):
                 logger.debug("done loading database")
 
 
-    def changeSeriesIDs(self, result):
-        """
-
-        :param var:
-        :param qcl:
-        :param method:
-        :return:
-        """
-
-        query = self.mem_service._session.query(TSRV)
-        # if var is not None:
-        #     logger.debug(var)
-        #     query.update({DataValue.variable_id: var})
-        #
-        # if method is not None:
-        #     logger.debug(method)
-        #     query.update({DataValue.method_id: method})
-        # # check that the code is not zero
-        # # if qcl is not None and qcl.code != 0:
-        # if qcl is not None:
-        #     logger.debug(qcl)
-        #     query.update({DataValue.quality_control_level_id: qcl})
-        logger.debug(result)
-        query.update({TSRV.ResultID:result})
-
-

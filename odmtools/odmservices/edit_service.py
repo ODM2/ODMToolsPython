@@ -493,7 +493,7 @@ class EditService():
 
         result_id = result.ResultID if result is not None else None
 
-        #self.memDB.changeSeriesIDs(var_id, method_id, qcl_id)
+
         dvs = self.memDB.getDataValuesDF()
         if result_id is not None:
             dvs["ResultID"] = result_id

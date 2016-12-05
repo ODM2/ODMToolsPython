@@ -520,6 +520,51 @@ class SeriesService(serviceBase):
 #  Create functions
 #
 #####################
+    def save(self, result = None):
+        #update result
+        #upsert values
+        #save series
+        pass
+    def saveAppend(self, overwrite = True):
+        #get save result
+        #get value count
+        #set in df
+        #update result
+        #count = overlap calc
+        #set value count = res.vc+valuecount-count
+        #insert values
+        #save series
+        pass
+    def saveAs(self):
+        #create series
+        #set in df
+        #insert values
+        #save_new_series
+        pass
+    def saveExisting(self):
+        #get save result
+        #set in df
+        #save(result)
+        pass
+
+#new series
+    def createResult(self, var, meth, proc):
+        #also create an action
+        #copy old
+        #change var, meth proc, in df #intend ts, agg stat
+        Result = None
+
+        return self.updateResult(Result)
+
+    def updateResult(self, Result):
+        #get pd
+        #get result
+        #update count, dates,
+        return Result
+
+    def overlapcalc(self):
+        pass
+
 
 #     def save_series(self, series, dvs):
 #         """ Save to an Existing Series
