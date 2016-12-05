@@ -68,12 +68,14 @@ class MemoryDatabase(object):
         #else:
         #    self.updateDF()
         '''
+        setSchema(self.mem_service._session_factory.engine)
         self.updateDF()
         # pick up thread here before it is needed
         logging.debug("done updating memory dataframe")
         return self.df
 
     def getDataValues(self):
+        setSchema(self.mem_service._session_factory.engine)
         return self.mem_service.get_all_values()
 
     def getEditRowCount(self):

@@ -391,7 +391,7 @@ class SeriesService(serviceBase):
 
         :return: Pandas DataFrame object
         """
-        q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
+        q = self.read._session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
                           params=query.params)
@@ -416,11 +416,11 @@ class SeriesService(serviceBase):
 
         :return:
         """
-        result = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
+        result =self.read._session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
         return [x.list_repr() for x in result]
 
     def get_all_values(self):
-        return self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
+        return self.read._session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
 #
     @staticmethod
     def calcSeason(row):
@@ -520,12 +520,15 @@ class SeriesService(serviceBase):
 #  Create functions
 #
 #####################
-    def save(self, result = None):
+
+
+    def save(self, values, result = None):
         #update result
         #upsert values
         #save series
+        #save new annotations
         pass
-    def saveAppend(self, overwrite = True):
+    def saveAppend(self,value,  overwrite = True):
         #get save result
         #get value count
         #set in df
@@ -534,17 +537,22 @@ class SeriesService(serviceBase):
         #set value count = res.vc+valuecount-count
         #insert values
         #save series
+        #save new annotations
         pass
-    def saveAs(self):
+    def saveAs(self, values):
         #create series
         #set in df
         #insert values
         #save_new_series
+        #get all annotations for series
+        #save all annotations
+
         pass
-    def saveExisting(self):
+    def saveExisting(self, values):
         #get save result
         #set in df
-        #save(result)
+        #save(values, result)
+
         pass
 
 #new series
@@ -635,15 +643,15 @@ class SeriesService(serviceBase):
 
     def upsert_values(self, values):
         newvals= upsert.clean_df_db_dups(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
-                       filter_categorical_col= "resultdatetime" )
+                                         filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
         self.insert_values(newvals)
         delvals = upsert.delete(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
-                       filter_categorical_col= "resultdatetime" )
+                        filter_continuous_col = "valuedatetime", filter_categorical_col = "resultid")
         self.delete_dvs(delvals["valuedatetime"])
 
         upvals = upsert.update(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
-                       filter_categorical_col= "resultdatetime" )
-        pass
+                               filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
+        self.update(upvals)
 
     def insert_values(self, values):
         """
@@ -824,6 +832,13 @@ class SeriesService(serviceBase):
 
     def get_all_annotations(self):
         return self.read.getAnnotations(type=None)
+
+    def get_annotations_by_result(self, resultid):
+        setSchema(self._session_factory.engine)
+        ids = [x[0] for x in self.read._session.query(TimeSeriesResultValues.ValueID)\
+                .filter(TimeSeriesResultValues.ResultID == resultid).all()]
+        return self.read._session.query(TimeSeriesResultValueAnnotations)\
+            .filter(TimeSeriesResultValueAnnotations.ValueID.in_(ids)).all()
 
     def get_aggregation_statistic(self):
         return self.read.getCVs(type="aggregationstatistic")
