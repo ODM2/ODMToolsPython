@@ -19,15 +19,15 @@ class WizardVariableView(wx.lib.scrolledpanel.ScrolledPanel):
         variable_code_text = wx.StaticText(self, label="Variable Code")
         self.variable_code_text_ctrl = wx.TextCtrl(self)
         variable_name_text = wx.StaticText(self, label="Variable Name")
-        self.variable_name_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY | wx.CB_SORT)
+        self.variable_name_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY )#| wx.CB_SORT)
         variable_type_text = wx.StaticText(self, label="Variable Type")
-        self.variable_type_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY | wx.CB_SORT)
+        self.variable_type_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY )#| wx.CB_SORT)
         no_data_value_text = wx.StaticText(self, label="No Data Value")
         self.no_data_value_text_ctrl = wx.TextCtrl(self, value="-9999")
 
         optional_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Optional Fields"), orient=wx.VERTICAL)
         speciation_text = wx.StaticText(self, label="Speciation")
-        self.speciation_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY | wx.CB_SORT)
+        self.speciation_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY)# | wx.CB_SORT)
         definition_text = wx.StaticText(self, label="Definition")
         self.definition_text_ctrl = wx.TextCtrl(self, size=(-1, 75))
 

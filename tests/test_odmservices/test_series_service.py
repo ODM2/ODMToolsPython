@@ -353,11 +353,7 @@ class TestSeriesService:
 
     def test_create_variable(self):
         unit = test_util.add_unit(self.session)
-        variable = self.series_service.create_variable("Code", "Name", "Speciation", unit.id, "SampleMedium",
-                                                       "ValueType", True,  # is_regular
-                                                       5.0,  # time_support
-                                                       unit.id,  # time_unit_id
-                                                       "DataType", "GeneralCategory", -999.0)  # no_data_value
+        variable = self.series_service.create_variable("Code", "Name", "Speciation", -9999.0)  # no_data_value
 
         assert variable.id != None
         assert variable.code == "Code"

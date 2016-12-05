@@ -462,17 +462,17 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         if site_code and var_code:
-            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10],text=site_code)
-            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10],text=var_code)
+            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns,text=site_code)
+            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns,text=var_code)
             self.tblSeries.SetFilter(Chain(self.siteFilter, self.variableFilter))
         elif site_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10], text=site_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns, text=site_code))
         elif var_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10], text=var_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns, text=var_code))
         elif advfilter:
             self.tblSeries.SetFilter(advfilter)
         else:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10]))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns))
         self.tblSeries.RepopulateList()
 
 

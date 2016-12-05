@@ -169,7 +169,7 @@ class MemoryDatabase(object):
         #     # add entry in the Timeseriesresultvalueannotations table
         #     self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
         #         .update({TSRV.qualifier_id: value}, False)
-        
+
         frames = [self.annotation_list, flags]
         self.annotation_list=pd.concat(frames)
         print self.annotation_list
@@ -205,6 +205,7 @@ class MemoryDatabase(object):
 
             setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)
+
 
 
     def stopEdit(self):
@@ -258,31 +259,5 @@ class MemoryDatabase(object):
                 self.df.to_sql(name="timeseriesresultvalues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
-
-
-    def changeSeriesIDs(self, result):
-        """
-
-        :param var:
-        :param qcl:
-        :param method:
-        :return:
-        """
-
-        query = self.mem_service._session.query(TSRV)
-        # if var is not None:
-        #     logger.debug(var)
-        #     query.update({DataValue.variable_id: var})
-        #
-        # if method is not None:
-        #     logger.debug(method)
-        #     query.update({DataValue.method_id: method})
-        # # check that the code is not zero
-        # # if qcl is not None and qcl.code != 0:
-        # if qcl is not None:
-        #     logger.debug(qcl)
-        #     query.update({DataValue.quality_control_level_id: qcl})
-        logger.debug(result)
-        query.update({TSRV.ResultID:result})
 
 
