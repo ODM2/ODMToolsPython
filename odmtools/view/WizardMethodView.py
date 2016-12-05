@@ -22,11 +22,11 @@ class WizardMethodView(wx.lib.scrolledpanel.ScrolledPanel):
         method_name_text = wx.StaticText(self, label="Method Name")
         self.method_name_text_ctrl = wx.TextCtrl(self)
         method_type_text = wx.StaticText(self, label="Method Type")
-        self.method_type_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY | wx.CB_SORT)
+        self.method_type_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY )#| wx.CB_SORT)
 
         optional_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Optional Fields"), orient=wx.VERTICAL)
         organization_text = wx.StaticText(self, label="Organization")
-        self.organization_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY | wx.CB_SORT)
+        self.organization_combo = wx.ComboBox(self, choices=["---"], style=wx.CB_READONLY )#| wx.CB_SORT)
         method_link_text = wx.StaticText(self, label="Method Link")
         self.method_link_text_ctrl = wx.TextCtrl(self)
         description_text = wx.StaticText(self, label="Description")

@@ -1,10 +1,9 @@
 import logging
-from sqlalchemy import not_
-from sqlalchemy import distinct, func
+from sqlalchemy import not_, bindparam, distinct, func
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
-from  odmtools.odmservices import to_sql_newrows
+from odmtools.odmservices import to_sql_newrows as upsert
 import datetime
 from odmtools.common.logger import LoggerTool
 import pandas as pd
@@ -30,17 +29,11 @@ class SeriesService(serviceBase):
         self.delete.reset_session()
         self.create.reset_session()
 
-
-
-
-
 #####################
 #
-# Get functions
+#  Get functions
 #
 #####################
-
-
 
     def get_used_sites(self):
         """
@@ -73,7 +66,6 @@ class SeriesService(serviceBase):
 
 
     # Query DetailedResultInfo/series object is for Display purposes
-
     def get_all_series(self):
         """
         Returns all series as a modelObject
@@ -128,23 +120,7 @@ class SeriesService(serviceBase):
         :param series_id:  Series id
         :return: pandas dataframe
         '''
-        # series= self.get_series_by_id(series_id)
-        # if series:
-        #     q = self._edit_session.query(DataValue).filter_by(
-        #             site_id=series.site_id,
-        #             variable_id=series.variable_id,
-        #             method_id=series.method_id,
-        #             source_id=series.source_id,
-        #             quality_control_level_id=series.quality_control_level_id)
-        #
-        #     query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-        #     data= pd.read_sql_query(sql= query,
-        #                       con = self._session_factory.engine,
-        #                       params = query.params )
-        #     #return data.set_index(data['LocalDateTime'])
-        #     return data
-        # else:
-        #     return None
+
         setSchema(self._session_factory.engine)
         q = self.read._session.query(TimeSeriesResultValues)
         if series_id:
@@ -175,7 +151,6 @@ class SeriesService(serviceBase):
 
 
 
-
     # Site methods
     def get_all_sites(self):
         """
@@ -185,7 +160,6 @@ class SeriesService(serviceBase):
         return self.read.getResults(type="site")
 
 
-#
     def get_site_by_id(self, site_id):
         """
         return a Site object that has an id=site_id
@@ -199,15 +173,14 @@ class SeriesService(serviceBase):
 
         return self.read.getSampling(ids = [site_id])[0]
 
-#
-#
+
     def get_all_variables(self):
         """
         :return: List[Variables]
         """
         #return self._edit_session.query(Variable).all()
         return self.read.getVariables()
-#
+
     def get_variable_by_id(self, variable_id):
         """
         :param variable_id: int
@@ -300,10 +273,7 @@ class SeriesService(serviceBase):
 #             Series.data_values).filter(Series.id == series_id, DataValue.qualifier_id != None).distinct().subquery()
 #         return self._edit_session.query(Qualifier).join(subquery).distinct().all()
 #
-    # Processing Level methods
-    def get_all_processing_level_(self):
-        return self.read.getProcessingLevels()
-#        return self._edit_session.query(QualityControlLevel).all()
+
 
     def get_processing_level_by_id(self, qcl_id):
         try:
@@ -518,12 +488,12 @@ class SeriesService(serviceBase):
 #
 #
 #
+
+#####################
 #
-# #####################
-# #
-# #Update functions
-# #
-# #####################
+#  Update functions
+#
+#####################
 #     def update_series(self, series):
 #         """
 #
@@ -547,7 +517,7 @@ class SeriesService(serviceBase):
 
 #####################
 #
-#Create functions
+#  Create functions
 #
 #####################
 
@@ -599,11 +569,34 @@ class SeriesService(serviceBase):
 #         logger.info("A new series was added to the database, series id: "+str(series.id))
 #         return True
 #
+    def update_values(self, updates):
+        '''
+        updates : time series result values, pandas dataframe
+        '''
+        setSchema(self.mem_service._session_factory.engine)
+
+        stmt = (TimeSeriesResultValues.__table__.update().
+                where(TimeSeriesResultValues.ValueDateTime == bindparam('id')).
+                values(datavalue=bindparam('value'))
+                )
+
+        self.create._session.execute(stmt, updates["datavalue"].to_dict(orient='dict'))
+        #self.mem_service._session.query(TSRV).filter_by
+
+        # self.updateDF()
+
     def insert_annotations(self, annotations):
         annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
 
     def upsert_values(self, values):
-        newvals= to_sql_newrows(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+        newvals= upsert.clean_df_db_dups(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+                       filter_categorical_col= "resultdatetime" )
+        self.insert_values(newvals)
+        delvals = upsert.delete(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+                       filter_categorical_col= "resultdatetime" )
+        self.delete_dvs(delvals["valuedatetime"])
+
+        upvals = upsert.update(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
                        filter_categorical_col= "resultdatetime" )
         pass
 
@@ -660,7 +653,7 @@ class SeriesService(serviceBase):
 
 
     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
-        #create a result and an Action object of type derivation
+        # ToDo: create a Result, TimeSeriesResult and an Action object of type derivation
         """
         series_service -> Result in ODM2
         :param data_values:
@@ -720,20 +713,12 @@ class SeriesService(serviceBase):
         :param no_data_value:
         :return:
         """
-        # var = Variable()
+
         variable = Variables()
         variable.VariableCode = code
         variable.VariableNameCV = name
         variable.SpeciationCV = speciation
-        # Commented lines indicate that Variables does not have such attributes
-        # var.variable_unit_id = variable_unit_id
-        # var.sample_medium = sample_medium
-        # var.value_type = value_type
-        # var.is_regular = is_regular
-        # var.time_support = time_support
-        # var.time_unit_id = time_unit_id
-        # var.data_type = data_type
-        # var.general_category = general_category
+
         variable.NoDataValue = no_data_value
 
         return self.create.createVariable(var=variable)
@@ -784,8 +769,7 @@ class SeriesService(serviceBase):
         return self.read.getSamplingFeatures(ids=None, codes=None, uuids=None, type=None, wkt=None)
 
     def get_site_type_cvs(self):
-        return self.read.getCVs(
-            type="Site Type")  # OR return self.read.getCVs(type="Sampling Feature Type")
+        return self.read.getCVs(type="Site Type")  # OR return self.read.getCVs(type="Sampling Feature Type")
 
     def get_variable_name_cvs(self):
         return self.read.getCVs(type="Variable Name")
@@ -811,8 +795,8 @@ class SeriesService(serviceBase):
     def get_censor_code_cvs(self):
         return self.read.getCVs(type="censorcode")
 
-    def get_sample_type_cvs(self):
-        return self.read.getCVs(type="Sampling Feature Type")
+    # def get_sample_type_cvs(self):
+    #     return self.read.getCVs(type="Sampling Feature Type")
 
     def get_units(self):
         return self.read.getUnits(ids=None, name=None, type=None)

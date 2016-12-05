@@ -10,8 +10,50 @@ from timeit import default_timer as timer
 os.path.dirname(os.path.abspath(__file__))
 
 
-def clean_df_db_dups(df, tablename, engine, dup_cols=[],
-                     filter_continuous_col=None, filter_categorical_col=None):
+def get_df_query(tablename, dup_cols, filter_continuous_col=None, filter_categorical_col=None, filter_equal_col= None):
+
+    args = 'SELECT %s FROM %s' % (', '.join(['"{0}"'.format(col) for col in dup_cols]), tablename)
+    args_contin_filter, args_cat_filter, args_eq_filter = None, None, None
+    if filter_continuous_col is not None:
+        if df[filter_continuous_col].dtype == 'datetime64[ns]':
+            args_contin_filter = """ "%s" BETWEEN Convert(datetime, '%s')
+                                          AND Convert(datetime, '%s')""" % (filter_continuous_col,
+                                                                            df[filter_continuous_col].min(),
+                                                                            df[filter_continuous_col].max())
+
+    if filter_categorical_col is not None:
+        args_cat_filter = ' "%s" in(%s)' % (filter_categorical_col,
+                                            ', '.join(["'{0}'".format(value) for value in
+                                                       df[filter_categorical_col].unique()]))
+    # if filter_equal_col is not None:
+    #     args_eq_filter = ' "%s" = %(s)' %(filter_categorical_col, df)
+
+    if args_contin_filter and args_cat_filter:
+        args += ' Where ' + args_contin_filter + ' AND' + args_cat_filter
+    elif args_contin_filter:
+        args += ' Where ' + args_contin_filter
+    elif args_cat_filter:
+        args += ' Where ' + args_cat_filter
+
+    return args
+
+def delete(df, tablename, engine, dup_cols=[], filter_continuous_col=None, filter_categorical_col=None, filter_equal_col= None):
+    query = get_df_query(tablename, dup_cols, filter_continuous_col=None, filter_categorical_col=None, filter_equal_col= None)
+    df.drop_duplicates(dup_cols, keep='last', inplace=True)
+    df = pd.merge(df, pd.read_sql(query, engine), how='right', on=dup_cols, indicator=True)
+    df = df[df['_merge'] == 'right_only']
+    df.drop(['_merge'], axis=1, inplace=True)
+    return df
+
+def update(df, tablename, engine, dup_cols=[], filter_continuous_col=None, filter_categorical_col=None, filter_equal_col= None):
+    query = get_df_query(tablename, dup_cols, filter_continuous_col=None, filter_categorical_col=None, filter_equal_col= None)
+    #df.drop_duplicates(dup_cols, keep='last', inplace=True)
+    df = pd.merge(df, pd.read_sql(query, engine), how='inner', on=dup_cols, indicator=True)
+    #df = df[df['_merge'] == 'right_only']
+    #df.drop(['_merge'], axis=1, inplace=True)
+    return df
+
+def clean_df_db_dups(df, tablename, engine, dup_cols=[], filter_continuous_col=None, filter_categorical_col=None, filter_equal_col= None):
     """
     Remove rows from a dataframe that already exist in a database
     Required:
@@ -28,29 +70,10 @@ def clean_df_db_dups(df, tablename, engine, dup_cols=[],
     Returns
         Unique list of values from dataframe compared to database table
     """
-    args = 'SELECT %s FROM %s' % (', '.join(['"{0}"'.format(col) for col in dup_cols]), tablename)
-    args_contin_filter, args_cat_filter = None, None
-    if filter_continuous_col is not None:
-        if df[filter_continuous_col].dtype == 'datetime64[ns]':
-            args_contin_filter = """ "%s" BETWEEN Convert(datetime, '%s')
-                                          AND Convert(datetime, '%s')""" % (filter_continuous_col,
-                                                                            df[filter_continuous_col].min(),
-                                                                            df[filter_continuous_col].max())
 
-    if filter_categorical_col is not None:
-        args_cat_filter = ' "%s" in(%s)' % (filter_categorical_col,
-                                            ', '.join(["'{0}'".format(value) for value in
-                                                       df[filter_categorical_col].unique()]))
-
-    if args_contin_filter and args_cat_filter:
-        args += ' Where ' + args_contin_filter + ' AND' + args_cat_filter
-    elif args_contin_filter:
-        args += ' Where ' + args_contin_filter
-    elif args_cat_filter:
-        args += ' Where ' + args_cat_filter
-
+    query = get_df_query(tablename, dup_cols, filter_continuous_col=None, filter_categorical_col=None, filter_equal_col= None)
     df.drop_duplicates(dup_cols, keep='last', inplace=True)
-    df = pd.merge(df, pd.read_sql(args, engine), how='left', on=dup_cols, indicator=True)
+    df = pd.merge(df, pd.read_sql(query, engine), how='left', on=dup_cols, indicator=True)
     df = df[df['_merge'] == 'left_only']
     df.drop(['_merge'], axis=1, inplace=True)
     return df
@@ -100,6 +123,8 @@ def to_sql_newrows(df, pool_size, *args, **kargs):
 
     df.iloc[INITIAL_CHUNK + (i + 1) * CHUNKSIZE:, :].to_sql(*args, **kargs)
     [t.join() for t in workers]
+
+
 
 
 def setup(engine, tablename):
