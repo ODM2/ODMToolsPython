@@ -64,7 +64,7 @@ class MyTree(wx.TreeCtrl): # Who's tree is this? Who said it was theirs?
 
          self.md=self.AppendItem(self.m, 'Description: ')
 
-         self.soc=self.AppendItem(self.action, 'Person: ')
+         # self.soc=self.AppendItem(self.action, 'Person: ')
          self.soo=self.AppendItem(self.action, 'Organization: ')
          self.sod=self.AppendItem(self.action, 'Description: ')
 

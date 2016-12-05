@@ -193,9 +193,8 @@ class SummaryPage(wiz.WizardPageSimple):
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(method.MethodDescription))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Person: ' + str(action.PersonObj.PersonFirstName + " " + action.PersonObj.PersonLastName))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(action.OrganizationObj.OrganizationName))
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(action.OrganizationObj.OrganizationDescription))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(action.MethodObj.OrganizationObj.OrganizationName))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(action.MethodObj.OrganizationObj.OrganizationDescription))
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(processing_level.ProcessingLevelCode))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(processing_level.Definition))
@@ -270,6 +269,7 @@ class wizSave(wx.wizard.Wizard):
         action.MethodObj = method
         action.ActionDescription = self.action_page.action_view.description_text_box.GetValue()
         action.ActionFileLink = self.action_page.action_view.action_file_link_text_box.GetValue()
+        action.MethodObj.OrganizationObj = affiliation.OrganizationObj
 
         return site, variable, method, action, processing_level
 
