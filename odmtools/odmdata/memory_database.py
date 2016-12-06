@@ -196,19 +196,15 @@ class MemoryDatabase(object):
             points = [points]
 
         for point in points:
-            vals = {"DataValue": point[0], "LocalDateTime": point[1],
-                    "DateTimeUTC": point[2], "UTCOffset": point[3],
-                    "CensorCode": point[4], "QualityCode": point[5],
-                    "TimeAggregationInterval": point[6], "TImeAggregationUnitID": point[7],
-                    "Annotation": point[8], "SiteID": point[9],
-                    "VariableID": point[10], "MethodID": point[11],
-                    "OrganizationID": point[12], "ProcessID": point[13]
+            vals = {"datavalue": point[0], "valuedatetime": point[1],
+                    "valuedatetimeutcoffset": point[3],
+                    "censorcodecv": point[4], "qualitycodecv": point[5],
+                    "timeaggregationinterval": point[6], "timeaggregationintervalunitsid": point[7]
+                    # todo: Add annotations
                     }
 
             setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)
-
-
 
     def stopEdit(self):
         self.editLoaded = False

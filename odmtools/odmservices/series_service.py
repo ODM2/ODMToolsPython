@@ -561,6 +561,7 @@ class SeriesService(serviceBase):
         #copy old
         #change var, meth proc, in df #intend ts, agg stat
         Result = None
+        result = Results()
 
         return self.updateResult(Result)
 

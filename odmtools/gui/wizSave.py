@@ -452,6 +452,10 @@ class wizSave(wx.wizard.Wizard):
                 result = self.record_service.saveAs(Variable, Method, QCL, True)
             '''
 
+            # Create action
+            new_result = self.series_service.createResult(var=variable, meth=method, proc=proc_level)
+            # action = self.series_service.create.createAction(action)
+
             try:
                 if rbSave:
                     result = self.record_service.save()
