@@ -481,6 +481,72 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
+    def save(self, values, result=None):
+        # update result
+        # upsert values
+        # save series
+        # save new annotations
+        pass
+
+    def saveAppend(self, value, overwrite=True):
+        # get save result
+        # get value count
+        # set in df
+        # update result
+        # count = overlap calc
+        # set value count = res.vc+valuecount-count
+        # insert values
+        # save series
+        # save new annotations
+        pass
+
+    def saveAs(self, values):
+        # create series
+        # set in df
+        # insert values
+        # save_new_series
+        # get all annotations for series
+        # save all annotations
+
+        pass
+
+    def saveExisting(self, values):
+        # get save result
+        # set in df
+        # save(values, result)
+
+        pass
+
+        # new series
+
+    def createResult(self, var, meth, proc):
+        # also create an action
+        # copy old
+        # change var, meth proc, in df #intend ts, agg stat
+        Result = None
+
+        return self.updateResult(Result)
+
+    def updateResult(self, Result):
+        # get pd
+        # get result
+        # update count, dates,
+        return Result
+
+    def overlapcalc(self):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
     def updateSeries(self, result = None, is_new_series=False, overwrite = True, append = False):
         """
 

@@ -522,38 +522,6 @@ class SeriesService(serviceBase):
 #####################
 
 
-    def save(self, values, result = None):
-        #update result
-        #upsert values
-        #save series
-        #save new annotations
-        pass
-    def saveAppend(self,value,  overwrite = True):
-        #get save result
-        #get value count
-        #set in df
-        #update result
-        #count = overlap calc
-        #set value count = res.vc+valuecount-count
-        #insert values
-        #save series
-        #save new annotations
-        pass
-    def saveAs(self, values):
-        #create series
-        #set in df
-        #insert values
-        #save_new_series
-        #get all annotations for series
-        #save all annotations
-
-        pass
-    def saveExisting(self, values):
-        #get save result
-        #set in df
-        #save(values, result)
-
-        pass
 
 #new series
     def createResult(self, var, meth, proc):
@@ -599,8 +567,6 @@ class SeriesService(serviceBase):
         #update count, dates,
         return Result
 
-    def overlapcalc(self):
-        pass
 
 
 #     def save_series(self, series, dvs):
@@ -651,6 +617,7 @@ class SeriesService(serviceBase):
 #         logger.info("A new series was added to the database, series id: "+str(series.id))
 #         return True
 #
+
     def update_values(self, updates):
         '''
         updates : time series result values, pandas dataframe
@@ -669,6 +636,7 @@ class SeriesService(serviceBase):
 
     def insert_annotations(self, annotations):
         annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
+
 
     def upsert_values(self, values):
         newvals= upsert.clean_df_db_dups(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
