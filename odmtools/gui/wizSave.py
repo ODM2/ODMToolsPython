@@ -452,8 +452,12 @@ class wizSave(wx.wizard.Wizard):
                 result = self.record_service.saveAs(Variable, Method, QCL, True)
             '''
 
+
+            TODO: move all of this stuff into the edit_service file
             # Create action
             new_result = self.series_service.createResult(var=variable, meth=method, proc=proc_level)
+            #TODO create a timeseriesresult
+            #TODO create a featureaction
             # action = self.series_service.create.createAction(action)
 
             affiliation = self.action_page.get_affiliation()

@@ -1,9 +1,9 @@
 import logging
-from sqlalchemy import not_, bindparam, distinct, func
+from sqlalchemy import not_, bindparam, distinct, func, exists
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
-from odmtools.odmservices import to_sql_newrows as upsert
+from odmtools.odmservices.to_sql_newrows import clean_df_db_dups, delete, update
 import datetime
 from odmtools.common.logger import LoggerTool
 import pandas as pd
@@ -316,39 +316,46 @@ class SeriesService(serviceBase):
 #
 
 #todo: Take another look at this
-    # def get_samples_by_series_id(self, series_id):
-    #     # """
-    #     #
-    #     # :param series_id:
-    #     # :return:
-    #     # # """
-    #     # subquery = self._edit_session.query(DataValue.sample_id).outerjoin(
-    #     #     Series.data_values).filter(Series.id == series_id, DataValue.sample_id != None).distinct().subquery()
-    #     # return self._edit_session.query(Sample).join(subquery).distinct().all()
 
-#
-#     # Series Catalog methods
-#     def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
-#         """
-#
-#         :param site_id:
-#         :param var_id:
-#         :param method_id:
-#         :param source_id:
-#         :param qcl_id:
-#         :return: Series
-#         """
-#         try:
-#             return self._edit_session.query(Series).filter_by(
-#                 site_id=site_id, variable_id=var_id, method_id=method_id,
-#                 source_id=source_id, quality_control_level_id=qcl_id).first()
-#         except:
-#             return None
-#
-#     def get_series_from_filter(self):
-#         # Pass in probably a Series object, match it against the database
-#         pass
-#
+
+    # Series Catalog methods
+    def get_series_by_id_quint(self, result):
+        """
+
+        :param site_id:
+        :param var_id:
+        :param method_id:
+        :param source_id:
+        :param qcl_id:
+        :return: Series
+        """
+        #unique Result
+        #FeatureActionID, ResultTypeCV, VariableID, UnitsID, ProcessingLevelID, SampledMediumCV
+
+
+        try:
+            # return self._edit_session.query(Results).filter_by(
+            #      VariableID=var_id, MethodID=method_id,
+            #      AnnotationID=qcl_id).first()
+            (ret, ), = self._session.query(exists().
+                                           where(Results.FeatureActionID == result.FeatureActionID).
+                                           where(Results.ResultTypeCV == result.ResultTypeCV).
+                                           where(Results.VariableID == result.VariableID).
+                                           where(Results.UnitsID == result.UnitsID).
+                                           where(Results.ProcessingLevelID == result.ProcessingLevelID).
+                                           wehre(Results.SampledMediumCV == result.SampledMediumCV)
+
+
+                        )
+
+            return ret
+        except:
+            return None
+
+    def get_series_from_filter(self):
+        # Pass in probably a Series object, match it against the database
+        pass
+
 #
     #Data Value Methods
     def get_values(self, series_id=None):
@@ -548,9 +555,9 @@ class SeriesService(serviceBase):
         result.ResultDateTime = time
         result.ResultDateTimeUTCOffset = offset
 
-        self.create.createResult(result=result)
+        return self.create.createResult(result=result)
 
-        return self.updateResult(result)
+
 
     def get_current_time_and_utcoffset(self):
         current_time = datetime.datetime.now()
@@ -561,11 +568,7 @@ class SeriesService(serviceBase):
 
         return current_time, offset_in_hours
 
-    def updateResult(self, Result):
-        #get pd
-        #get result
-        #update count, dates,
-        return Result
+
 
 
 
@@ -593,30 +596,30 @@ class SeriesService(serviceBase):
 #             raise Exception("Series does not exist, unable to save. Please select 'Save As'")
 #
 #
-#     def save_new_series(self, series, dvs):
-#         """ Create as a new catalog entry
-#         :param series:
-#         :param data_values:
-#         :return:
-#         """
-#         # Save As case
-#         if self.series_exists(series):
-#             msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
-#             logger.info(msg)
-#             raise Exception(msg)
-#         else:
-#             try:
-#                 self._edit_session.add(series)
-#                 self._edit_session.commit()
-#                 self.save_values(dvs)
-#                 #self._edit_session.add_all(dvs)
-#             except Exception as e:
-#                 self._edit_session.rollback()
-#                 raise e
-#
-#         logger.info("A new series was added to the database, series id: "+str(series.id))
-#         return True
-#
+    def save_new_series(self, series, dvs):
+        """ Create as a new catalog entry
+        :param series:
+        :param data_values:
+        :return:
+        """
+        # Save As case
+        if self.series_exists(series):
+            msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
+            logger.info(msg)
+            raise Exception(msg)
+        else:
+            try:
+                self._edit_session.add(series)
+                self._edit_session.commit()
+                self.save_values(dvs)
+                #self._edit_session.add_all(dvs)
+            except Exception as e:
+                self._edit_session.rollback()
+                raise e
+
+        logger.info("A new series was added to the database, series id: "+str(series.id))
+        return True
+
 
     def update_values(self, updates):
         '''
@@ -639,14 +642,15 @@ class SeriesService(serviceBase):
 
 
     def upsert_values(self, values):
-        newvals= upsert.clean_df_db_dups(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+        setSchema(self._session_factory.engine)
+        newvals= clean_df_db_dups(df = values, dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
                                          filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
         self.insert_values(newvals)
-        delvals = upsert.delete(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+        delvals = delete(df = values, dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
                         filter_continuous_col = "valuedatetime", filter_categorical_col = "resultid")
         self.delete_dvs(delvals["valuedatetime"])
 
-        upvals = upsert.update(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+        upvals = update(df = values,dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
                                filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
         self.update(upvals)
 
@@ -905,6 +909,7 @@ class SeriesService(serviceBase):
         :param id_list: list of datetimes
         :return:
         """
+        setSchema(self._session_factory.engine)
         try:
             self.delete.deleteTSRValues(dates=id_list)
         except Exception as ex:
