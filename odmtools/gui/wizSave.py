@@ -9,7 +9,7 @@ import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
-from odm2api.ODM2.models import Actions
+from odm2api.ODM2.models import *
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
  wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,
@@ -267,9 +267,11 @@ class wizSave(wx.wizard.Wizard):
         # Create action
         action = Actions()
         action.MethodObj = method
+        action.MethodID = method.MethodID
         action.ActionDescription = self.action_page.action_view.description_text_box.GetValue()
         action.ActionFileLink = self.action_page.action_view.action_file_link_text_box.GetValue()
         action.MethodObj.OrganizationObj = affiliation.OrganizationObj
+        action.BeginDateTime = self.currSeries.ResultDateTime
 
         return site, variable, method, action, processing_level
 
@@ -442,8 +444,6 @@ class wizSave(wx.wizard.Wizard):
             else:
                 method = self.series_service.get_method_by_code(method.MethodCode)
 
-
-
             # initiate either "Save as" or "Save"
             '''
             if self.page1.pnlIntroduction.rbSave.GetValue():
@@ -455,6 +455,14 @@ class wizSave(wx.wizard.Wizard):
             # Create action
             new_result = self.series_service.createResult(var=variable, meth=method, proc=proc_level)
             # action = self.series_service.create.createAction(action)
+
+            affiliation = self.action_page.get_affiliation()
+
+            new_action_by = ActionBy()
+            new_action_by.ActionID = action.ActionID
+            new_action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
+            new_action_by.AffiliationID = affiliation.AffiliationID
+            new_action_by.AffiliationObj = affiliation
 
             try:
                 if rbSave:

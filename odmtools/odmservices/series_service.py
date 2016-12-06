@@ -560,10 +560,38 @@ class SeriesService(serviceBase):
         #also create an action
         #copy old
         #change var, meth proc, in df #intend ts, agg stat
-        Result = None
+        # Result = None
+        # result = Results()
         result = Results()
 
-        return self.updateResult(Result)
+        if isinstance(var, Variables):
+            result.VariableID = var.VariableID
+            result.VariableObj = var
+
+        if isinstance(meth, Methods):
+            # do something with meth
+            pass
+
+        if isinstance(proc, ProcessingLevels):
+            result.ProcessingLevelID = proc.ProcessingLevelID
+            result.ProcessingLevelObj = proc
+
+        time, offset = self.get_current_time_and_utcoffset()
+        result.ResultDateTime = time
+        result.ResultDateTimeUTCOffset = offset
+
+        self.create.createResult(result=result)
+
+        return self.updateResult(result)
+
+    def get_current_time_and_utcoffset(self):
+        current_time = datetime.datetime.now()
+        utc_time = datetime.datetime.utcnow()
+
+        difference_in_timezone = current_time - utc_time
+        offset_in_hours = difference_in_timezone.total_seconds() / 3600
+
+        return current_time, offset_in_hours
 
     def updateResult(self, Result):
         #get pd
@@ -768,13 +796,11 @@ class SeriesService(serviceBase):
         annotation.AnnotationCode = code
         annotation.AnnotationText = text
         annotation.AnnotationTypeCV = "Time series result value annotation"
-        current_time = datetime.datetime.now()
-        utc_time = datetime.datetime.utcnow()
-        annotation.AnnotationDateTime = current_time
 
-        difference_in_timezone = utc_time - current_time
-        offset_in_hours = difference_in_timezone.seconds / 3600
-        annotation.AnnotationUTCOffset = offset_in_hours
+        time, offset = self.get_current_time_and_utcoffset()
+        annotation.AnnotationDateTime = time
+        annotation.AnnotationUTCOffset = offset
+
         annotation.AnnotationLink = link
 
         return self.create_annotation_by_anno(annotation)
