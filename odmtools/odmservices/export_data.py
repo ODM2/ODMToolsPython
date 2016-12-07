@@ -16,13 +16,15 @@ class ExportData():
         if series is None:
             return False
 
-        writer = csv.writer(open(filename, 'wb'))
-        plainWriter = open(filename, 'w')
         print "filename: "
         print filename
-        self.write_data_header(plainWriter, series, utc, site, var, offset, qual, src, qcl)
+        plainWriter = open(filename, 'w')
+        self.write_text_header(plainWriter, series, utc, site, var, offset, qual, src, qcl)
+        plainWriter.close()
+        writer = csv.writer(open(filename, 'a'))
+        self.write_data_header(writer, utc, site, var, offset, qual, src, qcl)
         # for dv in series.data_values:
-        #    self.write_data_row(writer, series, dv, utc, site, var, offset, qual, src, qcl)
+        #     self.write_data_row(writer, series, dv, utc, site, var, offset, qual, src, qcl)
 
     def export_data(self, series_ids, filename):
         if series_ids is None:
@@ -37,11 +39,131 @@ class ExportData():
         if file_exists:
             pass
 
-    def write_data_header(self, plainWriter, series, utc, site, var, offset, qual, src, qcl):
+    def write_data_header(self, writer, utc, site, var, offset, qual, src, qcl):
+        # Build header list
+        header = []
+        header.append("SeriesId")
+        header.append("ValueId")
+        header.append("DataValue")
+        header.append("ValueAccuracy")
+        header.append("LocalDateTime")
+        if utc:
+            header.append("UTCOffset")
+            header.append("DateTimeUTC")
+        header.append("SiteCode")
+        if site:
+            header.append("SiteName")
+            header.append("SiteType")
+            header.append("Latitude")
+            header.append("Longitude")
+            header.append("SRSName")
+        header.append("VariableCode")
+        if var:
+            header.append("VariableName")
+            header.append("Speciation")
+            header.append("VariableUnitsName")
+            header.append("VariableUnitsAbbreviation")
+            header.append("SampleMedium")
+        header.append("OffsetValue")
+        header.append("OffsetTypeID")
+        if offset:
+            header.append("OffsetDescription")
+            header.append("OffsetUnitsName")
+        header.append("CensorCode")
+        header.append("QualifierID")
+        if qual:
+            header.append("QualifierCode")
+            header.append("QualifierDescription")
+        if src:
+            header.append("Organization")
+            header.append("SourceDescription")
+            header.append("Citation")
+        if qcl:
+            header.append("QualityControlLevelCode")
+            header.append("Definition")
+            header.append("Explanation")
+        header.append("SampleID")
+
+        writer.writerow(header)
+
+    def write_data_row(self, writer, series, dv, utc, site, var, offset, qual, src, qcl):
+        data = []
+        data.append(series.id)
+        data.append(dv.id)
+        data.append(dv.data_value)
+        data.append(dv.value_accuracy)
+        data.append(dv.local_date_time)
+        if utc:
+            data.append(dv.utc_offset)
+            data.append(dv.date_time_utc)
+        data.append(series.site_code)
+        if site:
+            data.append(series.site_name)
+            data.append(series.site.type)
+            data.append(series.site.latitude)
+            data.append(series.site.longitude)
+            data.append(series.site.spatial_ref.srs_name)
+        data.append(series.variable_code)
+        if var:
+            data.append(series.variable_name)
+            data.append(series.speciation)
+            data.append(series.variable_units_name)
+            data.append(series.variable.variable_unit.abbreviation)
+            data.append(series.sample_medium)
+        data.append(dv.offset_value)
+        data.append(dv.offset_type_id)
+        if offset:
+            if dv.offset_type is not None:
+                data.append(dv.offset_type.description)
+                data.append(dv.offset_type.unit.name)
+            else:
+                data.append('')
+                data.append('')
+        data.append(dv.censor_code)
+        data.append(dv.qualifier_id)
+        if qual:
+            if dv.qualifier is not None:
+                data.append(dv.qualifier.code)
+                data.append(dv.qualifier.description)
+            else:
+                data.append('')
+                data.append('')
+        if src:
+            data.append(series.organization)
+            data.append(series.source_description)
+            data.append(series.citation)
+        if qcl:
+            data.append(series.quality_control_level_code)
+            data.append(series.quality_control_level.definition)
+            data.append(series.quality_control_level.explanation)
+        data.append(dv.sample_id)
+
+        writer.writerow(data)
+
+    def write_text_header(self, plainWriter, series, utc, site, var, offset, qual, src, qcl):
         self.write_warning_header(plainWriter)
         self.write_site_information(plainWriter, series, site)
         self.write_variable_and_method_information(plainWriter, series)
+        self.write_source_information(plainWriter, series)
+        self.write_qualifier_information(plainWriter, series)
 
+
+    def write_warning_header(self, plainWriter):
+        plainWriter.write(
+            '# ------------------------------------------------------------------------------------------\n')
+        plainWriter.write('# WARNING: The data are released on the condition that neither iUTAH nor any of its \n')
+        plainWriter.write('# participants may be held liable for any damages resulting from their use. The following \n')
+        plainWriter.write('# metadata describe the data in this file:\n')
+        plainWriter.write(
+            '# ------------------------------------------------------------------------------------------\n')
+        plainWriter.write('#\n')
+        plainWriter.write('# Quality Control Level Information\n')
+        plainWriter.write('# -----------------------------------------------\n')
+        plainWriter.write('# These data have passed QA/QC procedures such as sensor calibration and\n')
+        plainWriter.write('# visual inspection and removal of obvious errors. These data are approved\n')
+        plainWriter.write('# by Technicians as the best available version of the data. See published\n')
+        plainWriter.write('# script for correction steps specific to this data series.\n')
+        plainWriter.write('#\n')
 
     def write_site_information(self, plainWriter, series, site):
         plainWriter.write('# Site Information\n')
@@ -65,21 +187,59 @@ class ExportData():
         plainWriter.write('# Variable and Method Information\n')
         plainWriter.write('# ----------------------------------\n')
         plainWriter.write('# VariableCode: ' + str(series.VariableObj.VariableCode) + '\n')
-        plainWriter.write('# VariableName: ' + str(series.VariableObj.VariableName) + '\n')
-
-    def write_warning_header(self, plainWriter):
-        plainWriter.write(
-            '# ------------------------------------------------------------------------------------------\n')
-        plainWriter.write('# WARNING: The data are released on the condition that neither iUTAH nor any of its \n')
-        plainWriter.write('# participants may be held liable for any damages resulting from their use. The following \n')
-        plainWriter.write('# metadata describe the data in this file:\n')
-        plainWriter.write(
-            '# ------------------------------------------------------------------------------------------\n')
+        plainWriter.write('# VariableName: ' + str(series.VariableObj.VariableNameCV) + '\n')
+        plainWriter.write('# ValueType: ' + 'TBD' + '\n')
+        plainWriter.write('# DataType: ' + 'TBD' + '\n')
+        plainWriter.write('# GeneralCategory: ' + 'TBD' + '\n')
+        plainWriter.write('# SampleMedium: ' + 'TBD' + '\n')
+        plainWriter.write('# VariableUnitsName: ' + str(series.UnitsObj.UnitsName) + '\n')
+        plainWriter.write('# VariableUnitsType: ' + str(series.UnitsObj.UnitsTypeCV) + '\n')
+        plainWriter.write('# VariableUnitsAbbreviation: ' + str(series.UnitsObj.UnitsAbbreviation) + '\n')
+        plainWriter.write('# NoDataValue: ' + str(series.VariableObj.NoDataValue) + '\n')
+        plainWriter.write('# TimeSupport: ' + 'TBD' + '\n')
+        plainWriter.write('# TimeSupportUnitsAbbreviation: ' + 'TBD' + '\n')
+        plainWriter.write('# TimeSupportUnitsType: ' + 'TBD' + '\n')
+        plainWriter.write('# TimeSupportUnitsName: ' + 'TBD' + '\n')
+        plainWriter.write('# MethodDescription: ' +
+                          str(series.FeatureActionObj.ActionObj.MethodObj.MethodDescription) + '\n')
+        plainWriter.write('# MethodLink: ' +
+                          str(series.FeatureActionObj.ActionObj.MethodObj.MethodLink) + '\n')
         plainWriter.write('#\n')
-        plainWriter.write('# Quality Control Level Information\n')
-        plainWriter.write('# -----------------------------------------------\n')
-        plainWriter.write('# These data have passed QA/QC procedures such as sensor calibration and\n')
-        plainWriter.write('# visual inspection and removal of obvious errors. These data are approved\n')
-        plainWriter.write('# by Technicians as the best available version of the data. See published\n')
-        plainWriter.write('# script for correction steps specific to this data series.\n')
+
+    def write_source_information(self, plainWriter, series):
+        plainWriter.write('# Source Information\n')
+        plainWriter.write('# ----------------------------------\n')
+        if(series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj != None):
+            plainWriter.write('# Organization: ' +
+                              str(series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj.OrganizationName) + '\n')
+            plainWriter.write('# SourceDescription: ' +
+                              str(series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj.OrganizationDescription) +
+                              '\n')
+            plainWriter.write('# SourceLink: ' +
+                              str(series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj.OrganizationLink) + '\n')
+            plainWriter.write('# ContactName: ' +
+                              str(series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj.
+                                  AffiliationObj.PersonObj.PersonFirstName) + ' ' + (
+                                  series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj.
+                                  AffiliationObj.PersonObj.PersonLastName
+                                  ) + '\n')
+            plainWriter.write('# SourceLink: ' +
+                              str(series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj.AffiliationObj.PrimaryPhone) + '\n')
+            plainWriter.write('# SourceLink: ' +
+                              str(
+                                  series.FeatureActionObj.ActionObj.MethodObj.OrganizationObj.AffiliationObj.PrimaryEmail) + '\n')
+            plainWriter.write('# Citation: ' + 'TBD' + '\n')
+
+        plainWriter.write('#\n')
+
+    def write_qualifier_information(self, plainWriter, series):
+        plainWriter.write('# Qualifier Information\n')
+        plainWriter.write('# ----------------------------------\n')
+        plainWriter.write('# Code   Description\n')
+        plainWriter.write('# LI     Linear Interpolation\n')
+        plainWriter.write('# SM     Sensor Malfunction\n')
+        plainWriter.write('# PF     Power Failure\n')
+        plainWriter.write('# S      Suspicious Values\n')
+        plainWriter.write('# MNT    Erroneous or missing data due to maintenance\n')
+        plainWriter.write('#\n')
         plainWriter.write('#\n')
