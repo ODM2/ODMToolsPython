@@ -483,20 +483,24 @@ class EditService():
         self.reset_filter()
 
     def save(self,  result=None):
-        values = self.memDB.df
+        values = self.memDB.getDataValuesDF()
+
         if not result:
             result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
+        else:
+            values["resultid"] = result.ResultID
+
         # update result
         result.ValueCount = 0
         self.updateResult(result)
         # upsert values
-        self.memDB.series_service.upsert(values)
+        self.memDB.series_service.upsert_values(values)
         # save new annotations
         self.add_annotations(self.memDB.annotation_list)
         return result
 
-    def saveAppend(self,  result, overwrite=True):
-        values = self.memDB.df
+    def save_appending(self, result, overwrite=True):
+        values = self.memDB.getDataValuesDF()
 
         # get save result
 
@@ -517,22 +521,21 @@ class EditService():
         return result
 
 
-    def saveExisting(self, result):
-        values = self.memdB.df
+    def save_existing(self, result):
+        #values = self.memDB.getDataValuesDF()
         # get save result
 
         # set in df
-        values["resultid"]=result.ResultID
+        #values["resultid"]=result.ResultID
 
         # save(values)
         self.save(result)
-        #self.memDB.series_service.upsert_values(values)
 
         return result
 
-    def saveAs(self, variable, method, proc_level, action, action_by):
+    def save_as(self, variable, method, proc_level, action, action_by):
         #save as new series
-        values = self.memDB.df
+        values = self.memDB.getDataValuesDF()
         # get all annotations for series
         annolist= self.memDB.series_service.get_annotations_by_result(values["resultid"][0])
         annolist['valueid']
@@ -555,9 +558,9 @@ class EditService():
         return result
 
     def getResult(self, var, meth, proc, action, actionby):
-
+        values = self.memDB.getDataValuesDF()
         # copy old
-        result = self.memDB.series_service.get_series(self.memDB.df["resultid"][0])
+        result = self.memDB.series_service.get_series(values["resultid"][0])
         sampling_feature = result.FeatureActionObj.SamplingFeatureObj
         # self.memDB.series_service._session.expunge(result)
 
@@ -595,7 +598,7 @@ class EditService():
     def updateResult(self, Result):
         form = "%Y-%m-%d %H:%M:%S"
         # get pd
-        values = self.memDB.df
+        values = self.memDB.getDataValuesDF()
 
         # update count, dates,
         Action = Result.FeatureActionObj.ActionObj

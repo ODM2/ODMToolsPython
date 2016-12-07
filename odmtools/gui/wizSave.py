@@ -262,7 +262,7 @@ class wizSave(wx.wizard.Wizard):
 
         elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
             # selected an existing series
-            method, processing_level, variable = self.pgExisting.get_selected_series()
+            method, processing_level, variable, result = self.pgExisting.get_selected_series()
 
         # Create action
         action = Actions()
@@ -460,25 +460,27 @@ class wizSave(wx.wizard.Wizard):
             action_by.AffiliationObj = affiliation
 
             # result = self.series_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
-            result = self.record_service._edit_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
+            result = self.pgExisting.pnlExisting.olvSeriesList.GetSelectedObject().ResultObj
+
+            #result = self.record_service._edit_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
 
             try:
                 if rbSave:
                     result = self.record_service.save()
                 elif rbSaveAsNew:
-                    result = self.record_service.saveAs(variable=variable, method=method, proc_level=proc_level,
+                    result = self.record_service.save_as(variable=variable, method=method, proc_level=proc_level,
                                                         action=action, action_by=action_by)
                 elif rbSaveAsExisting:
                     if overwrite:
-                        result = self.record_service.saveExisting(result=result)
+                        result = self.record_service.save_existing(result=result)
                     elif append:
                         #TODO send in just the result
                         #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
                         #TODO if i require that original or new is selected I can call once with overwrite = original
                         if original:
-                            result = self.record_service.saveAppend(result=result, overwrite=False)
+                            result = self.record_service.save_appending(result=result, overwrite=False)
                         elif new:
-                            result = self.record_service.saveAppend(result=result, overwrite=True)
+                            result = self.record_service.save_appending(result=result, overwrite=True)
 
                 Publisher.sendMessage("refreshSeries")
 

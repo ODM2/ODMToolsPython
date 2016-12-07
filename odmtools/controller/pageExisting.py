@@ -70,8 +70,8 @@ class pageExisting(wiz.WizardPageSimple):
 
     def get_selected_series(self):
         selectedObject = self.pnlExisting.olvSeriesList.GetSelectedObject()
-        result = self.series_service.get_series(selectedObject.ResultID)
-        return result.FeatureActionObj.ActionObj.MethodObj, result.ProcessingLevelObj, result.VariableObj
+        result = selectedObject.ResultObj#self.series_service.get_series(selectedObject.ResultID)
+        return result.FeatureActionObj.ActionObj.MethodObj, result.ProcessingLevelObj, result.VariableObj, result
 
     def initTable(self, dbservice, site_id):
         """Set up columns and objects to be used in the objectlistview to be visible in the series_service selector"""
