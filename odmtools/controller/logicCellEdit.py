@@ -30,9 +30,9 @@ class CellEdit():
             self.annotationChoices = [NULL] + ['SampleAnnotation1'] + ['SampleAnnotation2'] + ['SampleAnnotation3']
 
     def fetch_annotations(self):
-        qualifierChoices = OrderedDict((x.AnnotationCode + ':' + x.AnnotationText, x.AnnotationID)
+        self.qualifierChoices = OrderedDict((x.AnnotationCode + ':' + x.AnnotationText, x.AnnotationID)
                                        for x in self.series_service.get_all_qualifiers() if x.AnnotationCode and x.AnnotationText)
-        qualifierCodeChoices = [NULL] + qualifierChoices.keys() + [NEW]
+        qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
         return qualifierCodeChoices
 
     def fetchCensorCodeChoices(self):
@@ -40,7 +40,7 @@ class CellEdit():
             return [NULL]
 
         series_service = self.serviceManager.get_series_service()
-        return [NULL] + [x.Term for x in series_service.get_censor_code_cvs()]
+        return [NULL] + [x.Name for x in series_service.get_censor_code_cvs()]
 
     def fetchQualityCodeChoices(self):
         """
@@ -50,13 +50,13 @@ class CellEdit():
             return [NULL]
 
         series_service = self.serviceManager.get_series_service()
-        return [NULL] + [x.Term for x in series_service.get_quality_code()]
+        return [NULL] + [x.Name for x in series_service.get_quality_code()]
 
     def fetchTimeUnitChoices(self):
         if not self.serviceManager:
             return [NULL]
-        units = self.series_service.read.getUnits()
-        return [NULL] + [unit.UnitsName for unit in units]
+        units = self.series_service.read.getUnits(type='time')
+        return  {unit.UnitsName:unit.UnitsID for unit in units}
 
     """
         --------------------
@@ -172,26 +172,7 @@ class CellEdit():
 
         return "error"
 
-    def imgGetterValueAcc(self, point):
-        value = point.valueAccuracy
-        point.validValueAcc = False
-        if not value:
-            return "error"
 
-        if value == NULL:
-            point.validValueAcc = True
-            return "check"
-
-        if isinstance(value, basestring):
-            for type in [int, float]:
-                try:
-                    value = type(value)
-                    if isinstance(value, type):
-                        point.validValueAcc = True
-                        return "check"
-                except ValueError:
-                    continue
-        return "error"
 
     def imgGetterOffSetType(self, point):
         point.validOffSetType = False
@@ -336,7 +317,7 @@ class CellEdit():
         return odcb
 
     def setComboForTimeAggregationUnitIDCreator(self, olv, rowIndex, subItemIndex):
-        customCombo = CustomComboBox(olv, choices=self.timeAggretaionUnitChoices, style=wx.CB_READONLY)
+        customCombo = CustomComboBox(olv, choices=self.timeAggretaionUnitChoices.keys(), style=wx.CB_READONLY)
         customCombo.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return customCombo
 

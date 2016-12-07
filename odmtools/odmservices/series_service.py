@@ -3,7 +3,7 @@ from sqlalchemy import not_, bindparam, distinct, func, exists
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
-from odmtools.odmservices.to_sql_newrows import clean_df_db_dups, delete, update
+from odmtools.odmservices.to_sql_newrows import get_insert, get_delete, get_update
 import datetime
 from odmtools.common.logger import LoggerTool
 import pandas as pd
@@ -340,7 +340,7 @@ class SeriesService(serviceBase):
             # return self._edit_session.query(Results).filter_by(
             #      VariableID=var_id, MethodID=method_id,
             #      AnnotationID=qcl_id).first()
-            res = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV).
+            ret = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV).
                                            where(Results.VariableID == result.VariableID).
                                            where(Results.UnitsID == result.UnitsID).
                                            where(Results.ProcessingLevelID == result.ProcessingLevelID).
@@ -349,7 +349,7 @@ class SeriesService(serviceBase):
         # where(Results.FeatureActionID == result.FeatureActionID).
 
 
-            return res
+            return ret.scalar()
         except:
             return None
 
@@ -624,38 +624,39 @@ class SeriesService(serviceBase):
     #     return True
 
 
-    def update_values(self, updates):
-        '''
-        updates : time series result values, pandas dataframe
-        '''
-        setSchema(self.mem_service._session_factory.engine)
 
-        stmt = (TimeSeriesResultValues.__table__.update().
-                where(TimeSeriesResultValues.ValueDateTime == bindparam('id')).
-                values(datavalue=bindparam('value'))
-                )
 
-        self.create._session.execute(stmt, updates["datavalue"].to_dict(orient='dict'))
-        #self.mem_service._session.query(TSRV).filter_by
 
-        # self.updateDF()
 
     def insert_annotations(self, annotations):
         annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
 
+    def _get_df_query(self, values):
+
+        resid = str(values['resultid'][0])
+        sd = values['valuedatetime'].min()
+        ed = values['valuedatetime'].max()
+        q = self.read._session.query(TimeSeriesResultValues).\
+            filter(TimeSeriesResultValues.ResultID == resid)#.\
+            #filter(TimeSeriesResultValues.ValueDateTime.between(sd, ed))
+        return q.statement.compile(dialect=self._session_factory.engine.dialect)
+
 
     def upsert_values(self, values):
         setSchema(self._session_factory.engine)
-        newvals= clean_df_db_dups(df = values, dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
-                                         filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
-        self.insert_values(newvals)
-        delvals = delete(df = values, dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
-                        filter_continuous_col = "valuedatetime", filter_categorical_col = "resultid")
-        self.delete_dvs(delvals["valuedatetime"])
+        query = self._get_df_query(values)
+        newvals= get_insert(df = values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        if not newvals.empty:
+            self.insert_values(newvals)
+        delvals = get_delete(df = values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        if not delvals.empty:
+            self.delete_dvs(delvals["valuedatetime"].tolist())
 
-        upvals = update(df = values,dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
-                               filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
-        self.update(upvals)
+        upvals = get_update(df = values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        if not upvals.empty:
+            self.update_values(upvals)
+
+        self._session.commit()
 
     def insert_values(self, values):
         """
@@ -663,8 +664,29 @@ class SeriesService(serviceBase):
         :param values: pandas dataframe
         :return:
         """
-        values.to_sql(name="timeseriesresultvalues", if_exists='append', con=self._session_factory.engine, index=False)
-#
+        values.to_sql(name="TimeSeriesResultValues",
+                      schema=TimeSeriesResultValues.__table_args__['schema'],
+                      if_exists='append',
+                      chunksize=1000,
+                      con=self._session_factory.engine,
+                      index=False)
+
+
+    def update_values(self, updates):
+        '''
+        updates : time series result values, pandas dataframe
+        '''
+        setSchema(self._session_factory.engine)
+
+        stmt = (TimeSeriesResultValues.__table__.update().
+                where(TimeSeriesResultValues.ValueDateTime == bindparam('id')).
+                values(datavalue=bindparam('value'))
+                )
+        update_list = [{"value": row["datavalue"], "id": index.to_pydatetime()} for index, row in updates.iterrows()]
+        # update_list = {'value':updates["datavalue"].tolist(), 'id':updates.index.to_pydatetime().tolist()}
+        vals = self.create._session.execute(stmt, update_list)
+
+
 #     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
 #         """
 #
@@ -848,7 +870,8 @@ class SeriesService(serviceBase):
 
     def get_annotation_by_code(self, code):
         return self.read.getAnnotations(codes=[code])[0]
-
+    def get_annotation_by_id(self, id):
+        return self.read.getAnnotations(ids=[id])[0]
     def get_all_annotations(self):
         return self.read.getAnnotations(type=None)
 

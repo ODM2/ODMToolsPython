@@ -46,6 +46,8 @@ class WizardActionController(WizardPageSimple):
         return self.affiliations[index]
 
 
+
+
 if __name__ == '__main__':
     app = wx.App(False)
     controller = WizardActionController(None, None)
