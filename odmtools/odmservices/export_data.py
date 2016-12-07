@@ -23,8 +23,14 @@ class ExportData():
         plainWriter.close()
         writer = csv.writer(open(filename, 'a'))
         self.write_data_header(writer, utc, site, var, offset, qual, src, qcl)
-        # for dv in series.data_values:
+        # for dv in self._series_service.get_values(series.ResultID):
         #     self.write_data_row(writer, series, dv, utc, site, var, offset, qual, src, qcl)
+        vals = self._series_service.get_values(series.ResultID)
+        vals.to_csv(filename, ',',
+                    columns = ['valuedatetime', 'valuedatetimeutcoffset', 'datavalue', 'censorcodecv', 'qualifiercodecv'],
+                    header = ['LocalDateTime', 'UTCOffset', series.VariableObj.VariableCode, 'CensorCode', 'QualifierCode'],
+                    mode = 'a',
+                    index = False)
 
     def export_data(self, series_ids, filename):
         if series_ids is None:

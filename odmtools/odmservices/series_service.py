@@ -971,3 +971,12 @@ class SeriesService(serviceBase):
             print message
             logger.error(message)
             raise ex
+
+    def get_values_by_series(self, series_id):
+        setSchema(self._session_factory.engine)
+        q = self.read._session.query(TimeSeriesResultValues)
+        if series_id:
+            q = q.filter_by(ResultID=series_id)
+        q = q.order_by(TimeSeriesResultValues.ValueDateTime)
+
+        return q.all()
