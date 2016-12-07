@@ -9,6 +9,7 @@ import odmtools.gui.frmQueryBuilder as frmQueryBuilder
 
 from odmtools.common.logger import LoggerTool
 from odmtools.odmdata import MemoryDatabase
+from odmtools.odmdata import returnDict
 from odmtools.view import clsSeriesSelector
 
 # tool = LoggerTool()
@@ -71,7 +72,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.memDB.set_series_service(self.series_service)
 
             object = self.series_service.get_all_series()
-            cols = object[0].__dict__.keys()
+            #cols = object[0].__dict__.keys()
+            cols = returnDict()
             self.tblSeries._buildColumns(cols)
             if object:
                 self.tblSeries.SetObjects(object)
@@ -94,6 +96,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.memDB.set_series_service(db)
         object = self.series_service.get_all_series()
         #checkedObjs = self.tblSeries.GetCheckedObjects()
+
         idList = [x.id for x in self.tblSeries.modelObjects]
 
         for x in object:

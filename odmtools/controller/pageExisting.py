@@ -77,9 +77,8 @@ class pageExisting(wiz.WizardPageSimple):
             clsExisting.ColumnDefn(key, align="left", minimumWidth=100, valueGetter=key,
                        # stringConverter = '%s')
                        stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else '%s')
-            for key in objects[0].__dict__.keys()]
+            # for key in objects[0].__dict__.keys()]
+            for key in returnDict()]
 
         self.pnlExisting.olvSeriesList.SetColumns(seriesColumns)
-        # objects = dbservice.get_series_by_site(site_id=site_id)
-
         self.pnlExisting.olvSeriesList.SetObjects(objects)
