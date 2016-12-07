@@ -29,6 +29,7 @@ class MemoryDatabase(object):
         # Memory_service handles in memory database
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+
         setSchema(self.mem_service._session_factory.engine)
 
         # TODO clean up closing of program
@@ -68,6 +69,8 @@ class MemoryDatabase(object):
         #else:
         #    self.updateDF()
         '''
+        # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
+        self.mem_service._session.commit()
         setSchema(self.mem_service._session_factory.engine)
         self.updateDF()
         # pick up thread here before it is needed
@@ -75,6 +78,8 @@ class MemoryDatabase(object):
         return self.df
 
     def getDataValues(self):
+        # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
+        self.mem_service._session.commit()
         setSchema(self.mem_service._session_factory.engine)
         return self.mem_service.get_all_values()
 
@@ -97,6 +102,7 @@ class MemoryDatabase(object):
 
     def commit(self):
         self.mem_service._session.commit()
+        # self.mem_service._session.commit()
 
     def rollback(self):
         self.mem_service._session.rollback()
@@ -143,6 +149,7 @@ class MemoryDatabase(object):
             q=self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))
             q.update({TSRV.DataValue: query}, False)
 
+
         #self.updateDF()
 
     def chunking(self, data):
@@ -175,6 +182,7 @@ class MemoryDatabase(object):
         frames = [self.annotation_list, flags]
         self.annotation_list=pd.concat(frames)
         print self.annotation_list
+        #todo: remove duplicates before saving
 
 
 
@@ -199,9 +207,12 @@ class MemoryDatabase(object):
             vals = {"datavalue": point[0], "valuedatetime": point[1],
                     "valuedatetimeutcoffset": point[3],
                     "censorcodecv": point[4], "qualitycodecv": point[5],
-                    "timeaggregationinterval": point[6], "timeaggregationintervalunitsid": point[7]
+                    "timeaggregationinterval": point[6], "timeaggregationintervalunitsid": point[7],
+                    "resultid":self.df["resultid"][0]
                     # todo: Add annotations
                     }
+            if point[8]:
+                self.updateFlag(point[1], self.series_service.get_annotation_by_code(point[8].split(':')[0]).AnnotationID)
 
             setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)

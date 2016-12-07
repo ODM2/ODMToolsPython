@@ -1,9 +1,9 @@
 import logging
-from sqlalchemy import not_, bindparam, distinct, func
+from sqlalchemy import not_, bindparam, distinct, func, exists
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
-from odmtools.odmservices import to_sql_newrows as upsert
+from odmtools.odmservices.to_sql_newrows import clean_df_db_dups, delete, update
 import datetime
 from odmtools.common.logger import LoggerTool
 import pandas as pd
@@ -66,13 +66,16 @@ class SeriesService(serviceBase):
 
 
     # Query DetailedResultInfo/series object is for Display purposes
-    def get_all_series(self):
+    def get_all_series(self, siteid = None):
         """
         Returns all series as a modelObject
         :return: List[Series]
         """
+
         setSchema(self._session_factory.engine)
-        return self.read.getDetailedResultInfo('Time Series Coverage')
+
+
+        return self.read.getDetailedResultInfo('Time Series Coverage', sfID=siteid)
 
     def get_series(self, series_id=None):
         """
@@ -316,39 +319,46 @@ class SeriesService(serviceBase):
 #
 
 #todo: Take another look at this
-    # def get_samples_by_series_id(self, series_id):
-    #     # """
-    #     #
-    #     # :param series_id:
-    #     # :return:
-    #     # # """
-    #     # subquery = self._edit_session.query(DataValue.sample_id).outerjoin(
-    #     #     Series.data_values).filter(Series.id == series_id, DataValue.sample_id != None).distinct().subquery()
-    #     # return self._edit_session.query(Sample).join(subquery).distinct().all()
 
-#
-#     # Series Catalog methods
-#     def get_series_by_id_quint(self, site_id, var_id, method_id, source_id, qcl_id):
-#         """
-#
-#         :param site_id:
-#         :param var_id:
-#         :param method_id:
-#         :param source_id:
-#         :param qcl_id:
-#         :return: Series
-#         """
-#         try:
-#             return self._edit_session.query(Series).filter_by(
-#                 site_id=site_id, variable_id=var_id, method_id=method_id,
-#                 source_id=source_id, quality_control_level_id=qcl_id).first()
-#         except:
-#             return None
-#
-#     def get_series_from_filter(self):
-#         # Pass in probably a Series object, match it against the database
-#         pass
-#
+
+    # Series Catalog methods
+    def resultExists(self, result):
+        """
+
+        :param site_id:
+        :param var_id:
+        :param method_id:
+        :param source_id:
+        :param qcl_id:
+        :return: Series
+        """
+        # unique Result
+        # FeatureActionID, ResultTypeCV, VariableID, UnitsID, ProcessingLevelID, SampledMediumCV
+
+
+        try:
+            # return self._edit_session.query(Results).filter_by(
+            #      VariableID=var_id, MethodID=method_id,
+            #      AnnotationID=qcl_id).first()
+            res = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV).
+                                           where(Results.VariableID == result.VariableID).
+                                           where(Results.UnitsID == result.UnitsID).
+                                           where(Results.ProcessingLevelID == result.ProcessingLevelID).
+                                           where(Results.SampledMediumCV == result.SampledMediumCV)
+                                      )
+        # where(Results.FeatureActionID == result.FeatureActionID).
+
+
+            return res
+        except:
+            return None
+
+
+
+    def get_series_from_filter(self):
+        # Pass in probably a Series object, match it against the database
+        pass
+
 #
     #Data Value Methods
     def get_values(self, series_id=None):
@@ -395,13 +405,13 @@ class SeriesService(serviceBase):
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
                           params=query.params)
-        columns = list(data)
+        #columns = list(data)
 
         # columns.insert(0, columns.pop(columns.index("DataValue")))
         # columns.insert(1, columns.pop(columns.index("ValueDateTime")))
         #columns.insert(2, columns.pop(columns.index("QualifierID")))
 
-        data = data.ix[:, columns]
+        #data = data.ix[:, columns]
         return data.set_index(data['ValueDateTime'])
         # q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
         # query = q.statement.compile(dialect = self._session_factory.engine.dialect)
@@ -522,57 +532,47 @@ class SeriesService(serviceBase):
 #####################
 
 
-    def save(self, values, result = None):
-        #update result
-        #upsert values
-        #save series
-        #save new annotations
-        pass
-    def saveAppend(self,value,  overwrite = True):
-        #get save result
-        #get value count
-        #set in df
-        #update result
-        #count = overlap calc
-        #set value count = res.vc+valuecount-count
-        #insert values
-        #save series
-        #save new annotations
-        pass
-    def saveAs(self, values):
-        #create series
-        #set in df
-        #insert values
-        #save_new_series
-        #get all annotations for series
-        #save all annotations
-
-        pass
-    def saveExisting(self, values):
-        #get save result
-        #set in df
-        #save(values, result)
-
-        pass
 
 #new series
     def createResult(self, var, meth, proc):
         #also create an action
         #copy old
         #change var, meth proc, in df #intend ts, agg stat
-        Result = None
+        # Result = None
+        # result = Results()
         result = Results()
 
-        return self.updateResult(Result)
+        if isinstance(var, Variables):
+            result.VariableID = var.VariableID
+            result.VariableObj = var
 
-    def updateResult(self, Result):
-        #get pd
-        #get result
-        #update count, dates,
-        return Result
+        if isinstance(meth, Methods):
+            # do something with meth
+            pass
 
-    def overlapcalc(self):
-        pass
+        if isinstance(proc, ProcessingLevels):
+            result.ProcessingLevelID = proc.ProcessingLevelID
+            result.ProcessingLevelObj = proc
+
+        time, offset = self.get_current_time_and_utcoffset()
+        result.ResultDateTime = time
+        result.ResultDateTimeUTCOffset = offset
+
+        return self.create.createResult(result=result)
+
+
+
+    def get_current_time_and_utcoffset(self):
+        current_time = datetime.datetime.now()
+        utc_time = datetime.datetime.utcnow()
+
+        difference_in_timezone = current_time - utc_time
+        offset_in_hours = difference_in_timezone.total_seconds() / 3600
+
+        return current_time, offset_in_hours
+
+
+
 
 
 #     def save_series(self, series, dvs):
@@ -599,30 +599,31 @@ class SeriesService(serviceBase):
 #             raise Exception("Series does not exist, unable to save. Please select 'Save As'")
 #
 #
-#     def save_new_series(self, series, dvs):
-#         """ Create as a new catalog entry
-#         :param series:
-#         :param data_values:
-#         :return:
-#         """
-#         # Save As case
-#         if self.series_exists(series):
-#             msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
-#             logger.info(msg)
-#             raise Exception(msg)
-#         else:
-#             try:
-#                 self._edit_session.add(series)
-#                 self._edit_session.commit()
-#                 self.save_values(dvs)
-#                 #self._edit_session.add_all(dvs)
-#             except Exception as e:
-#                 self._edit_session.rollback()
-#                 raise e
-#
-#         logger.info("A new series was added to the database, series id: "+str(series.id))
-#         return True
-#
+    # def save_new_series(self, series, dvs):
+    #     """ Create as a new catalog entry
+    #     :param series:
+    #     :param data_values:
+    #     :return:
+    #     """
+    #     # Save As case
+    #     if self.series_exists(series):
+    #         msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
+    #         logger.info(msg)
+    #         raise Exception(msg)
+    #     else:
+    #         try:
+    #             self._edit_session.add(series)
+    #             self._edit_session.commit()
+    #             self.save_values(dvs)
+    #             #self._edit_session.add_all(dvs)
+    #         except Exception as e:
+    #             self._edit_session.rollback()
+    #             raise e
+    #
+    #     logger.info("A new series was added to the database, series id: "+str(series.id))
+    #     return True
+
+
     def update_values(self, updates):
         '''
         updates : time series result values, pandas dataframe
@@ -642,15 +643,17 @@ class SeriesService(serviceBase):
     def insert_annotations(self, annotations):
         annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
 
+
     def upsert_values(self, values):
-        newvals= upsert.clean_df_db_dups(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+        setSchema(self._session_factory.engine)
+        newvals= clean_df_db_dups(df = values, dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
                                          filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
         self.insert_values(newvals)
-        delvals = upsert.delete(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+        delvals = delete(df = values, dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
                         filter_continuous_col = "valuedatetime", filter_categorical_col = "resultid")
         self.delete_dvs(delvals["valuedatetime"])
 
-        upvals = upsert.update(df = values, tablename="timeseriesresultvalues", engine = self._session_factory.engine,
+        upvals = update(df = values,dup_cols = ["valuedatetime", "resultid"], tablename="timeseriesresultvalues", engine = self._session_factory.engine,
                                filter_continuous_col="valuedatetime", filter_categorical_col="resultid")
         self.update(upvals)
 
@@ -706,7 +709,7 @@ class SeriesService(serviceBase):
         series.source_id = source_id
         series.quality_control_level_id = qcl_id
 
-        return self.create_service.createResult(series)
+        return self.create_service.getResult(series)
 
     def create_method(self, description, link):
         """
@@ -768,16 +771,31 @@ class SeriesService(serviceBase):
         annotation.AnnotationCode = code
         annotation.AnnotationText = text
         annotation.AnnotationTypeCV = "Time series result value annotation"
-        current_time = datetime.datetime.now()
-        utc_time = datetime.datetime.utcnow()
-        annotation.AnnotationDateTime = current_time
 
-        difference_in_timezone = utc_time - current_time
-        offset_in_hours = difference_in_timezone.seconds / 3600
-        annotation.AnnotationUTCOffset = offset_in_hours
+        time, offset = self.get_current_time_and_utcoffset()
+        annotation.AnnotationDateTime = time
+        annotation.AnnotationUTCOffset = offset
+
         annotation.AnnotationLink = link
 
         return self.create_annotation_by_anno(annotation)
+
+    def add_annotations(self, anno_list):
+        try:
+            #tablename = TimeSeriesResultValueAnnotations.__tablename__
+            #print ("I am TS saving name the table name", tablename)
+            anno_list.to_sql(name="TimeSeriesResultValueAnnotations",
+                              schema=TimeSeriesResultValueAnnotations.__table_args__['schema'],
+                              if_exists='append',
+                              chunksize=1000,
+                              con=self._session_factory.engine,
+                              index=False)
+            self._session.commit()
+
+            return anno_list
+        except Exception as e:
+            print(e)
+            return None
 
 
     def get_vertical_datum_cvs(self):
@@ -836,10 +854,21 @@ class SeriesService(serviceBase):
 
     def get_annotations_by_result(self, resultid):
         setSchema(self._session_factory.engine)
-        ids = [x[0] for x in self.read._session.query(TimeSeriesResultValues.ValueID)\
-                .filter(TimeSeriesResultValues.ResultID == resultid).all()]
-        return self.read._session.query(TimeSeriesResultValueAnnotations)\
-            .filter(TimeSeriesResultValueAnnotations.ValueID.in_(ids)).all()
+
+        # ids = [x[0] for x in self.read._session.query(TimeSeriesResultValues.ValueID)\
+        #         .filter(TimeSeriesResultValues.ResultID == resultid).all()]
+        # q = self.read._session.query(TimeSeriesResultValueAnnotations)\
+        #     .filter(TimeSeriesResultValueAnnotations.ValueID.in_(ids)).all()
+
+        q =self.read._session.query(TimeSeriesResultValueAnnotations.AnnotationID, TimeSeriesResultValueAnnotations.ValueID,
+                                    TimeSeriesResultValues.ResultID, TimeSeriesResultValues.ValueDateTime)\
+                            .filter(TimeSeriesResultValues.ResultID == resultid)\
+                            .filter(TimeSeriesResultValueAnnotations.ValueID == TimeSeriesResultValues.ValueID)
+
+        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
+                             params=query.params)
+        return data
 
     def get_aggregation_statistic(self):
         return self.read.getCVs(type="aggregationstatistic")
@@ -911,6 +940,7 @@ class SeriesService(serviceBase):
         :param id_list: list of datetimes
         :return:
         """
+        setSchema(self._session_factory.engine)
         try:
             self.delete.deleteTSRValues(dates=id_list)
         except Exception as ex:

@@ -9,7 +9,7 @@ import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
-from odm2api.ODM2.models import Actions
+from odm2api.ODM2.models import *
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
  wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,
@@ -226,7 +226,7 @@ class wizSave(wx.wizard.Wizard):
 
     def get_metadata(self):
         # method = self.currSeries.FeatureActionObj.ActionObj.MethodObj
-        # processing_level = self.currSeries.quality_control_level
+        # processing_level = self.currSeriefs.quality_control_level
         # variable = self.currSeries.variable
         # action =
 
@@ -267,9 +267,11 @@ class wizSave(wx.wizard.Wizard):
         # Create action
         action = Actions()
         action.MethodObj = method
+        action.MethodID = method.MethodID
         action.ActionDescription = self.action_page.action_view.description_text_box.GetValue()
         action.ActionFileLink = self.action_page.action_view.action_file_link_text_box.GetValue()
         action.MethodObj.OrganizationObj = affiliation.OrganizationObj
+        action.BeginDateTime = self.currSeries.ResultDateTime
 
         return site, variable, method, action, processing_level
 
@@ -442,8 +444,6 @@ class wizSave(wx.wizard.Wizard):
             else:
                 method = self.series_service.get_method_by_code(method.MethodCode)
 
-
-
             # initiate either "Save as" or "Save"
             '''
             if self.page1.pnlIntroduction.rbSave.GetValue():
@@ -452,19 +452,35 @@ class wizSave(wx.wizard.Wizard):
                 result = self.record_service.saveAs(Variable, Method, QCL, True)
             '''
 
+
+            #TODO: move all of this stuff into the edit_service file
             # Create action
-            new_result = self.series_service.createResult(var=variable, meth=method, proc=proc_level)
+            new_result = self.series_service.getResult(var=variable, meth=method, proc=proc_level)
+
             # action = self.series_service.create.createAction(action)
+
+            affiliation = self.action_page.get_affiliation()
+
+            new_action_by = ActionBy()
+            new_action_by.ActionID = action.ActionID
+            new_action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
+            new_action_by.AffiliationID = affiliation.AffiliationID
+            new_action_by.AffiliationObj = affiliation
+
+            #TODO end
 
             try:
                 if rbSave:
                     result = self.record_service.save()
                 elif rbSaveAsNew:
+                    #TODO send in Action, and Actionby
                     result = self.record_service.save_as(variable, method, proc_level)
                 elif rbSaveAsExisting:
                     if overwrite:
+                        #TODO send in just the result
                         result = self.record_service.save_existing(variable, method, proc_level)
                     elif append:
+                        #TODO send in just the result
                         #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
                         #TODO if i require that original or new is selected I can call once with overwrite = original
                         if original:
