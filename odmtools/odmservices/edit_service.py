@@ -9,6 +9,7 @@ from series_service import SeriesService
 import pandas as pd
 import datetime
 import numpy as np
+from odm2api.ODM2.models import *
 
 import logging
 from odmtools.common.logger import LoggerTool
@@ -549,28 +550,38 @@ class EditService():
         self.add_annotations(self.memDB.annotation_list)
         return result
 
-
     def getResult(self, var, meth, proc, action, actionby):
 
         # copy old
         result = self.memDB.series_service.get_series(self.memDB.df["resultid"][0])
-        self.memDB.series_service._session.expunge(result)
+        sampling_feature = result.FeatureActionObj.SamplingFeatureObj
+        # self.memDB.series_service._session.expunge(result)
 
         # change var, meth proc, in df #intend ts, agg stat
+        if var:
+            result.VariableID = var.VariableID
+            result.VariableObj = var
 
-        result.VariableID = var.VariableID
-        result.VariableObj = var
-        result.ProcessingLevelID = proc.ProcessingLevelID
-        result.ProcessingLevelObj = proc
+        if proc:
+            result.ProcessingLevelID = proc.ProcessingLevelID
+            result.ProcessingLevelObj = proc
+
+        if meth:
+            result.FeatureActionObj.ActionObj.MethodID = meth.MethodID
+            result.FeatureActionObj.ActionObj.MethodObj = meth
 
         #if result does not exist
-
         if self.memDB.series_service.resultExists(result):
-            pass
-            #create Action : of type "derivation"
-            #create Actionby
-            #create FeatureAction( using current sampling feature id
-            #create TimeSeriesResult- this should also contain all of the stuff for the Result
+            action.ActionTypeCV = "derivation"
+            # create Actionby done
+
+            # create FeatureAction (using current sampling feature id)
+            feature_action = FeatureActions()
+            feature_action.SamplingFeatureID = sampling_feature.SamplingFeatureID
+            feature_action.SamplingFeatureObj = sampling_feature
+
+            # create TimeSeriesResult - this should also contain all of the stuff for the Result
+            series = TimeSeriesResults()
 
 
 

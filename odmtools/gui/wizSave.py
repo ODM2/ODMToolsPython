@@ -262,7 +262,7 @@ class wizSave(wx.wizard.Wizard):
 
         elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
             # selected an existing series
-            method, processing_level, variable = self.pgExisting.getSeries()
+            method, processing_level, variable = self.pgExisting.get_selected_series()
 
         # Create action
         action = Actions()
@@ -451,42 +451,34 @@ class wizSave(wx.wizard.Wizard):
             else:
                 result = self.record_service.saveAs(Variable, Method, QCL, True)
             '''
-
-
-            #TODO: move all of this stuff into the edit_service file
-            # Create action
-            new_result = self.series_service.getResult(var=variable, meth=method, proc=proc_level)
-
-            # action = self.series_service.create.createAction(action)
-
             affiliation = self.action_page.get_affiliation()
 
-            new_action_by = ActionBy()
-            new_action_by.ActionID = action.ActionID
-            new_action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
-            new_action_by.AffiliationID = affiliation.AffiliationID
-            new_action_by.AffiliationObj = affiliation
+            action_by = ActionBy()
+            action_by.ActionID = action.ActionID
+            action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
+            action_by.AffiliationID = affiliation.AffiliationID
+            action_by.AffiliationObj = affiliation
 
-            #TODO end
+            # result = self.series_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
+            result = self.record_service._edit_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
 
             try:
                 if rbSave:
                     result = self.record_service.save()
                 elif rbSaveAsNew:
-                    #TODO send in Action, and Actionby
-                    result = self.record_service.save_as(variable, method, proc_level)
+                    result = self.record_service.saveAs(variable=variable, method=method, proc_level=proc_level,
+                                                        action=action, action_by=action_by)
                 elif rbSaveAsExisting:
                     if overwrite:
-                        #TODO send in just the result
-                        result = self.record_service.save_existing(variable, method, proc_level)
+                        result = self.record_service.saveExisting(result=result)
                     elif append:
                         #TODO send in just the result
                         #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
                         #TODO if i require that original or new is selected I can call once with overwrite = original
                         if original:
-                            result = self.record_service.save_appending(variable, method, proc_level, overwrite = False)
+                            result = self.record_service.saveAppend(result=result, overwrite=False)
                         elif new:
-                            result = self.record_service.save_appending(variable, method, proc_level, overwrite = True)
+                            result = self.record_service.saveAppend(result=result, overwrite=True)
 
                 Publisher.sendMessage("refreshSeries")
 

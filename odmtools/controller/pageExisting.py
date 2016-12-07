@@ -19,6 +19,8 @@ class pageExisting(wiz.WizardPageSimple):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
         self.SetSizer(sizer)
+        self.site = site
+        self.series_service = series_service
         #self.series_service = series_service
 
         title = wx.StaticText(self, -1, title)
@@ -66,9 +68,10 @@ class pageExisting(wiz.WizardPageSimple):
         self.pnlExisting.rbOriginal.Enable(isEnabled)
         self.pnlExisting.lblOverlap.Enable(isEnabled)
 
-    def getSeries(self):
+    def get_selected_series(self):
         selectedObject = self.pnlExisting.olvSeriesList.GetSelectedObject()
-        return selectedObject.method, selectedObject.quality_control_level, selectedObject.variable
+        result = self.series_service.get_series(selectedObject.ResultID)
+        return result.FeatureActionObj.ActionObj.MethodObj, result.ProcessingLevelObj, result.VariableObj
 
     def initTable(self, dbservice, site_id):
         """Set up columns and objects to be used in the objectlistview to be visible in the series_service selector"""

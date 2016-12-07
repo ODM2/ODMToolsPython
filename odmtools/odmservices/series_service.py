@@ -88,7 +88,7 @@ class SeriesService(serviceBase):
         #     print e
         #     return None
         setSchema(self._session_factory.engine)
-        return self.read.getResults(ids=[series_id])[0]
+        return self.read.getResults(ids=[str(series_id)])[0]
 
     # Query result objects for data purposes
     def get_result_dates(self, result_id):
