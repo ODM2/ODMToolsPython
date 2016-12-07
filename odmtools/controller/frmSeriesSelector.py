@@ -188,8 +188,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         # TODO @jmeline needs to fix edit, it doesn't unedit when a plot is being edited
         self.Bind(wx.EVT_MENU, self.onRightEdit, editItem)
         # TODO @jmeline will refresh and clear selected as an enhancement
-        #self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
-        #self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
+
+
 
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))

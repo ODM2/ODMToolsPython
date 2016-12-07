@@ -487,6 +487,7 @@ class EditService():
         if not result:
             result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
         # update result
+        result.ValueCount = 0
         self.updateResult(result)
         # upsert values
         self.memDB.series_service.upsert(values)
@@ -508,6 +509,7 @@ class EditService():
         # count = overlap calc
         count = self.overlapcalc()
         # set value count = res.vc+valuecount-count
+        result.ValueCount = result.ValueCount+ vc -count
         # insert values
         self.memDB.series_service.upsert_values(values)
         # save new annotations
@@ -515,16 +517,30 @@ class EditService():
         return result
 
 
+    def saveExisting(self, result):
+        values = self.memdB.df
+        # get save result
+
+        # set in df
+        values["resultid"]=result.ResultID
+
+        # save(values)
+        self.save(result)
+        #self.memDB.series_service.upsert_values(values)
+
+        return result
+
     def saveAs(self, variable, method, proc_level, action, action_by):
+        #save as new series
         values = self.memDB.df
         # get all annotations for series
         annolist= self.memDB.series_service.get_annotations_by_result(values["resultid"][0])
         annolist['valueid']
 
         # create series
-        result= self.getResult(variable, method, proc_level)
-        # update result
-        self.updateResult(result)
+        result = self.getResult(variable, method, proc_level)
+        result.ValueCount = 0
+
         # set in df
         values["resultid"] = result.ResultID
         # insert values
@@ -536,18 +552,6 @@ class EditService():
         self.add_annotations(annolist)
 
 
-        return result
-
-    def saveExisting(self, result):
-        values = self.memdB.df
-        # get save result
-
-        # set in df
-        values["resultid"]=result.ResultID
-        # save(values)
-        self.memDB.series_service.upsert_values(values)
-        #insert new annotations
-        self.add_annotations(self.memDB.annotation_list)
         return result
 
     def getResult(self, var, meth, proc, action, actionby):
@@ -580,18 +584,24 @@ class EditService():
             feature_action.SamplingFeatureID = sampling_feature.SamplingFeatureID
             feature_action.SamplingFeatureObj = sampling_feature
 
-            # create TimeSeriesResult - this should also contain all of the stuff for the Result
+            # create TimeSeriesResult - this should also contain all of the stuff for the Result  (hopefully the result will actually be of type, TimeSeriesResult)
             series = TimeSeriesResults()
 
 
 
         return self.updateResult(result)
 
+    form = "%Y-%m-%d %H:%M:%S"
     def updateResult(self, Result):
+        form = "%Y-%m-%d %H:%M:%S"
         # get pd
         values = self.memDB.df
-        # get result
+
         # update count, dates,
+        Action = Result.FeatureActionObj.ActionObj
+        Action.BeginDateTime= datetime.datetime.strptime(str(np.min(values['valuedatetime'])), form)
+        Action.EndDateTime = datetime.datetime.strptime(str(np.max(values["valuedatetime"])), form)
+        Result.ValueCount = len(values)
         return Result
 
     def overlapcalc(self):
