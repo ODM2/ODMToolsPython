@@ -257,7 +257,7 @@ class EditTools():
             Publisher.sendMessage("scroll")
         return result
 
-    def save_as(self, var=None, method=None, qcl=None, action = None, actionby = None):
+    def save_as(self, variable=None, method=None, proc_level=None, action = None, action_by = None):
         """
 
         :param var:
@@ -266,10 +266,10 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save_as(var=var, method=method, qcl=qcl, action = action, actionby = actionby)
+        result = self._edit_service.save_as(variable=variable, method=method, proc_level=proc_level, action = action, action_by = action_by)
         if self._record:
             self._script(
-                "edit_service.save_as(%s, %s, %s, %s, %s)\n" % (self.saveFactory(var, method, qcl, action, actionby)),
+                "edit_service.save_as(%s, %s, %s, %s, %s)\n" % (self.saveFactory(variable, method, proc_level, action, action_by)),
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")

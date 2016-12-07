@@ -272,6 +272,7 @@ class wizSave(wx.wizard.Wizard):
         action.ActionFileLink = self.action_page.action_view.action_file_link_text_box.GetValue()
         action.MethodObj.OrganizationObj = affiliation.OrganizationObj
         action.BeginDateTime = self.currSeries.ResultDateTime
+        action.BeginDateTimeUTCOffset = self.currSeries.ResultDateTimeUTCOffset
 
         return site, variable, method, action, processing_level
 
@@ -454,7 +455,7 @@ class wizSave(wx.wizard.Wizard):
             affiliation = self.action_page.get_affiliation()
 
             action_by = ActionBy()
-            action_by.ActionID = action.ActionID
+            #action_by.ActionID = action.ActionID
             action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
             action_by.AffiliationID = affiliation.AffiliationID
             action_by.AffiliationObj = affiliation

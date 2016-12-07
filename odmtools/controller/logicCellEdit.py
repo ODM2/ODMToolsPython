@@ -40,7 +40,7 @@ class CellEdit():
             return [NULL]
 
         series_service = self.serviceManager.get_series_service()
-        return [NULL] + [x.Term for x in series_service.get_censor_code_cvs()]
+        return [NULL] + [x.Name for x in series_service.get_censor_code_cvs()]
 
     def fetchQualityCodeChoices(self):
         """
@@ -50,7 +50,7 @@ class CellEdit():
             return [NULL]
 
         series_service = self.serviceManager.get_series_service()
-        return [NULL] + [x.Term for x in series_service.get_quality_code()]
+        return [NULL] + [x.Name for x in series_service.get_quality_code()]
 
     def fetchTimeUnitChoices(self):
         if not self.serviceManager:

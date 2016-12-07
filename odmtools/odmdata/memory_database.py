@@ -160,7 +160,7 @@ class MemoryDatabase(object):
 
 
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
-    #TODO update to work with odm2
+
 
     def updateFlag(self, ids, value):
 
@@ -211,8 +211,9 @@ class MemoryDatabase(object):
                     "resultid":self.df["resultid"][0]
                     # todo: Add annotations
                     }
-            if point[8]:
-                self.updateFlag(point[1], self.series_service.get_annotation_by_id(point[8]).AnnotationID)
+            if point[8] != 'NULL':
+                print point[8]
+                self.updateFlag([point[1]], [point[8]])
 
             setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)

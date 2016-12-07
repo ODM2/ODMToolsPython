@@ -340,7 +340,7 @@ class SeriesService(serviceBase):
             # return self._edit_session.query(Results).filter_by(
             #      VariableID=var_id, MethodID=method_id,
             #      AnnotationID=qcl_id).first()
-            res = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV).
+            ret = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV).
                                            where(Results.VariableID == result.VariableID).
                                            where(Results.UnitsID == result.UnitsID).
                                            where(Results.ProcessingLevelID == result.ProcessingLevelID).
@@ -349,7 +349,7 @@ class SeriesService(serviceBase):
         # where(Results.FeatureActionID == result.FeatureActionID).
 
 
-            return res
+            return ret.scalar()
         except:
             return None
 
@@ -870,7 +870,7 @@ class SeriesService(serviceBase):
 
     def get_annotation_by_code(self, code):
         return self.read.getAnnotations(codes=[code])[0]
-    def get_annotation_by_id (self, id):
+    def get_annotation_by_id(self, id):
         return self.read.getAnnotations(ids=[id])[0]
     def get_all_annotations(self):
         return self.read.getAnnotations(type=None)
