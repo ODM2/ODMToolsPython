@@ -306,7 +306,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
 
             #series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
-            series_id = self.tblSeries.GetSelectedObject().id
+            series_id = self.tblSeries.GetSelectedObject().ResultID
             self.export_service.export_series_data(series_id, full_path, True, True, True, True, True, True, True)
             self.Close()
 
