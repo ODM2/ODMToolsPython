@@ -80,4 +80,5 @@ class pageExisting(wiz.WizardPageSimple):
 
         self.pnlExisting.olvSeriesList.SetColumns(seriesColumns)
         objects = dbservice.get_series_by_site(site_id=site_id)
+
         self.pnlExisting.olvSeriesList.SetObjects(objects)

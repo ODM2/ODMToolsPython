@@ -191,11 +191,11 @@ class TestSeriesService:
         assert series.id == db_series.id
 
     def test_get_series_by_id_quint(self):
-        assert self.series_service.get_series_by_id_quint(10, 10, 10, 10, 10) == None
+        assert self.series_service.resultExists(10, 10, 10, 10, 10) == None
 
         series = test_util.add_series(self.session)
-        db_series = self.series_service.get_series_by_id_quint(series.site_id, series.variable_id, series.method_id,
-                                                               series.source_id, series.quality_control_level_id)
+        db_series = self.series_service.resultExists(series.site_id, series.variable_id, series.method_id,
+                                                     series.source_id, series.quality_control_level_id)
 
         assert series.id == db_series.id
 

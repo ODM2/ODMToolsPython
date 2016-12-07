@@ -226,7 +226,7 @@ class wizSave(wx.wizard.Wizard):
 
     def get_metadata(self):
         # method = self.currSeries.FeatureActionObj.ActionObj.MethodObj
-        # processing_level = self.currSeries.quality_control_level
+        # processing_level = self.currSeriefs.quality_control_level
         # variable = self.currSeries.variable
         # action =
 
@@ -453,11 +453,10 @@ class wizSave(wx.wizard.Wizard):
             '''
 
 
-            TODO: move all of this stuff into the edit_service file
+            #TODO: move all of this stuff into the edit_service file
             # Create action
-            new_result = self.series_service.createResult(var=variable, meth=method, proc=proc_level)
-            #TODO create a timeseriesresult
-            #TODO create a featureaction
+            new_result = self.series_service.getResult(var=variable, meth=method, proc=proc_level)
+
             # action = self.series_service.create.createAction(action)
 
             affiliation = self.action_page.get_affiliation()
@@ -468,15 +467,20 @@ class wizSave(wx.wizard.Wizard):
             new_action_by.AffiliationID = affiliation.AffiliationID
             new_action_by.AffiliationObj = affiliation
 
+            #TODO end
+
             try:
                 if rbSave:
                     result = self.record_service.save()
                 elif rbSaveAsNew:
+                    #TODO send in Action, and Actionby
                     result = self.record_service.save_as(variable, method, proc_level)
                 elif rbSaveAsExisting:
                     if overwrite:
+                        #TODO send in just the result
                         result = self.record_service.save_existing(variable, method, proc_level)
                     elif append:
+                        #TODO send in just the result
                         #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
                         #TODO if i require that original or new is selected I can call once with overwrite = original
                         if original:

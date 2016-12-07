@@ -66,12 +66,13 @@ class SeriesService(serviceBase):
 
 
     # Query DetailedResultInfo/series object is for Display purposes
-    def get_all_series(self):
+    def get_all_series(self, sitePid = None):
         """
         Returns all series as a modelObject
         :return: List[Series]
         """
         setSchema(self._session_factory.engine)
+
         return self.read.getDetailedResultInfo('Time Series Coverage')
 
     def get_series(self, series_id=None):
@@ -319,7 +320,7 @@ class SeriesService(serviceBase):
 
 
     # Series Catalog methods
-    def get_series_by_id_quint(self, result):
+    def resultExists(self, result):
         """
 
         :param site_id:
@@ -329,28 +330,28 @@ class SeriesService(serviceBase):
         :param qcl_id:
         :return: Series
         """
-        #unique Result
-        #FeatureActionID, ResultTypeCV, VariableID, UnitsID, ProcessingLevelID, SampledMediumCV
+        # unique Result
+        # FeatureActionID, ResultTypeCV, VariableID, UnitsID, ProcessingLevelID, SampledMediumCV
 
 
         try:
             # return self._edit_session.query(Results).filter_by(
             #      VariableID=var_id, MethodID=method_id,
             #      AnnotationID=qcl_id).first()
-            (ret, ), = self._session.query(exists().
-                                           where(Results.FeatureActionID == result.FeatureActionID).
-                                           where(Results.ResultTypeCV == result.ResultTypeCV).
+            res = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV).
                                            where(Results.VariableID == result.VariableID).
                                            where(Results.UnitsID == result.UnitsID).
                                            where(Results.ProcessingLevelID == result.ProcessingLevelID).
-                                           wehre(Results.SampledMediumCV == result.SampledMediumCV)
+                                           where(Results.SampledMediumCV == result.SampledMediumCV)
+                                      )
+        # where(Results.FeatureActionID == result.FeatureActionID).
 
 
-                        )
-
-            return ret
+            return res
         except:
             return None
+
+
 
     def get_series_from_filter(self):
         # Pass in probably a Series object, match it against the database
@@ -402,13 +403,13 @@ class SeriesService(serviceBase):
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
                           params=query.params)
-        columns = list(data)
+        #columns = list(data)
 
         # columns.insert(0, columns.pop(columns.index("DataValue")))
         # columns.insert(1, columns.pop(columns.index("ValueDateTime")))
         #columns.insert(2, columns.pop(columns.index("QualifierID")))
 
-        data = data.ix[:, columns]
+        #data = data.ix[:, columns]
         return data.set_index(data['ValueDateTime'])
         # q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
         # query = q.statement.compile(dialect = self._session_factory.engine.dialect)
@@ -596,29 +597,29 @@ class SeriesService(serviceBase):
 #             raise Exception("Series does not exist, unable to save. Please select 'Save As'")
 #
 #
-    def save_new_series(self, series, dvs):
-        """ Create as a new catalog entry
-        :param series:
-        :param data_values:
-        :return:
-        """
-        # Save As case
-        if self.series_exists(series):
-            msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
-            logger.info(msg)
-            raise Exception(msg)
-        else:
-            try:
-                self._edit_session.add(series)
-                self._edit_session.commit()
-                self.save_values(dvs)
-                #self._edit_session.add_all(dvs)
-            except Exception as e:
-                self._edit_session.rollback()
-                raise e
-
-        logger.info("A new series was added to the database, series id: "+str(series.id))
-        return True
+    # def save_new_series(self, series, dvs):
+    #     """ Create as a new catalog entry
+    #     :param series:
+    #     :param data_values:
+    #     :return:
+    #     """
+    #     # Save As case
+    #     if self.series_exists(series):
+    #         msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
+    #         logger.info(msg)
+    #         raise Exception(msg)
+    #     else:
+    #         try:
+    #             self._edit_session.add(series)
+    #             self._edit_session.commit()
+    #             self.save_values(dvs)
+    #             #self._edit_session.add_all(dvs)
+    #         except Exception as e:
+    #             self._edit_session.rollback()
+    #             raise e
+    #
+    #     logger.info("A new series was added to the database, series id: "+str(series.id))
+    #     return True
 
 
     def update_values(self, updates):
@@ -706,7 +707,7 @@ class SeriesService(serviceBase):
         series.source_id = source_id
         series.quality_control_level_id = qcl_id
 
-        return self.create_service.createResult(series)
+        return self.create_service.getResult(series)
 
     def create_method(self, description, link):
         """
@@ -777,6 +778,23 @@ class SeriesService(serviceBase):
 
         return self.create_annotation_by_anno(annotation)
 
+    def add_annotations(self, anno_list):
+        try:
+            #tablename = TimeSeriesResultValueAnnotations.__tablename__
+            #print ("I am TS saving name the table name", tablename)
+            anno_list.to_sql(name="TimeSeriesResultValueAnnotations",
+                              schema=TimeSeriesResultValueAnnotations.__table_args__['schema'],
+                              if_exists='append',
+                              chunksize=1000,
+                              con=self._session_factory.engine,
+                              index=False)
+            self._session.commit()
+
+            return anno_list
+        except Exception as e:
+            print(e)
+            return None
+
 
     def get_vertical_datum_cvs(self):
         return self.read.getCVs(type="Elevation Datum")
@@ -834,10 +852,21 @@ class SeriesService(serviceBase):
 
     def get_annotations_by_result(self, resultid):
         setSchema(self._session_factory.engine)
-        ids = [x[0] for x in self.read._session.query(TimeSeriesResultValues.ValueID)\
-                .filter(TimeSeriesResultValues.ResultID == resultid).all()]
-        return self.read._session.query(TimeSeriesResultValueAnnotations)\
-            .filter(TimeSeriesResultValueAnnotations.ValueID.in_(ids)).all()
+
+        # ids = [x[0] for x in self.read._session.query(TimeSeriesResultValues.ValueID)\
+        #         .filter(TimeSeriesResultValues.ResultID == resultid).all()]
+        # q = self.read._session.query(TimeSeriesResultValueAnnotations)\
+        #     .filter(TimeSeriesResultValueAnnotations.ValueID.in_(ids)).all()
+
+        q =self.read._session.query(TimeSeriesResultValueAnnotations.AnnotationID, TimeSeriesResultValueAnnotations.ValueID,
+                                    TimeSeriesResultValues.ResultID, TimeSeriesResultValues.ValueDateTime)\
+                            .filter(TimeSeriesResultValues.ResultID == resultid)\
+                            .filter(TimeSeriesResultValueAnnotations.ValueID == TimeSeriesResultValues.ValueID)
+
+        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
+        data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
+                             params=query.params)
+        return data
 
     def get_aggregation_statistic(self):
         return self.read.getCVs(type="aggregationstatistic")

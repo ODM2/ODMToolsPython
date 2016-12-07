@@ -482,71 +482,103 @@ class EditService():
         self.reset_filter()
 
     def save(self,  result=None):
+        values = self.memDB.df
         if not result:
-            result = self.memDB.series_service.get_series(series_id = self.memDB.df['resultid'])[0]
+            result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
         # update result
         self.updateResult(result)
         # upsert values
-        self.memDB.series_service.upsert(self.memDB.df)
+        self.memDB.series_service.upsert(values)
         # save new annotations
         self.add_annotations(self.memDB.annotation_list)
         return result
 
-    def saveAppend(self,  variable, method, proc_level, overwrite=True):
+    def saveAppend(self,  result, overwrite=True):
+        values = self.memDB.df
+
         # get save result
-        result= self.memDB.series_service.get_series_by_id_quint(variable, method, proc_level)
+
         # get value count
+        vc = result.ValueCount
         # set in df
+        values["resultid"] = result.ResultID
         # update result
         self.updateResult(result)
         # count = overlap calc
+        count = self.overlapcalc()
         # set value count = res.vc+valuecount-count
         # insert values
-        # save series
+        self.memDB.series_service.upsert_values(values)
         # save new annotations
+        self.add_annotations(self.memDB.annotation_list)
         return result
 
 
-    def saveAs(self, variable, method, proc_level):
+    def saveAs(self, variable, method, proc_level, action, action_by):
+        values = self.memDB.df
+        # get all annotations for series
+        annolist= self.memDB.series_service.get_annotations_by_result(values["resultid"][0])
+        annolist['valueid']
+
         # create series
-        result= self.createResult(variable, method, proc_level)
+        result= self.getResult(variable, method, proc_level)
         # update result
         self.updateResult(result)
         # set in df
+        values["resultid"] = result.ResultID
         # insert values
+        self.memDB.series_service.insert_values(values)
 
-        # save_new_series
-        # get all annotations for series
         # save all annotations
+        frames = [self.memDB.annotation_list, annolist]
+        annolist = pd.concat(frames)
+        self.add_annotations(annolist)
+
 
         return result
 
-    def saveExisting(self, variable, method, proc_level):
+    def saveExisting(self, result):
+        values = self.memdB.df
         # get save result
-        result = self.memDB.series_service.get_series_by_id_quint(variable, method, proc_level)
+
         # set in df
-        # save(values, result)
-        self.memDB.series_service.
+        values["resultid"]=result.ResultID
+        # save(values)
+        self.memDB.series_service.upsert_values(values)
+        #insert new annotations
+        self.add_annotations(self.memDB.annotation_list)
         return result
 
-        # new series
 
-    def createResult(self, var, meth, proc):
-
-        #if result does not exist
-        #create Action : of type "derivation"
-        #create Actionby
-        #create FeatureAction( using current sampling feature id
-        #create TimeSeriesResult- this should also contain all of the stuff for the Result
+    def getResult(self, var, meth, proc, action, actionby):
 
         # copy old
-        # change var, meth proc, in df #intend ts, agg stat
-        Result = None
+        result = self.memDB.series_service.get_series(self.memDB.df["resultid"][0])
+        self.memDB.series_service._session.expunge(result)
 
-        return self.updateResult(Result)
+        # change var, meth proc, in df #intend ts, agg stat
+
+        result.VariableID = var.VariableID
+        result.VariableObj = var
+        result.ProcessingLevelID = proc.ProcessingLevelID
+        result.ProcessingLevelObj = proc
+
+        #if result does not exist
+
+        if self.memDB.series_service.resultExists(result):
+            pass
+            #create Action : of type "derivation"
+            #create Actionby
+            #create FeatureAction( using current sampling feature id
+            #create TimeSeriesResult- this should also contain all of the stuff for the Result
+
+
+
+        return self.updateResult(result)
 
     def updateResult(self, Result):
         # get pd
+        values = self.memDB.df
         # get result
         # update count, dates,
         return Result
@@ -556,6 +588,8 @@ class EditService():
 
     def add_annotations(self, annolist):
         pass
+
+
 
 
 
