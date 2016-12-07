@@ -123,7 +123,7 @@ class AddPoints(clsAddPoints.AddPoints):
         :return:
         """
         self.checkIfEditing()
-
+        #todo fran: update this for odm2 info.
         message = "DataValue: FLOAT\n" \
                   "Date: YYYY-MM-DD\n" \
                   "Time: HH:MM:SS\n" \
@@ -233,8 +233,9 @@ class AddPoints(clsAddPoints.AddPoints):
                 row[4] = point.censorCode
                 row[5] = point.qualityCodeCV
                 row[6] = point.timeAggInterval
-                row[7] = point.timeAggregationUnitID
-                row[8] = point.annotation
+                # row[7] = point.timeAggregationUnitID
+                row[7] = self.olv.cellEdit.timeAggretaionUnitChoices[point.timeAggregationUnitID]
+                row[8] = self.olv.cellEdit.qualifierChoices[ point.annotation] if point.annotation != 'NULL' else point.annotation
 
                 row.extend([site_id, variable_id, method_id, organization_id, process_id])
 

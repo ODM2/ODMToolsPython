@@ -686,7 +686,7 @@ class SeriesService(serviceBase):
         # update_list = {'value':updates["datavalue"].tolist(), 'id':updates.index.to_pydatetime().tolist()}
         vals = self.create._session.execute(stmt, update_list)
 
-        
+
 #     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
 #         """
 #
@@ -870,7 +870,8 @@ class SeriesService(serviceBase):
 
     def get_annotation_by_code(self, code):
         return self.read.getAnnotations(codes=[code])[0]
-
+    def get_annotation_by_id (self, id):
+        return self.read.getAnnotations(ids=[id])[0]
     def get_all_annotations(self):
         return self.read.getAnnotations(type=None)
 

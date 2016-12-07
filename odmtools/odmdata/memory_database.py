@@ -212,7 +212,7 @@ class MemoryDatabase(object):
                     # todo: Add annotations
                     }
             if point[8]:
-                self.updateFlag(point[1], self.series_service.get_annotation_by_code(point[8].split(':')[0]).AnnotationID)
+                self.updateFlag(point[1], self.series_service.get_annotation_by_id(point[8]).AnnotationID)
 
             setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)
