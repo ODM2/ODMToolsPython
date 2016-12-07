@@ -72,13 +72,14 @@ class pageExisting(wiz.WizardPageSimple):
 
     def initTable(self, dbservice, site_id):
         """Set up columns and objects to be used in the objectlistview to be visible in the series_service selector"""
-
-        seriesColumns = [clsExisting.ColumnDefn(key, align="left",
-                                                minimumWidth=-1, valueGetter=value,
-                                                stringConverter= '%Y-%m-%d %H:%M:%S' if 'date' in key.lower() else '%s')
-                         for key, value in returnDict().iteritems()]
+        objects = dbservice.get_all_series(siteid=site_id)
+        seriesColumns = [
+            clsExisting.ColumnDefn(key, align="left", minimumWidth=100, valueGetter=key,
+                       # stringConverter = '%s')
+                       stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else '%s')
+            for key in objects[0].__dict__.keys()]
 
         self.pnlExisting.olvSeriesList.SetColumns(seriesColumns)
-        objects = dbservice.get_series_by_site(site_id=site_id)
+        # objects = dbservice.get_series_by_site(site_id=site_id)
 
         self.pnlExisting.olvSeriesList.SetObjects(objects)

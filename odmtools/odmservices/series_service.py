@@ -66,14 +66,16 @@ class SeriesService(serviceBase):
 
 
     # Query DetailedResultInfo/series object is for Display purposes
-    def get_all_series(self, sitePid = None):
+    def get_all_series(self, siteid = None):
         """
         Returns all series as a modelObject
         :return: List[Series]
         """
+
         setSchema(self._session_factory.engine)
 
-        return self.read.getDetailedResultInfo('Time Series Coverage')
+
+        return self.read.getDetailedResultInfo('Time Series Coverage', sfID=siteid)
 
     def get_series(self, series_id=None):
         """
