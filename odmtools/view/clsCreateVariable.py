@@ -44,7 +44,7 @@ class clsCreateVariable(wx.Dialog):
 
         cbVarNameChoices = []
         self.cbVarName = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                     cbVarNameChoices, wx.CB_READONLY | wx.CB_SORT)
+                                     cbVarNameChoices, wx.CB_READONLY )#| wx.CB_SORT)
         fgSizer1.Add(self.cbVarName, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, 5)
 
         self.stUnits = wx.StaticText(self, wx.ID_ANY, u"Units:", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -55,7 +55,7 @@ class clsCreateVariable(wx.Dialog):
 
         cbVarUnitsChoices = []
         self.cbVarUnits = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                      cbVarUnitsChoices, wx.CB_READONLY | wx.CB_SORT)
+                                      cbVarUnitsChoices, wx.CB_READONLY )#| wx.CB_SORT)
         bSizer21.Add(self.cbVarUnits, 0, wx.ALL | wx.EXPAND, 5)
 
         self.stSpeciation = wx.StaticText(self, wx.ID_ANY, u"Speciation:", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -64,7 +64,7 @@ class clsCreateVariable(wx.Dialog):
 
         cbSpeciationChoices = []
         self.cbSpeciation = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                        cbSpeciationChoices, wx.CB_READONLY | wx.CB_SORT)
+                                        cbSpeciationChoices, wx.CB_READONLY)# | wx.CB_SORT)
         bSizer21.Add(self.cbSpeciation, 0, wx.ALL | wx.EXPAND, 5)
 
         fgSizer1.Add(bSizer21, 1, wx.EXPAND, 5)
@@ -90,7 +90,7 @@ class clsCreateVariable(wx.Dialog):
 
         cbTSUnitsChoices = []
         self.cbTSUnits = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                     cbTSUnitsChoices, wx.CB_READONLY | wx.CB_SORT)
+                                     cbTSUnitsChoices, wx.CB_READONLY )#| wx.CB_SORT)
         fgSizer3.Add(self.cbTSUnits, 0, wx.ALL | wx.EXPAND, 5)
 
         sbSizer3.Add(fgSizer3, 1, wx.ALL | wx.EXPAND, 5)
@@ -107,7 +107,7 @@ class clsCreateVariable(wx.Dialog):
 
         cbValueTypeChoices = []
         self.cbValueType = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                       cbValueTypeChoices, wx.CB_READONLY | wx.CB_SORT)
+                                       cbValueTypeChoices, wx.CB_READONLY )#| wx.CB_SORT)
         fgSizer6.Add(self.cbValueType, 0, wx.ALL | wx.EXPAND, 5)
 
         self.stDataType = wx.StaticText(self, wx.ID_ANY, u"Data Type:", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -116,7 +116,7 @@ class clsCreateVariable(wx.Dialog):
 
         cbDataTypeChoices = []
         self.cbDataType = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                      cbDataTypeChoices, wx.CB_READONLY | wx.CB_SORT)
+                                      cbDataTypeChoices, wx.CB_READONLY )#| wx.CB_SORT)
         fgSizer6.Add(self.cbDataType, 0, wx.ALL | wx.EXPAND, 5)
 
         self.stGenCat = wx.StaticText(self, wx.ID_ANY, u"General Category:", wx.DefaultPosition, wx.DefaultSize, 0)
@@ -143,7 +143,7 @@ class clsCreateVariable(wx.Dialog):
 
         cbSampleMediumChoices = []
         self.cbSampleMedium = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
-                                          cbSampleMediumChoices, wx.CB_READONLY | wx.CB_SORT)
+                                          cbSampleMediumChoices, wx.CB_READONLY )#| wx.CB_SORT)
         fgSizer6.Add(self.cbSampleMedium, 0, wx.ALL | wx.EXPAND, 5)
 
         self.stReg = wx.StaticText(self, wx.ID_ANY, u"Is Regular:", wx.DefaultPosition, wx.DefaultSize, 0)

@@ -17,15 +17,15 @@ class NewFlagValuesView(wx.Frame):
         content_panel.SetupScrolling()
 
         annotation_title = wx.StaticText(content_panel, label="Annotation")
-        collapsible_panel = CustomCollapsiblePanel(content_panel, title="Panel 1", expand=0, use_combo=True, combo_trigger_item="New Annontation")
-        self.annotation_combo = collapsible_panel.interactive_item
+        self.collapsible_panel = CustomCollapsiblePanel(content_panel, title="Panel 1", expand=0, use_combo=True, combo_trigger_item="New Annontation")
+        self.annotation_combo = self.collapsible_panel.interactive_item
 
-        code_title = wx.StaticText(collapsible_panel, label="Code")
-        self.code_textbox = wx.TextCtrl(collapsible_panel, size=(100, -1))
-        text_title = wx.StaticText(collapsible_panel, label="Text")
-        self.text_textbox = wx.TextCtrl(collapsible_panel)
-        link_text = wx.StaticText(collapsible_panel, label="Link")
-        self.link_textbox = wx.TextCtrl(collapsible_panel)
+        code_title = wx.StaticText(self.collapsible_panel, label="Code")
+        self.code_textbox = wx.TextCtrl(self.collapsible_panel, size=(100, -1))
+        text_title = wx.StaticText(self.collapsible_panel, label="Text")
+        self.text_textbox = wx.TextCtrl(self.collapsible_panel)
+        link_text = wx.StaticText(self.collapsible_panel, label="Link")
+        self.link_textbox = wx.TextCtrl(self.collapsible_panel)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         content_panel_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -36,10 +36,10 @@ class NewFlagValuesView(wx.Frame):
         content_panel_sizer.Add(link_text, 0, wx.EXPAND | wx.ALL ^ wx.BOTTOM, 10)
         content_panel_sizer.Add(self.link_textbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        collapsible_panel.finish_layout()
+        self.collapsible_panel.finish_layout()
 
         sizer.Add(annotation_title, 0, wx.EXPAND | wx.ALL ^ wx.BOTTOM, 10)
-        sizer.Add(collapsible_panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        sizer.Add(self.collapsible_panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         content_panel.SetSizer(sizer)
 
         ##########################################

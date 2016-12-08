@@ -29,6 +29,7 @@ class MemoryDatabase(object):
         # Memory_service handles in memory database
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+
         setSchema(self.mem_service._session_factory.engine)
 
         # TODO clean up closing of program
@@ -68,12 +69,18 @@ class MemoryDatabase(object):
         #else:
         #    self.updateDF()
         '''
+        # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
+        self.mem_service._session.commit()
+        setSchema(self.mem_service._session_factory.engine)
         self.updateDF()
         # pick up thread here before it is needed
         logging.debug("done updating memory dataframe")
         return self.df
 
     def getDataValues(self):
+        # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
+        self.mem_service._session.commit()
+        setSchema(self.mem_service._session_factory.engine)
         return self.mem_service.get_all_values()
 
     def getEditRowCount(self):
@@ -95,6 +102,7 @@ class MemoryDatabase(object):
 
     def commit(self):
         self.mem_service._session.commit()
+        # self.mem_service._session.commit()
 
     def rollback(self):
         self.mem_service._session.rollback()
@@ -141,6 +149,7 @@ class MemoryDatabase(object):
             q=self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))
             q.update({TSRV.DataValue: query}, False)
 
+
         #self.updateDF()
 
     def chunking(self, data):
@@ -151,7 +160,7 @@ class MemoryDatabase(object):
 
 
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
-    #TODO update to work with odm2
+
 
     def updateFlag(self, ids, value):
 
@@ -169,10 +178,11 @@ class MemoryDatabase(object):
         #     # add entry in the Timeseriesresultvalueannotations table
         #     self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
         #         .update({TSRV.qualifier_id: value}, False)
-        
+
         frames = [self.annotation_list, flags]
         self.annotation_list=pd.concat(frames)
         print self.annotation_list
+        #todo: remove duplicates before saving
 
 
 
@@ -194,18 +204,19 @@ class MemoryDatabase(object):
             points = [points]
 
         for point in points:
-            vals = {"DataValue": point[0], "LocalDateTime": point[1],
-                    "DateTimeUTC": point[2], "UTCOffset": point[3],
-                    "CensorCode": point[4], "QualityCode": point[5],
-                    "TimeAggregationInterval": point[6], "TImeAggregationUnitID": point[7],
-                    "Annotation": point[8], "SiteID": point[9],
-                    "VariableID": point[10], "MethodID": point[11],
-                    "OrganizationID": point[12], "ProcessID": point[13]
+            vals = {"datavalue": point[0], "valuedatetime": point[1],
+                    "valuedatetimeutcoffset": point[3],
+                    "censorcodecv": point[4], "qualitycodecv": point[5],
+                    "timeaggregationinterval": point[6], "timeaggregationintervalunitsid": point[7],
+                    "resultid":self.df["resultid"][0]
+                    # todo: Add annotations
                     }
+            if point[8] != 'NULL':
+                print point[8]
+                self.updateFlag([point[1]], [point[8]])
 
             setSchema(self.mem_service._session_factory.engine)
             self.mem_service._session.execute(stmt, vals)
-
 
     def stopEdit(self):
         self.editLoaded = False
@@ -258,31 +269,5 @@ class MemoryDatabase(object):
                 self.df.to_sql(name="timeseriesresultvalues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
-
-
-    def changeSeriesIDs(self, result):
-        """
-
-        :param var:
-        :param qcl:
-        :param method:
-        :return:
-        """
-
-        query = self.mem_service._session.query(TSRV)
-        # if var is not None:
-        #     logger.debug(var)
-        #     query.update({DataValue.variable_id: var})
-        #
-        # if method is not None:
-        #     logger.debug(method)
-        #     query.update({DataValue.method_id: method})
-        # # check that the code is not zero
-        # # if qcl is not None and qcl.code != 0:
-        # if qcl is not None:
-        #     logger.debug(qcl)
-        #     query.update({DataValue.quality_control_level_id: qcl})
-        logger.debug(result)
-        query.update({TSRV.ResultID:result})
 
 

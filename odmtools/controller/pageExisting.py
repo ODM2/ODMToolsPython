@@ -19,6 +19,8 @@ class pageExisting(wiz.WizardPageSimple):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
         self.SetSizer(sizer)
+        self.site = site
+        self.series_service = series_service
         #self.series_service = series_service
 
         title = wx.StaticText(self, -1, title)
@@ -66,18 +68,20 @@ class pageExisting(wiz.WizardPageSimple):
         self.pnlExisting.rbOriginal.Enable(isEnabled)
         self.pnlExisting.lblOverlap.Enable(isEnabled)
 
-    def getSeries(self):
+    def get_selected_series(self):
         selectedObject = self.pnlExisting.olvSeriesList.GetSelectedObject()
-        return selectedObject.method, selectedObject.quality_control_level, selectedObject.variable
+        result = selectedObject.ResultObj#self.series_service.get_series(selectedObject.ResultID)
+        return result.FeatureActionObj.ActionObj.MethodObj, result.ProcessingLevelObj, result.VariableObj, result
 
     def initTable(self, dbservice, site_id):
         """Set up columns and objects to be used in the objectlistview to be visible in the series_service selector"""
-
-        seriesColumns = [clsExisting.ColumnDefn(key, align="left",
-                                                minimumWidth=-1, valueGetter=value,
-                                                stringConverter= '%Y-%m-%d %H:%M:%S' if 'date' in key.lower() else '%s')
-                         for key, value in returnDict().iteritems()]
+        objects = dbservice.get_all_series(siteid=site_id)
+        seriesColumns = [
+            clsExisting.ColumnDefn(key, align="left", minimumWidth=100, valueGetter=key,
+                       # stringConverter = '%s')
+                       stringConverter='%Y-%m-%d %H:%M:%S' if "date" in key.lower() else '%s')
+            # for key in objects[0].__dict__.keys()]
+            for key in returnDict()]
 
         self.pnlExisting.olvSeriesList.SetColumns(seriesColumns)
-        objects = dbservice.get_series_by_site(site_id=site_id)
         self.pnlExisting.olvSeriesList.SetObjects(objects)

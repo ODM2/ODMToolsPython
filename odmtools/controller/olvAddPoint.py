@@ -60,41 +60,41 @@ class OLVAddPoint(FastObjectListView):
 
         FastObjectListView.__init__(self, *args, **kwargs)
 
-        cellEdit = CellEdit(self, self.serviceManager, self.recordService)
+        self.cellEdit = CellEdit(self, self.serviceManager, self.recordService)
 
         self.checkedObjects = []
 
         # # Custom Image Getters
-        self.imgGetterDataValue = cellEdit.imgGetterDataValue
-        self.imgGetterDate = cellEdit.imgGetterDate
-        self.imgGetterTime = cellEdit.imgGetterTime
-        self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
-        self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
-        self.imgGetterQualityCode = cellEdit.imgGetterQualityCode
-        self.imgGetterTimeAggInterval = cellEdit.imgGetterTimeAggregationInterval
-        self.imgGetterTimeAggUnit = cellEdit.imgGetterTimeAggregationUnit
+        self.imgGetterDataValue = self.cellEdit.imgGetterDataValue
+        self.imgGetterDate = self.cellEdit.imgGetterDate
+        self.imgGetterTime = self.cellEdit.imgGetterTime
+        self.imgGetterCensorCode = self.cellEdit.imgGetterCensorCode
+        self.imgGetterUTCOffset = self.cellEdit.imgGetterUTCOFFset
+        self.imgGetterQualityCode = self.cellEdit.imgGetterQualityCode
+        self.imgGetterTimeAggInterval = self.cellEdit.imgGetterTimeAggregationInterval
+        self.imgGetterTimeAggUnit = self.cellEdit.imgGetterTimeAggregationUnit
 
         ## Custom Value Setters
         ## Sets the value, can modify rules for setting value
-        self.valueSetterDataValue = cellEdit.valueSetterDataValue
-        self.valueSetterUTCOffset = cellEdit.valueSetterUTCOffset
+        self.valueSetterDataValue = self.cellEdit.valueSetterDataValue
+        self.valueSetterUTCOffset = self.cellEdit.valueSetterUTCOffset
 
         ## Custom String Converters
         ## Changes how the string will appear in the cell after editing
-        self.localtime2Str = cellEdit.strConverterLocalTime
-        self.str2DataValue = cellEdit.strConverterDataValue
-        self.utcOffSet2Str = cellEdit.strConverterUTCOffset
+        self.localtime2Str = self.cellEdit.strConverterLocalTime
+        self.str2DataValue = self.cellEdit.strConverterDataValue
+        self.utcOffSet2Str = self.cellEdit.strConverterUTCOffset
         # self.offSetValue2Str = cellEdit.strConverterOffSetValue
 
         ## Custom CellEditors
         ## Custom cell editors for each cell
-        self.dateEditor = cellEdit.dateEditor
-        self.timeEditor = cellEdit.localTimeEditor
-        self.censorEditor = cellEdit.censorCodeEditor
-        self.valueDateTimeEditorCreator = cellEdit.valueDateTimeEditor
-        self.qualityCodeCreator = cellEdit.setComboForQualityCodeColumn
-        self.timeAggregationUnitIDCreator = cellEdit.setComboForTimeAggregationUnitIDCreator
-        self.annotationCreator = cellEdit.setComboForAnnotation
+        self.dateEditor = self.cellEdit.dateEditor
+        self.timeEditor = self.cellEdit.localTimeEditor
+        self.censorEditor = self.cellEdit.censorCodeEditor
+        self.valueDateTimeEditorCreator = self.cellEdit.valueDateTimeEditor
+        self.qualityCodeCreator = self.cellEdit.setComboForQualityCodeColumn
+        self.timeAggregationUnitIDCreator = self.cellEdit.setComboForTimeAggregationUnitIDCreator
+        self.annotationCreator = self.cellEdit.setComboForAnnotation
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
@@ -106,6 +106,9 @@ class OLVAddPoint(FastObjectListView):
         self.useAlternateBackColors = True
         self.oddRowsBackColor = wx.Colour(191, 239, 255)
         self.cellEditMode = self.CELLEDIT_DOUBLECLICK
+
+    def refresh_annotations(self):
+        self.cellEdit.annotationChoices = self.cellEdit.fetch_annotations()
 
     def buildOlv(self):
         columns = [

@@ -15,9 +15,12 @@ class WizardActionView(wx.lib.scrolledpanel.ScrolledPanel):
         header_text.SetFont(font)
 
         # REQUIRED FIELDS
-        required_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Required Fields"), orient=wx.VERTICAL)
+        required_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Required Fields"),
+                                                      orient=wx.VERTICAL)
         affiliations_text = wx.StaticText(self, label="Affiliations")
         self.affiliations_table = CustomListCtrl(self)
+
+        self.affiliations_table.SetSingleStyle(wx.LC_SINGLE_SEL, add=True)
 
         row_sizer = wx.BoxSizer(wx.HORIZONTAL)
         row_sizer.Add(affiliations_text, 0, wx.EXPAND)
@@ -28,19 +31,20 @@ class WizardActionView(wx.lib.scrolledpanel.ScrolledPanel):
         required_static_box_sizer.Add(row_sizer, 0, wx.EXPAND | wx.ALL, 5)
 
         # OPTIONAL FIELDS
-        optional_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Optional Fields"), orient=wx.VERTICAL)
+        optional_static_box_sizer = wx.StaticBoxSizer(box=wx.StaticBox(self, label="Optional Fields"),
+                                                      orient=wx.VERTICAL)
         action_file_link_text = wx.StaticText(self, label="Action File Link")
-        action_file_link_text_box = wx.TextCtrl(self)
+        self.action_file_link_text_box = wx.TextCtrl(self)
         description_text = wx.StaticText(self, label="Description")
-        description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         role_description_text = wx.StaticText(self, label="Role Description")
-        role_description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        self.role_description_text_box = wx.TextCtrl(self, style=wx.TE_MULTILINE)
 
         flex_grid_sizer = wx.FlexGridSizer(rows=3, cols=2, vgap=9, hgap=25)
 
-        flex_grid_sizer.AddMany([(action_file_link_text), (action_file_link_text_box, 1, wx.EXPAND),
-                                 (description_text), (description_text_box, 1, wx.EXPAND),
-                                 (role_description_text), (role_description_text_box, 1, wx.EXPAND)
+        flex_grid_sizer.AddMany([(action_file_link_text), (self.action_file_link_text_box, 1, wx.EXPAND),
+                                 (description_text), (self.description_text_box, 1, wx.EXPAND),
+                                 (role_description_text), (self.role_description_text_box, 1, wx.EXPAND)
                                  ])
 
         flex_grid_sizer.AddGrowableRow(1, 1)

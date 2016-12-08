@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from series_service import  SeriesService
 from edit_service import EditService
 from export_service import ExportService
+from export_data import ExportData
 
 
 from odmtools.controller import EditTools
@@ -165,7 +166,7 @@ class ServiceManager():
 
 
     def get_export_service(self):
-        return ExportService(self.get_series_service())
+        return ExportData(self.get_series_service())
 
     ## ###################
     # private variables

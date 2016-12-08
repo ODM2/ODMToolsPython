@@ -9,6 +9,7 @@ import odmtools.gui.frmQueryBuilder as frmQueryBuilder
 
 from odmtools.common.logger import LoggerTool
 from odmtools.odmdata import MemoryDatabase
+from odmtools.odmdata import returnDict
 from odmtools.view import clsSeriesSelector
 
 # tool = LoggerTool()
@@ -71,7 +72,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             self.memDB.set_series_service(self.series_service)
 
             object = self.series_service.get_all_series()
-            cols = object[0].__dict__.keys()
+            #cols = object[0].__dict__.keys()
+            cols = returnDict()
             self.tblSeries._buildColumns(cols)
             if object:
                 self.tblSeries.SetObjects(object)
@@ -94,6 +96,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         self.memDB.set_series_service(db)
         object = self.series_service.get_all_series()
         #checkedObjs = self.tblSeries.GetCheckedObjects()
+
         idList = [x.id for x in self.tblSeries.modelObjects]
 
         for x in object:
@@ -185,8 +188,8 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         # TODO @jmeline needs to fix edit, it doesn't unedit when a plot is being edited
         self.Bind(wx.EVT_MENU, self.onRightEdit, editItem)
         # TODO @jmeline will refresh and clear selected as an enhancement
-        #self.Bind(wx.EVT_MENU, self.onRightRefresh, popup_menu.Append(popup_series_refresh, 'Refresh'))
-        #self.Bind(wx.EVT_MENU, self.onRightClearSelected, popup_menu.Append(popup_series_refresh, 'Clear Selected'))
+
+
 
         popup_menu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.onRightExData, popup_menu.Append(popup_export_data, 'Export Data'))
@@ -306,7 +309,7 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
             full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
 
             #series_id = self.tableSeries.getColumnText(self.selectedIndex, 1)
-            series_id = self.tblSeries.GetSelectedObject().id
+            series_id = self.tblSeries.GetSelectedObject().ResultID
             self.export_service.export_series_data(series_id, full_path, True, True, True, True, True, True, True)
             self.Close()
 
@@ -462,17 +465,17 @@ class FrmSeriesSelector(clsSeriesSelector.ClsSeriesSelector):
         :return:
         """
         if site_code and var_code:
-            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10],text=site_code)
-            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10],text=var_code)
+            self.siteFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns,text=site_code)
+            self.variableFilter = TextSearch(self.tblSeries, columns=self.tblSeries.columns,text=var_code)
             self.tblSeries.SetFilter(Chain(self.siteFilter, self.variableFilter))
         elif site_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10], text=site_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns, text=site_code))
         elif var_code:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10], text=var_code))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns, text=var_code))
         elif advfilter:
             self.tblSeries.SetFilter(advfilter)
         else:
-            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns[0:10]))
+            self.tblSeries.SetFilter(TextSearch(self.tblSeries, columns=self.tblSeries.columns))
         self.tblSeries.RepopulateList()
 
 

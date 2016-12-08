@@ -9,6 +9,7 @@ import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
+from odm2api.ODM2.models import *
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
  wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,
@@ -184,7 +185,7 @@ class SummaryPage(wiz.WizardPageSimple):
 
 
     def fill_summary(self):
-        sampling_feature, variable, method, source, processing_level = self.parent.get_metadata()
+        sampling_feature, variable, method, action, processing_level = self.parent.get_metadata()
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sc, 'Code: ' + str(sampling_feature.SamplingFeatureCode))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sn, 'Name: ' + str(sampling_feature.SamplingFeatureName))
@@ -194,9 +195,8 @@ class SummaryPage(wiz.WizardPageSimple):
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(method.MethodDescription))
 
-        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(source.organization))
-        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(source.description))
-        # self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Citation: ' + str(source.citation))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(action.MethodObj.OrganizationObj.OrganizationName))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(action.MethodObj.OrganizationObj.OrganizationDescription))
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(processing_level.ProcessingLevelCode))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(processing_level.Definition))
@@ -227,29 +227,56 @@ class wizSave(wx.wizard.Wizard):
         self.Bind(wx.wizard.EVT_WIZARD_FINISHED, self.on_wizard_finished)
 
     def get_metadata(self):
-        method = None
-        variable = None
-        processing_level = None
-        source = None
+        # method = self.currSeries.FeatureActionObj.ActionObj.MethodObj
+        # processing_level = self.currSeriefs.quality_control_level
+        # variable = self.currSeries.variable
+        # action =
+
+        # if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
+        #     logger.debug("SaveAs")
+        #     method = self.pgMethod.get_method()
+        #     processing_level = self.pgQCL.get_processing_level()
+        #     variable = self.pgVariable.get_variable()
+        #     action = self.action_page.get_action()
+        # elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
+        #     logger.debug("Save")
+        # elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
+        #     logger.debug("Existing")
+        #     method, processing_level, variable = self.pgExisting.getSeries()
+        # site = self.currSeries.FeatureActionObj.SamplingFeatureObj
+        # # source = self.currSeries.source
+        # logger.debug("site: %s, variable: %s, method: %s, source: %s, processing_level: %s" % (
+        # str(site), str(variable), str(method), str(action), str(processing_level)))
+        # return site, variable, method, action, processing_level
+        #
+        method = self.__method_from_series
+        processing_level = self.__processing_level_from_series
+        variable = self.__variable_from_series
+        affiliation = self.action_page.get_affiliation()
+        site = self.__site_from_series
+
 
         if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
-            logger.debug("SaveAs")
-            method = self.pgMethod.getMethod()
+            # Selected a new series
+            method = self.pgMethod.get_method()
             processing_level = self.pgQCL.get_processing_level()
             variable = self.pgVariable.get_variable()
-        elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
-            logger.debug("Save")
-            method = self.currSeries.FeatureActionObj.ActionObj.MethodObj
-            processing_level = self.currSeries.quality_control_level
-            variable = self.currSeries.variable
+
         elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
-            logger.debug("Existing")
-            method, processing_level, variable = self.pgExisting.getSeries()
-        site = self.currSeries.FeatureActionObj.SamplingFeatureObj
-        # source = self.currSeries.source
-        logger.debug("site: %s, variable: %s, method: %s, source: %s, processing_level: %s" % (
-        str(site), str(variable), str(method), str(source), str(processing_level)))
-        return site, variable, method, source, processing_level
+            # selected an existing series
+            method, processing_level, variable, result = self.pgExisting.get_selected_series()
+
+        # Create action
+        action = Actions()
+        action.MethodObj = method
+        action.MethodID = method.MethodID
+        action.ActionDescription = self.action_page.action_view.description_text_box.GetValue()
+        action.ActionFileLink = self.action_page.action_view.action_file_link_text_box.GetValue()
+        action.MethodObj.OrganizationObj = affiliation.OrganizationObj
+        action.BeginDateTime = self.currSeries.ResultDateTime
+        action.BeginDateTimeUTCOffset = self.currSeries.ResultDateTimeUTCOffset
+
+        return site, variable, method, action, processing_level
 
     def __init__(self, parent, service_manager, record_service):
         self._init_ctrls(parent)
@@ -263,19 +290,20 @@ class wizSave(wx.wizard.Wizard):
         self.currSeries = record_service.get_series()
 
         self.pgIntro = pageIntro.pageIntro(self, "Intro")
-        # self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
-        self.pgMethod = WizardMethodController(self, self.series_service)
-        # self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
-        self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager)
-        # self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
-        self.pgVariable = WizardVariableController(self, service_manager=service_manager,
-                                                   current_variable=self.currSeries.VariableObj)
-        self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service,
-                                                    self.currSeries.FeatureActionObj.SamplingFeatureObj)
 
-        affiliations = self.series_service.get_all_affiliations()
+        self.__method_from_series = self.currSeries.FeatureActionObj.ActionObj.MethodObj
+        self.__variable_from_series = self.currSeries.VariableObj
+        self.__processing_level_from_series = self.currSeries.ProcessingLevelObj
+        self.__all_affiliations = self.series_service.get_all_affiliations()
+        self.__site_from_series = self.currSeries.FeatureActionObj.SamplingFeatureObj
 
-        self.action_page = WizardActionController(self, affiliations=affiliations)
+        self.pgMethod = WizardMethodController(self, self.series_service, current_method=self.__method_from_series)
+        self.pgQCL = WizardProcessLevelController(self, service_manager=service_manager, current_processing_level=self.__processing_level_from_series)
+        self.pgVariable = WizardVariableController(self, service_manager=service_manager, current_variable=self.__variable_from_series)
+        self.action_page = WizardActionController(self, affiliations=self.__all_affiliations)
+
+        self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.__site_from_series)
+
 
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
@@ -329,7 +357,7 @@ class wizSave(wx.wizard.Wizard):
         self.Close()
 
     def on_wizard_finished(self, event):
-        Site, Variable, Method, Source, QCL = self.get_metadata()
+        site, variable, method, action, proc_level = self.get_metadata()
         #if qcl exits use its its
         closeSuccessful = False
 
@@ -343,7 +371,7 @@ class wizSave(wx.wizard.Wizard):
                 original = self.pgExisting.pnlExisting.rbOriginal.GetValue()
                 new = self.pgExisting.pnlExisting.rbNew.GetValue()
 
-        if QCL.id == 0 and not rbSaveAsNew:
+        if proc_level.ProcessingLevelID == 0 and not rbSaveAsNew:
             """
             If we're looking at a QCL with Control level 0 and the following cases:
                 Save
@@ -378,28 +406,46 @@ class wizSave(wx.wizard.Wizard):
 
         if closeSuccessful:
             #if qcl exists use its id
-            if self.series_service.qcl_exists(QCL):
-                if QCL == self.currSeries.quality_control_level:
-                    QCL = None
-                else:
-                    QCL = self.record_service.get_qcl(QCL)
+            # if self.series_service.qcl_exists(QCL):
+            #     if QCL == self.currSeries.quality_control_level:
+            #         QCL = None
+            #     else:
+            #         QCL = self.record_service.get_qcl(QCL)
+            # else:
+            #     QCL = self.record_service.create_processing_level(QCL.code, QCL.definition, QCL.explanation)
+            if self.series_service.get_processing_level_by_code(proc_level.ProcessingLevelCode) is None:
+                proc_level = self.series_service.create_processing_level(proc_level.ProcessingLevelCode, proc_level.Definition, proc_level.Explanation)
+            elif proc_level.ProcessingLevelCode == self.__processing_level_from_series.ProcessingLevelCode:
+                proc_level = None
             else:
-                QCL = self.record_service.create_processing_level(QCL.code, QCL.definition, QCL.explanation)
+                proc_level = self.series_service.get_processing_level_by_code(proc_level.ProcessingLevelCode)
+
 
             #if variable exists use its id
-            if self.series_service.variable_exists(Variable):
-                Variable = self.record_service.get_variable(Variable)
+            # if self.series_service.variable_exists(Variable):
+            #     Variable = self.record_service.get_variable(Variable)
+            # else:
+            #     Variable = self.record_service.create_variable(Variable)
+            if self.series_service.get_variable_by_code(variable.VariableCode) is None:
+                variable = self.series_service.create_variable_by_var(variable)
             else:
-                Variable = self.record_service.create_variable(Variable)
+                variable = self.series_service.get_variable_by_code(variable.VariableCode)
+
 
             #if method exists use its id
-            if self.series_service.method_exists(Method):
-                if Method == self.currSeries.method:
-                    Method = None
-                else:
-                    Method = self.record_service.get_method(Method)
+            # if self.series_service.method_exists(Method):
+            #     if Method == self.currSeries.method:
+            #         Method = None
+            #     else:
+            #         Method = self.record_service.get_method(Method)
+            # else:
+            #     Method = self.record_service.create_method(Method)
+            if self.series_service.get_method_by_code(method.MethodCode) is None:
+                method = self.series_service.create_method(method.MethodDescription, method.MethodLink)
+            elif method == self.__method_from_series:
+                method = None
             else:
-                Method = self.record_service.create_method(Method)
+                method = self.series_service.get_method_by_code(method.MethodCode)
 
             # initiate either "Save as" or "Save"
             '''
@@ -408,22 +454,36 @@ class wizSave(wx.wizard.Wizard):
             else:
                 result = self.record_service.saveAs(Variable, Method, QCL, True)
             '''
+            affiliation = self.action_page.get_affiliation()
+
+            action_by = ActionBy()
+            #action_by.ActionID = action.ActionID
+            action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
+            action_by.AffiliationID = affiliation.AffiliationID
+            action_by.AffiliationObj = affiliation
+
+            # result = self.series_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
+            result = self.pgExisting.pnlExisting.olvSeriesList.GetSelectedObject().ResultObj
+
+            #result = self.record_service._edit_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
 
             try:
                 if rbSave:
                     result = self.record_service.save()
                 elif rbSaveAsNew:
-                    result = self.record_service.save_as(Variable, Method, QCL)
+                    result = self.record_service.save_as(variable=variable, method=method, proc_level=proc_level,
+                                                        action=action, action_by=action_by)
                 elif rbSaveAsExisting:
                     if overwrite:
-                        result = self.record_service.save_existing(Variable, Method, QCL)
+                        result = self.record_service.save_existing(result=result)
                     elif append:
+                        #TODO send in just the result
                         #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
                         #TODO if i require that original or new is selected I can call once with overwrite = original
                         if original:
-                            result = self.record_service.save_appending(Variable, Method, QCL, overwrite = False)
+                            result = self.record_service.save_appending(result=result, overwrite=False)
                         elif new:
-                            result = self.record_service.save_appending(Variable, Method, QCL, overwrite = True)
+                            result = self.record_service.save_appending(result=result, overwrite=True)
 
                 Publisher.sendMessage("refreshSeries")
 
