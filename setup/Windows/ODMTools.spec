@@ -27,7 +27,7 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='ODMTools')
+               name='ODM2Tools')
 
 
 
