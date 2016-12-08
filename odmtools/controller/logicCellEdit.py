@@ -3,6 +3,7 @@ import datetime
 import wx
 import wx.combo
 from wx.lib import masked
+from odmtools.controller.NewFlagValuesController import NewFlagValuesController
 
 __author__ = 'Jacob'
 
@@ -324,7 +325,26 @@ class CellEdit():
     def setComboForAnnotation(self, olv, rowIndex, subItemIndex):
         customCombo = CustomComboBox(olv, choices=self.annotationChoices, style=wx.CB_READONLY)
         customCombo.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        customCombo.Bind(wx.EVT_COMBOBOX, self.on_annotation_combo_change)
         return customCombo
+
+    def on_annotation_combo_change(self, event):
+        if not event:
+            return
+
+        combo = event.GetEventObject()
+        if combo.GetValue() == NEW:
+            self.__show_flag_controller()
+
+        event.Skip()
+
+    def __show_flag_controller(self):
+        add_flag_controller = NewFlagValuesController(self.parent, series_service=self.series_service,
+                                                      qualifier_choice=None,
+                                                      record_service=self.recordService)
+
+        add_flag_controller.collapsible_panel.expand_panel()
+        add_flag_controller.Show()
 
 
 class DatePicker(wx.DatePickerCtrl):

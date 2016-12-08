@@ -107,6 +107,9 @@ class OLVAddPoint(FastObjectListView):
         self.oddRowsBackColor = wx.Colour(191, 239, 255)
         self.cellEditMode = self.CELLEDIT_DOUBLECLICK
 
+    def refresh_annotations(self):
+        self.cellEdit.annotationChoices = self.cellEdit.fetch_annotations()
+
     def buildOlv(self):
         columns = [
             ColumnDefn(title="DataValue",

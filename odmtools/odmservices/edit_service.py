@@ -566,18 +566,17 @@ class EditService():
 
         if meth:
             action.MethodID = meth.MethodID
-            result.FeatureActionObj.ActionObj.MethodID = meth.MethodID
+            action.MethodObj = meth.MethodObj
 
         #if result does not exist
         if not self.memDB.series_service.resultExists(result):
             try:
                 #create Action
                 action.ActionID = None
-                #action.MethodObj = None
                 action.ActionTypeCV = "Derivation"
                 self.memDB.series_service.read._session.expunge(action.MethodObj.OrganizationObj)
                 self.memDB.series_service.read._session.expunge(action.MethodObj)
-                action = self.memDB.series_service.create.create(action)
+                action = self.memDB.series_service.create.createAction(action)  # it times out. find out why
                 print action
 
 
