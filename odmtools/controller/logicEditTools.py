@@ -153,6 +153,15 @@ class EditTools():
     ###################
     # Editing
     ###################
+    def updateValues(self, values):
+        """
+
+        :param values: pandas Dataframe - must contain a "datavalues" column and a date time as the index
+        :return:
+        """
+        self._edit_service.updateValues(values)
+        self.refresh_edit()
+
     def _create_dataframe(self, points):
         return pd.DataFrame(points)
 

@@ -119,6 +119,7 @@ class MethodPage(wiz.WizardPageSimple):
         # pageMethod.pnlMethod.__init__(self, parent)
         wiz.WizardPageSimple.__init__(self, parent)
 
+
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.page_method_view = pageMethod.pnlMethod(self)
         main_sizer.Add(self.page_method_view, 1, wx.EXPAND | wx.ALL, 0)
@@ -159,6 +160,7 @@ class MethodPage(wiz.WizardPageSimple):
 #
 #         self.panel.lstMethods.Focus(index)
 #         self.panel.lstMethods.Select(index)
+
 
 
 ########################################################################
