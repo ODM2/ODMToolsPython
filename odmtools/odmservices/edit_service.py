@@ -510,13 +510,13 @@ class EditService():
         vc = result.ValueCount
         # set in df
         values["resultid"] = result.ResultID
-        # update result
-        self.updateResult(result)
+
         # count = overlap calc
         count = self.overlapcalc(result, values, overwrite)
         # set value count = res.vc+valuecount-count
-        result.ValueCount = result.ValueCount + vc - count
-        self.memDB.series_service.update.updateResult(result.ResultID, result.ValueCount)
+        valuecount = result.ValueCount + vc - count
+        # update result
+        self.updateResult(result, valuecount)
         # insert values
         self.memDB.series_service.upsert_values(values)
         # save new annotations
@@ -618,7 +618,7 @@ class EditService():
         return self.updateResult(result)
 
 
-    def updateResult(self, result):
+    def updateResult(self, result, valuecount = -10):
         form = "%Y-%m-%d %H:%M:%S"
         # get pd
         values = self.memDB.getDataValuesDF()
@@ -627,7 +627,12 @@ class EditService():
         action = result.FeatureActionObj.ActionObj
         action.BeginDateTime= datetime.datetime.strptime(str(np.min(values['valuedatetime'])), form)
         action.EndDateTime = datetime.datetime.strptime(str(np.max(values["valuedatetime"])), form)
-        result.ValueCount = len(values)
+        if valuecount > 0 :
+            result.ValueCount=valuecount
+        else:
+            result.ValueCount = len(values)
+
+        setSchema(self.memDB.series_service._session_factory.engine)
         self.memDB.series_service.update.updateResult(result.ResultID, result.ValueCount)
         self.memDB.series_service.update.updateAction(actionID=action.ActionID, begin=action.BeginDateTime, end=action.EndDateTime)
 
@@ -641,7 +646,7 @@ class EditService():
         dfstart = datetime.datetime.strptime(str(np.min(values["valuedatetime"])), form)
         overlap = dbend>= dfstart
         #number of overlapping values
-        overlapdf = values[(values["valuedatetime"]>= dfstart) & (values["valudatetime"]<= dbend)]
+        overlapdf = values[(values["valuedatetime"]<= dfstart) & (values["valuedatetime"]>= dbend)]
         count =len(overlapdf)
         #if not overwrite. remove any overlapping values from df
         if overlap:

@@ -631,6 +631,7 @@ class SeriesService(serviceBase):
     def insert_annotations(self, annotations):
         annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
 
+
     def _get_df_query(self, values):
 
         resid = str(values['resultid'][0])
