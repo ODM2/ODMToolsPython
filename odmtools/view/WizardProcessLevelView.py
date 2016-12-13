@@ -27,6 +27,8 @@ class WizardProcessLevelView(wx.lib.scrolledpanel.ScrolledPanel):
         font = wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD)
         header_text.SetFont(font)
         self.SetupScrolling()
+        self.existing_process_radio.SetValue(True)
+        self.existing_process_table.SetSingleStyle(wx.LC_SINGLE_SEL, add=True)
 
         # Add components to sizer
         table_sizer = wx.BoxSizer(wx.VERTICAL)

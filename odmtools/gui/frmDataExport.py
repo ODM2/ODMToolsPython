@@ -79,7 +79,7 @@ class frmDataExport(wx.Dialog):
 		self._init_ctrls(parent)
 
 		sm = ServiceManager()
-		self.export_service = sm.get_export_service()
+		self.export_data = sm.get_export_service()
 
 
 	def OnBtnOKButton(self, event):
@@ -96,7 +96,8 @@ class frmDataExport(wx.Dialog):
 			full_path = os.path.join(dlg.GetDirectory(), dlg.GetFilename())
 			print full_path
 
-			self.export_service.export_series_data(self.series_id, full_path, utc, site, var, offset, qual, src, qcl)
+			#self.export_service.export_series_data(self.series_id, full_path, utc, site, var, offset, qual, src, qcl)
+			self.export_data.export_series_data(self.series_id, full_path, utc, site, var, offset, qual, src, qcl)
 			self.Close()
 
 		dlg.Destroy()

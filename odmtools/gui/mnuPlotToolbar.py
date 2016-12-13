@@ -402,7 +402,8 @@ class ToolTip(wx.ToolTip):
         self.tooltip_string = tip
 
     def Enable(self, x):
-        print ("in custom tooltip set enable")
+        #todo fix tooltip for mac
+        #print ("in custom tooltip set enable")
         if x: self.SetTip(self.tooltip_string)
         else: self.SetTip("")
 

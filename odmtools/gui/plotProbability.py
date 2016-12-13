@@ -133,20 +133,12 @@ class plotProb(wx.Panel):
                 self.plots.set_title("\n".join(textwrap.wrap(oneSeries.siteName, 55)))
 
             if len(oneSeries.dataTable) > 0:
-
-                #self.prob.append(
-                #prop = oneSeries.Probability.plot(column="DataValue", ax=self.plots)
-                #todo FutureWarning: order is deprecated, use sort_values(...)
-
-                # xValues = oneSeries.Probability.xAxis.sort_values().values
-                # yValues = oneSeries.Probability.yAxis.sort_values().values
-
-                xValues = oneSeries.Probability.xAxis.order().values
-                yValues = oneSeries.Probability.yAxis.order().values
-
+                xValues = oneSeries.Probability.xAxis.sort_values().values
+                yValues = oneSeries.Probability.yAxis.sort_values().values
 
                 ax = self.plots.plot(xValues, yValues, 'bs', color=oneSeries.color,
                                    label=oneSeries.plotTitle)
+
                 self.axislist[oneSeries.axisTitle] = ax[0]
 
         self.setXaxis()

@@ -1,14 +1,15 @@
 import sqlite3
 
 
-from odmtools.odmdata import DataValue
+# from odmtools.odmdata import DataValue
 from series_service import SeriesService
 
-from odmtools.odmdata import series as series_module
+# from odmtools.odmdata import series as series_module
 
 import pandas as pd
 import datetime
 import numpy as np
+from odm2api.ODM2.models import *
 
 import logging
 from odmtools.common.logger import LoggerTool
@@ -48,12 +49,13 @@ class EditService():
         self._filter_from_selection = False
         self._debug = debug
 
-        if connection_string is  "" and connection is not None:
-            self.memDB= connection
+        if connection_string is "" and connection is not None:
+            self.memDB = connection
 
         elif connection_string is not "" and connection is None:
             from odmtools.odmdata import MemoryDatabase
-            self.memDB= MemoryDatabase()
+            self.memDB = MemoryDatabase()
+            # todo Stephanie: does not accept a string for the connection anymore
             self.memDB.set_series_service(SeriesService(connection_string, False))
 
 
@@ -235,8 +237,6 @@ class EditService():
         self.filtered_dataframe= df[df.index.isin(newdf.drop_duplicates().dropna())]
 
 
-
-
     def change_value_threshold(self, value, operator):
 
         df = self._test_filter_previous()
@@ -308,7 +308,7 @@ class EditService():
     # Gets
     ###################
     def get_series(self):
-        return self.memDB.series_service.get_series_by_id(self._series_id)
+        return self.memDB.series_service.get_series(self._series_id)
 
     def get_series_points(self):
         # all point in the series_service
@@ -416,15 +416,15 @@ class EditService():
             tmp_filter_list =self.get_filtered_points()
             startdate =tmp_filter_list.index[0]
             x_l = (tmp_filter_list.index[-1]-startdate).total_seconds()
-            #nodv= self.memDB.series_service.get_variable_by_id(self.memDB.df["VariableID"][0])
-            nodv = self.memDB.series.variable.no_data_value
+
+            nodv = self.memDB.series.VariableObj.NoDataValue
+
             # y_n = y_0 + G(x_i / x_l)
-
             # f = lambda row :  row["datavalue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l))
-            # tmp_filter_list["datavalue"]=tmp_filter_list.apply(f, axis = 1)
 
-            f = lambda row :  row["DataValue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l)) if row["DataValue"] != nodv else row["DataValue"]
-            tmp_filter_list["DataValue"]=tmp_filter_list.apply(f, axis = 1)
+
+            f = lambda row :  row["datavalue"]+(gap_width * ((row.name-startdate).total_seconds() / x_l)) if row["datavalue"] != nodv else row["datavalue"]
+            tmp_filter_list["datavalue"]=tmp_filter_list.apply(f, axis = 1)
 
             update_list = [{"value": row["datavalue"], "id":index} for index, row in tmp_filter_list.iterrows()]
 
@@ -482,180 +482,361 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
-    def updateSeries(self, var=None, method=None, qcl=None, is_new_series=False, overwrite = True, append = False):
-        """
+    def save(self,  result=None):
+        values = self.memDB.getDataValuesDF()
 
-        :param var:
-        :param method:
-        :param qcl:
-        :param is_new_series:
-        :return:
-        """
+        if not result:
+            result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
+        else:
+            values["resultid"] = result.ResultID
 
-        var_id = var.id if var is not None else None
-        method_id = method.id if method is not None else None
-        qcl_id = qcl.id if qcl is not None else None
-        #self.memDB.changeSeriesIDs(var_id, method_id, qcl_id)
-        dvs = self.memDB.getDataValuesDF()
-        if var_id is not None:
-            dvs["VariableID"] = var_id
-        if method_id is not None:
-            dvs["MethodID"] = method_id
-        if qcl_id is not None:
-            dvs["QualityControlLevelID"] = qcl_id
+        # update result
+        result.ValueCount = 0
+        self.updateResult(result)
+        # upsert values
+        self.memDB.series_service.upsert_values(values)
+        # save new annotations
+        self.add_annotations(self.memDB.annotation_list)
+        return result
+
+    def save_existing(self, result):
+        result = self.save(result)
+        return result
+
+    def save_appending(self, result, overwrite=True):
+        values = self.memDB.getDataValuesDF()
+
+        # get value count
+        vc = result.ValueCount
+        # set in df
+        values["resultid"] = result.ResultID
+
+        # count = overlap calc
+        count = self.overlapcalc(result, values, overwrite)
+        # set value count = res.vc+valuecount-count
+        valuecount = result.ValueCount + vc - count
+        # update result
+        self.updateResult(result, valuecount)
+        # insert values
+        self.memDB.series_service.upsert_values(values)
+        # save new annotations
+        self.add_annotations(self.memDB.annotation_list)
+
+        return result
+
+    def save_as(self, variable, method, proc_level, action, action_by):
+        #save as new series
+        values = self.memDB.getDataValuesDF()
+        # get all annotations for series
+        annolist= self.memDB.series_service.get_annotations_by_result(str(values["resultid"][0]))
+        annolist['valueid']=None
+
+        # create series
+        result = self.getResult(variable, method, proc_level, action, action_by)
+
+        # set in df
+        values["resultid"] = result.ResultID
+        # insert values
+        self.memDB.series_service.insert_values(values)
+
+        # save all annotations
+        frames = [self.memDB.annotation_list, annolist]
+        annolist = pd.concat(frames)
+        self.add_annotations(annolist)
 
 
+        return result
 
-        #if is new series_service remove valueids
-        #if is_new_series:
-        dvs["ValueID"] = None
-        '''
-            for dv in dvs:
-                dv.id = None
-        '''
+    def getResult(self, var, meth, proc, action, action_by):
+        values = self.memDB.getDataValuesDF()
+        # copy old
+        result = self.memDB.series_service.get_series(str(values["resultid"][0]))
+        result.ResultID = None
+        result.ResultUUID = None
 
-        series = self.memDB.series_service.get_series_by_id(self._series_id)
-        logger.debug("original editing series_service id: %s" % str(series.id))
 
-        if (var or method or qcl ):
-            tseries = self.memDB.series_service.get_series_by_id_quint(site_id=int(series.site_id),
-                                                                  var_id=var_id if var else int(series.variable_id),
-                                                                  method_id=method_id if method else int(
-                                                                      series.method_id),
-                                                                  source_id=series.source_id,
-                                                                  qcl_id=qcl_id if qcl else int(
-                                                                      series.quality_control_level_id))
-            if tseries:
-                logger.debug("Save existing series_service ID: %s" % str(tseries.id))
-                series = tseries
-            else:
-                print "Series doesn't exist (if you are not, you should be running SaveAs)"
+        # change var, meth proc, in df #intend ts, agg sta
+        if var:
+            result.VariableID = var.VariableID
+            result.VariableObj = var
 
-        if is_new_series:
-            series = series_module.copy_series(series)
-            if var:
-                series.variable_id = var_id
-                series.variable_code = var.code
-                series.variable_name = var.name
-                series.speciation = var.speciation
-                series.variable_units_id = var.variable_unit_id
-                series.variable_units_name = var.variable_unit.name
-                series.sample_medium = var.sample_medium
-                series.value_type = var.value_type
-                series.time_support = var.time_support
-                series.time_units_id = var.time_unit_id
-                series.time_units_name = var.time_unit.name
-                series.data_type = var.data_type
-                series.general_category = var.general_category
+        if proc:
+            result.ProcessingLevelID = proc.ProcessingLevelID
+            result.ProcessingLevelObj = proc
 
-            if method:
-                series.method_id = method_id
-                series.method_description = method.description
+        if meth:
+            action.MethodID = meth.MethodID
+            action.MethodObj = meth.MethodObj
 
-            if qcl:
-                series.quality_control_level_id = qcl_id
-                series.quality_control_level_code = qcl.code
-        '''
-        dvs["LocalDateTime"] = pd.to_datetime(dvs["LocalDateTime"])
-        dvs["DateTimeUTC"] = pd.to_datetime(dvs["DateTimeUTC"])
-        '''
+        #if result does not exist
+        if not self.memDB.series_service.resultExists(result):
+            try:
+                #create Action
+                action.ActionID = None
+                action.ActionTypeCV = "Derivation"
+                self.memDB.series_service.read._session.expunge(action.MethodObj.OrganizationObj)
+                self.memDB.series_service.read._session.expunge(action.MethodObj)
+                action = self.memDB.series_service.create.createAction(action)  # it times out. find out why
+                print action
 
+
+                # create Actionby done
+                action_by.ActionID = action.ActionID
+                action_by= self.memDB.series_service.create.createActionby(action_by)
+                print action_by
+
+
+                # create FeatureAction (using current sampling feature id)
+                sampling_feature = result.FeatureActionObj.SamplingFeatureObj
+                self.memDB.series_service.read._session.expunge(result.FeatureActionObj.SamplingFeatureObj)
+
+                feature_action = FeatureActions()
+                feature_action.SamplingFeatureID = sampling_feature.SamplingFeatureID
+                feature_action.ActionID = action.ActionID
+                feature_action.ActionObj = action
+                feature_action.SamplingFeatureObj = sampling_feature
+                feature_action = self.memDB.series_service.create.createFeatureAction(feature_action)
+                print feature_action
+
+                # create TimeSeriesResult - this should also contain all of the stuff for the Result
+                time, offset = self.get_current_time_and_utcoffset()
+
+                result.ValueCount = 0
+                result.FeatureActionID = feature_action.FeatureActionID
+                result.ResultDateTime = time
+                result.ResultDateTimeUTCOffset = offset
+                result.FeatureActionObj= feature_action
+                self.memDB.series_service.read._session.expunge(result.ProcessingLevelObj)
+                self.memDB.series_service.read._session.expunge(result.VariableObj)
+                self.memDB.series_service.read._session.expunge(result)
+
+
+                result = self.memDB.series_service.create.createResult(result)
+                print result
+            except Exception as ex:
+                print ex
+        return self.updateResult(result)
+
+
+    def updateResult(self, result, valuecount = -10):
+        form = "%Y-%m-%d %H:%M:%S"
+        # get pd
+        values = self.memDB.getDataValuesDF()
+
+        # update count, dates,
+        action = result.FeatureActionObj.ActionObj
+        action.BeginDateTime= datetime.datetime.strptime(str(np.min(values['valuedatetime'])), form)
+        action.EndDateTime = datetime.datetime.strptime(str(np.max(values["valuedatetime"])), form)
+        if valuecount > 0 :
+            result.ValueCount=valuecount
+        else:
+            result.ValueCount = len(values)
+
+        setSchema(self.memDB.series_service._session_factory.engine)
+        self.memDB.series_service.update.updateResult(result.ResultID, result.ValueCount)
+        self.memDB.series_service.update.updateAction(actionID=action.ActionID, begin=action.BeginDateTime, end=action.EndDateTime)
+
+        return result
+
+    def overlapcalc(self, result, values,  overwrite):
         form = "%Y-%m-%d %H:%M:%S"
 
-        if not append:
+        #is there any overlap
+        dbend = result.FeatureActionObj.ActionObj.EndDateTime
+        dfstart = datetime.datetime.strptime(str(np.min(values["valuedatetime"])), form)
+        overlap = dbend>= dfstart
+        #number of overlapping values
+        overlapdf = values[(values["valuedatetime"]<= dfstart) & (values["valuedatetime"]>= dbend)]
+        count =len(overlapdf)
+        #if not overwrite. remove any overlapping values from df
+        if overlap:
+            if not overwrite:
+                values = values[values["valuedatetime"] > dbend]
 
-            series.begin_date_time = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)#np.min(dvs["LocalDateTime"])#dvs[c0].local_date_time
-            series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)#np.max(dvs["LocalDateTime"])#dvs[-1].local_date_time
-            series.begin_date_time_utc = datetime.datetime.strptime(str(np.min(dvs["DateTimeUTC"])), form) #dvs[0].date_time_utc
-            series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form) #dvs[-1].date_time_utc
-            series.value_count = len(dvs)
+        # return the number of overlapping values
+        return count
 
-            ## Override previous save
-            if not is_new_series:
-                # delete old dvs
-                #pass
-                self.memDB.series_service.delete_values_by_series(series)
-        elif append:
-            #if series_service end date is after  dvs startdate
-            dbend = series.end_date_time
-            dfstart = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)
-            overlap = dbend>= dfstart
-            #leave series_service start dates to those previously set
-            series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
-            series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)
-            #TODO figure out how to calculate the new value count
-            series.value_count = len(dvs)
-
-            if overlap:
-                if overwrite:
-                    #remove values from the database
-                    self.memDB.series_service.delete_values_by_series(series, startdate=dfstart)
-                else:
-                    #remove values from df
-                    dvs = dvs[dvs["LocalDateTime"] > dbend]
+    def add_annotations(self, annolist):
+        #match up with existing values and get value id
+        #get df with only ValueID and AnnotationID
+        #remove any duplicates
+        #save df to db
+        pass
 
 
 
-        #logger.debug("series_service.data_values: %s" % ([x for x in series_service.data_values]))
-        dvs.drop('ValueID', axis=1, inplace=True)
-        return series, dvs
 
-    def save(self):
-        """ Save to an existing catalog
-        :param var:
-        :param method:
-        :param qcl:
-        :return:
-        """
 
-        series, dvs = self.updateSeries(is_new_series=False)
-        if self.memDB.series_service.save_series(series, dvs):
-            logger.debug("series_service saved!")
-            return True
-        else:
-            logger.debug("The Save was unsuccessful")
-            return False
 
-    def save_as(self, var=None, method=None, qcl=None):
-        """
-        :param var:
-        :param method:
-        :param qcl:
-        :return:
-        """
-        series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
 
-        if self.memDB.series_service.save_new_series(series, dvs):
-            logger.debug("series_service saved!")
-            return True
-        else:
-            logger.debug("The Save As Function was Unsuccessful")
-            return False
 
-    def save_appending(self, var= None, method = None, qcl=None, overwrite=False):
-        series, dvs = self.updateSeries(var, method, qcl, is_new_series=False, append= True, overwrite=overwrite)
 
-        if self.memDB.series_service.save_series(series, dvs):
-            logger.debug("series_service saved!")
-            return True
-        else:
-            logger.debug("The Append Existing Function was Unsuccessful")
-            return False
 
-    def save_existing(self, var=None, method=None, qcl=None):
-        """
-        :param var:
-        :param method:
-        :param qcl:
-        :return:
-        """
-        series, dvs = self.updateSeries(var, method, qcl, is_new_series=False)
-        if self.memDB.series_service.save_series(series, dvs):
-            logger.debug("series_service saved!")
-            return True
-        else:
-            logger.debug("The Save As Existing Function was Unsuccessful")
-            return False
+
+    #
+    # def updateSeries(self, result = None, is_new_series=False, overwrite = True, append = False):
+    #     """
+    #
+    #     :param var:
+    #     :param method:
+    #     :param qcl:
+    #     :param is_new_series:
+    #     :return:
+    #     """
+    #
+    #     result_id = result.ResultID if result is not None else None
+    #
+    #
+    #     dvs = self.memDB.getDataValuesDF()
+    #     if result_id is not None:
+    #         dvs["ResultID"] = result_id
+    #
+    #
+    #     #if is new series_service remove valueids
+    #     #if is_new_series:
+    #     dvs["ValueID"] = None
+    #     '''
+    #         for dv in dvs:
+    #             dv.id = None
+    #     '''
+    #
+    #     series = self.memDB.series_service.get_series_by_id(self._series_id)
+    #     logger.debug("original editing series_service id: %s" % str(series.id))
+    #
+    #     if (result):
+    #         tseries = self.memDB.series_service.get_series(result_id)
+    #
+    #         if tseries:
+    #             logger.debug("Save existing series_service ID: %s" % str(tseries.id))
+    #             series = tseries
+    #         else:
+    #             print "Series doesn't exist (if you are not, you should be running SaveAs)"
+    #
+    #     if is_new_series:
+    #         series = series_module.copy_series(series)
+    #         if var:
+    #             series.variable_id = var_id
+    #             series.variable_code = var.code
+    #             series.variable_name = var.name
+    #             series.speciation = var.speciation
+    #             series.variable_units_id = var.variable_unit_id
+    #             series.variable_units_name = var.variable_unit.name
+    #             series.sample_medium = var.sample_medium
+    #             series.value_type = var.value_type
+    #             series.time_support = var.time_support
+    #             series.time_units_id = var.time_unit_id
+    #             series.time_units_name = var.time_unit.name
+    #             series.data_type = var.data_type
+    #             series.general_category = var.general_category
+    #
+    #         if method:
+    #             series.method_id = method_id
+    #             series.method_description = method.description
+    #
+    #         if qcl:
+    #             series.quality_control_level_id = qcl_id
+    #             series.quality_control_level_code = qcl.code
+    #     '''
+    #     dvs["LocalDateTime"] = pd.to_datetime(dvs["LocalDateTime"])
+    #     dvs["DateTimeUTC"] = pd.to_datetime(dvs["DateTimeUTC"])
+    #     '''
+    #
+    #     form = "%Y-%m-%d %H:%M:%S"
+    #
+    #     if not append:
+    #
+    #         series.begin_date_time = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)#np.min(dvs["LocalDateTime"])#dvs[c0].local_date_time
+    #         series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)#np.max(dvs["LocalDateTime"])#dvs[-1].local_date_time
+    #         series.begin_date_time_utc = datetime.datetime.strptime(str(np.min(dvs["DateTimeUTC"])), form) #dvs[0].date_time_utc
+    #         series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form) #dvs[-1].date_time_utc
+    #         series.value_count = len(dvs)
+    #
+    #         ## Override previous save
+    #         if not is_new_series:
+    #             # delete old dvs
+    #             #pass
+    #             self.memDB.series_service.delete_values_by_series(series)
+    #     elif append:
+    #         #if series_service end date is after  dvs startdate
+    #         dbend = series.end_date_time
+    #         dfstart = datetime.datetime.strptime(str(np.min(dvs["LocalDateTime"])), form)
+    #         overlap = dbend>= dfstart
+    #         #leave series_service start dates to those previously set
+    #         series.end_date_time = datetime.datetime.strptime(str(np.max(dvs["LocalDateTime"])), form)
+    #         series.end_date_time_utc = datetime.datetime.strptime(str(np.max(dvs["DateTimeUTC"])), form)
+    #         #TODO figure out how to calculate the new value count
+    #         series.value_count = len(dvs)
+    #
+    #         if overlap:
+    #             if overwrite:
+    #                 #remove values from the database
+    #                 self.memDB.series_service.delete_values_by_series(series, startdate=dfstart)
+    #             else:
+    #                 #remove values from df
+    #                 dvs = dvs[dvs["LocalDateTime"] > dbend]
+    #
+    #
+    #
+    #     #logger.debug("series_service.data_values: %s" % ([x for x in series_service.data_values]))
+    #     dvs.drop('ValueID', axis=1, inplace=True)
+    #     return series, dvs
+    #
+    # def save(self):
+    #     """ Save to an existing catalog
+    #     :param var:
+    #     :param method:
+    #     :param qcl:
+    #     :return:
+    #     """
+    #
+    #     series, dvs = self.updateSeries(is_new_series=False)
+    #     if self.memDB.series_service.save_series(series, dvs):
+    #         logger.debug("series_service saved!")
+    #         return True
+    #     else:
+    #         logger.debug("The Save was unsuccessful")
+    #         return False
+    #
+    # def save_as(self, var=None, method=None, qcl=None):
+    #     """
+    #     :param var:
+    #     :param method:
+    #     :param qcl:
+    #     :return:
+    #     """
+    #     series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
+    #
+    #     if self.memDB.series_service.save_new_series(series, dvs):
+    #         logger.debug("series_service saved!")
+    #         return True
+    #     else:
+    #         logger.debug("The Save As Function was Unsuccessful")
+    #         return False
+    #
+    # def save_appending(self, var= None, method = None, qcl=None, overwrite=False):
+    #     series, dvs = self.updateSeries(var, method, qcl, is_new_series=False, append= True, overwrite=overwrite)
+    #
+    #     if self.memDB.series_service.save_series(series, dvs):
+    #         logger.debug("series_service saved!")
+    #         return True
+    #     else:
+    #         logger.debug("The Append Existing Function was Unsuccessful")
+    #         return False
+    #
+    # def save_existing(self, var=None, method=None, qcl=None):
+    #     """
+    #     :param var:
+    #     :param method:
+    #     :param qcl:
+    #     :return:
+    #     """
+    #     series, dvs = self.updateSeries(var, method, qcl, is_new_series=False)
+    #     if self.memDB.series_service.save_series(series, dvs):
+    #         logger.debug("series_service saved!")
+    #         return True
+    #     else:
+    #         logger.debug("The Save As Existing Function was Unsuccessful")
+    #         return False
 
     def create_qcl(self, code, definition, explanation):
         return self.memDB.series_service.create_processing_level(code, definition, explanation)
@@ -679,3 +860,11 @@ class EditService():
         pass
 
 
+    def get_current_time_and_utcoffset(self):
+        current_time = datetime.datetime.now()
+        utc_time = datetime.datetime.utcnow()
+
+        difference_in_timezone = current_time - utc_time
+        offset_in_hours = difference_in_timezone.total_seconds() / 3600
+
+        return current_time, offset_in_hours

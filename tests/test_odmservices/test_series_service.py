@@ -191,11 +191,11 @@ class TestSeriesService:
         assert series.id == db_series.id
 
     def test_get_series_by_id_quint(self):
-        assert self.series_service.get_series_by_id_quint(10, 10, 10, 10, 10) == None
+        assert self.series_service.resultExists(10, 10, 10, 10, 10) == None
 
         series = test_util.add_series(self.session)
-        db_series = self.series_service.get_series_by_id_quint(series.site_id, series.variable_id, series.method_id,
-                                                               series.source_id, series.quality_control_level_id)
+        db_series = self.series_service.resultExists(series.site_id, series.variable_id, series.method_id,
+                                                     series.source_id, series.quality_control_level_id)
 
         assert series.id == db_series.id
 
@@ -353,11 +353,7 @@ class TestSeriesService:
 
     def test_create_variable(self):
         unit = test_util.add_unit(self.session)
-        variable = self.series_service.create_variable("Code", "Name", "Speciation", unit.id, "SampleMedium",
-                                                       "ValueType", True,  # is_regular
-                                                       5.0,  # time_support
-                                                       unit.id,  # time_unit_id
-                                                       "DataType", "GeneralCategory", -999.0)  # no_data_value
+        variable = self.series_service.create_variable("Code", "Name", "Speciation", -9999.0)  # no_data_value
 
         assert variable.id != None
         assert variable.code == "Code"

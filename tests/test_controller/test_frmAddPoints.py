@@ -50,7 +50,7 @@ class TestAddPoints:
         '''
 
         evt = wx.PyCommandEvent(wx.EVT_BUTTON.typeId, self.frame.addRowBtn.GetId())
-        #wx.PostEvent(self.frame.addRowBtn, evt)
+        #wx.PostEvent(self.bulkInsertCtrl.addRowBtn, evt)
         self.frame.GetEventHandler().ProcessEvent(evt)
         assert self.olv.GetObjects()
 

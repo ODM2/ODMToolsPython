@@ -123,7 +123,7 @@ class plotTimeSeries(wx.Panel):
 
         if isinstance(filtered_datetime, list):
             df = self.editCurve.dataTable
-            result = df[df['LocalDateTime'].isin(filtered_datetime)].astype(datetime.datetime)
+            result = df[df['valuedatetime'].isin(filtered_datetime)].astype(datetime.datetime)
 
         if isinstance(result, pd.DataFrame):
             if result.empty:
@@ -134,7 +134,7 @@ class plotTimeSeries(wx.Panel):
                 self.canvas.draw()
                 return
 
-        values = result['DataValue'].values.tolist()
+        values = result['datavalue'].values.tolist()
         dates = result.index.astype(datetime.datetime)
         self.selplot = self.axislist[self.editSeries.axisTitle].scatter(
             dates, values, s=35, c='red', edgecolors='none', zorder=12, marker='s', alpha=1)
@@ -239,7 +239,7 @@ class plotTimeSeries(wx.Panel):
         dates = data.index.astype(datetime.datetime)
         curraxis = self.axislist[oneSeries.axisTitle]
 
-        curraxis.plot_date(dates, data['DataValue'], "-s",
+        curraxis.plot_date(dates, data['datavalue'], "-s",
                  color=oneSeries.color, xdate=True, label=oneSeries.plotTitle, zorder=10, alpha=1,
                  picker=5.0, pickradius=5.0, markersize=4.5)
         curraxis.set_xlabel('Date')
@@ -250,7 +250,7 @@ class plotTimeSeries(wx.Panel):
         # scale = 1.5
         # f = zoom_factory(curraxis , base_scale = scale)
 
-        self.xys = zip(convertedDates, oneSeries.dataTable['DataValue'])
+        self.xys = zip(convertedDates, oneSeries.dataTable['datavalue'])
         self.toolbar.editSeries(self.xys, self.editCurve)
         # self.pointPick = self.canvas.mpl_connect('pick_event', self._onPick)
         self.editSeries = oneSeries

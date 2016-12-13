@@ -8,7 +8,7 @@ from wx.py.frame import Frame, ShellFrameMixin
 
 __author__ = 'Jacob'
 class ModifiedFrame(Frame):
-    """Override standard PyCrust frame in order to remove exit and about page"""
+    """Override standard PyCrust bulkInsertCtrl in order to remove exit and about page"""
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
 

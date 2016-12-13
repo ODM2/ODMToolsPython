@@ -186,7 +186,7 @@ MEMORY_VIEW_COLUMNS = [
 
 
 class MainFrame(wx.Frame):
-    """The root frame for the display of a single data-set"""
+    """The root bulkInsertCtrl for the display of a single data-set"""
     loader = None
     percentageView = False
     

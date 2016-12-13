@@ -6,7 +6,10 @@ import urllib
 
 
 from sqlalchemy.exc import SQLAlchemyError
-from odmtools.odmservices import SeriesService, EditService, ExportService
+from series_service import  SeriesService
+from edit_service import EditService
+from export_service import ExportService
+from export_data import ExportData
 
 
 from odmtools.controller import EditTools
@@ -22,7 +25,7 @@ logger =logging.getLogger('main')
 
 
 class ServiceManager():
-    def __init__(self, debug=False, conn_dict = None):
+    def __init__(self, debug=False, conn_dict=None):
         self.debug = debug
         f = self._get_file('r')
         self._conn_dicts = []
@@ -125,14 +128,13 @@ class ServiceManager():
     def delete_connection(self, conn_dict):
         self._conn_dicts[:] = [x for x in self._conn_dicts if x != conn_dict]
 
-
     def get_series_service(self, conn_dict=None, conn_string=""):
         if not conn_dict:
             conn_dict = self.get_current_conn_dict()
 
         if conn_string:
             #todo how to get version from a connection string
-            conn = dbconnection.createConnectionFromString(conn_string, float(self.get_current_conn_dict()["version"]))
+            conn = dbconnection.createConnectionFromString(conn_string, 2.0)#float(self.get_current_conn_dict()["version"]))
         else:
             conn = dbconnection.createConnection(conn_dict['engine'], conn_dict['address'], conn_dict['db'], conn_dict['user'],
                                       conn_dict['password'], conn_dict['version'])
@@ -149,24 +151,22 @@ class ServiceManager():
         #     version = float(self._current_conn_dict['version'])
         #
         # sf = SessionFactory(conn_string, self.debug, version = version)
-        ss= SeriesService(conn)
-        return ss
-
-    def get_cv_service(self):
-        conn_string = self._build_connection_string(self._current_conn_dict)
-        return ReadService(conn_string, self.debug)
-
+        self.series_service= SeriesService(conn)
+        return self.series_service
 
     def get_edit_service(self, series_id, connection):
         return EditService(series_id, connection=connection,  debug=self.debug)
 
-
+    # todo: Not using build_connection_string. Need to update this
     def get_record_service(self, script, series_id, connection):
-        return EditTools(self, script, self.get_edit_service(series_id, connection),
-                             self._build_connection_string(self.is_valid_connection()))
+
+        # return EditTools(self, script, self.get_edit_service(series_id, connection),
+        #                      connection)
+        return EditTools(script, self.get_edit_service(series_id, connection), connection_string=connection)
+
 
     def get_export_service(self):
-        return ExportService(self.get_series_service())
+        return ExportData(self.get_series_service())
 
     ## ###################
     # private variables

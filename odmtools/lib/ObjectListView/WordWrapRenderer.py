@@ -184,7 +184,7 @@ The bottom of the red rectangle should be immediately below this."""
             inset = (20, 20, 20, 20)
             rect = [inset[0], inset[1], self.GetSize().width-(inset[0]+inset[2]), self.GetSize().height-(inset[1]+inset[3])]
 
-            # Calculate exactly how high the wrapped is going to be and put a frame around it.
+            # Calculate exactly how high the wrapped is going to be and put a bulkInsertCtrl around it.
             dc.SetFont(self.font)
             dc.SetPen(wx.RED_PEN)
             rect[3] = WordWrapRenderer.CalculateHeight(dc, self.text, rect[2])

@@ -8,7 +8,9 @@ from odmtools.odmservices import ServiceManager, SeriesService
 
 # from odmtools.odmdata import SeriesService#ODM
 # ODM = SeriesService.ODM
-from odm2api.ODM2.models import TimeSeriesResultValues as DataValue
+from odm2api.ODM2.models import TimeSeriesResultValues as TSRV
+from odm2api.ODM2.models import setSchema
+import pandas as pd
 
 
 logger =logging.getLogger('main')
@@ -28,6 +30,8 @@ class MemoryDatabase(object):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
 
+        setSchema(self.mem_service._session_factory.engine)
+
         # TODO clean up closing of program
         # if taskserver is None:
         #numproc = cpu_count()
@@ -35,10 +39,15 @@ class MemoryDatabase(object):
         #else:
 
         self.taskserver = taskserver
+        self.annotation_list = pd.DataFrame()
+        #self.annotation_list = pd.DataFrame() columns =['ResultID', 'ValueDateTime', 'ValueID', 'AnnotationID')
+        #send in engine
+
 
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+        setSchema(self.mem_service._session_factory.engine)
 
 
     def set_series_service(self, service):
@@ -60,12 +69,18 @@ class MemoryDatabase(object):
         #else:
         #    self.updateDF()
         '''
+        # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
+        self.mem_service._session.commit()
+        setSchema(self.mem_service._session_factory.engine)
         self.updateDF()
         # pick up thread here before it is needed
         logging.debug("done updating memory dataframe")
         return self.df
 
     def getDataValues(self):
+        # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
+        self.mem_service._session.commit()
+        setSchema(self.mem_service._session_factory.engine)
         return self.mem_service.get_all_values()
 
     def getEditRowCount(self):
@@ -74,12 +89,7 @@ class MemoryDatabase(object):
     def getEditColumns(self):
         columns = []
         tmp_columns = self.df.columns.tolist()
-        tmp_columns.remove('DataValue')
-        tmp_columns.remove('LocalDateTime')
-        tmp_columns.remove('QualifierID')
-        columns.append('DataValue')
-        columns.append('LocalDateTime')
-        columns.append('QualifierID')
+
         columns.extend(tmp_columns)
         return [(x, i) for (i, x) in enumerate(columns)]
         # return [(x, i) for (i, x) in enumerate(self.df.columns)]
@@ -92,6 +102,7 @@ class MemoryDatabase(object):
 
     def commit(self):
         self.mem_service._session.commit()
+        # self.mem_service._session.commit()
 
     def rollback(self):
         self.mem_service._session.rollback()
@@ -107,13 +118,14 @@ class MemoryDatabase(object):
         '''
         updates : list of dictionary that contains 2 items, id and value
         '''
-
-        stmt = (DataValue.__table__.update().
-                where(DataValue.ValueDateTime == bindparam('id')).
-                values(DataValue=bindparam('value'))
-        )
+        setSchema(self.mem_service._session_factory.engine)
+        stmt = (TSRV.__table__.update().
+                where(TSRV.ValueDateTime == bindparam('id')).
+                values(datavalue=bindparam('value'))
+                )
 
         self.mem_service._session.execute(stmt, updates)
+        #self.mem_service._session.query(TSRV).filter_by
 
         # self.updateDF()
 
@@ -121,20 +133,22 @@ class MemoryDatabase(object):
     def updateValue(self, ids, operator, value):
         # query = DataValue.data_value+value
         if operator == '+':
-            query = DataValue.DataValue + value
+            query = TSRV.DataValue + value
         elif operator == '-':
-            query = DataValue.DataValue - value
+            query = TSRV.DataValue - value
         elif operator == '*':
-            query = DataValue.DataValue * value
+            query = TSRV.DataValue * value
         elif operator == '=':
             query = value
 
 
         #break into chunks to get around sqlites restriction. allowing user to send in only 999 arguments at once
         chunks=self.chunking(ids)
+        setSchema(self.mem_service._session_factory.engine)
         for c in chunks:
-            q=self.mem_service._session.query(DataValue).filter(DataValue.ValueDateTime.in_(c))
-            q.update({DataValue.DataValue: query}, False)
+            q=self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))
+            q.update({TSRV.DataValue: query}, False)
+
 
         #self.updateDF()
 
@@ -146,12 +160,31 @@ class MemoryDatabase(object):
 
 
     #break into chunks to get around sqlite's restriction. allowing user to send in only 999 arguments at once
-    #TODO update to work with odm2
+
+
     def updateFlag(self, ids, value):
-        chunks=self.chunking(ids)
-        for c in chunks:
-            self.mem_service._session.query(DataValue).filter(DataValue.ValueDateTime.in_(c))\
-                .update({DataValue.qualifier_id: value}, False)
+
+
+        flags = pd.DataFrame(columns = ['AnnotationID', 'DateTime', 'ResultID', 'ValueID'])
+        flags["DateTime"] = ids
+        flags["AnnotationID"] = value
+        flags["ResultID"] = self.series.ResultID
+        flags["ValueID"] = None
+
+
+        #what if the column already exists
+        # chunks=self.chunking(ids)
+        # for c in chunks:
+        #     # add entry in the Timeseriesresultvalueannotations table
+        #     self.mem_service._session.query(TSRV).filter(TSRV.ValueDateTime.in_(c))\
+        #         .update({TSRV.qualifier_id: value}, False)
+
+        frames = [self.annotation_list, flags]
+        self.annotation_list=pd.concat(frames)
+        print self.annotation_list
+        #todo: remove duplicates before saving
+
+
 
 
     def delete(self, ids):
@@ -165,22 +198,25 @@ class MemoryDatabase(object):
         """
         Takes in a list of points and loads each point into the database
         """
-        stmt = DataValue.__table__.insert()
+        stmt = TSRV.__table__.insert()
 
         if not isinstance(points, list):
             points = [points]
 
         for point in points:
-            vals = {"DataValue": point[0], "ValueAccuracy": point[1],
-                    "LocalDateTime": point[2], "UTCOffset": point[3],
-                    "DateTimeUTC": point[4], "OffsetValue": point[5],
-                    "OffsetTypeID": point[6], "CensorCode": point[7],
-                    "QualifierID": point[8], "SampleID": point[9],
-                    "SiteID": point[10], "VariableID": point[11],
-                    "MethodID": point[12], "SourceID": point[13],
-                    "QualityControlLevelID": point[14]}
-            self.mem_service._session.execute(stmt, vals)
+            vals = {"datavalue": point[0], "valuedatetime": point[1],
+                    "valuedatetimeutcoffset": point[3],
+                    "censorcodecv": point[4], "qualitycodecv": point[5],
+                    "timeaggregationinterval": point[6], "timeaggregationintervalunitsid": point[7],
+                    "resultid":self.df["resultid"][0]
+                    # todo: Add annotations
+                    }
+            if point[8] != 'NULL':
+                print point[8]
+                self.updateFlag([point[1]], [point[8]])
 
+            setSchema(self.mem_service._session_factory.engine)
+            self.mem_service._session.execute(stmt, vals)
 
     def stopEdit(self):
         self.editLoaded = False
@@ -202,7 +238,6 @@ class MemoryDatabase(object):
         else:
         '''
         self.df = self.mem_service.get_values()
-        print self.mem_service._version
 
 
     def initEditValues(self, seriesID):
@@ -213,8 +248,9 @@ class MemoryDatabase(object):
         if not self.editLoaded:
 
             logger.debug("Load series from db")
-            self.series = self.series_service.get_series_by_id(seriesID)
-            self.df = self.series_service.get_values_by_series(seriesID)
+
+            self.series = self.series_service.get_series(seriesID)
+            self.df = self.series_service.get_values(series_id= seriesID)
 
             self.editLoaded = True
 
@@ -229,34 +265,9 @@ class MemoryDatabase(object):
             if self.df is not None and len(self.df)<=0:
                 logger.debug("no data in series")
             else:
-
-                self.df.to_sql(name="DataValues", if_exists='replace', con=self.mem_service._session_factory.engine,
+                setSchema(self.mem_service._session_factory.engine)
+                self.df.to_sql(name="timeseriesresultvalues", if_exists='replace', con=self.mem_service._session_factory.engine,
                                index=False)#,flavor='sqlite', chunksize=10000)
                 logger.debug("done loading database")
 
-
-
-#TODO: update to work with ODM2
-    def changeSeriesIDs(self, var=None, qcl=None, method=None):
-        """
-
-        :param var:
-        :param qcl:
-        :param method:
-        :return:
-        """
-
-        query = self.mem_service._session.query(DataValue)
-        if var is not None:
-            logger.debug(var)
-            query.update({DataValue.variable_id: var})
-
-        if method is not None:
-            logger.debug(method)
-            query.update({DataValue.method_id: method})
-        # check that the code is not zero
-        # if qcl is not None and qcl.code != 0:
-        if qcl is not None:
-            logger.debug(qcl)
-            query.update({DataValue.quality_control_level_id: qcl})
 

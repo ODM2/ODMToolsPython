@@ -1,48 +1,63 @@
-"""
-    ADD Point Cell Editor Logic
-"""
 from collections import OrderedDict
 import datetime
-
 import wx
 import wx.combo
 from wx.lib import masked
-from odmtools.gui.frmFlagValues import frmFlagValues
-from odmtools.lib.ObjectListView import CellEditor
+from odmtools.controller.NewFlagValuesController import NewFlagValuesController
 
 __author__ = 'Jacob'
 
 #### Options ####
 utcOffSetBounds = (-12, 12)
 NULL = "NULL"
-NEW = "[New Qualifier]"
+NEW = "[New Annotation]"
 
 class CellEdit():
     def __init__(self, parent, serviceManager, recordService):
         self.parent = parent
         self.recordService = recordService
-        if serviceManager:
-            self.serviceManager = serviceManager
-            self.cv_service = serviceManager.get_cv_service()
-            self.series_service = serviceManager.get_series_service()
-            offsetChoices = OrderedDict((x.description, x.id) for x in
-                                        self.cv_service.get_offset_type_cvs())
-            self.offSetTypeChoices = [NULL] + offsetChoices.keys()
-
-            labChoices = OrderedDict((x.lab_sample_code, x.id) for x in self.cv_service.get_samples())
-
-            self.censorCodeChoices = [NULL] + [x.term for x in self.cv_service.get_censor_code_cvs()]
-            self.labSampleChoices = [NULL] + labChoices.keys()
-
-            self.qualifierChoices = OrderedDict((x.code + ':' + x.description, x.id)
-                                           for x in self.series_service.get_all_qualifiers() if x.code and x.description)
-            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
-
+        self.serviceManager = serviceManager
+        if self.serviceManager:
+            self.series_service = self.serviceManager.get_series_service()
+            self.annotationChoices = self.fetch_annotations()
+            self.censorCodeChoices = self.fetchCensorCodeChoices()
+            self.qualityCodeChoices = self.fetchQualityCodeChoices()
+            self.timeAggregationInterval = -1
+            self.timeAggretaionUnitChoices = self.fetchTimeUnitChoices()
         else:
             self.censorCodeChoices = [NULL] + ['SampleCensorCode1'] + ['SampleCensorCode2'] + ['SampleCensorCode3']
             self.labSampleChoices = [NULL] + ['SampleLabSample1'] + ['SampleLabSample2'] + ['SampleLabSample3']
             self.offSetTypeChoices = [NULL] + ['SampleOffsetType1'] + ['SampleOffsetType2'] + ['SampleOffsetType3']
-            self.qualifierCodeChoices = [NULL] + ['SampleQualifierCode1'] + ['SampleQualifierCode2'] + ['SampleQualifierCode3']
+            self.annotationChoices = [NULL] + ['SampleAnnotation1'] + ['SampleAnnotation2'] + ['SampleAnnotation3']
+
+    def fetch_annotations(self):
+        self.qualifierChoices = OrderedDict((x.AnnotationCode + ':' + x.AnnotationText, x.AnnotationID)
+                                       for x in self.series_service.get_all_qualifiers() if x.AnnotationCode and x.AnnotationText)
+        qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
+        return qualifierCodeChoices
+
+    def fetchCensorCodeChoices(self):
+        if not self.serviceManager:
+            return [NULL]
+
+        series_service = self.serviceManager.get_series_service()
+        return [NULL] + [x.Name for x in series_service.get_censor_code_cvs()]
+
+    def fetchQualityCodeChoices(self):
+        """
+        :return: type(list
+        """
+        if not self.serviceManager:
+            return [NULL]
+
+        series_service = self.serviceManager.get_series_service()
+        return [NULL] + [x.Name for x in series_service.get_quality_code()]
+
+    def fetchTimeUnitChoices(self):
+        if not self.serviceManager:
+            return [NULL]
+        units = self.series_service.read.getUnits(type='time')
+        return  {unit.UnitsName:unit.UnitsID for unit in units}
 
     """
         --------------------
@@ -158,32 +173,9 @@ class CellEdit():
 
         return "error"
 
-    def imgGetterValueAcc(self, point):
-        """
-        """
-        value = point.valueAccuracy
-        point.validValueAcc = False
-        if not value:
-            return "error"
 
-        if value == NULL:
-            point.validValueAcc = True
-            return "check"
-
-        if isinstance(value, basestring):
-            for type in [int, float]:
-                try:
-                    value = type(value)
-                    if isinstance(value, type):
-                        point.validValueAcc = True
-                        return "check"
-                except ValueError:
-                    continue
-        return "error"
 
     def imgGetterOffSetType(self, point):
-        """
-        """
         point.validOffSetType = False
         if not point.offSetType in self.offSetTypeChoices:
             return "error"
@@ -191,9 +183,6 @@ class CellEdit():
         return "check"
 
     def imgGetterOffSetValue(self, point):
-        """
-        """
-
         point.validOffSetValue = False
         if point.offSetValue == NULL:
             point.validOffSetValue = True
@@ -216,25 +205,30 @@ class CellEdit():
             return "check"
         return "error"
 
-
-    def imgGetterQualifierCode(self, point):
-        """
-        """
-
-        point.validQualifierCode = False
-        if not point.qualifierCode in self.qualifierCodeChoices:
+    def imgGetterQualityCode(self, point):
+        point.validQualityCode = False
+        if not point.qualityCodeCV in self.qualityCodeChoices or point.qualityCodeCV == NULL:
             return "error"
-        point.validQualifierCode = True
+        point.validQualityCode = True
         return "check"
 
-    def imgGetterLabSampleCode(self, point):
-        """
-        """
+    def imgGetterTimeAggregationInterval(self, point):
+        point.validTimeAggInterval = False
 
-        point.validLabSampleCode = False
-        if not point.labSampleCode in self.labSampleChoices:
+        if point.timeAggInterval == NULL:
             return "error"
-        point.validLabSampleCode = True
+
+        point.validTimeAggInterval = True
+        return "check"
+
+    def imgGetterTimeAggregationUnit(self, point):
+        point.validTimeAggUnit = False
+
+        if not point.timeAggregationUnitID in self.timeAggretaionUnitChoices or point.timeAggregationUnitID == NULL:
+            return "error"
+
+        point.validTimeAggUnit = True
+
         return "check"
 
     """
@@ -262,39 +256,24 @@ class CellEdit():
 
         point.utcOffSet = newValue
 
-
     """
         ------------------------
         Custom String Converters
         ------------------------
     """
     def strConverterDataValue(self, value):
-        """
-        """
-
         try:
             return str(value)
         except Exception as e:
             return str(NULL)
 
     def strConverterLocalTime(self, time):
-        """Required Element
-
-        :param time:
-        :return:
-        """
-
         return unicode(time)
 
     def strConverterUTCOffset(self, value):
-        """
-        """
-
         return str(value)
 
     def strConverterOffSetValue(self, value):
-        """
-        """
         try:
             return str(value)
         except UnicodeEncodeError:
@@ -307,110 +286,66 @@ class CellEdit():
     """
 
     def localTimeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-
-        # odcb = masked.TimeCtrl(olv, fmt24hr=True)
         odcb = TimePicker(olv)
 
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
     def dateEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
         odcb = DatePicker(olv)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
     def offSetTypeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-
         odcb = CustomComboBox(olv, choices=self.offSetTypeChoices, style=wx.CB_READONLY)
-        # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
-        return odcb
-
-    def qualifierCodeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-        def cbHandler(event):
-            """
-            :param event:
-                :type wx.EVT_COMBOBOX:
-            """
-
-            if event.GetEventObject().Value == NEW:
-                dlg = frmFlagValues(self.parent, self.cv_service, self.qualifierChoices, isNew=True)
-
-                value = dlg.ShowModal()
-                if value == wx.ID_OK and dlg.selectedValue:
-                    self.qualifierCodeChoices.insert(0, dlg.selectedValue)
-                    event.GetEventObject().SetItems(self.qualifierCodeChoices)
-                    print event.GetEventObject().GetValue()
-                    print type(event.GetEventObject())
-                    event.GetEventObject().SetValue(dlg.selectedValue)
-                    print event.GetEventObject().GetValue()
-                #dlg.Destroy()
-
-        try:
-            self.qualifierChoices = OrderedDict((x.code + ':' + x.description, x.id)
-                                               for x in self.cv_service.get_all_qualifiers() if x.code and x.description)
-            self.qualifierCodeChoices = [NULL] + self.qualifierChoices.keys() + [NEW]
-        except:
-            pass
-        odcb = CustomComboBox(olv, choices=self.qualifierCodeChoices, style=wx.CB_READONLY)
-        # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
-        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
-        odcb.Bind(wx.EVT_COMBOBOX, cbHandler)
         return odcb
 
     def censorCodeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
         odcb = CustomComboBox(olv, choices=self.censorCodeChoices, style=wx.CB_READONLY)
         # OwnerDrawnComboxBoxes don't generate EVT_CHAR so look for keydown instead
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
-    def labSampleCodeEditor(self, olv, rowIndex, subItemIndex):
-        """
-
-        :param olv:
-        :param rowIndex:
-        :param subItemIndex:
-        :return:
-        """
-
-        odcb = CustomComboBox(olv, choices=self.labSampleChoices, style=wx.CB_READONLY)
+    def valueDateTimeEditor(self, olv, rowIndex, subItemIndex):
+        odcb = DatePicker(olv)
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
+
+    def setComboForQualityCodeColumn(self, olv, rowIndex, subItemIndex):
+        odcb = CustomComboBox(olv, choices=self.qualityCodeChoices, style=wx.CB_READONLY)
+        odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return odcb
+
+    def setComboForTimeAggregationUnitIDCreator(self, olv, rowIndex, subItemIndex):
+        customCombo = CustomComboBox(olv, choices=self.timeAggretaionUnitChoices.keys(), style=wx.CB_READONLY)
+        customCombo.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        return customCombo
+
+    def setComboForAnnotation(self, olv, rowIndex, subItemIndex):
+        customCombo = CustomComboBox(olv, choices=self.annotationChoices, style=wx.CB_READONLY)
+        customCombo.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
+        customCombo.Bind(wx.EVT_COMBOBOX, self.on_annotation_combo_change)
+        return customCombo
+
+    def on_annotation_combo_change(self, event):
+        if not event:
+            return
+
+        combo = event.GetEventObject()
+        if combo.GetValue() == NEW:
+            self.__show_flag_controller()
+
+        event.Skip()
+
+    def __show_flag_controller(self):
+        add_flag_controller = NewFlagValuesController(self.parent, series_service=self.series_service,
+                                                      qualifier_choice=None,
+                                                      record_service=self.recordService)
+
+        add_flag_controller.collapsible_panel.expand_panel()
+        add_flag_controller.Show()
+
 
 class DatePicker(wx.DatePickerCtrl):
     """

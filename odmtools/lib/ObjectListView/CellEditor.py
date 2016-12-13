@@ -489,12 +489,12 @@ def MakeAutoCompleteComboBox(olv, columnIndex, maxObjectsToConsider=10000):
     maxObjectsToConsider = min(maxObjectsToConsider, olv.GetItemCount())
     options = set(col.GetStringValue(olv.GetObjectAt(i)) for i in range(maxObjectsToConsider))
     cb = wx.ComboBox(olv, choices=list(options),
-                     style=wx.CB_DROPDOWN|wx.CB_SORT|wx.TE_PROCESS_ENTER)
+                     style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER)#|wx.CB_SORT)
     AutoCompleteHelper(cb)
     return cb
 
 
-#-------------------------------------------------------------------------
+#  -------------------------------------------------------------------------
 
 class AutoCompleteHelper(object):
     """

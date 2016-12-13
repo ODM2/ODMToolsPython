@@ -76,7 +76,7 @@ The ``ListCtrlPrintout`` handles all the details of the wx printing subsystem. I
 particular, it configures the printing DC so that its origin and scale are correct. This
 enables the ``ReportEngine`` to simply render the report without knowing the
 characteristics of the underlying printer DPI, unprintable region, or the scale of a print
-preview. When The ``ListCtrlPrintout`` encounters some action that is cannot perform (like
+preview. When The ``ListCtrlPrintout`` encounters some interactive_item that is cannot perform (like
 actually rendering a page) it calls back into ``ListCtrlPrinter`` (which simply forwards
 to the ``ReportEngine``).
 
@@ -1658,7 +1658,7 @@ class CellBlock(Block):
                 right = RectUtils.Right(x.cell)
                 dc.DrawLine(right, top, right, bottom)
 
-            # Draw the surrounding frame
+            # Draw the surrounding bulkInsertCtrl
             left = RectUtils.Left(combined[0].cell)
             right = RectUtils.Right(combined[-1].cell)
             dc.DrawRectangle(left, top, right-left, bottom-top)
@@ -1879,7 +1879,7 @@ class ListBlock(Block):
         """
         firstColumn = 0
 
-        # If a GroupListView has a column just for the expand/collapse, don't include it
+        # If a GroupListView has a column just for the is_expanded/collapse, don't include it
         if hasattr(self.lv, "useExpansionColumn") and self.lv.useExpansionColumn:
             firstColumn = 1
 
@@ -2369,7 +2369,7 @@ class RectangleDecoration(Decoration):
     A RectangleDecoration draw a rectangle around or on the side of a block.
 
     The rectangle can be hollow, solid filled or gradient-filled. It can have
-    a frame drawn as well.
+    a bulkInsertCtrl drawn as well.
 
     """
 

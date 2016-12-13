@@ -19,7 +19,7 @@ class TestFrmDBConfig:
     '''
     def test_form(self):
         """test form"""
-        assert self.frame.panel.choices == {
+        assert self.bulkInsertCtrl.panel.choices == {
             "Microsoft SQL Server": 'mssql', "MySQL": 'mysql', "PostgreSQL":"postgresql"
         }
     '''

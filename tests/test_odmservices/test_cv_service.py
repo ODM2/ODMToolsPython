@@ -98,12 +98,12 @@ class TestReadService:
         db_censor_code = self.cv_service.get_censor_code_cvs()[0]
         assert censor_code.term == db_censor_code.term
 
-    def test_get_sample_type_cvs(self):
-        assert self.cv_service.get_sample_type_cvs() == []
-
-        sample_type = test_util.add_sample_type_cv(self.session)
-        db_sample_type = self.cv_service.get_sample_type_cvs()[0]
-        assert sample_type.term == db_sample_type.term
+    # def test_get_sample_type_cvs(self):
+    #     assert self.cv_service.get_sample_type_cvs() == []
+    #
+    #     sample_type = test_util.add_sample_type_cv(self.session)
+    #     db_sample_type = self.cv_service.get_sample_type_cvs()[0]
+    #     assert sample_type.term == db_sample_type.term
 
     def test_get_units(self):
         assert self.cv_service.get_units() == []

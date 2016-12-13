@@ -1,50 +1,34 @@
-"""
-    Object List View Control used in Add Point Form
-"""
 import wx
 import wx.lib.newevent
 from datetime import datetime
 from odmtools.common.icons import x_mark_16, star_16, star_32, x_mark_32, check_mark_3_16, check_mark_3_32
 from odmtools.controller.logicCellEdit import CellEdit, NULL
-
-
+from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
+from odmtools.odmservices.service_manager import ServiceManager
 OvlCheckEvent, EVT_OVL_CHECK_EVENT = wx.lib.newevent.NewEvent()
 
 
-__author__ = 'Jacob'
-
-from odmtools.lib.ObjectListView import FastObjectListView, ColumnDefn
-
-
 class Points(object):
-    """
-
-    """
-
-    def __init__(self, dataValue="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
-                 censorCode="NULL", valueAccuracy="NULL", offSetValue="NULL", offSetType="NULL", qualifierCode="NULL",
-                 labSampleCode="NULL"):
+    def __init__(self, data_value="-9999", date=datetime.now().date(), time="00:00:00", utcOffSet=-7,
+                 censor_code="NULL", quality_code="NULL", time_agg_interval="NULL", time_agg_unit="NULL", annotation="NULL"):
         try:
-            self.dataValue = str(dataValue)
+            self.dataValue = str(data_value)
         except:
-            self.dataValue = dataValue
-
-        self.valueAccuracy = valueAccuracy
-
+            self.dataValue = data_value
         try:
             self.time = str(time)
         except:
             self.time = time
 
         self.date = str(date)
+        self.valueDateTime = self.date
 
         self.utcOffSet = str(utcOffSet)
-        #self.dateTimeUTC = dateTimeUTC
-        self.offSetValue = offSetValue
-        self.offSetType = offSetType
-        self.censorCode = censorCode
-        self.qualifierCode = qualifierCode
-        self.labSampleCode = labSampleCode
+        self.censorCode = censor_code
+        self.qualityCodeCV = quality_code
+        self.timeAggInterval = time_agg_interval
+        self.timeAggregationUnitID = time_agg_unit
+        self.annotation = annotation
 
         ## determines whether a row is in correct format or now
         self.validDataValue = False
@@ -53,80 +37,64 @@ class Points(object):
         self.validUTCOffSet = False
         self.validCensorCode = False
         self.validValueAcc = False
-        self.validOffSetValue = False
         self.validOffSetType = False
-        self.validQualifierCode = False
-        self.validLabSampleCode = False
-    def __repr__(self):
-        """
-
-        :return:
-        """
-
-        return "<Point('%s', '%s, '%s', '%s', '%s')>" \
-               % (self.dataValue, self.date, self.time, self.utcOffSet, self.censorCode)
+        self.validQualityCode = False
+        self.validTimeAggInterval = False
+        self.validTimeAggUnit = False
 
 
 class OLVAddPoint(FastObjectListView):
-    """
-
-    """
     def __init__(self, *args, **kwargs):
-        """
-
-        :param args:
-        :param kwargs:
-        :return:
-        """
-
-        try:
+        if "serviceManager" in kwargs:
             self.serviceManager = kwargs.pop("serviceManager")
-        except:
-            self.serviceManager = None
+        else:
+            try:
+                self.serviceManager = ServiceManager()
+            except:
+                self.serviceManager = None
+
         try:
             self.recordService = kwargs.pop("recordService")
         except:
             self.recordService = None
 
-
         FastObjectListView.__init__(self, *args, **kwargs)
 
-        cellEdit = CellEdit(self, self.serviceManager, self.recordService)
+        self.cellEdit = CellEdit(self, self.serviceManager, self.recordService)
 
         self.checkedObjects = []
 
         # # Custom Image Getters
-        self.imgGetterDataValue = cellEdit.imgGetterDataValue
-        self.imgGetterDate = cellEdit.imgGetterDate
-        self.imgGetterTime = cellEdit.imgGetterTime
-        self.imgGetterCensorCode = cellEdit.imgGetterCensorCode
-        self.imgGetterUTCOffset = cellEdit.imgGetterUTCOFFset
-        self.imgGetterValueAcc = cellEdit.imgGetterValueAcc
-        self.imgGetterlabSample = cellEdit.imgGetterLabSampleCode
-        self.imgGetterQualifier = cellEdit.imgGetterQualifierCode
-        self.imgGetterOffSetType = cellEdit.imgGetterOffSetType
-        self.imgGetterOffSetValue = cellEdit.imgGetterOffSetValue
+        self.imgGetterDataValue = self.cellEdit.imgGetterDataValue
+        self.imgGetterDate = self.cellEdit.imgGetterDate
+        self.imgGetterTime = self.cellEdit.imgGetterTime
+        self.imgGetterCensorCode = self.cellEdit.imgGetterCensorCode
+        self.imgGetterUTCOffset = self.cellEdit.imgGetterUTCOFFset
+        self.imgGetterQualityCode = self.cellEdit.imgGetterQualityCode
+        self.imgGetterTimeAggInterval = self.cellEdit.imgGetterTimeAggregationInterval
+        self.imgGetterTimeAggUnit = self.cellEdit.imgGetterTimeAggregationUnit
 
         ## Custom Value Setters
         ## Sets the value, can modify rules for setting value
-        self.valueSetterDataValue = cellEdit.valueSetterDataValue
-        self.valueSetterUTCOffset = cellEdit.valueSetterUTCOffset
+        self.valueSetterDataValue = self.cellEdit.valueSetterDataValue
+        self.valueSetterUTCOffset = self.cellEdit.valueSetterUTCOffset
 
         ## Custom String Converters
         ## Changes how the string will appear in the cell after editing
-        self.localtime2Str = cellEdit.strConverterLocalTime
-        self.str2DataValue = cellEdit.strConverterDataValue
-        self.utcOffSet2Str = cellEdit.strConverterUTCOffset
-        self.offSetValue2Str = cellEdit.strConverterOffSetValue
+        self.localtime2Str = self.cellEdit.strConverterLocalTime
+        self.str2DataValue = self.cellEdit.strConverterDataValue
+        self.utcOffSet2Str = self.cellEdit.strConverterUTCOffset
+        # self.offSetValue2Str = cellEdit.strConverterOffSetValue
 
         ## Custom CellEditors
         ## Custom cell editors for each cell
-        self.dateEditor = cellEdit.dateEditor
-        self.timeEditor = cellEdit.localTimeEditor
-        self.censorEditor = cellEdit.censorCodeEditor
-        self.offSetTypeEditor = cellEdit.offSetTypeEditor
-        self.qualifierCodeEditor = cellEdit.qualifierCodeEditor
-        self.labSampleEditor = cellEdit.labSampleCodeEditor
+        self.dateEditor = self.cellEdit.dateEditor
+        self.timeEditor = self.cellEdit.localTimeEditor
+        self.censorEditor = self.cellEdit.censorCodeEditor
+        self.valueDateTimeEditorCreator = self.cellEdit.valueDateTimeEditor
+        self.qualityCodeCreator = self.cellEdit.setComboForQualityCodeColumn
+        self.timeAggregationUnitIDCreator = self.cellEdit.setComboForTimeAggregationUnitIDCreator
+        self.annotationCreator = self.cellEdit.setComboForAnnotation
 
         self.SetEmptyListMsg("Add points either by csv or by adding a new row")
         self.AddNamedImages("error", x_mark_16.GetBitmap(), x_mark_32.GetBitmap())
@@ -139,57 +107,71 @@ class OLVAddPoint(FastObjectListView):
         self.oddRowsBackColor = wx.Colour(191, 239, 255)
         self.cellEditMode = self.CELLEDIT_DOUBLECLICK
 
+    def refresh_annotations(self):
+        self.cellEdit.annotationChoices = self.cellEdit.fetch_annotations()
+
     def buildOlv(self):
         columns = [
-            ## TODO This is needed for the windows version
-            #ColumnDefn("", "left", -1, valueSetter=self.emptyCol),
-            ColumnDefn("DataValue", "left", -1, minimumWidth=100,
+            ColumnDefn(title="DataValue",
+                       minimumWidth=100,
                        valueGetter='dataValue',
                        valueSetter=self.valueSetterDataValue,
                        imageGetter=self.imgGetterDataValue,
                        stringConverter=self.str2DataValue,
                        headerImage="star"),
-            ColumnDefn("Date", "left", -1, minimumWidth=120,
+
+            ColumnDefn(title="Date", minimumWidth=120,
                        valueGetter="date",
                        imageGetter=self.imgGetterDate,
                        cellEditorCreator=self.dateEditor,
                        headerImage="star"),
-            ColumnDefn("Time", "left", -1, minimumWidth=100,
+
+            ColumnDefn(title="Time", minimumWidth=100,
                        valueGetter="time",
                        imageGetter=self.imgGetterTime,
                        cellEditorCreator=self.timeEditor,
                        stringConverter=self.localtime2Str,
                        headerImage="star"),
-            ColumnDefn("UTCOffset", "left", -1, minimumWidth=100,
+
+            ColumnDefn(title="UTCOffset",
+                       minimumWidth=100,
                        valueGetter="utcOffSet",
-                       #valueSetter=self.valueSetterUTCOffset,
-                       #stringConverter=self.utcOffSet2Str,
                        imageGetter=self.imgGetterUTCOffset,
                        headerImage="star"),
-            ColumnDefn("CensorCode", "left", -1, valueGetter="censorCode", minimumWidth=110,
+
+            ColumnDefn(title="CensorCode",
+                       valueGetter="censorCode",
+                       minimumWidth=110,
                        cellEditorCreator=self.censorEditor,
                        imageGetter=self.imgGetterCensorCode,
                        headerImage="star"),
-            ColumnDefn("ValueAccuracy", "left", -1, valueGetter="valueAccuracy", minimumWidth=100,
-                       imageGetter=self.imgGetterValueAcc),
-            ColumnDefn("OffsetValue", "left", -1, valueGetter="offSetValue", minimumWidth=100,
-                       stringConverter=self.offSetValue2Str,
-                       imageGetter=self.imgGetterOffSetValue),
-            ColumnDefn("OffsetType", "left", -1, valueGetter="offSetType", minimumWidth=100,
-                       imageGetter=self.imgGetterOffSetType,
-                       cellEditorCreator=self.offSetTypeEditor),
-            ColumnDefn("QualifierCode", "left", -1, valueGetter="qualifierCode", minimumWidth=130,
-                       imageGetter=self.imgGetterQualifier,
-                       cellEditorCreator=self.qualifierCodeEditor),
-            ColumnDefn("LabSampleCode", "left", -1, valueGetter="labSampleCode", minimumWidth=130,
-                       imageGetter=self.imgGetterlabSample,
-                       cellEditorCreator=self.labSampleEditor
-                       ),
+
+            ColumnDefn(title="Quality CodeCV",
+                       valueGetter="qualityCodeCV",
+                       minimumWidth=130,
+                       cellEditorCreator=self.qualityCodeCreator,
+                       imageGetter=self.imgGetterQualityCode,
+                       headerImage="star"),
+
+            ColumnDefn(title="TimeAggregationInterval",
+                       minimumWidth=130,
+                       valueGetter="timeAggInterval",
+                       imageGetter=self.imgGetterTimeAggInterval,
+                       headerImage="star"),
+
+            ColumnDefn(title="TimeAggregationUnitID",
+                       minimumWidth=130,
+                       valueGetter="timeAggregationUnitID",
+                       cellEditorCreator=self.timeAggregationUnitIDCreator,
+                       imageGetter=self.imgGetterTimeAggUnit, headerImage="star"),
+
+            ColumnDefn(title="Annotation",
+                       minimumWidth=130,
+                       valueGetter="annotation",
+                       cellEditorCreator=self.annotationCreator)
         ]
 
         self.SetColumns(columns)
-
-        # self.CreateCheckStateColumn()
         self.SetObjects(None)
 
         def rowFormatter(listItem, point):
@@ -206,8 +188,7 @@ class OLVAddPoint(FastObjectListView):
     def isCorrect(self, point):
         validators = [
             self.imgGetterDataValue, self.imgGetterDate, self.imgGetterTime, self.imgGetterCensorCode,
-            self.imgGetterUTCOffset, self.imgGetterValueAcc, self.imgGetterlabSample,
-            self.imgGetterQualifier, self.imgGetterOffSetType, self.imgGetterOffSetValue
+            self.imgGetterUTCOffset, self.imgGetterQualityCode, self.imgGetterTimeAggInterval, self.imgGetterTimeAggUnit
         ]
 
         isCorrect = True
