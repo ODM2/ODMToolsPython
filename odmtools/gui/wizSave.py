@@ -1,15 +1,12 @@
-# Boa:Wizard:wizSave
-
 import wx
 import wx.wizard as wiz
-
-# import * from WizardPanels
 from odmtools.controller import pageIntro, pageExisting
-import pageMethod
-import pageQCL
-import pageVariable
 import pageSummary
 from odm2api.ODM2.models import *
+from odmtools.controller.WizardMethodController import WizardMethodController
+from odmtools.controller.WizardProcessLevelController import WizardProcessLevelController
+from odmtools.controller.WizardVariableController import WizardVariableController
+from odmtools.controller.WizardActionController import WizardActionController
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
  wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,
@@ -18,149 +15,7 @@ from odm2api.ODM2.models import *
 from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
 import logging
-
-# tool = LoggerTool()
-# logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
-logger =logging.getLogger('main')
-
-
-########################################################################
-class QCLPage(wiz.WizardPageSimple):
-    # CLASS IS DEPECRATED
-    # REPLACED WITH WizardProcessLevelController.py
-    def __init__(self, parent, title, series_service, qcl):
-        """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer = sizer
-        self.SetSizer(sizer)
-        self.qcl = qcl
-
-        title = wx.StaticText(self, -1, title)
-        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
-        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
-        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
-        self.panel = pageQCL.pnlQCL(self, id=wxID_PNLQCL, name=u'pnlQCL',
-                                    pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                    style=wx.TAB_TRAVERSAL, ss=series_service, qcl=qcl)
-        self.sizer.Add(self.panel, 85, wx.ALL, 5)
-
-        self._init_data(self.panel.series_service)
-
-    def _init_data(self, series):
-        qcl = series.get_all_processing_levels()
-        index = 0
-        for q, i in zip(qcl, range(len(qcl))):
-            num_items = self.panel.lstQCL.GetItemCount()
-            self.panel.lstQCL.InsertStringItem(num_items, str(q.code))
-            self.panel.lstQCL.SetStringItem(num_items, 1, str(q.definition))
-            self.panel.lstQCL.SetStringItem(num_items, 2, str(q.explanation))
-            self.panel.lstQCL.SetStringItem(num_items, 3, str(q.id))
-            if q.code == self.qcl.code:
-                index = i
-        self.panel.lstQCL.Focus(index)
-        self.panel.lstQCL.Select(index)
-
-
-########################################################################
-class VariablePage(wiz.WizardPageSimple):
-    # CLASS IS DEPECRATED
-    # REPLACED WITH WizardVariableController.py
-    def __init__(self, parent, title, service_manager, var):
-        """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer = sizer
-        self.SetSizer(sizer)
-        self.variable = var
-
-        title = wx.StaticText(self, -1, title)
-        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
-        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
-        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
-        self.panel = pageVariable.pnlVariable(self, id=wxID_PNLVARIABLE, name=u'pnlVariable',
-                                              pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                              style=wx.TAB_TRAVERSAL, sm=service_manager, var=var)
-        self.sizer.Add(self.panel, 85, wx.ALL, 5)
-
-        self._init_data(self.panel.series_service)
-
-    def _init_data(self, series_service):
-        vars = series_service.get_all_variables()
-        index = 0
-        for v, i in zip(vars, range(len(vars))):
-            num_items = self.panel.lstVariable.GetItemCount()
-            self.panel.lstVariable.InsertStringItem(num_items, str(v.code))
-            self.panel.lstVariable.SetStringItem(num_items, 1, str(v.name))
-            self.panel.lstVariable.SetStringItem(num_items, 2, str(v.speciation))
-            self.panel.lstVariable.SetStringItem(num_items, 3, str(v.variable_unit.name))
-            self.panel.lstVariable.SetStringItem(num_items, 4, str(v.sample_medium))
-            self.panel.lstVariable.SetStringItem(num_items, 5, str(v.value_type))
-            self.panel.lstVariable.SetStringItem(num_items, 6, str(v.is_regular))
-            self.panel.lstVariable.SetStringItem(num_items, 7, str(v.time_support))
-            self.panel.lstVariable.SetStringItem(num_items, 8, str(v.time_unit.name))
-            self.panel.lstVariable.SetStringItem(num_items, 9, str(v.data_type))
-            self.panel.lstVariable.SetStringItem(num_items, 10, str(v.general_category))
-            self.panel.lstVariable.SetStringItem(num_items, 11, str(v.no_data_value))
-            self.panel.lstVariable.SetStringItem(num_items, 12, str(v.id))
-
-            if v.code == self.variable.code:
-                index = i
-        self.panel.lstVariable.Focus(index)
-        self.panel.lstVariable.Select(index)
-
-
-########################################################################
-class MethodPage(wiz.WizardPageSimple):
-    # THIS CLASS IS DEPECRATED
-    # REPLACED WITH WizardMethodController.py
-    def __init__(self, parent):
-        # pageMethod.pnlMethod.__init__(self, parent)
-        wiz.WizardPageSimple.__init__(self, parent)
-
-
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.page_method_view = pageMethod.pnlMethod(self)
-        main_sizer.Add(self.page_method_view, 1, wx.EXPAND | wx.ALL, 0)
-        self.SetSizer(main_sizer)
-
-# class MethodPage(wiz.WizardPageSimple):
-#     def __init__(self, parent, title, series_service, method):
-#         """Constructor"""
-#         wiz.WizardPageSimple.__init__(self, parent)
-#
-#         sizer = wx.BoxSizer(wx.VERTICAL)
-#         self.sizer = sizer
-#         self.SetSizer(sizer)
-#         self.method = method
-#
-#         title = wx.StaticText(self, -1, title)
-#         title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
-#         sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
-#         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
-#         self.panel = pageMethod.pnlMethod(self, id=wxID_PNLMETHOD, name=u'pnlMethod',
-#                                           pos=wx.Point(536, 285), size=wx.Size(439, 357),
-#                                           style=wx.TAB_TRAVERSAL, ss=series_service, method=method)
-#         self.sizer.Add(self.panel, 1, wx.EXPAND, 5)
-#
-#         self._init_data(self.panel.series_service)
-#
-#     def _init_data(self, series_service):
-#         meth = series_service.get_all_methods()
-#         index = 0
-#         for m, i in zip(meth, range(len(meth))):
-#             num_items = self.panel.lstMethods.GetItemCount()
-#             self.panel.lstMethods.InsertStringItem(num_items, str(m.description))
-#             self.panel.lstMethods.SetStringItem(num_items, 1, str(m.link))
-#             self.panel.lstMethods.SetStringItem(num_items, 2, str(m.id))
-#
-#             if m.description == self.method.description:
-#                 index = i
-#
-#         self.panel.lstMethods.Focus(index)
-#         self.panel.lstMethods.Select(index)
+logger = logging.getLogger('main')
 
 
 
@@ -206,10 +61,6 @@ class SummaryPage(wiz.WizardPageSimple):
 
 
 ########################################################################
-from odmtools.controller.WizardMethodController import WizardMethodController
-from odmtools.controller.WizardProcessLevelController import WizardProcessLevelController
-from odmtools.controller.WizardVariableController import WizardVariableController
-from odmtools.controller.WizardActionController import WizardActionController
 
 
 class wizSave(wx.wizard.Wizard):
@@ -227,28 +78,6 @@ class wizSave(wx.wizard.Wizard):
         self.Bind(wx.wizard.EVT_WIZARD_FINISHED, self.on_wizard_finished)
 
     def get_metadata(self):
-        # method = self.currSeries.FeatureActionObj.ActionObj.MethodObj
-        # processing_level = self.currSeriefs.quality_control_level
-        # variable = self.currSeries.variable
-        # action =
-
-        # if self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
-        #     logger.debug("SaveAs")
-        #     method = self.pgMethod.get_method()
-        #     processing_level = self.pgQCL.get_processing_level()
-        #     variable = self.pgVariable.get_variable()
-        #     action = self.action_page.get_action()
-        # elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
-        #     logger.debug("Save")
-        # elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
-        #     logger.debug("Existing")
-        #     method, processing_level, variable = self.pgExisting.getSeries()
-        # site = self.currSeries.FeatureActionObj.SamplingFeatureObj
-        # # source = self.currSeries.source
-        # logger.debug("site: %s, variable: %s, method: %s, source: %s, processing_level: %s" % (
-        # str(site), str(variable), str(method), str(action), str(processing_level)))
-        # return site, variable, method, action, processing_level
-        #
         method = self.__method_from_series
         processing_level = self.__processing_level_from_series
         variable = self.__variable_from_series

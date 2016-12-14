@@ -3,9 +3,9 @@
 ; http://www.jrsoftware.org/isinfo.php 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
-#define MyAppName "ODMTools"
+#define MyAppName "ODM2Tools"
 #define OrgName "UCHIC"
-#define MyAppVersion "v1.2.8-beta"
+#define MyAppVersion "v2.0.0-beta"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
 
 [Setup]

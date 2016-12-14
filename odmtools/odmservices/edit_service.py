@@ -566,8 +566,7 @@ class EditService():
         values = self.memDB.getDataValuesDF()
         # copy old
         result = self.memDB.series_service.get_series(str(values["resultid"][0]))
-        result.ResultID = None
-        result.ResultUUID = None
+
 
 
         # change var, meth proc, in df #intend ts, agg sta
@@ -586,6 +585,7 @@ class EditService():
         #if result does not exist
         if not self.memDB.series_service.resultExists(result):
             try:
+
                 #create Action
                 action.ActionID = None
                 action.ActionTypeCV = "Derivation"
@@ -616,6 +616,8 @@ class EditService():
                 # create TimeSeriesResult - this should also contain all of the stuff for the Result
                 time, offset = self.get_current_time_and_utcoffset()
 
+                result.ResultID = None
+                result.ResultUUID = None
                 result.ValueCount = 0
                 result.FeatureActionID = feature_action.FeatureActionID
                 result.ResultDateTime = time
