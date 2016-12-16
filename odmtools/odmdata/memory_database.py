@@ -80,7 +80,7 @@ class MemoryDatabase(object):
 
     def get_annotations(self, query_db_again=False):
         # self.mem_service._session.commit()
-        # setSchema(self.mem_service._session_factory.engine)
+        setSchema(self.series_service._session_factory.engine)
         if self.results_annotations is None or query_db_again:
             result_id = self.df.resultid[0]
             annotation = self.series_service.get_annotations_by_result(resultid=result_id)
