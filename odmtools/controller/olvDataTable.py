@@ -20,6 +20,8 @@ class OLVDataTable(VirtualObjectListView):
         self.sortedColumnIndex = -1
         self.currentItem = None
         self.dataframe = None
+        self.annotations = None
+        self.data = None
 
     def init(self, memDB):
         self.memDB = memDB
@@ -28,18 +30,53 @@ class OLVDataTable(VirtualObjectListView):
         self.oddRowsBackColor = wx.Colour(191, 217, 217)
 
         self.dataframe = self.memDB.getDataValuesDF()
-        sort_by_index = list(self.dataframe.columns).index("valuedatetime")
-        self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
-        self.dataObjects = self.dataframe.values.tolist()
+        self.annotations = self.memDB.get_annotations()
+        # sort_by_index = list(self.dataframe.columns).index("valuedatetime")
+        # columns = self.memDB.get_columns_with_annotations()
+        # self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
+        # self.dataObjects = self.dataframe.values.tolist()
+        self.dataObjects = self.__merge_dataframe_with_annotations()
+        col = self.memDB.get_columns_with_annotations()
+
+        # columns = \
+        #     [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
+        #                       stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
+        #            for x, i in self.memDB.getEditColumns()]
         columns = \
             [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
-                              stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
-                   for x, i in self.memDB.getEditColumns()]
+                        stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
+             for x, i in col]
+
         self.SetColumns(columns)
 
 
         self.SetObjectGetter(self.ObjectGetter)
         self.SetItemCount(len(self.dataframe))
+
+    def __merge_dataframe_with_annotations(self):
+        sort_by_index = self.dataframe.columns.tolist().index("valuedatetime")
+        self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
+
+        data_list = self.dataframe.values.tolist()
+        anno_list = self.annotations.values.tolist()
+        data = data_list
+
+        anno = {}
+        for i in range(0, len(anno_list)):
+            value_id = anno_list[i][1]
+            annotation_code = anno_list[i][-1]
+            if value_id in anno:
+                anno[value_id].append(annotation_code)
+            else:
+                anno[value_id] = [annotation_code]
+
+        for key, value in anno.iteritems():
+            for i in range(0, len(data_list)):
+                if key in data_list[i]:
+                    data_list[i].append(value)
+                    break
+
+        return data
 
     def EnableSorting(self):
         self.Bind(wx.EVT_LIST_COL_CLICK, self.onColSelected)
