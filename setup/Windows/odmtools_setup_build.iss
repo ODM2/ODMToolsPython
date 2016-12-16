@@ -23,7 +23,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename={#MyAppName}_{#MyAppVersion}_Installer
-SetupIconFile=D:\DEV\Releases\ODMTools\odmtools_beta_source_code\odmtools\common\icons\ODMTools.ico
+SetupIconFile=D:\DEV\Releases\ODM2Tools\odmtools_beta_source_code\odmtools\common\icons\ODMTools.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -34,7 +34,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\DEV\Releases\ODMTools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\DEV\Releases\ODM2Tools\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
