@@ -13,6 +13,7 @@ Usage (Windows):
 
 
 import sys
+import os
 '''
 from setuptools import setup
 
@@ -23,23 +24,29 @@ ez_setup.use_setuptools()
 
 
 
-NAME = 'ODMTools'
+NAME = 'ODM2Tools'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+ICON_DIR = os.path.join('odmtools', 'common', "icons")
+WIN_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
+MAC_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.icns")
 
+#APP = ['/Users/stephanie/DEV/ODMToolsPython/ODMTools.py']
+APP = os.path.join(BASE_DIR, 'ODMTools.py')
 extra_options = None
 sys.setrecursionlimit(2000)
 if sys.platform == 'darwin':
     sys.argv.append('py2app')
     from setuptools import setup
-    APP = ['/Users/stephanie/DEV/ODMToolsPython/ODMTools.py']
+    # APP = ['/Users/stephanie/DEV/ODMToolsPython/ODMTools.py']
     LIBS = ['/usr/X11/lib/libfreetype.6.dylib', '/usr/X11/lib/libstdc++.6.dylib', '/usr/X11/lib/libpng15.15.dylib']
-    OPTIONS = {'iconfile': '/Users/stephanie/DEV/ODMToolsPython/odmtools/common/icons/ODMTools.icns',
+    OPTIONS = {'iconfile': MAC_ICON_FILE,
                'includes': ['pymysql', 'sqlalchemy', 'dateutil'], 'frameworks': LIBS}
     extra_options = dict(app=APP, setup_requires=['py2app'], options={'py2app': OPTIONS})
 
 elif sys.platform == 'win32':
     sys.argv.append('py2exe')
     from distutils.core import setup
-    APP = ['C:\Users\Jacob\Documents\ODMToolsPython\ODMTools.py']
+    #APP = ['C:\Users\Jacob\Documents\ODMToolsPython\ODMTools.py']
     import numpy
     import py2exe
     from glob import glob
@@ -68,7 +75,7 @@ elif sys.platform == 'win32':
 
 
     sys.path.append("C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\Microsoft.VC90.CRT")
-    sys.path.append("C:\\Users\\Jacob\\Documents\\ODMToolsPython")
+    sys.path.append(BASE_DIR)
     extra_options = dict(console=APP, data_files=data_files, options={'py2exe': OPTIONS})
 
 setup(name=NAME, **extra_options)

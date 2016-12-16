@@ -16,7 +16,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 ## Update odmtools.meta.data whenever creating a release
 from odmtools.meta import data
 
-BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 SETUP_DIR = os.path.join(BASE_DIR, 'setup')
 WIN_DIR = os.path.join(SETUP_DIR, "Windows")
 MAC_DIR = os.path.join(SETUP_DIR, "Mac")
@@ -32,7 +32,7 @@ ICON_DIR = os.path.join('odmtools', 'common', "icons")
 WIN_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
 MAC_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.icns")
 
-APP_DIR = os.path.join(MAC_DIR, 'Dist', "ODMTools.app")
+APP_DIR = os.path.join(MAC_DIR, 'Dist', "ODM2Tools.app")
 # Location of Windows files
 APP_FILE = os.path.join(BASE_DIR, "ODMTools.py")
 MAKE_FILE = os.path.realpath(__file__)
@@ -94,7 +94,7 @@ def zipdir(basedir, archivename):
                 z.write(absfn, zfn)
 def printInfo():
     print "============================================================="
-    print "=             ODMTools Installer                             "
+    print "=             ODM2Tools Installer                             "
     print "= Be sure to update odmtools/meta/data with every release    "
     print "= Building release: {version}".format(version=data.version),
     print "\n= Platform: {platform}, {architecture}".format(platform=sys.platform, architecture=platform.architecture()), "\n="
