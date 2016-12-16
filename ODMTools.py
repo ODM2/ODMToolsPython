@@ -45,7 +45,7 @@ class MyApp(wx.App):
         """
         Initialize an App with a Frame
         """
-        title = u'ODMTools'
+        title = u'ODM2Tools'
 
         kwargs = {}
         kwargs['parent'] = None
