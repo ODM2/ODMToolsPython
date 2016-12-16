@@ -112,6 +112,10 @@ class OLVDataTable(VirtualObjectListView):
         self.sortColumn(event.Column)
 
     def sortColumn(self, selected_column):
+        if selected_column >= len(self.dataframe.columns):
+            # Cannot sort by annotation code yet. Need to fix this
+            return
+
         oldSortColumnIndex = self.sortedColumnIndex
         self.sortedColumnIndex = selected_column
 
