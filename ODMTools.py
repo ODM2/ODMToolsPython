@@ -24,7 +24,7 @@ import pymysql
 
 tool = LoggerTool()
 # logger = tool.setupLogger('main',  'odmtools.log', 'a', logging.INFO)
-logger = tool.setupLogger('main',  'odmtools.log', 'a', logging.DEBUG)
+logger = tool.setupLogger('main',  'odm2tools.log', 'a', logging.DEBUG)
 wx.Log.SetLogLevel(0)
 
 
@@ -64,7 +64,7 @@ class MyApp(wx.App):
 
 
 if __name__ == '__main__':
-    logger.info("Welcome to ODMTools Python. Please wait as system loads")
+    logger.info("Welcome to ODM2Tools Python. Please wait as system loads")
     # https://docs.python.org/2/library/multiprocessing.html#miscellaneous
 
     # Add support for when a program which uses multiprocessing has been frozen to produce a Windows executable.

@@ -86,7 +86,7 @@ class frmODMToolsMain(wx.Frame):
 
         '''
         if minimumAllowedSize >= wx.GetDisplaySize():
-            logger.fatal("ODMTools cannot be displayed in this resolution: %s \n\tPlease use a larger resolution"
+            logger.fatal("ODM2Tools cannot be displayed in this resolution: %s \n\tPlease use a larger resolution"
                          % wx.GetDisplaySize())
             print "minimumAllowedsize: ", minimumAllowedSize, "display: ", wx.GetDisplaySize()
             sys.exit(0)
@@ -104,7 +104,7 @@ class frmODMToolsMain(wx.Frame):
         elif screenWidth < defaultWidth:
             newSize = wx.Size(defaultHeight, screenWidth / 1.5)
 
-        logger.debug("ODMTools Window Size: %s" % newSize)
+        logger.debug("ODM2Tools Window Size: %s" % newSize)
         return newSize
 
     #############Entire Form Sizers##########
@@ -137,7 +137,7 @@ class frmODMToolsMain(wx.Frame):
             db_config = frmDBConfig.frmDBConfig(None, self.service_manager, False)
             value = db_config.ShowModal()
             if value == wx.ID_CANCEL and quit_if_cancel:
-                logger.fatal("ODMTools is now closing because there is no database connection.")
+                logger.fatal("ODM2Tools is now closing because there is no database connection.")
                 sys.exit(0)
             elif not quit_if_cancel:
                 return series_service
@@ -234,7 +234,7 @@ class frmODMToolsMain(wx.Frame):
             self.menu_bar = wx.MenuBar()
             self.help_menu = wx.Menu()
 
-            self.help_menu.Append(wx.ID_ABOUT, "&About ODMTools")
+            self.help_menu.Append(wx.ID_ABOUT, "&About ODM2Tools")
             self.menu_bar.Append(self.help_menu, "&Help")
 
             self.SetMenuBar(self.menu_bar)
@@ -381,7 +381,7 @@ class frmODMToolsMain(wx.Frame):
     def addEdit(self, event):
 
 
-        with wx.BusyInfo("Please wait for a moment while ODMTools fetches the data and stores it in our database", parent=self):
+        with wx.BusyInfo("Please wait for a moment while ODM2Tools fetches the data and stores it in our database", parent=self):
             self.scriptcreate = True
             isSelected, seriesID = self.pnlSelector.onReadyToEdit()
             logger.info("Beginning editing seriesID: %s"%str(seriesID))
@@ -481,12 +481,12 @@ class frmODMToolsMain(wx.Frame):
         # test if there is a perspective to load
         try:
             # TODO Fix resource_path to appdirs
-            os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config')
-            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'r')
+            os.path.join(user_config_dir("ODM2Tools", "UCHIC"), 'ODM2Tools.config')
+            f = open(os.path.join(user_config_dir("ODM2Tools", "UCHIC"), 'ODM2Tools.config'), 'r')
         except:
             # Create the file if it doesn't exist
-            open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'w').close()
-            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'r')
+            open(os.path.join(user_config_dir("ODM2Tools", "UCHIC"), 'ODM2Tools.config'), 'w').close()
+            f = open(os.path.join(user_config_dir("ODM2Tools", "UCHIC"), 'ODM2Tools.config'), 'r')
 
         self._mgr.LoadPerspective(f.read(), True)
 
@@ -507,7 +507,7 @@ class frmODMToolsMain(wx.Frame):
         # deinitialize the bulkInsertCtrl manager
         self.pnlPlot.Close()
         try:
-            f = open(os.path.join(user_config_dir("ODMTools", "UCHIC"), 'ODMTools.config'), 'w')
+            f = open(os.path.join(user_config_dir("ODM2Tools", "UCHIC"), 'ODM2Tools.config'), 'w')
             f.write(self._mgr.SavePerspective())
         except:
             print "error saving docking data"
@@ -516,7 +516,7 @@ class frmODMToolsMain(wx.Frame):
 
         # Shut down processes running in background
         if self.taskserver.numprocesses > 0 and self.taskserver.anyAlive:
-            busy = wx.BusyInfo("Closing ODMTools ...", parent=self)
+            busy = wx.BusyInfo("Closing ODM2Tools ...", parent=self)
 
             # Terminate the processes
             self.taskserver.processTerminate()
@@ -539,7 +539,7 @@ class frmODMToolsMain(wx.Frame):
                     elif isinstance(item, wx.Dialog):
                         item.Destroy()
                     item.Close()
-        logger.info("Closing ODMTools\n")
+        logger.info("Closing ODM2Tools\n")
         self.Destroy()
 
         wx.GetApp().ExitMainLoop()
