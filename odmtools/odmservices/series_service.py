@@ -378,16 +378,6 @@ class SeriesService(serviceBase):
     # newdf.drop(['_merge'], axis=1, inplace=True)
     # return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
 
-    # def merge_annotation_with_timeseries_result(self, x):
-    #     print x
-    #
-    #     # return x
-    #     return 123
-    def merge_annotation_with_timeseries_result(self, data, anno):
-
-        print 123
-        return
-
     def get_all_values_df(self):
 
         """
@@ -863,20 +853,24 @@ class SeriesService(serviceBase):
         return self.read.getCVs(type="Quality Code")
 
     def get_annotation_by_code(self, code):
-        return self.read.getAnnotations(codes=[code])[0]
+        try:
+            return self.read.getAnnotations(codes=[code])[0]
+        except:
+            return None
+
     def get_annotation_by_id(self, id):
-        return self.read.getAnnotations(ids=[id])[0]
+        try:
+            return self.read.getAnnotations(ids=[id])[0]
+        except:
+            return None
+
     def get_all_annotations(self):
-        return self.read.getAnnotations(type=None)
+        try:
+            return self.read.getAnnotations(type=None)
+        except:
+            return None
 
     def get_annotations_by_result(self, resultid):
-        # setSchema(self._session_factory.engine)
-
-        # ids = [x[0] for x in self.read._session.query(TimeSeriesResultValues.ValueID)\
-        #         .filter(TimeSeriesResultValues.ResultID == resultid).all()]
-        # q = self.read._session.query(TimeSeriesResultValueAnnotations)\
-        #     .filter(TimeSeriesResultValueAnnotations.ValueID.in_(ids)).all()
-
         resultid = int(resultid)
 
         q = self.read._session.query(TimeSeriesResultValueAnnotations.AnnotationID, TimeSeriesResultValueAnnotations.ValueID,
