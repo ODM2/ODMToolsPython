@@ -28,7 +28,7 @@ DIST_DIR = os.path.join(WIN_DIR, 'Dist')
 MAC_WORK_DIR = os.path.join(MAC_DIR, "Temp")
 WORK_DIR = os.path.join(WIN_DIR, "Temp")
 
-ICON_DIR = os.path.join('odmtools', 'common', "icons")
+ICON_DIR = os.path.join(BASE_DIR, 'odmtools', 'common', "icons")
 WIN_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
 MAC_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.icns")
 

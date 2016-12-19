@@ -55,7 +55,11 @@ elif sys.platform == 'win32':
         (r'mpl-data', [r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\matplotlibrc']),
         (r'mpl-data\images', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
         (r'mpl-data\fonts', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
-        (r'mpl-data\stylelib', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\stylelib\*.*'))]
+        (r'mpl-data\stylelib', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\stylelib\*.*')),
+        ('.', glob('*.dll')),
+        ('.', glob('C:\Windows\system32\OPENGL32.dll'))]
+        #('.', glob('mkl_p4m.dll')),
+        #('.', glob('mkl_p4.dll'))]
 
     OPTIONS = {
         #'excludes': ['_ssl', 'pyreadline', 'difflib', 'doctest', 'optparse', 'pickle', 'calendar'],
@@ -71,7 +75,7 @@ elif sys.platform == 'win32':
         "skip_archive": False,
         "ascii": False,
         "custom_boot_script": '',
-        "packages": ['wx.lib.pubsub',  'pyodbc', 'numpy', 'scipy', 'sqlalchemy', 'wx', 'geoalchemy2'], #'ObjectListView',
+        "packages": ['wx.lib.pubsub',  'pyodbc', 'numpy', 'scipy', 'sqlalchemy', 'wx', 'pandas'], #'ObjectListView',
     }
 
 
