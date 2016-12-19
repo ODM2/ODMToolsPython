@@ -54,7 +54,8 @@ elif sys.platform == 'win32':
         ("Microsoft.VC90.CRT", glob(r'C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Microsoft.VC90.CRT\*.*')),
         (r'mpl-data', [r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\matplotlibrc']),
         (r'mpl-data\images', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
-        (r'mpl-data\fonts', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\fonts\*.*'))]
+        (r'mpl-data\fonts', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
+        (r'mpl-data\stylelib', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\stylelib\*.*'))]
 
     OPTIONS = {
         #'excludes': ['_ssl', 'pyreadline', 'difflib', 'doctest', 'optparse', 'pickle', 'calendar'],
@@ -70,7 +71,7 @@ elif sys.platform == 'win32':
         "skip_archive": False,
         "ascii": False,
         "custom_boot_script": '',
-        "packages": ['wx.lib.pubsub',  'pyodbc'], #'ObjectListView',
+        "packages": ['wx.lib.pubsub',  'pyodbc', 'numpy', 'scipy', 'sqlalchemy', 'wx', 'geoalchemy2'], #'ObjectListView',
     }
 
 
