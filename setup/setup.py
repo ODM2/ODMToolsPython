@@ -40,7 +40,8 @@ if sys.platform == 'darwin':
     # APP = ['/Users/stephanie/DEV/ODMToolsPython/ODMTools.py']
     LIBS = ['/usr/X11/lib/libfreetype.6.dylib', '/usr/X11/lib/libstdc++.6.dylib', '/usr/X11/lib/libpng15.15.dylib']
     OPTIONS = {'iconfile': MAC_ICON_FILE,
-               'includes': ['pymysql', 'sqlalchemy', 'dateutil'], 'frameworks': LIBS}
+               'includes': ['pymysql', 'sqlalchemy', 'dateutil'],
+               'frameworks': LIBS}
     extra_options = dict(app=APP, setup_requires=['py2app'], options={'py2app': OPTIONS})
 
 elif sys.platform == 'win32':
@@ -53,9 +54,9 @@ elif sys.platform == 'win32':
     data_files = [
         ("Microsoft.VC90.CRT", glob(r'C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Microsoft.VC90.CRT\*.*')),
         (r'mpl-data', [r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\matplotlibrc']),
-        (r'mpl-data\images', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
-        (r'mpl-data\fonts', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
-        (r'mpl-data\stylelib', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\stylelib\*.*'))]
+        (r'mpl-data\images', glob(r'C:\Anaconda3\envs\odmtools_release\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
+        (r'mpl-data\fonts', glob(r'C:\Anaconda3\envs\odmtools_release\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
+        (r'mpl-data\stylelib', glob(r'C:\Anaconda3\envs\odmtools_release\Lib\site-packages\matplotlib\mpl-data\stylelib\*.*'))]
         # ('.', glob('*.dll')),
         # ('.', glob('C:\Windows\system32\OPENGL32.dll'))]
         #('.', glob('mkl_p4m.dll')),
@@ -69,14 +70,16 @@ elif sys.platform == 'win32':
                          'MSVCP90.dll', 'WS2_32.dll', 'WINSPOOL.DRV', 'GDI32.dll', 'KERNEL32.dll',
                          'ntdll.dll', 'COMCTL32.dll', 'COMDLG32.dll', 'msvcrt.dll', 'RPCRT4.dll'],
         "optimize": 2,
-        "frameworks": ['C:\Windows\system32\OPENGL32.dll'','','']
+        # "includes": ['C:\Windows\system32\OPENGL32.dll',
+        #                'C:\Anaconda3\envs\odmtools_release\Library\bin\mkl_p4.dll',
+        #                'C:\Anaconda3\envs\odmtools_release\Library\bin\mkl_p4m.dll'],
         "bundle_files": 3,
         "dist_dir": "dist",
         "xref": False,
         "skip_archive": False,
         "ascii": False,
         "custom_boot_script": '',
-        "packages": ['wx.lib.pubsub',  'pyodbc', 'numpy', 'scipy', 'sqlalchemy', 'wx', 'pandas'], #'ObjectListView',
+        "packages": ['wx.lib.pubsub',  'pyodbc', 'numpy', 'scipy', 'sqlalchemy', 'wx', 'pandas', 'mkl'], #'ObjectListView',
     }
 
 
