@@ -26,7 +26,7 @@ ez_setup.use_setuptools()
 
 NAME = 'ODM2Tools'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-ICON_DIR = os.path.join('odmtools', 'common', "icons")
+ICON_DIR = os.path.join(BASE_DIR, 'odmtools', 'common', "icons")
 WIN_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.ico")
 MAC_ICON_FILE = os.path.join(ICON_DIR, "ODMTools.icns")
 
@@ -55,9 +55,9 @@ elif sys.platform == 'win32':
         (r'mpl-data', [r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\matplotlibrc']),
         (r'mpl-data\images', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\images\*.*')),
         (r'mpl-data\fonts', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\fonts\*.*')),
-        (r'mpl-data\stylelib', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\stylelib\*.*')),
-        ('.', glob('*.dll')),
-        ('.', glob('C:\Windows\system32\OPENGL32.dll'))]
+        (r'mpl-data\stylelib', glob(r'C:\Anaconda3\envs\odmtools\Lib\site-packages\matplotlib\mpl-data\stylelib\*.*'))]
+        # ('.', glob('*.dll')),
+        # ('.', glob('C:\Windows\system32\OPENGL32.dll'))]
         #('.', glob('mkl_p4m.dll')),
         #('.', glob('mkl_p4.dll'))]
 
@@ -69,6 +69,7 @@ elif sys.platform == 'win32':
                          'MSVCP90.dll', 'WS2_32.dll', 'WINSPOOL.DRV', 'GDI32.dll', 'KERNEL32.dll',
                          'ntdll.dll', 'COMCTL32.dll', 'COMDLG32.dll', 'msvcrt.dll', 'RPCRT4.dll'],
         "optimize": 2,
+        "frameworks": ['C:\Windows\system32\OPENGL32.dll'','','']
         "bundle_files": 3,
         "dist_dir": "dist",
         "xref": False,
