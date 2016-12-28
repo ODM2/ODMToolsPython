@@ -44,17 +44,13 @@ class MemoryDatabase(object):
         #self.annotation_list = pd.DataFrame() columns =['ResultID', 'ValueDateTime', 'ValueID', 'AnnotationID')
         #send in engine
 
-
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
         setSchema(self.mem_service._session_factory.engine)
 
-
     def set_series_service(self, service):
         self.series_service = service
-
-
 
     ##############
     # DB Queries
@@ -78,14 +74,10 @@ class MemoryDatabase(object):
         logging.debug("done updating memory dataframe")
         return self.df
 
-    def get_annotations(self, query_db_again=False):
-        # self.mem_service._session.commit()
-        # setSchema(self.mem_service._session_factory.engine)
-        if self.results_annotations is None or query_db_again:
-            result_id = self.df.resultid[0]
-            annotation = self.series_service.get_annotations_by_result(resultid=result_id)
-            self.results_annotations = annotation
-
+    def get_annotations(self):
+        result_id = self.df.resultid[0]
+        annotation = self.series_service.get_annotations_by_result(resultid=result_id)
+        self.results_annotations = annotation
         return self.results_annotations
 
     def getDataValues(self):
