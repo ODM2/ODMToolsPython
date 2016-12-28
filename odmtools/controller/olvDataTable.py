@@ -112,26 +112,41 @@ class OLVDataTable(VirtualObjectListView):
         self.sortColumn(event.Column)
 
     def sortColumn(self, selected_column):
-        if selected_column >= len(self.dataframe.columns):
-            # Cannot sort by annotation code yet. Need to fix this
-            return
+        self.sortAscending = not self.sortAscending
 
         oldSortColumnIndex = self.sortedColumnIndex
         self.sortedColumnIndex = selected_column
 
-        self.sortAscending = not self.sortAscending
-        self.dataframe.sort_values(self.dataframe.columns[selected_column], ascending=self.sortAscending, inplace=True)
-
         self._UpdateColumnSortIndicators(selected_column, oldSortColumnIndex)
 
-        # self.dataObjects = self.dataframe.values.tolist()
-        self.dataObjects = self.__merge_dataframe_with_annotations()
+        if selected_column >= len(self.dataframe.columns):
+            self.dataObjects = self.sort_columns_by_annotation_code(reverse=self.sortAscending)
+        else:
+            self.dataframe.sort_values(self.dataframe.columns[selected_column], ascending=self.sortAscending, inplace=True)
+            self.dataObjects = self.__merge_dataframe_with_annotations()
 
         if self.GetItemCount():
             itemFrom = self.GetTopItem()
             itemTo = self.GetTopItem() + 1 + self.GetCountPerPage()
             itemTo = min(itemTo, self.GetItemCount() - 1)
             self.RefreshItems(itemFrom, itemTo)
+
+    def sort_columns_by_annotation_code(self, reverse=False):
+        rows_with_annotation = []
+        rows_without_annotation = []
+
+        column_number_of_dataframe = len(self.dataframe.columns)
+
+        for i in self.dataObjects:
+            if len(i) > column_number_of_dataframe:
+                rows_with_annotation.append(i)
+            else:
+                rows_without_annotation.append(i)
+
+        if reverse:
+            return rows_without_annotation + rows_with_annotation
+        else:
+            return rows_with_annotation + rows_without_annotation
 
     def onItemSelected(self, event):
         """
