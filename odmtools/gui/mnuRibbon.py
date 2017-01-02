@@ -129,6 +129,7 @@ class mnuRibbon(RB.RibbonBar):
 
         # -------------------------------------------------------------------------------
         editPage = RB.RibbonPage(self, wx.ID_ANY, "Edit")
+        # editPage.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)
 
         main_panel = RB.RibbonPanel(editPage, wx.ID_ANY, "Main", wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize,
                                     RB.RIBBON_PANEL_NO_AUTO_MINIMISE)
@@ -204,14 +205,28 @@ class mnuRibbon(RB.RibbonBar):
         self.CurrPage = 1
         self.SetActivePageByIndex(self.CurrPage)
 
-        self.bindEvents()
+        self.__bind_events()
         self.initPubSub()
 
     def __init__(self, parent, id, name):
         self.parent = parent
         self._init_ctrls(parent)
 
-    def bindEvents(self):
+    def on_mouse_enter(self, event):
+        ribbon_panel = event.GetEventObject().GetParent()
+        ribbon_panel._hovered = True
+
+        self.Refresh()
+        event.Skip()
+
+    def on_mouse_leave(self, event):
+        ribbon_panel = event.GetEventObject().GetParent()
+        ribbon_panel._hovered = False
+
+        self.Refresh()
+        event.Skip()
+
+    def __bind_events(self):
         ###Docking Window Selection
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onDocking, id=wxID_RIBBONVIEWTABLE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.onDocking, id=wxID_RIBBONVIEWSERIES)
@@ -261,6 +276,24 @@ class mnuRibbon(RB.RibbonBar):
 
         ###Ribbon Event
         self.Bind(RB.EVT_RIBBONBAR_PAGE_CHANGED, self.onFileMenu, id=wxID_PANEL1)
+
+        # ENTER
+        self.main_bar.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)            # 1
+        self.edit_bar.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)            # 2
+        self.record_bar.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)          # 3
+        self.PlotsOptions_bar.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)    # 4
+        self.plots_bar.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)           # 5
+        self.dateTime_buttonbar.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)  # 6
+        self.scriptBar.Bind(wx.EVT_ENTER_WINDOW, self.on_mouse_enter)           # 7
+
+        # LEAVE
+        self.main_bar.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)            # 1
+        self.edit_bar.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)            # 2
+        self.record_bar.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)          # 3
+        self.PlotsOptions_bar.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)    # 4
+        self.plots_bar.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)           # 5
+        self.dateTime_buttonbar.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)  # 6
+        self.scriptBar.Bind(wx.EVT_LEAVE_WINDOW, self.on_mouse_leave)           # 7
 
     def initPubSub(self):
         Publisher.subscribe(self.toggleEditButtons, "EnableEditButtons")
