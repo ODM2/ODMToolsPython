@@ -76,6 +76,7 @@ class MemoryDatabase(object):
 
     def get_annotations(self):
         result_id = self.df.resultid[0]
+        setSchema(self.series_service._session_factory.engine)
         annotation = self.series_service.get_annotations_by_result(resultid=result_id)
         self.results_annotations = annotation
         return self.results_annotations
