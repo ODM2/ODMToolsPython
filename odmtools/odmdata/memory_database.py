@@ -25,6 +25,7 @@ class MemoryDatabase(object):
         self.df = None
         # Series_Service handles remote database
         self.series_service = None
+        self.results_annotations = None
 
         # Memory_service handles in memory database
         sm = ServiceManager()
@@ -43,17 +44,13 @@ class MemoryDatabase(object):
         #self.annotation_list = pd.DataFrame() columns =['ResultID', 'ValueDateTime', 'ValueID', 'AnnotationID')
         #send in engine
 
-
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
         setSchema(self.mem_service._session_factory.engine)
 
-
     def set_series_service(self, service):
         self.series_service = service
-
-
 
     ##############
     # DB Queries
@@ -77,6 +74,13 @@ class MemoryDatabase(object):
         logging.debug("done updating memory dataframe")
         return self.df
 
+    def get_annotations(self):
+        result_id = self.df.resultid[0]
+        setSchema(self.series_service._session_factory.engine)
+        annotation = self.series_service.get_annotations_by_result(resultid=result_id)
+        self.results_annotations = annotation
+        return self.results_annotations
+
     def getDataValues(self):
         # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
         self.mem_service._session.commit()
@@ -93,6 +97,27 @@ class MemoryDatabase(object):
         columns.extend(tmp_columns)
         return [(x, i) for (i, x) in enumerate(columns)]
         # return [(x, i) for (i, x) in enumerate(self.df.columns)]
+
+    def get_columns_with_annotations(self):
+        """
+        If results_annotations has not been set then
+        :return:
+        """
+
+        if self.results_annotations is None or self.df is None:
+            print "self.df and self.results_annotations must be a pandas dataframe. Currently they are None"
+            return []
+
+        columns = []
+        columns.extend(self.df.columns.tolist())
+
+        annotation_columns = self.results_annotations.columns.tolist()
+        index = annotation_columns.index("annotationcode")
+        annotation_code_column = annotation_columns[index]
+
+        columns.append(annotation_code_column)
+
+        return [(x, i) for (i, x) in enumerate(columns)]
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
         return self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
@@ -250,7 +275,7 @@ class MemoryDatabase(object):
             logger.debug("Load series from db")
 
             self.series = self.series_service.get_series(seriesID)
-            self.df = self.series_service.get_values(series_id= seriesID)
+            self.df = self.series_service.get_values(series_id=seriesID)
 
             self.editLoaded = True
 
