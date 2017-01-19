@@ -3,7 +3,7 @@ from sqlalchemy import not_, bindparam, distinct, func, exists
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
-from odmtools.odmservices.to_sql_newrows import get_insert, get_delete, get_update
+#from odmtools.odmservices.to_sql_newrows import get_insert, get_delete, get_update
 import datetime
 from odmtools.common.logger import LoggerTool
 import pandas as pd
@@ -646,14 +646,14 @@ class SeriesService(serviceBase):
     def upsert_values(self, values):
         setSchema(self._session_factory.engine)
         query = self._get_df_query(values)
-        newvals= get_insert(df = values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        newvals= get_insert(df= values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
         if not newvals.empty:
             self.insert_values(newvals)
-        delvals = get_delete(df = values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        delvals = get_delete(df= values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
         if not delvals.empty:
             self.delete_dvs(delvals["valuedatetime"].tolist())
 
-        upvals = get_update(df = values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        upvals = get_update(df= values, query= query, dup_cols = ["valuedatetime", "resultid"], engine= self._session_factory.engine)
         if not upvals.empty:
             self.update_values(upvals)
 
@@ -981,3 +981,46 @@ class SeriesService(serviceBase):
         q = q.order_by(TimeSeriesResultValues.ValueDateTime)
 
         return q.all()
+
+
+    def get_delete(df, engine, query, dup_cols=[]):
+        #query = get_df_query(df, tablename, dup_cols, filter_continuous_col=filter_continuous_col, filter_categorical_col=filter_categorical_col, filter_equal_col= filter_equal_col)
+        df.drop_duplicates(dup_cols, keep='last', inplace=True)
+        newdf = pd.merge(df, pd.read_sql(query, engine), how='right', on=dup_cols, indicator=True)
+        newdf = newdf[newdf['_merge'] == 'right_only']
+        newdf.drop(['_merge'], axis=1, inplace=True)
+        return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
+
+    def get_update(df, engine, query, dup_cols=[]):
+        #query = get_df_query(df, tablename, dup_cols, filter_continuous_col=filter_continuous_col, filter_categorical_col=filter_categorical_col, filter_equal_col= filter_equal_col)
+        df.drop_duplicates(dup_cols, keep='last', inplace=True)
+        newdf = pd.merge(df, pd.read_sql(query, engine), how='inner', on=dup_cols, indicator=True)
+        #newdf = newdf[newdf['_merge'] == 'right_only']
+        newdf.drop(['_merge'], axis=1, inplace=True)
+        test = newdf[newdf['datavalue_x'] != newdf['datavalue_y']]
+        return df[df['valuedatetime'].isin(test['valuedatetime'])]
+
+    def get_insert(df, engine, query, dup_cols=[]):
+        """
+        Remove rows from a dataframe that already exist in a database
+        Required:
+            df : dataframe to remove duplicate rows from
+            engine: SQLAlchemy engine object
+            tablename: tablename to check duplicates in
+            dup_cols: list or tuple of column names to check for duplicate row values
+        Optional:
+            filter_continuous_col: the name of the continuous data column for BETWEEEN min/max filter
+                                   can be either a datetime, int, or float data type
+                                   useful for restricting the database table size to check
+            filter_categorical_col : the name of the categorical data column for Where = value check
+                                     Creates an "IN ()" check on the unique values in this column
+        Returns
+            Unique list of values from dataframe compared to database table
+        """
+
+        #query = get_df_query(df, tablename, dup_cols, filter_continuous_col=filter_continuous_col, filter_categorical_col=filter_categorical_col, filter_equal_col= filter_equal_col)
+        df.drop_duplicates(dup_cols, keep='last', inplace=True)
+        newdf = pd.merge(df, pd.read_sql(query, engine), how='left', on=dup_cols, indicator=True)
+        newdf = newdf[newdf['_merge'] == 'left_only']
+        newdf.drop(['_merge'], axis=1, inplace=True)
+        return df[df['valuedatetime'].isin(newdf['valuedatetime'])]

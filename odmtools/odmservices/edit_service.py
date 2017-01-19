@@ -566,7 +566,7 @@ class EditService():
         values = self.memDB.getDataValuesDF()
         # copy old
         result = self.memDB.series_service.get_series(str(values["resultid"][0]))
-
+        newaction = Actions()
 
 
         # change var, meth proc, in df #intend ts, agg sta
@@ -579,24 +579,33 @@ class EditService():
             result.ProcessingLevelObj = proc
 
         if meth:
-            action.MethodID = meth.MethodID
-            action.MethodObj = meth.MethodObj
+            newaction.MethodID = meth.MethodID
+            newaction.MethodObj = meth.MethodObj
 
         #if result does not exist
         if not self.memDB.series_service.resultExists(result):
             try:
 
                 #create Action
-                action.ActionID = None
-                action.ActionTypeCV = "Derivation"
-                self.memDB.series_service.read._session.expunge(action.MethodObj.OrganizationObj)
-                self.memDB.series_service.read._session.expunge(action.MethodObj)
-                action = self.memDB.series_service.create.createAction(action)  # it times out. find out why
-                print action
+                # self.memDB.series_service.read._session.expunge(action.MethodObj.OrganizationObj)
+                # self.memDB.series_service.read._session.expunge(action.MethodObj)
+
+                newaction.ActionDescription = action.ActionDescription
+                newaction.ActionFileLink = action.ActionFileLink
+                newaction.BeginDateTime = action.BeginDateTime
+                newaction.BeginDateTimeUTCOffset = action.BeginDateTimeUTCOffset
+                newaction.EndDateTime = action.EndDateTime
+                newaction.EndDateTimeUTCOffset = action.EndDateTimeUTCOffset
+                newaction.MethodID = action.MethodID
+                newaction.ActionTypeCV = "Derivation"
+
+                print newaction
+                newaction = self.memDB.series_service.create.createAction(newaction)  # it times out. find out why
+                print newaction
 
 
                 # create Actionby done
-                action_by.ActionID = action.ActionID
+                action_by.ActionID = newaction.ActionID
                 action_by= self.memDB.series_service.create.createActionby(action_by)
                 print action_by
 
@@ -607,8 +616,8 @@ class EditService():
 
                 feature_action = FeatureActions()
                 feature_action.SamplingFeatureID = sampling_feature.SamplingFeatureID
-                feature_action.ActionID = action.ActionID
-                feature_action.ActionObj = action
+                feature_action.ActionID = newaction.ActionID
+                feature_action.ActionObj = newaction
                 feature_action.SamplingFeatureObj = sampling_feature
                 feature_action = self.memDB.series_service.create.createFeatureAction(feature_action)
                 print feature_action
@@ -631,6 +640,7 @@ class EditService():
                 result = self.memDB.series_service.create.createResult(result)
                 print result
             except Exception as ex:
+                self.memDB.series_service._session.rollback()
                 print ex
         return self.updateResult(result)
 
