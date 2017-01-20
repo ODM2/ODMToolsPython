@@ -498,20 +498,23 @@ class EditService():
         self.reset_filter()
 
     def save(self,  result=None):
-        values = self.memDB.getDataValuesDF()
+        try:
+            values = self.memDB.getDataValuesDF()
 
-        if not result:
-            result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
-        else:
-            values["resultid"] = result.ResultID
+            if not result:
+                result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
+            else:
+                values["resultid"] = result.ResultID
 
-        # update result
-        result.ValueCount = 0
-        self.updateResult(result)
-        # upsert values
-        self.memDB.series_service.upsert_values(values)
-        # save new annotations
-        self.add_annotations(self.memDB.annotation_list)
+            # update result
+            result.ValueCount = 0
+            self.updateResult(result)
+            # upsert values
+            self.memDB.series_service.upsert_values(values)
+            # save new annotations
+            self.add_annotations(self.memDB.annotation_list)
+        except Exception as e:
+            logger.error("Exception encountered while saving: {}".format(e))
         return result
 
     def save_existing(self, result):
@@ -651,8 +654,8 @@ class EditService():
 
         setSchema(self.memDB.series_service._session_factory.engine)
         self.memDB.series_service.update.updateResult(result.ResultID, result.ValueCount)
-        self.memDB.series_service.update.updateAction(actionID=action.ActionID, begin=action.BeginDateTime, end=action.EndDateTime)
-
+        self.memDB.series_service.update.updateAction(actionID=action.ActionID,
+                                                      begin=action.BeginDateTime, end=action.EndDateTime)
         return result
 
     def overlapcalc(self, result, values,  overwrite):
@@ -678,16 +681,12 @@ class EditService():
         #get df with only ValueID and AnnotationID
         #remove any duplicates
         #save df to db
+        print("ANNOTATIONS ARE ATTEMPTED TO ADD")
+        query = "SELECT resultid, datetime FROM TSRV"
+        pd.read_sql(query, self._session_factory.engine)
+
+
         pass
-
-
-
-
-
-
-
-
-
 
 
     #
