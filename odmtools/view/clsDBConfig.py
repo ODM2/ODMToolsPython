@@ -179,7 +179,7 @@ class clsDBConfiguration(wx.Panel):
         self.cbVersion.SetSelection(0)
         connectionSizer.Add(self.cbVersion, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.stConnType = wx.StaticText(self, wx.ID_ANY, u"Connection Type:", wx.DefaultPosition, wx.DefaultSize,
+        self.stConnType = wx.StaticText(self, wx.ID_ANY, u"ODM Version:", wx.DefaultPosition, wx.DefaultSize,
                                         wx.ALIGN_RIGHT)
         self.stConnType.Wrap(-1)
         connectionSizer.Add(self.stConnType, 0, wx.ALL | wx.EXPAND | wx.ALIGN_RIGHT, 5)
