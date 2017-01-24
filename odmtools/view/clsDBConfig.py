@@ -172,8 +172,9 @@ class clsDBConfiguration(wx.Panel):
         self.stVersion.Wrap(-1)
         connectionSizer.Add(self.stVersion, 0, wx.ALL | wx.ALIGN_RIGHT | wx.EXPAND, 5)
 
-        version_choices = [ u"1.1", u"2.0"]
-        self.cbVersion = wx.ComboBox(self, wx.ID_ANY, u"1.1", wx.DefaultPosition, wx.DefaultSize,
+        # version_choices = [ u"1.1", u"2.0"]
+        version_choices = [u"2.0"]
+        self.cbVersion = wx.ComboBox(self, wx.ID_ANY, u"2.0", wx.DefaultPosition, wx.DefaultSize,
                                            version_choices, wx.CB_READONLY )#| wx.CB_SORT)
         self.cbVersion.SetSelection(0)
         connectionSizer.Add(self.cbVersion, 1, wx.ALL | wx.EXPAND, 5)
