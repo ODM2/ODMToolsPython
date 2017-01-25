@@ -20,6 +20,8 @@ class OLVDataTable(VirtualObjectListView):
         self.sortedColumnIndex = -1
         self.currentItem = None
         self.dataframe = None
+        self.annotations = None
+        self.annotations_grouped = {}
 
     def init(self, memDB):
         self.memDB = memDB
@@ -28,21 +30,59 @@ class OLVDataTable(VirtualObjectListView):
         self.oddRowsBackColor = wx.Colour(191, 217, 217)
 
         self.dataframe = self.memDB.getDataValuesDF()
-        sort_by_index = list(self.dataframe.columns).index("valuedatetime")
+        self.annotations = self.memDB.get_annotations()
+
+        sort_by_index = self.dataframe.columns.tolist().index("valuedatetime")
         self.dataframe.sort_values(self.dataframe.columns[sort_by_index], inplace=True)
-        self.dataObjects = self.dataframe.values.tolist()
+
+        self.annotations_grouped = self.__group_annotations()
+        self.dataObjects = self.__merge_dataframe_with_annotations()
+
+        col = self.memDB.get_columns_with_annotations()
+
         columns = \
             [ColumnDefn(x.strip(), align="left", valueGetter=i, minimumWidth=125, width=125,
-                              stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
-                   for x, i in self.memDB.getEditColumns()]
+                        stringConverter='%Y-%m-%d %H:%M:%S' if "valuedatetime" == x.lower() else '%s')
+             for x, i in col]
+
         self.SetColumns(columns)
 
 
         self.SetObjectGetter(self.ObjectGetter)
-        self.SetItemCount(len(self.dataframe))
+        self.SetItemCount(len(self.dataObjects))
+
+    def __merge_dataframe_with_annotations(self):
+        data_list = self.dataframe.values.tolist()
+        data = data_list
+
+        for key, value in self.annotations_grouped.iteritems():
+            for i in range(0, len(data_list)):
+                if key in data[i]:
+                    data[i].append(value)
+                    break
+
+        return data
+
+    def __group_annotations(self):
+        """
+        Ideally, this method should only be called once. Use self.grouped_annotations after calling this method
+        :return:
+        """
+        anno_list = self.annotations.values.tolist()
+
+        anno = {}
+        for i in range(0, len(anno_list)):
+            value_id = anno_list[i][1]
+            annotation_code = anno_list[i][-1]
+            if value_id in anno:
+                anno[value_id].append(annotation_code)
+            else:
+                anno[value_id] = [annotation_code]
+
+        return anno
 
     def EnableSorting(self):
-        self.Bind(wx.EVT_LIST_COL_CLICK, self.onColSelected)
+        self.Bind(wx.EVT_LIST_COL_CLICK, self.on_column_selected)
         if not self.smallImageList:
             self.SetImageLists()
         if (not self.smallImageList.HasName(ObjectListView.NAME_DOWN_IMAGE) and
@@ -56,39 +96,57 @@ class OLVDataTable(VirtualObjectListView):
         """
         return self.dataObjects[index % len(self.dataObjects)]
 
-    def onColSelected(self, evt):
+    def on_column_selected(self, event):
         """
         Allows users to sort by clicking on columns
         """
-        if isinstance(self.dataframe, pd.DataFrame):
-           if self.dataframe.empty:
-               return
-        else:
-            if not self.dataframe:
-                return
+        if not isinstance(self.dataframe, pd.DataFrame):
+            return
 
-        logger.debug("Column: %s" % evt.m_col)
-        self.sortColumn(evt.m_col)
+        if self.dataframe.empty:
+            return
+
+        if not len(self.dataObjects):
+            return
+
+        self.sortColumn(event.Column)
 
     def sortColumn(self, selected_column):
+        self.sortAscending = not self.sortAscending
+
         oldSortColumnIndex = self.sortedColumnIndex
         self.sortedColumnIndex = selected_column
-        ascending = self.sortAscending
-        if ascending:
-            self.dataframe.sort_values(self.dataframe.columns[selected_column], inplace=True)
-            self.sortAscending = False
-        elif not ascending:
-            self.dataframe.sort_values(self.dataframe.columns[selected_column], ascending=False, inplace=True)
-            self.sortAscending = True
 
         self._UpdateColumnSortIndicators(selected_column, oldSortColumnIndex)
 
-        self.dataObjects = self.dataframe.values.tolist()
-        if self.GetItemCount:
+        if selected_column >= len(self.dataframe.columns):
+            self.dataObjects = self.sort_columns_by_annotation_code(reverse=self.sortAscending)
+        else:
+            self.dataframe.sort_values(self.dataframe.columns[selected_column], ascending=self.sortAscending, inplace=True)
+            self.dataObjects = self.__merge_dataframe_with_annotations()
+
+        if self.GetItemCount():
             itemFrom = self.GetTopItem()
             itemTo = self.GetTopItem() + 1 + self.GetCountPerPage()
             itemTo = min(itemTo, self.GetItemCount() - 1)
             self.RefreshItems(itemFrom, itemTo)
+
+    def sort_columns_by_annotation_code(self, reverse=False):
+        rows_with_annotation = []
+        rows_without_annotation = []
+
+        column_number_of_dataframe = len(self.dataframe.columns)
+
+        for i in self.dataObjects:
+            if len(i) > column_number_of_dataframe:
+                rows_with_annotation.append(i)
+            else:
+                rows_without_annotation.append(i)
+
+        if reverse:
+            return rows_without_annotation + rows_with_annotation
+        else:
+            return rows_with_annotation + rows_without_annotation
 
     def onItemSelected(self, event):
         """

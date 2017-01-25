@@ -116,26 +116,6 @@ class SeriesService(serviceBase):
         q = self._session.query(Variables).filter(Variables.VariableID.in_(var_ids))
         return q.all()
 
-        # Data Value Methods
-    def get_values(self, series_id=None):
-        '''
-
-        :param series_id:  Series id
-        :return: pandas dataframe
-        '''
-
-        setSchema(self._session_factory.engine)
-        q = self.read._session.query(TimeSeriesResultValues)
-        if series_id:
-            q = q.filter_by(ResultID=series_id)
-        q = q.order_by(TimeSeriesResultValues.ValueDateTime)
-        query = q.statement.compile(dialect=self._session_factory.engine.dialect)
-        data = pd.read_sql_query(sql=query,
-                                 con=self._session_factory.engine,
-                                 params=query.params)
-        data.set_index(data['valuedatetime'], inplace=True)
-        return data
-
 # Series Catalog methods
     def get_series_by_site(self , site_id):
         # try:
@@ -359,41 +339,44 @@ class SeriesService(serviceBase):
         # Pass in probably a Series object, match it against the database
         pass
 
-#
+
     #Data Value Methods
     def get_values(self, series_id=None):
-        '''
-        :param series_id:  Series id
+        """
+        :param series_id:
         :return: pandas dataframe
-        '''
-        #series= self.get_series_by_id(series_id)
-        # if series:
-        #     q = self._edit_session.query(DataValue).filter_by(
-        #             site_id=series.site_id,
-        #             variable_id=series.variable_id,
-        #             method_id=series.method_id,
-        #             source_id=series.source_id,
-        #             quality_control_level_id=series.quality_control_level_id)
-        #
-        #     query=q.statement.compile(dialect=self._session_factory.engine.dialect)
-        #     data= pd.read_sql_query(sql= query,
-        #                       con = self._session_factory.engine,
-        #                       params = query.params )
-        #     #return data.set_index(data['LocalDateTime'])
-        #     return data
-        # else:
-        #     return None
+        """
+        # see get_annotations_by_result around line 850
 
         q = self.read._session.query(TimeSeriesResultValues)
         if series_id:
-            q=q.filter_by(ResultID=series_id)
-        q= q.order_by(TimeSeriesResultValues.ValueDateTime)
+            q = q.filter_by(ResultID=series_id)
+        q = q.order_by(TimeSeriesResultValues.ValueDateTime)
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query,
                                  con=self._session_factory.engine,
                                  params=query.params)
         data.set_index(data['valuedatetime'], inplace=True)
+
+        # if series_id:
+        #     anno = self.get_annotations_by_result(series_id)
+        # q = pd.merge(data, anno, how="left", on='valueid', indicator=False)
+        # data.applymap(self.merge_annotation_with_timeseries_result)
+
+        # if len(anno):
+        #     # data.valueid.apply(self.merge_annotation_with_timeseries_result)
+        #     # data.applymap(self.merge_annotation_with_timeseries_result)
+        #     self.merge_annotation_with_timeseries_result(data, anno)
+
+
+
         return data
+
+    # df.drop_duplicates(dup_cols, keep='last', inplace=True)
+    # newdf = pd.merge(df, pd.read_sql(query, engine), how='left', on=dup_cols, indicator=True)
+    # newdf = newdf[newdf['_merge'] == 'left_only']
+    # newdf.drop(['_merge'], axis=1, inplace=True)
+    # return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
 
     def get_all_values_df(self):
 
@@ -870,24 +853,31 @@ class SeriesService(serviceBase):
         return self.read.getCVs(type="Quality Code")
 
     def get_annotation_by_code(self, code):
-        return self.read.getAnnotations(codes=[code])[0]
+        try:
+            return self.read.getAnnotations(codes=[code])[0]
+        except:
+            return None
+
     def get_annotation_by_id(self, id):
-        return self.read.getAnnotations(ids=[id])[0]
+        try:
+            return self.read.getAnnotations(ids=[id])[0]
+        except:
+            return None
+
     def get_all_annotations(self):
-        return self.read.getAnnotations(type=None)
+        try:
+            return self.read.getAnnotations(type=None)
+        except:
+            return None
 
     def get_annotations_by_result(self, resultid):
-        setSchema(self._session_factory.engine)
+        resultid = int(resultid)
 
-        # ids = [x[0] for x in self.read._session.query(TimeSeriesResultValues.ValueID)\
-        #         .filter(TimeSeriesResultValues.ResultID == resultid).all()]
-        # q = self.read._session.query(TimeSeriesResultValueAnnotations)\
-        #     .filter(TimeSeriesResultValueAnnotations.ValueID.in_(ids)).all()
-
-        q =self.read._session.query(TimeSeriesResultValueAnnotations.AnnotationID, TimeSeriesResultValueAnnotations.ValueID,
-                                    TimeSeriesResultValues.ResultID, TimeSeriesResultValues.ValueDateTime)\
+        q = self.read._session.query(TimeSeriesResultValueAnnotations.AnnotationID, TimeSeriesResultValueAnnotations.ValueID,
+                                    TimeSeriesResultValues.ResultID, TimeSeriesResultValues.ValueDateTime, Annotations.AnnotationCode)\
                             .filter(TimeSeriesResultValues.ResultID == resultid)\
-                            .filter(TimeSeriesResultValueAnnotations.ValueID == TimeSeriesResultValues.ValueID)
+                            .filter(TimeSeriesResultValueAnnotations.ValueID == TimeSeriesResultValues.ValueID)\
+                            .filter(Annotations.AnnotationID==TimeSeriesResultValueAnnotations.AnnotationID)
 
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
