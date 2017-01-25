@@ -694,31 +694,14 @@ class EditService():
         # remove any duplicates
         annolist.drop_duplicates(["resultid", "annotationid", "valuedatetime"], keep= 'last', inplace = True)
         newdf = pd.merge(annolist, vals, how='left', on= ["resultid", "valuedatetime"], indicator = True)
-        print "after merge"
-        print newdf
-        # newdf = newdf(newdf['_merge'], axis = 1, inplace = True)
-        # print "after filter"
-        # print newdf
+
 
         #get only AnnotationID and ValueID
-        print "after column selection"
         mynewdf= newdf[["valueid_y","annotationid"]]
-        print "rename columns"
         mynewdf.columns = ["ValueID", "AnnotationID"]
-        print newdf
-
 
         # save df to db
-        print "save to db"
         self.memDB.series_service.add_annotations(mynewdf)
-        print "done"
-
-
-        # df.drop_duplicates(dup_cols, keep='last', inplace=True)
-        # newdf = pd.merge(df, pd.read_sql(query, engine), how='left', on=dup_cols, indicator=True)
-        # newdf = newdf[newdf['_merge'] == 'left_only']
-        # newdf.drop(['_merge'], axis=1, inplace=True)
-        # return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
 
 
 
