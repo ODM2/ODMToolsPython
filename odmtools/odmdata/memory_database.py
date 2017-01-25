@@ -194,11 +194,11 @@ class MemoryDatabase(object):
     def updateFlag(self, ids, value):
 
 
-        flags = pd.DataFrame(columns = ['AnnotationID', 'DateTime', 'ResultID', 'ValueID'])
-        flags["DateTime"] = ids
-        flags["AnnotationID"] = value
-        flags["ResultID"] = self.series.ResultID
-        flags["ValueID"] = None
+        flags = pd.DataFrame(columns = ['annotationid', 'valuedatetime', 'resultid', 'valueid'])
+        flags["valuedatetime"] = ids
+        flags["annotationid"] = value
+        flags["resultid"] = self.series.ResultID
+        flags["valueid"] = None
 
 
         #what if the column already exists
