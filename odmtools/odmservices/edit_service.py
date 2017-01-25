@@ -679,7 +679,6 @@ class EditService():
     def add_annotations(self, annolist):
         #match up with existing values and get value id
 
-        print("ANNOTATIONS ARE ATTEMPTED TO ADD")
         engine = self.memDB.series_service._session_factory.engine
 
         q =self.memDB.series_service._session.query(TimeSeriesResultValues) \
