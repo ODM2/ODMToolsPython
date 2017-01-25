@@ -678,15 +678,50 @@ class EditService():
 
     def add_annotations(self, annolist):
         #match up with existing values and get value id
-        #get df with only ValueID and AnnotationID
-        #remove any duplicates
-        #save df to db
+
         print("ANNOTATIONS ARE ATTEMPTED TO ADD")
-        query = "SELECT resultid, datetime FROM TSRV"
-        pd.read_sql(query, self._session_factory.engine)
+        engine = self.memDB.series_service._session_factory.engine
+
+        q =self.memDB.series_service._session.query(TimeSeriesResultValues) \
+            .filter(TimeSeriesResultValues.ResultID == int(min(annolist["resultid"])))
+
+        query = q.statement.compile(dialect=engine.dialect)
+        # data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
+        #                          params=query.params)
+        # query = "SELECT ValueID, ResultID, ValueDateTime  FROM TimeSeriesResultValues Where ResultID="+annolist["ResultID"][0]
+
+        vals = pd.read_sql_query(sql=query, con=engine,params=query.params)
+        # remove any duplicates
+        annolist.drop_duplicates(["resultid", "annotationid", "valuedatetime"], keep= 'last', inplace = True)
+        newdf = pd.merge(annolist, vals, how='left', on= ["resultid", "valuedatetime"], indicator = True)
+        print "after merge"
+        print newdf
+        # newdf = newdf(newdf['_merge'], axis = 1, inplace = True)
+        # print "after filter"
+        # print newdf
+
+        #get only AnnotationID and ValueID
+        print "after column selection"
+        mynewdf= newdf[["valueid_y","annotationid"]]
+        print "rename columns"
+        mynewdf.columns = ["ValueID", "AnnotationID"]
+        print newdf
 
 
-        pass
+        # save df to db
+        print "save to db"
+        self.memDB.series_service.add_annotations(mynewdf)
+        print "done"
+
+
+        # df.drop_duplicates(dup_cols, keep='last', inplace=True)
+        # newdf = pd.merge(df, pd.read_sql(query, engine), how='left', on=dup_cols, indicator=True)
+        # newdf = newdf[newdf['_merge'] == 'left_only']
+        # newdf.drop(['_merge'], axis=1, inplace=True)
+        # return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
+
+
+
 
 
     #
