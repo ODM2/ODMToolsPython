@@ -1,5 +1,5 @@
 app_name = "ODM2Tools"
-version = "2.0.0_Beta"
+version = "2.0.1_Beta"
 copyright = "Copyright (c) 2013 - 2015, Utah State University. All rights reserved."
 description = "ODMTools is a python application for managing observational data using the Observations Data Model. " \
             "ODMTools allows you to query, visualize, and edit data stored in an Observations Data Model (ODM) database." \
