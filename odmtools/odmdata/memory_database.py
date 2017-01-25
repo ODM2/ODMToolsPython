@@ -74,12 +74,16 @@ class MemoryDatabase(object):
         logging.debug("done updating memory dataframe")
         return self.df
 
-    def get_annotations(self):
-        result_id = self.df.resultid[0]
+
+    def get_annotations(self, query_db_again=False):
+        # self.mem_service._session.commit()
         setSchema(self.series_service._session_factory.engine)
-        annotation = self.series_service.get_annotations_by_result(resultid=result_id)
-        self.results_annotations = annotation
-        return self.results_annotations
+        if self.results_annotations is None or query_db_again:
+            result_id = self.df.resultid[0]
+            annotation = self.series_service.get_annotations_by_result(resultid=result_id)
+            self.results_annotations = annotation
+
+
 
     def getDataValues(self):
         # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
