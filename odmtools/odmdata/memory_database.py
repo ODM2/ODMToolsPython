@@ -83,6 +83,7 @@ class MemoryDatabase(object):
             annotation = self.series_service.get_annotations_by_result(resultid=result_id)
             self.results_annotations = annotation
 
+        return self.results_annotations
 
 
     def getDataValues(self):
