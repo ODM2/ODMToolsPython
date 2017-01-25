@@ -512,58 +512,71 @@ class EditService():
             # upsert values
             self.memDB.series_service.upsert_values(values)
             # save new annotations
-            self.add_annotations(self.memDB.annotation_list)
+            if len(self.memDB.annotation_list >0):
+                self.add_annotations(self.memDB.annotation_list)
+            return result
         except Exception as e:
             logger.error("Exception encountered while saving: {}".format(e))
-        return result
+        return None
 
     def save_existing(self, result):
         result = self.save(result)
         return result
 
     def save_appending(self, result, overwrite=True):
-        values = self.memDB.getDataValuesDF()
+        try:
 
-        # get value count
-        vc = result.ValueCount
-        # set in df
-        values["resultid"] = result.ResultID
+            values = self.memDB.getDataValuesDF()
 
-        # count = overlap calc
-        count = self.overlapcalc(result, values, overwrite)
-        # set value count = res.vc+valuecount-count
-        valuecount = result.ValueCount + vc - count
-        # update result
-        self.updateResult(result, valuecount)
-        # insert values
-        self.memDB.series_service.upsert_values(values)
-        # save new annotations
-        self.add_annotations(self.memDB.annotation_list)
+            # get value count
+            vc = result.ValueCount
+            # set in df
+            values["resultid"] = result.ResultID
 
-        return result
+            # count = overlap calc
+            count = self.overlapcalc(result, values, overwrite)
+            # set value count = res.vc+valuecount-count
+            valuecount = result.ValueCount + vc - count
+            # update result
+            self.updateResult(result, valuecount)
+            # insert values
+            self.memDB.series_service.upsert_values(values)
+            # save new annotations
+            if len(self.memDB.annotation_list >0):
+                self.add_annotations(self.memDB.annotation_list)
+            return result
+        except Exception as e:
+            logger.error("Exception encountered while performing a save as: {}".format(e))
+        return None
 
     def save_as(self, variable, method, proc_level, action, action_by):
-        #save as new series
-        values = self.memDB.getDataValuesDF()
-        # get all annotations for series
-        annolist= self.memDB.series_service.get_annotations_by_result(str(values["resultid"][0]))
-        annolist['valueid']=None
 
-        # create series
-        result = self.getResult(variable, method, proc_level, action, action_by)
+        try:
+            #save as new series
+            values = self.memDB.getDataValuesDF()
+            # get all annotations for series
+            annolist= self.memDB.series_service.get_annotations_by_result(str(values["resultid"][0]))
+            annolist['valueid']=None
 
-        # set in df
-        values["resultid"] = result.ResultID
-        # insert values
-        self.memDB.series_service.insert_values(values)
+            # create series
+            result = self.getResult(variable, method, proc_level, action, action_by)
 
-        # save all annotations
-        frames = [self.memDB.annotation_list, annolist]
-        annolist = pd.concat(frames)
-        self.add_annotations(annolist)
+            # set in df
+            values["resultid"] = result.ResultID
+            # insert values
+            self.memDB.series_service.insert_values(values)
 
+            #combine all of the annotations new annotations with the existing
+            frames = [self.memDB.annotation_list, annolist]
+            annolist = pd.concat(frames)
+            # save all annotations
+            if len(annolist >0):
+                self.add_annotations(annolist)
 
-        return result
+            return result
+        except Exception as e:
+            logger.error("Exception encountered while performing a save as: {}".format(e))
+        return None
 
     def getResult(self, var, meth, proc, action, action_by):
         values = self.memDB.getDataValuesDF()
@@ -602,17 +615,19 @@ class EditService():
                 newaction.MethodID = action.MethodID
                 newaction.ActionTypeCV = "Derivation"
 
-                print newaction
+                print "creating an action"
                 newaction = self.memDB.series_service.create.createAction(newaction)  # it times out. find out why
                 print newaction
 
 
                 # create Actionby done
+                print "creating an actionby"
                 action_by.ActionID = newaction.ActionID
                 action_by= self.memDB.series_service.create.createActionby(action_by)
                 print action_by
 
 
+                print "creating a feature_action"
                 # create FeatureAction (using current sampling feature id)
                 sampling_feature = result.FeatureActionObj.SamplingFeatureObj
                 self.memDB.series_service.read._session.expunge(result.FeatureActionObj.SamplingFeatureObj)
@@ -625,6 +640,7 @@ class EditService():
                 feature_action = self.memDB.series_service.create.createFeatureAction(feature_action)
                 print feature_action
 
+                print "creating a result"
                 # create TimeSeriesResult - this should also contain all of the stuff for the Result
                 time, offset = self.get_current_time_and_utcoffset()
 
@@ -674,9 +690,9 @@ class EditService():
         #is there any overlap
         dbend = result.FeatureActionObj.ActionObj.EndDateTime
         dfstart = datetime.datetime.strptime(str(np.min(values["valuedatetime"])), form)
-        overlap = dbend>= dfstart
+        overlap = dbend >= dfstart
         #number of overlapping values
-        overlapdf = values[(values["valuedatetime"]<= dfstart) & (values["valuedatetime"]>= dbend)]
+        overlapdf = values[(values["valuedatetime"] <= dfstart) & (values["valuedatetime"] >= dbend)]
         count =len(overlapdf)
         #if not overwrite. remove any overlapping values from df
         if overlap:
@@ -709,6 +725,7 @@ class EditService():
         #get only AnnotationID and ValueID
         mynewdf= newdf[["valueid_y","annotationid"]]
         mynewdf.columns = ["ValueID", "AnnotationID"]
+
 
         # save df to db
         self.memDB.series_service.add_annotations(mynewdf)

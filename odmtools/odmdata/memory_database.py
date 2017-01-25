@@ -47,6 +47,7 @@ class MemoryDatabase(object):
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+        self.annotation_list = pd.DataFrame()
         setSchema(self.mem_service._session_factory.engine)
 
     def set_series_service(self, service):

@@ -54,12 +54,12 @@ class OLVDataTable(VirtualObjectListView):
     def __merge_dataframe_with_annotations(self):
         data_list = self.dataframe.values.tolist()
         data = data_list
-
-        for key, value in self.annotations_grouped.iteritems():
-            for i in range(0, len(data_list)):
-                if key in data[i]:
-                    data[i].append(value)
-                    break
+        if self.annotations_grouped:
+            for key, value in self.annotations_grouped.iteritems():
+                for i in range(0, len(data_list)):
+                    if key in data[i]:
+                        data[i].append(value)
+                        break
 
         return data
 
@@ -68,18 +68,21 @@ class OLVDataTable(VirtualObjectListView):
         Ideally, this method should only be called once. Use self.grouped_annotations after calling this method
         :return:
         """
-        anno_list = self.annotations.values.tolist()
+        if (self.annotations):
+            anno_list = self.annotations.values.tolist()
 
-        anno = {}
-        for i in range(0, len(anno_list)):
-            value_id = anno_list[i][1]
-            annotation_code = anno_list[i][-1]
-            if value_id in anno:
-                anno[value_id].append(annotation_code)
-            else:
-                anno[value_id] = [annotation_code]
+            anno = {}
+            for i in range(0, len(anno_list)):
+                value_id = anno_list[i][1]
+                annotation_code = anno_list[i][-1]
+                if value_id in anno:
+                    anno[value_id].append(annotation_code)
+                else:
+                    anno[value_id] = [annotation_code]
 
-        return anno
+            return anno
+        else:
+            return None
 
     def EnableSorting(self):
         self.Bind(wx.EVT_LIST_COL_CLICK, self.on_column_selected)

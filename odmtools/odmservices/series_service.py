@@ -611,8 +611,9 @@ class SeriesService(serviceBase):
 
 
 
-    def insert_annotations(self, annotations):
-        annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
+    # def insert_annotations(self, annotations):
+    #     setSchema(self._session_factory.engine)
+    #     annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
 
 
     def _get_df_query(self, values):
@@ -787,6 +788,7 @@ class SeriesService(serviceBase):
         return self.create_annotation_by_anno(annotation)
 
     def add_annotations(self, anno_list):
+        setSchema(self._session_factory.engine)
         try:
             #tablename = TimeSeriesResultValueAnnotations.__tablename__
             #print ("I am TS saving name the table name", tablename)
@@ -872,6 +874,7 @@ class SeriesService(serviceBase):
 
     def get_annotations_by_result(self, resultid):
         resultid = int(resultid)
+        setSchema(self._session_factory.engine)
 
         q = self.read._session.query(TimeSeriesResultValueAnnotations.AnnotationID, TimeSeriesResultValueAnnotations.ValueID,
                                     TimeSeriesResultValues.ResultID, TimeSeriesResultValues.ValueDateTime, Annotations.AnnotationCode)\
