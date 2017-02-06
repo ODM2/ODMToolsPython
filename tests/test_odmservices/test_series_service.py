@@ -183,10 +183,10 @@ class TestSeriesService:
         assert series.id == all_series[0].id
 
     def test_get_series_by_id(self):
-        assert self.series_service.get_series_by_id(10) == None
+        assert self.series_service.get_series(10) == None
 
         series = test_util.add_series(self.session)
-        db_series = self.series_service.get_series_by_id(series.id)
+        db_series = self.series_service.get_series(series.id)
 
         assert series.id == db_series.id
 
@@ -292,7 +292,7 @@ class TestSeriesService:
         subset = dvs[:5]
         self.series_service.delete_dvs([x.local_date_time for x in subset])
         assert self.series_service.get_data_value_by_id(subset[0].id) == None
-        series = self.series_service.get_series_by_id(series.id)  # Reload
+        series = self.series_service.get_series(series.id)  # Reload
         assert len(series.data_values) == 5
 
     def test_update_dvs(self):
@@ -304,7 +304,7 @@ class TestSeriesService:
             subset[i].data_value = 100
 
         self.series_service.update_dvs(subset)
-        series = self.series_service.get_series_by_id(series.id)
+        series = self.series_service.get_series(series.id)
         assert series.data_values[0].data_value == 100
 
     def test_create_new_series(self):
@@ -338,7 +338,7 @@ class TestSeriesService:
 
         self.series_service.update_series(series)
 
-        series = self.series_service.get_series_by_id(series.id)
+        series = self.series_service.get_series(series.id)
         assert series.site_code == "NEW"
         assert series.variable_code == "NEW"
 
@@ -367,16 +367,16 @@ class TestSeriesService:
 
     def test_delete_series(self):
         series = test_util.add_series(self.session)
-        assert self.series_service.get_series_by_id(series.id) != None
+        assert self.series_service.get_series(series.id) != None
 
         self.series_service.delete_series(series)
-        assert self.series_service.get_series_by_id(series.id) == None
+        assert self.series_service.get_series(series.id) == None
 
     def test_delete_values(self):
         series = test_util.add_series(self.session)
-        assert self.series_service.get_series_by_id(series.id) != None
+        assert self.series_service.get_series(series.id) != None
         self.series_service.delete_values_by_series(series)
-        val = self.series_service.get_series_by_id(series.id)
+        val = self.series_service.get_series(series.id)
         print val
         assert val != None
 

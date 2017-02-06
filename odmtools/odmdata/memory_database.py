@@ -3,7 +3,6 @@ import logging
 from sqlalchemy import bindparam
 
 from odmtools.common.logger import LoggerTool
-from odmtools.odmservices import SeriesService
 from odmtools.odmservices import ServiceManager, SeriesService
 
 # from odmtools.odmdata import SeriesService#ODM
@@ -12,11 +11,10 @@ from odm2api.ODM2.models import TimeSeriesResultValues as TSRV
 from odm2api.ODM2.models import setSchema
 import pandas as pd
 
-
 logger =logging.getLogger('main')
 
 class MemoryDatabase(object):
-    ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
+    ## this code should be changed to work with the database abstract layer so that sql queries are not in the code
 
     # series_service is a SeriesService
     def __init__(self, taskserver=None):
@@ -75,7 +73,6 @@ class MemoryDatabase(object):
         logging.debug("done updating memory dataframe")
         return self.df
 
-
     def get_annotations(self, query_db_again=False):
         # self.mem_service._session.commit()
         setSchema(self.series_service._session_factory.engine)
@@ -83,8 +80,6 @@ class MemoryDatabase(object):
             result_id = self.df.resultid[0]
             annotation = self.series_service.get_annotations_by_result(resultid=result_id)
             self.results_annotations = annotation
-
-
 
     def getDataValues(self):
         # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore

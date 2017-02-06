@@ -3,11 +3,9 @@ from sqlalchemy import not_, bindparam, distinct, func, exists
 from odm2api.ODM2.services import ReadODM2,  UpdateODM2, DeleteODM2, CreateODM2
 from odm2api import serviceBase
 from odm2api.ODM2.models import *
-#from odmtools.odmservices.to_sql_newrows import get_insert, get_delete, get_update
 import datetime
-from odmtools.common.logger import LoggerTool
 import pandas as pd
-logger =logging.getLogger('main')
+logger = logging.getLogger('main')
 
 
 class SeriesService(serviceBase):
@@ -19,9 +17,8 @@ class SeriesService(serviceBase):
         self.update = UpdateODM2(self._session_factory)
         self.delete = DeleteODM2(self._session_factory)
         self.create = CreateODM2(self._session_factory)
-        #send in engine
+        # send in engine
         setSchema(self._session_factory.engine)
-
 
     def reset_session(self):
         self.read.reset_session()
@@ -45,9 +42,10 @@ class SeriesService(serviceBase):
         except:
             return None
 
-        sf=[x[0] for x in self._session.query(distinct(FeatureActions.SamplingFeatureID)).filter(FeatureActions.FeatureActionID.in_(fas)).all()]
+        sf = [x[0] for x in self._session.query(distinct(FeatureActions.SamplingFeatureID))
+            .filter(FeatureActions.FeatureActionID.in_(fas)).all()]
 
-        sites = self.read.getSamplingFeatures(type = "site", ids = sf)
+        sites = self.read.getSamplingFeatures(type="site", ids=sf)
         return sites
 
     def get_used_variables(self):
@@ -63,8 +61,6 @@ class SeriesService(serviceBase):
         vars= self.read.getVariables(ids = ids)
         return vars
 
-
-
     # Query DetailedResultInfo/series object is for Display purposes
     def get_all_series(self, siteid = None):
         """
@@ -73,7 +69,6 @@ class SeriesService(serviceBase):
         """
 
         setSchema(self._session_factory.engine)
-
 
         return self.read.getDetailedResultInfo('Time Series Coverage', sfID=siteid)
 
@@ -117,7 +112,7 @@ class SeriesService(serviceBase):
         return q.all()
 
 # Series Catalog methods
-    def get_series_by_site(self , site_id):
+    def get_series_by_site(self, site_id):
         # try:
         #     selectedSeries = self._edit_session.query(Series).filter_by(site_id=site_id).order_by(Series.id).all()
         #     return selectedSeries
@@ -132,16 +127,13 @@ class SeriesService(serviceBase):
         # return self.read.getResults(type="site", ids= [site_id])[0]
         return self.read.getResults(ids=[site_id])
 
-
-
     # Site methods
     def get_all_sites(self):
         """
         :return: List[Sites]
         """
-        #return self._edit_session.query(Site).order_by(Site.code).all()
+        # return self._edit_session.query(Site).order_by(Site.code).all()
         return self.read.getResults(type="site")
-
 
     def get_site_by_id(self, site_id):
         """
@@ -154,14 +146,13 @@ class SeriesService(serviceBase):
 #         except:
 #             return None
 
-        return self.read.getSampling(ids = [site_id])[0]
-
+        return self.read.getSampling(ids=[site_id])[0]
 
     def get_all_variables(self):
         """
         :return: List[Variables]
         """
-        #return self._edit_session.query(Variable).all()
+        # return self._edit_session.query(Variable).all()
         return self.read.getVariables()
 
     def get_variable_by_id(self, variable_id):
@@ -173,8 +164,8 @@ class SeriesService(serviceBase):
 #             return self._edit_session.query(Variable).filter_by(id=variable_id).first()
 #         except:
 #             return None
-        return self.read.getVariables(ids = [variable_id])[0]
-#
+        return self.read.getVariables(ids=[variable_id])[0]
+
     def get_variable_by_code(self, variable_code):
         """
 
@@ -185,10 +176,8 @@ class SeriesService(serviceBase):
         #     return self._edit_session.query(Variable).filter_by(code=variable_code).first()
         # except:
         #     return None
-        return self.read.getVariables(codes = [variable_code])[0]
-#
+        return self.read.getVariables(codes=[variable_code])[0]
 
-#
     # Unit methods
     def get_all_units(self):
         """
@@ -197,7 +186,7 @@ class SeriesService(serviceBase):
         """
         # return self._edit_session.query(Unit).all()
         return self.read.getUnits()
-#
+
     def get_unit_by_name(self, unit_name):
         """
         :param unit_name: str
@@ -208,7 +197,7 @@ class SeriesService(serviceBase):
         # except:
         #     return None
         return self.read.getUnits(name=[unit_name])[0]
-#
+
     def get_unit_by_id(self, unit_id):
         """
 
@@ -221,7 +210,6 @@ class SeriesService(serviceBase):
         #     return None
         return self.read.getUnits(ids=[unit_id])[0]
 
-#
     def get_all_qualifiers(self):
         """
 
@@ -231,7 +219,7 @@ class SeriesService(serviceBase):
         # return result
         ann= self.read.getAnnotations()
         return ann
-#
+
     def get_qualifier_by_code(self, code):
         """
 
@@ -239,10 +227,10 @@ class SeriesService(serviceBase):
         # """
         # result = self._edit_session.query(Qualifier).filter(Qualifier.code==code).first()
         # return result
-        return self.read.getAnnotations(codes=[code])[0] ##todo: CHECK ON THIS
-#
+        return self.read.getAnnotations(codes=[code])[0]  # todo: CHECK ON THIS
+
     def get_qualifiers_by_series_id(self, series_id):
-        return self.read.getAnnotations(ids=[series_id])[0] ##todo: check on this
+        return self.read.getAnnotations(ids=[series_id])[0]  # todo: check on this
 
     def get_all_processing_levels(self):
         return self.read.getProcessingLevels(ids=None, codes=None)
@@ -257,25 +245,24 @@ class SeriesService(serviceBase):
 #         return self._edit_session.query(Qualifier).join(subquery).distinct().all()
 #
 
-
     def get_processing_level_by_id(self, qcl_id):
         try:
-            return self.read.getProcessingLevels(ids = [qcl_id])[0]
-            #return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
+            return self.read.getProcessingLevels(ids=[qcl_id])[0]
+            # return self._edit_session.query(QualityControlLevel).filter_by(id=qcl_id).first()
         except:
             return None
-#
+
     def get_processing_level_by_code(self, codes):
         try:
             return self.read.getProcessingLevels(codes=[codes])[0]
         except:
             return None
 
-#     # Method methods
+    # Method methods
     def get_all_methods(self):
-        #return self._edit_session.query(Method).all()
+        # return self._edit_session.query(Method).all()
         return self.read.getMethods()
-#
+
     def get_method_by_id(self, method_id):
         return self.read.getMethods(ids=[method_id])[0]
         # try:
@@ -283,7 +270,7 @@ class SeriesService(serviceBase):
         # except:
         #     result = None
         # return result
-#
+
     def get_method_by_code(self, method_code):
         try:
             return self.read.getMethods(codes=[method_code])[0]
@@ -296,58 +283,58 @@ class SeriesService(serviceBase):
         #     result = None
         #     logger.error("method not found")
         # return result
-#
 
-#todo: Take another look at this
-
+    # todo: Take another look at this
 
     # Series Catalog methods
     def resultExists(self, result):
         """
 
-        :param site_id:
-        :param var_id:
-        :param method_id:
-        :param source_id:
-        :param qcl_id:
+        :param result
         :return: Series
         """
         # unique Result
         # FeatureActionID, ResultTypeCV, VariableID, UnitsID, ProcessingLevelID, SampledMediumCV
 
-
         try:
             # return self._edit_session.query(Results).filter_by(
             #      VariableID=var_id, MethodID=method_id,
             #      AnnotationID=qcl_id).first()
-            ret = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV).
-                                           where(Results.VariableID == result.VariableID).
-                                           where(Results.UnitsID == result.UnitsID).
-                                           where(Results.ProcessingLevelID == result.ProcessingLevelID).
-                                           where(Results.SampledMediumCV == result.SampledMediumCV)
+            setSchema(self._session_factory.engine)
+            ret = self._session.query(exists().where(Results.ResultTypeCV == result.ResultTypeCV)
+                                              .where(Results.VariableID == result.VariableID)
+                                              .where(Results.UnitsID == result.UnitsID)
+                                              .where(Results.ProcessingLevelID == result.ProcessingLevelID)
+                                              .where(Results.SampledMediumCV == result.SampledMediumCV)
                                       )
-        # where(Results.FeatureActionID == result.FeatureActionID).
-
-
+            # where(Results.FeatureActionID == result.FeatureActionID).
             return ret.scalar()
+
         except:
             return None
 
-
+    def get_series_by_meta(self, result):
+        setSchema(self._session_factory.engine)
+        id = self.read._session.query(Results)\
+            .filter_by(ResultTypeCV=result.ResultTypeCV)\
+            .filter_by(VariableID=result.VariableID)\
+            .filter_by(UnitsID=result.UnitsID)\
+            .filter_by(ProcessingLevelID=result.ProcessingLevelID)\
+            .filter_by(SampledMediumCV=result.SampledMediumCV)
+        return id.first()
 
     def get_series_from_filter(self):
         # Pass in probably a Series object, match it against the database
         pass
 
-
-    #Data Value Methods
+    # Data Value Methods
     def get_values(self, series_id=None):
         """
         :param series_id:
         :return: pandas dataframe
         """
         # see get_annotations_by_result around line 850
-
+        setSchema(self._session_factory.engine)
         q = self.read._session.query(TimeSeriesResultValues)
         if series_id:
             q = q.filter_by(ResultID=series_id)
@@ -358,25 +345,7 @@ class SeriesService(serviceBase):
                                  params=query.params)
         data.set_index(data['valuedatetime'], inplace=True)
 
-        # if series_id:
-        #     anno = self.get_annotations_by_result(series_id)
-        # q = pd.merge(data, anno, how="left", on='valueid', indicator=False)
-        # data.applymap(self.merge_annotation_with_timeseries_result)
-
-        # if len(anno):
-        #     # data.valueid.apply(self.merge_annotation_with_timeseries_result)
-        #     # data.applymap(self.merge_annotation_with_timeseries_result)
-        #     self.merge_annotation_with_timeseries_result(data, anno)
-
-
-
         return data
-
-    # df.drop_duplicates(dup_cols, keep='last', inplace=True)
-    # newdf = pd.merge(df, pd.read_sql(query, engine), how='left', on=dup_cols, indicator=True)
-    # newdf = newdf[newdf['_merge'] == 'left_only']
-    # newdf.drop(['_merge'], axis=1, inplace=True)
-    # return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
 
     def get_all_values_df(self):
 
@@ -387,34 +356,21 @@ class SeriesService(serviceBase):
         q = self.read._session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
-                          params=query.params)
-        #columns = list(data)
+                                 params=query.params)
 
-        # columns.insert(0, columns.pop(columns.index("DataValue")))
-        # columns.insert(1, columns.pop(columns.index("ValueDateTime")))
-        #columns.insert(2, columns.pop(columns.index("QualifierID")))
-
-        #data = data.ix[:, columns]
         return data.set_index(data['ValueDateTime'])
-        # q = self._edit_session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime)
-        # query = q.statement.compile(dialect = self._session_factory.engine.dialect)
-        # data = pd.read_sql_query(sql= query,
-        #                          con= self._session_factory.engine,
-        #                          params=query.params)
-#
-
 
     def get_all_values_list(self):
         """
 
         :return:
         """
-        result =self.read._session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
+        result = self.read._session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
         return [x.list_repr() for x in result]
 
     def get_all_values(self):
         return self.read._session.query(TimeSeriesResultValues).order_by(TimeSeriesResultValues.ValueDateTime).all()
-#
+
     @staticmethod
     def calcSeason(row):
 
@@ -447,103 +403,96 @@ class SeriesService(serviceBase):
         data["month"] = data['valuedatetime'].apply(lambda x: x.month)
         data["year"] = data['valuedatetime'].apply(lambda x: x.year)
         data["season"] = data.apply(self.calcSeason, axis=1)
-        # data.set_index(data['valuedatetime'], inplace=True)
         return data
 
     def get_all_plot_values(self):
         setSchema(self._session_factory.engine)
         Values = self.get_values()
         data = Values[['datavalue', 'censorcodecv', 'valuedatetime']]
-        # data = data[data['datavalue'] != noDataValue]
-
 
         data["month"] = data['valuedatetime'].apply(lambda x: x.month)
         data["year"] = data['valuedatetime'].apply(lambda x: x.year)
         data["season"] = data.apply(self.calcSeason, axis=1)
-        #data.set_index(data['valuedatetime'], inplace=True)
         return data
 
-
-
-
-
-
-#     def get_data_value_by_id(self, id):
-#         """
-#
-#         :param id:
-#         :return:
-#         """
-#         try:
-#             return self._edit_session.query(DataValue).filter_by(id=id).first()
-#         except:
-#             return None
-#
-#
-#
 
 #####################
 #
 #  Update functions
 #
 #####################
-#     def update_series(self, series):
-#         """
-#
-#         :param series:
-#         :return:
-#         """
-#         merged_series = self._edit_session.merge(series)
-#         self._edit_session.add(merged_series)
-#         self._edit_session.commit()
-#
-#     def update_dvs(self, dv_list):
-#         """
-#
-#         :param dv_list:
-#         :return:
-#         """
-#         merged_dv_list = map(self._edit_session.merge, dv_list)
-#         self._edit_session.add_all(merged_dv_list)
-#         self._edit_session.commit()
-#
+    def update_result(self, result):
+        # self.update.updateResult(result.ResultID, result.ValueCount)
+        self.update.updateResult(result=result)
+
+
+    def update_action(self, action):
+        self.update.updateAction(action=action)
 
 #####################
 #
 #  Create functions
 #
 #####################
+    # new series
+    def create_result(self, var, proc, feature_action, aggcv, itsp, itspunit, status, type, units, medium):
 
-
-
-#new series
-    def createResult(self, var, meth, proc):
-        #also create an action
-        #copy old
-        #change var, meth proc, in df #intend ts, agg stat
-        # Result = None
-        # result = Results()
-        result = Results()
-
-        if isinstance(var, Variables):
-            result.VariableID = var.VariableID
-            result.VariableObj = var
-
-        if isinstance(meth, Methods):
-            # do something with meth
-            pass
-
-        if isinstance(proc, ProcessingLevels):
-            result.ProcessingLevelID = proc.ProcessingLevelID
-            result.ProcessingLevelObj = proc
+        new_result = TimeSeriesResults()
 
         time, offset = self.get_current_time_and_utcoffset()
-        result.ResultDateTime = time
-        result.ResultDateTimeUTCOffset = offset
+        new_result.ResultDateTime = time
+        new_result.ResultDateTimeUTCOffset = offset
 
-        return self.create.createResult(result=result)
+        # create TimeSeriesResult - this should also contain all of the stuff for the Result
+        new_result.ValueCount = 0
+        new_result.FeatureActionID = feature_action
+        new_result.ResultDateTime = time
+        new_result.ResultDateTimeUTCOffset = offset
+        new_result.VariableID = var
+        new_result.ProcessingLevelID = proc
+        new_result.AggregationStatisticCV = aggcv
+        new_result.IntendedTimeSpacingUnitsID = itspunit
+        new_result.IntendedTimeSpacing = itsp
+        new_result.StatusCV = status
+        new_result.ResultTypeCV = type
+        new_result.UnitsID = units
+        new_result.SampledMediumCV = medium
 
 
+        self.create.createResult(result=new_result)
+        self._session.refresh(new_result)
+        return new_result
+
+
+    def create_action(self, methodid, description, filelink, begindate, utc, actionby):
+        new_action = Actions()
+        new_action.MethodID= methodid
+        new_action.ActionDescription = description
+        new_action.ActionFileLink = filelink
+        new_action.BeginDateTime = begindate
+        new_action.BeginDateTimeUTCOffset = utc
+        new_action.EndDateTime = None
+        new_action.EndDateTimeUTCOffset = None
+        new_action.ActionTypeCV = "Derivation"
+
+        self.create.createAction(new_action)
+        action_by = new_action
+        action_by.ActionID = new_action.ActionID
+        action_by.IsActionLead = True
+
+        self.create.createActionby(action_by)
+
+        return new_action, actionby
+
+    def createFeatureAction(self, sfid, actionid):
+        feature_action = FeatureActions()
+
+        feature_action.SamplingFeatureID = sfid
+        feature_action.ActionID = actionid
+
+        self.create.createFeatureAction(feature_action)
+
+        return feature_action
 
     def get_current_time_and_utcoffset(self):
         current_time = datetime.datetime.now()
@@ -554,98 +503,26 @@ class SeriesService(serviceBase):
 
         return current_time, offset_in_hours
 
-
-
-
-
-#     def save_series(self, series, dvs):
-#         """ Save to an Existing Series
-#         :param series:
-#         :param data_values:
-#         :return:
-#         """
-#
-#         if self.series_exists(series):
-#
-#             try:
-#                 self._edit_session.add(series)
-#                 self._edit_session.commit()
-#                 self.save_values(dvs)
-#             except Exception as e:
-#                 self._edit_session.rollback()
-#                 raise e
-#             logger.info("Existing File was overwritten with new information")
-#             return True
-#         else:
-#             logger.debug("There wasn't an existing file to overwrite, please select 'Save As' first")
-#             # there wasn't an existing file to overwrite
-#             raise Exception("Series does not exist, unable to save. Please select 'Save As'")
-#
-#
-    # def save_new_series(self, series, dvs):
-    #     """ Create as a new catalog entry
-    #     :param series:
-    #     :param data_values:
-    #     :return:
-    #     """
-    #     # Save As case
-    #     if self.series_exists(series):
-    #         msg = "There is already an existing file with this information. Please select 'Save' or 'Save Existing' to overwrite"
-    #         logger.info(msg)
-    #         raise Exception(msg)
-    #     else:
-    #         try:
-    #             self._edit_session.add(series)
-    #             self._edit_session.commit()
-    #             self.save_values(dvs)
-    #             #self._edit_session.add_all(dvs)
-    #         except Exception as e:
-    #             self._edit_session.rollback()
-    #             raise e
-    #
-    #     logger.info("A new series was added to the database, series id: "+str(series.id))
-    #     return True
-
-
-
-
-
-
-    # def insert_annotations(self, annotations):
-    #     setSchema(self._session_factory.engine)
-    #     annotations.to_sql(name="timeseriesresultvalueannotations", if_exists='append', con=self._session_factory.engine, index=False)
-
-
-    def _get_df_query(self, values):
-
-        resid = str(values['resultid'][0])
-        sd = values['valuedatetime'].min()
-        ed = values['valuedatetime'].max()
-        q = self.read._session.query(TimeSeriesResultValues).\
-            filter(TimeSeriesResultValues.ResultID == resid)#.\
-            #filter(TimeSeriesResultValues.ValueDateTime.between(sd, ed))
-        return q.statement.compile(dialect=self._session_factory.engine.dialect)
-
-
     def upsert_values(self, values):
         setSchema(self._session_factory.engine)
         query = self._get_df_query(values)
-        newvals= get_insert(df= values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        newvals= self.get_insert(df=values, query=query, dup_cols=["valuedatetime", "resultid"],
+                                 engine=self._session_factory.engine)
         if not newvals.empty:
             self.insert_values(newvals)
-        delvals = get_delete(df= values, query = query, dup_cols = ["valuedatetime", "resultid"], engine = self._session_factory.engine)
+        delvals = self.get_delete(df= values, query = query, dup_cols=["valuedatetime", "resultid"],
+                                  engine=self._session_factory.engine)
         if not delvals.empty:
             self.delete_dvs(delvals["valuedatetime"].tolist())
 
-        upvals = get_update(df= values, query= query, dup_cols = ["valuedatetime", "resultid"], engine= self._session_factory.engine)
+        upvals = self.get_update(df=values, query=query, dup_cols=["valuedatetime", "resultid"],
+                                 engine=self._session_factory.engine)
         if not upvals.empty:
             self.update_values(upvals)
-
         self._session.commit()
 
     def insert_values(self, values):
         """
-
         :param values: pandas dataframe
         :return:
         """
@@ -671,52 +548,13 @@ class SeriesService(serviceBase):
         # update_list = {'value':updates["datavalue"].tolist(), 'id':updates.index.to_pydatetime().tolist()}
         vals = self.create._session.execute(stmt, update_list)
 
-
-#     def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
-#         """
-#
-#         :param data_values:
-#         :param site_id:
-#         :param variable_id:
-#         :param method_id:
-#         :param source_id:
-#         :param qcl_id:
-#         :return:
-#         """
-#         self.update_dvs(data_values)
-#         series = Series()
-#         series.site_id = site_id
-#         series.variable_id = variable_id
-#         series.method_id = method_id
-#         series.source_id = source_id
-#         series.quality_control_level_id = qcl_id
-#
-#         self._edit_session.add(series)
-#         self._edit_session.commit()
-#         return series
-
-
-    def create_new_series(self, data_values, site_id, variable_id, method_id, source_id, qcl_id):
-        # ToDo: create a Result, TimeSeriesResult and an Action object of type derivation
-        """
-        series_service -> Result in ODM2
-        :param data_values:
-        :param site_id:
-        :param variable_id:
-        :param method_id:
-        :param source_id:
-        :param qcl_id:
-        :return:
-        """
-        self.update_dvs(data_values)
-        series = Results()
-        series.site_id = site_id
-        series.variable_id = variable_id
-        series.method_id = method_id
-        series.source_id = source_id
-        series.quality_control_level_id = qcl_id
-
-        return self.create_service.getResult(series)
+    def _get_df_query(self, values):
+        resid = str(values['resultid'][0])
+        startdate = values['valuedatetime'].min()
+        ed = values['valuedatetime'].max()
+        q = self.read._session.query(TimeSeriesResultValues)\
+            .filter(TimeSeriesResultValues.ResultID == resid)
+        return q.statement.compile(dialect=self._session_factory.engine.dialect)
 
     def create_method(self, description, link):
         """
@@ -772,6 +610,7 @@ class SeriesService(serviceBase):
         """
         :param code:
         :param text:
+        :param link:
         :return:
         """
         annotation = Annotations()
@@ -790,8 +629,7 @@ class SeriesService(serviceBase):
     def add_annotations(self, anno_list):
         setSchema(self._session_factory.engine)
         try:
-            #tablename = TimeSeriesResultValueAnnotations.__tablename__
-            #print ("I am TS saving name the table name", tablename)
+
             anno_list.to_sql(name="TimeSeriesResultValueAnnotations",
                               schema=TimeSeriesResultValueAnnotations.__table_args__['schema'],
                               if_exists='append',
@@ -877,14 +715,14 @@ class SeriesService(serviceBase):
         setSchema(self._session_factory.engine)
 
         q = self.read._session.query(TimeSeriesResultValueAnnotations.AnnotationID, TimeSeriesResultValueAnnotations.ValueID,
-                                    TimeSeriesResultValues.ResultID, TimeSeriesResultValues.ValueDateTime, Annotations.AnnotationCode)\
+                                     TimeSeriesResultValues.ResultID, TimeSeriesResultValues.ValueDateTime, Annotations.AnnotationCode)\
                             .filter(TimeSeriesResultValues.ResultID == resultid)\
                             .filter(TimeSeriesResultValueAnnotations.ValueID == TimeSeriesResultValues.ValueID)\
                             .filter(Annotations.AnnotationID==TimeSeriesResultValueAnnotations.AnnotationID)
 
         query = q.statement.compile(dialect=self._session_factory.engine.dialect)
         data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
-                             params=query.params)
+                                 params=query.params)
         return data
 
     def get_aggregation_statistic(self):
@@ -975,25 +813,24 @@ class SeriesService(serviceBase):
 
         return q.all()
 
+    def get_delete(self, df, engine, query, dup_cols=[]):
 
-    def get_delete(df, engine, query, dup_cols=[]):
-        #query = get_df_query(df, tablename, dup_cols, filter_continuous_col=filter_continuous_col, filter_categorical_col=filter_categorical_col, filter_equal_col= filter_equal_col)
         df.drop_duplicates(dup_cols, keep='last', inplace=True)
         newdf = pd.merge(df, pd.read_sql(query, engine), how='right', on=dup_cols, indicator=True)
         newdf = newdf[newdf['_merge'] == 'right_only']
         newdf.drop(['_merge'], axis=1, inplace=True)
         return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
 
-    def get_update(df, engine, query, dup_cols=[]):
-        #query = get_df_query(df, tablename, dup_cols, filter_continuous_col=filter_continuous_col, filter_categorical_col=filter_categorical_col, filter_equal_col= filter_equal_col)
+    def get_update(self, df, engine, query, dup_cols=[]):
+
         df.drop_duplicates(dup_cols, keep='last', inplace=True)
         newdf = pd.merge(df, pd.read_sql(query, engine), how='inner', on=dup_cols, indicator=True)
-        #newdf = newdf[newdf['_merge'] == 'right_only']
+
         newdf.drop(['_merge'], axis=1, inplace=True)
         test = newdf[newdf['datavalue_x'] != newdf['datavalue_y']]
         return df[df['valuedatetime'].isin(test['valuedatetime'])]
 
-    def get_insert(df, engine, query, dup_cols=[]):
+    def get_insert(self, df, engine, query, dup_cols=[]):
         """
         Remove rows from a dataframe that already exist in a database
         Required:
@@ -1010,10 +847,9 @@ class SeriesService(serviceBase):
         Returns
             Unique list of values from dataframe compared to database table
         """
-
-        #query = get_df_query(df, tablename, dup_cols, filter_continuous_col=filter_continuous_col, filter_categorical_col=filter_categorical_col, filter_equal_col= filter_equal_col)
         df.drop_duplicates(dup_cols, keep='last', inplace=True)
         newdf = pd.merge(df, pd.read_sql(query, engine), how='left', on=dup_cols, indicator=True)
         newdf = newdf[newdf['_merge'] == 'left_only']
         newdf.drop(['_merge'], axis=1, inplace=True)
         return df[df['valuedatetime'].isin(newdf['valuedatetime'])]
+
