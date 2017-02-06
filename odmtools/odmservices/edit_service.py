@@ -687,10 +687,17 @@ class EditService():
         # number of overlapping values
         overlapdf = values[(values["valuedatetime"] <= dfstart) & (values["valuedatetime"] >= dbend)]
         count = len(overlapdf)
+
         # if not overwrite. remove any overlapping values from df
         if overlap:
             if not overwrite:
+                # delete overlapping from the data frame before saving to the database
                 values = values[values["valuedatetime"] > dbend]
+
+            else:
+                # delete overlapping values from the series database
+                count = self.memDB.series_service.delete_values_by_series(str(values["resultid"]), dfstart)
+
 
         # return the number of overlapping values
         return count

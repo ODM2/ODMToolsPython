@@ -526,7 +526,8 @@ class SeriesService(serviceBase):
         :param values: pandas dataframe
         :return:
         """
-        values.to_sql(name="TimeSeriesResultValues",
+        setSchema(self._session_factory.engine)
+        values.to_sql(name=TimeSeriesResultValues.__tablename__,
                       schema=TimeSeriesResultValues.__table_args__['schema'],
                       if_exists='append',
                       chunksize=1000,
@@ -756,38 +757,21 @@ class SeriesService(serviceBase):
     #             raise e
     #
     #
-    def delete_values_by_series(self, series, startdate=None):
+    def delete_values_by_series(self, seriesid, startdate=None):
         """
 
         :param series:
         :return:
         """
-        # todo stephanie: add startdate stuff
+
         try:
-            self.delete.deleteTSRValues(ids=[series.id])
+            return self.delete.deleteTSRValues(ids=[seriesid], startdate=startdate)
         except Exception as ex:
             message = "Values were not successfully deleted: %s" % ex
             print message
             logger.error(message)
             raise ex
-            #         try:
-            #             q= self._edit_session.query(DataValue).filter_by(site_id = series.site_id,
-            #                                                                  variable_id = series.variable_id,
-            #                                                                  method_id = series.method_id,
-            #                                                                  source_id = series.source_id,
-            #                                                                  quality_control_level_id = series.quality_control_level_id)
-            #             if startdate is not None:
-            #                 #start date indicates what day you should start deleting values. the values will delete to the end of the series
-            #                 return q.filter(DataValue.local_date_time >= startdate).delete()
-            #             else:
-            #                 return q.delete()
-            #
-            #         except Exception as ex:
-            #             message = "Values were not successfully deleted: %s" % ex
-            #             print message
-            #             logger.error(message)
-            #             raise ex
-            #
+
 
     def delete_dvs(self, id_list):
         """
