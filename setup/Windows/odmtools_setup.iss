@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ODM2Tools"
-#define MyAppVersion "2.0.0_Beta"
+#define MyAppVersion "2.0.1_Beta"
 #define MyAppPublisher "ODM2"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
 #define MyAppExeName "ODM2Tools.exe"

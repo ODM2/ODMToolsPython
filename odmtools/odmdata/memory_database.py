@@ -81,6 +81,9 @@ class MemoryDatabase(object):
             annotation = self.series_service.get_annotations_by_result(resultid=result_id)
             self.results_annotations = annotation
 
+        return self.results_annotations
+
+
     def getDataValues(self):
         # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
         self.mem_service._session.commit()

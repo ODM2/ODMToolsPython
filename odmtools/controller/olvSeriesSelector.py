@@ -47,18 +47,19 @@ class clsSeriesTable(FastObjectListView):
         pass
 
     def _buildColumns(self, columns):
-        seriesColumns = [
-            ColumnDefn(key, align="left", minimumWidth=100, valueGetter=key,
-                       # stringConverter = '%s')
-                       stringConverter='%Y-%m-%d %H:%M:%S' if ("date" in key.lower())  else '%s')
-            for key in columns]
+        series_columns = []
+        for key in columns:
+            col = ColumnDefn(title=key,
+                             minimumWidth=100,
+                             valueGetter=key,
+                             stringConverter=date_to_string if ("date" in key.lower()) else '%s')
 
+            series_columns.append(col)
 
-        self.SetColumns(seriesColumns)
+        self.SetColumns(series_columns)
         self.CreateCheckStateColumn()
 
     """User can select series_service using the mouse to click on check boxes """
-
     def _HandleLeftDownOnImage(self, rowIndex, subItemIndex):
         """
         This is the same code, just added the original _HandleLeftDownOnImage in ObjectListView but
@@ -109,6 +110,11 @@ class clsSeriesTable(FastObjectListView):
         return self._modelObjects if self._modelObjects else []
 
 
+def date_to_string(value):
+    try:
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    except AttributeError:
+        return ""
 
 
 

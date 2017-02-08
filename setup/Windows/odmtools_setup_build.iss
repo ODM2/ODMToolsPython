@@ -5,7 +5,7 @@
 
 #define MyAppName "ODM2Tools"
 #define OrgName "UCHIC"
-#define MyAppVersion "v2.0.0-beta"
+#define MyAppVersion "v2.0.1-beta"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
 
 [Setup]
