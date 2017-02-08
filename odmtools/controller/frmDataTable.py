@@ -13,16 +13,13 @@ class FrmDataTable(DataTable):
         self.memDB = None
         DataTable.__init__(self, parent, **kwargs)
 
-
-    def init_publishers(self):
-        Publisher.subscribe(self.onChangeSelection, "changeTableSelection")
-        Publisher.subscribe(self.onRefresh, "refreshTable")
-        Publisher.subscribe(self.olvDataTable.onDeselectAll, "deselectAllDataTable")
-
     def init(self, memDB):
         self.memDB = memDB
         self.olvDataTable.init(self.memDB)
-        self.init_publishers()
+
+        Publisher.subscribe(self.onChangeSelection, "changeTableSelection")
+        Publisher.subscribe(self.onRefresh, "refreshTable")
+        Publisher.subscribe(self.olvDataTable.onDeselectAll, "deselectAllDataTable")
 
     def onItemSelected(self, event):
         pass

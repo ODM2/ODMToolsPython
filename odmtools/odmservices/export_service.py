@@ -14,7 +14,7 @@ class ExportService():
 
     def export_series_data(self, series_id, filename, utc=False, site=False, var=False, offset=False, qual=False,
                            src=False, qcl=False):
-        series = self._series_service.get_series_by_id(series_id)
+        series = self._series_service.get_series(series_id)
         if series is None:
             return False
 
@@ -144,11 +144,11 @@ class ExportService():
             pass
 
         if isinstance(series_ids, int):
-            series = self._series_service.get_series_by_id(series_ids)
+            series = self._series_service.get_series(series_ids)
             self.append_series_node(series, list_root)
         else:
             for series_id in series_ids:
-                series = self._series_service.get_series_by_id(series_id)
+                series = self._series_service.get_series(series_id)
                 self.append_series_node(series, list_root)
 
         tree = ET.ElementTree(root)

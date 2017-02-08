@@ -498,193 +498,236 @@ class EditService():
         self.reset_filter()
 
     def save(self,  result=None):
-        values = self.memDB.getDataValuesDF()
+        try:
+            values = self.memDB.getDataValuesDF()
 
-        if not result:
-            result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
-        else:
-            values["resultid"] = result.ResultID
+            if not result:
+                result = self.memDB.series_service.get_series(series_id = values['resultid'][0])
+            else:
+                values["resultid"] = result.ResultID
 
-        # update result
-        result.ValueCount = 0
-        self.updateResult(result)
-        # upsert values
-        self.memDB.series_service.upsert_values(values)
-        # save new annotations
-        self.add_annotations(self.memDB.annotation_list)
-        return result
+            # update result
+            result.ValueCount = 0
+            self.updateResult(result)
+            # upsert values
+            self.memDB.series_service.upsert_values(values)
+            # save new annotations
+            if len(self.memDB.annotation_list >0):
+                self.add_annotations(self.memDB.annotation_list)
+            return result
+        except Exception as e:
+            logger.error("Exception encountered while saving: {}".format(e))
+            raise e
+        return None
 
     def save_existing(self, result):
         result = self.save(result)
         return result
 
     def save_appending(self, result, overwrite=True):
-        values = self.memDB.getDataValuesDF()
+        try:
 
-        # get value count
-        vc = result.ValueCount
-        # set in df
-        values["resultid"] = result.ResultID
+            values = self.memDB.getDataValuesDF()
 
-        # count = overlap calc
-        count = self.overlapcalc(result, values, overwrite)
-        # set value count = res.vc+valuecount-count
-        valuecount = result.ValueCount + vc - count
-        # update result
-        self.updateResult(result, valuecount)
-        # insert values
-        self.memDB.series_service.upsert_values(values)
-        # save new annotations
-        self.add_annotations(self.memDB.annotation_list)
+            # get value count
+            vc = result.ValueCount
+            # set in df
+            values["resultid"] = result.ResultID
 
-        return result
+            # count = overlap calc
+            count = self.overlapcalc(result, values, overwrite)
+            # set value count = res.vc+valuecount-count
+            valuecount = result.ValueCount + vc - count
+            # update result
+            self.updateResult(result, valuecount)
+            # insert values
+            self.memDB.series_service.upsert_values(values)
+            # save new annotations
+            if len(self.memDB.annotation_list >0):
+                self.add_annotations(self.memDB.annotation_list)
+            return result
+        except Exception as e:
+            logger.error("Exception encountered while performing a save as: {}".format(e))
+            raise e
+        return None
 
     def save_as(self, variable, method, proc_level, action, action_by):
-        #save as new series
-        values = self.memDB.getDataValuesDF()
-        # get all annotations for series
-        annolist= self.memDB.series_service.get_annotations_by_result(str(values["resultid"][0]))
-        annolist['valueid']=None
 
-        # create series
-        result = self.getResult(variable, method, proc_level, action, action_by)
+        try:
+            #save as new series
+            values = self.memDB.getDataValuesDF()
+            # get all annotations for series
+            annolist= self.memDB.series_service.get_annotations_by_result(str(values["resultid"][0]))
+            annolist['valueid'] = None
 
-        # set in df
-        values["resultid"] = result.ResultID
-        # insert values
-        self.memDB.series_service.insert_values(values)
+            # create series
+            result = self.getResult(variable, method, proc_level, action, action_by)
 
-        # save all annotations
-        frames = [self.memDB.annotation_list, annolist]
-        annolist = pd.concat(frames)
-        self.add_annotations(annolist)
+            # set in df
+            values["valueid"] = None
+            values["resultid"] = result.ResultID
+            # insert values
+            self.memDB.series_service.insert_values(values)
 
+            #combine all of the annotations new annotations with the existing
+            frames = [self.memDB.annotation_list, annolist]
+            annolist = pd.concat(frames)
+            # save all annotations
+            if len(annolist > 0):
+                self.add_annotations(annolist)
 
-        return result
+            return result
+        except Exception as e:
+            logger.error("Exception encountered while performing a save as: {}".format(e))
+            raise e
+
 
     def getResult(self, var, meth, proc, action, action_by):
-        values = self.memDB.getDataValuesDF()
+        id = self.memDB.getDataValuesDF()["resultid"]
+
         # copy old
-        result = self.memDB.series_service.get_series(str(values["resultid"][0]))
+        # what is my original result
+        result = self.memDB.series_service.get_series(str(id[0]))
+
+        sfid = result.FeatureActionObj.SamplingFeatureID
+        aggcv = result.AggregationStatisticCV
+        itsp = result.IntendedTimeSpacing
+        itspunit = result.IntendedTimeSpacingUnitsID
+        status = result.StatusCV
+        type = result.ResultTypeCV
+        units = result.UnitsID
+        medium = result.SampledMediumCV
 
 
-
+        self.memDB.series_service._session.expunge(result)
         # change var, meth proc, in df #intend ts, agg sta
         if var:
             result.VariableID = var.VariableID
-            result.VariableObj = var
+
 
         if proc:
             result.ProcessingLevelID = proc.ProcessingLevelID
-            result.ProcessingLevelObj = proc
 
-        if meth:
-            action.MethodID = meth.MethodID
-            action.MethodObj = meth.MethodObj
+        result.ResultID=None
+        result.ResultUUID = None
+
 
         #if result does not exist
         if not self.memDB.series_service.resultExists(result):
             try:
 
                 #create Action
-                action.ActionID = None
-                action.ActionTypeCV = "Derivation"
-                self.memDB.series_service.read._session.expunge(action.MethodObj.OrganizationObj)
-                self.memDB.series_service.read._session.expunge(action.MethodObj)
-                action = self.memDB.series_service.create.createAction(action)  # it times out. find out why
-                print action
-
-
-                # create Actionby done
-                action_by.ActionID = action.ActionID
-                action_by= self.memDB.series_service.create.createActionby(action_by)
-                print action_by
-
+                if meth:
+                    id = meth.MethodID
+                    # new_action.MethodObj = meth.MethodOb
+                else:
+                    id = action.MethodID
+                new_action, action_by = self.memDB.series_service.create_action(id, action.ActionDescription, action.ActionFileLink, action.BeginDateTime, action.BeginDateTimeUTCOffset, action_by)
 
                 # create FeatureAction (using current sampling feature id)
-                sampling_feature = result.FeatureActionObj.SamplingFeatureObj
-                self.memDB.series_service.read._session.expunge(result.FeatureActionObj.SamplingFeatureObj)
+                feature_action = self.memDB.series_service.createFeatureAction(sfid, new_action.ActionID)
 
-                feature_action = FeatureActions()
-                feature_action.SamplingFeatureID = sampling_feature.SamplingFeatureID
-                feature_action.ActionID = action.ActionID
-                feature_action.ActionObj = action
-                feature_action.SamplingFeatureObj = sampling_feature
-                feature_action = self.memDB.series_service.create.createFeatureAction(feature_action)
-                print feature_action
+                if var:
+                    varid = var.VariableID
+                else:
+                    varid = result.VariableID
 
-                # create TimeSeriesResult - this should also contain all of the stuff for the Result
-                time, offset = self.get_current_time_and_utcoffset()
+                if proc:
+                    procid= proc.ProcessingLevelID
+                else:
+                    procid= result.ProcessingLevelID
+                result = self.memDB.series_service.create_result(varid, procid,  feature_action.FeatureActionID,
+                                                                     aggcv, itsp, itspunit, status, type, units, medium)
 
-                result.ResultID = None
-                result.ResultUUID = None
-                result.ValueCount = 0
-                result.FeatureActionID = feature_action.FeatureActionID
-                result.ResultDateTime = time
-                result.ResultDateTimeUTCOffset = offset
-                result.FeatureActionObj= feature_action
-                self.memDB.series_service.read._session.expunge(result.ProcessingLevelObj)
-                self.memDB.series_service.read._session.expunge(result.VariableObj)
-                self.memDB.series_service.read._session.expunge(result)
-
-
-                result = self.memDB.series_service.create.createResult(result)
-                print result
             except Exception as ex:
+                self.memDB.series_service._session.rollback()
                 print ex
+                raise ex
+        else:
+            #if saveas called me throw an error that this series already exists
+            import inspect
+            (frame, filename, line_number,
+             function_name, lines, index) = inspect.getouterframes(inspect.currentframe())[1]
+
+            if function_name =='save_as':
+                raise Exception("this series already exists, but you have chosen to create a new series")
+            else:
+                #it already exists, so get it
+                result = self.memDB.series_service.get_series_by_meta(result)
+
         return self.updateResult(result)
 
-
-    def updateResult(self, result, valuecount = -10):
+    def updateResult(self, result, valuecount=-10):
         form = "%Y-%m-%d %H:%M:%S"
         # get pd
         values = self.memDB.getDataValuesDF()
 
         # update count, dates,
         action = result.FeatureActionObj.ActionObj
-        action.BeginDateTime= datetime.datetime.strptime(str(np.min(values['valuedatetime'])), form)
+        action.BeginDateTime = datetime.datetime.strptime(str(np.min(values["valuedatetime"])), form)
         action.EndDateTime = datetime.datetime.strptime(str(np.max(values["valuedatetime"])), form)
-        if valuecount > 0 :
-            result.ValueCount=valuecount
+
+        #TODO how does valuecount change, when do i send it in
+        if valuecount > 0:
+            result.ValueCount = valuecount
         else:
             result.ValueCount = len(values)
 
-        setSchema(self.memDB.series_service._session_factory.engine)
-        self.memDB.series_service.update.updateResult(result.ResultID, result.ValueCount)
-        self.memDB.series_service.update.updateAction(actionID=action.ActionID, begin=action.BeginDateTime, end=action.EndDateTime)
-
+        self.memDB.series_service.update_result(result=result)
+        self.memDB.series_service.update_action(action=action)
         return result
 
     def overlapcalc(self, result, values,  overwrite):
         form = "%Y-%m-%d %H:%M:%S"
 
-        #is there any overlap
+        # is there any overlap
         dbend = result.FeatureActionObj.ActionObj.EndDateTime
         dfstart = datetime.datetime.strptime(str(np.min(values["valuedatetime"])), form)
-        overlap = dbend>= dfstart
-        #number of overlapping values
-        overlapdf = values[(values["valuedatetime"]<= dfstart) & (values["valuedatetime"]>= dbend)]
-        count =len(overlapdf)
-        #if not overwrite. remove any overlapping values from df
+        overlap = dbend >= dfstart
+        # number of overlapping values
+        overlapdf = values[(values["valuedatetime"] <= dfstart) & (values["valuedatetime"] >= dbend)]
+        count = len(overlapdf)
+
+        # if not overwrite. remove any overlapping values from df
         if overlap:
             if not overwrite:
+                # delete overlapping from the data frame before saving to the database
                 values = values[values["valuedatetime"] > dbend]
+
+            else:
+                # delete overlapping values from the series database
+                count = self.memDB.series_service.delete_values_by_series(str(values["resultid"]), dfstart)
+
 
         # return the number of overlapping values
         return count
 
     def add_annotations(self, annolist):
-        #match up with existing values and get value id
-        #get df with only ValueID and AnnotationID
-        #remove any duplicates
-        #save df to db
-        pass
+        # match up with existing values and get value id
+
+        print("Adding Annotations")
+        engine = self.memDB.series_service._session_factory.engine
+
+        q =self.memDB.series_service._session.query(TimeSeriesResultValues) \
+            .filter(TimeSeriesResultValues.ResultID == int(min(annolist["resultid"])))
+
+        query = q.statement.compile(dialect=engine.dialect)
+        # data = pd.read_sql_query(sql=query, con=self._session_factory.engine,
+        #                          params=query.params)
+        # query = "SELECT ValueID, ResultID, ValueDateTime  FROM TimeSeriesResultValues Where ResultID="+annolist["ResultID"][0]
+
+        vals = pd.read_sql_query(sql=query, con=engine, params=query.params)
+        # remove any duplicates
+        annolist.drop_duplicates(["resultid", "annotationid", "valuedatetime"], keep='last', inplace=True)
+        newdf = pd.merge(annolist, vals, how='left', on=["resultid", "valuedatetime"], indicator=True)
+
+        # get only AnnotationID and ValueID
+        mynewdf= newdf[["valueid_y","annotationid"]]
+        mynewdf.columns = ["ValueID", "AnnotationID"]
 
 
-
-
-
-
+        # save df to db
+        self.memDB.series_service.add_annotations(mynewdf)
 
 
 
@@ -877,11 +920,3 @@ class EditService():
         pass
 
 
-    def get_current_time_and_utcoffset(self):
-        current_time = datetime.datetime.now()
-        utc_time = datetime.datetime.utcnow()
-
-        difference_in_timezone = current_time - utc_time
-        offset_in_hours = difference_in_timezone.total_seconds() / 3600
-
-        return current_time, offset_in_hours

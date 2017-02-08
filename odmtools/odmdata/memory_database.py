@@ -3,7 +3,6 @@ import logging
 from sqlalchemy import bindparam
 
 from odmtools.common.logger import LoggerTool
-from odmtools.odmservices import SeriesService
 from odmtools.odmservices import ServiceManager, SeriesService
 
 # from odmtools.odmdata import SeriesService#ODM
@@ -12,11 +11,10 @@ from odm2api.ODM2.models import TimeSeriesResultValues as TSRV
 from odm2api.ODM2.models import setSchema
 import pandas as pd
 
-
 logger =logging.getLogger('main')
 
 class MemoryDatabase(object):
-    ### this code should be changed to work with the database abstract layer so that sql queries are not in the code
+    ## this code should be changed to work with the database abstract layer so that sql queries are not in the code
 
     # series_service is a SeriesService
     def __init__(self, taskserver=None):
@@ -25,6 +23,7 @@ class MemoryDatabase(object):
         self.df = None
         # Series_Service handles remote database
         self.series_service = None
+        self.results_annotations = None
 
         # Memory_service handles in memory database
         sm = ServiceManager()
@@ -43,17 +42,14 @@ class MemoryDatabase(object):
         #self.annotation_list = pd.DataFrame() columns =['ResultID', 'ValueDateTime', 'ValueID', 'AnnotationID')
         #send in engine
 
-
     def reset_edit(self):
         sm = ServiceManager()
         self.mem_service = sm.get_series_service(conn_string="sqlite:///:memory:")
+        self.annotation_list = pd.DataFrame()
         setSchema(self.mem_service._session_factory.engine)
-
 
     def set_series_service(self, service):
         self.series_service = service
-
-
 
     ##############
     # DB Queries
@@ -77,6 +73,14 @@ class MemoryDatabase(object):
         logging.debug("done updating memory dataframe")
         return self.df
 
+    def get_annotations(self, query_db_again=False):
+        # self.mem_service._session.commit()
+        setSchema(self.series_service._session_factory.engine)
+        if self.results_annotations is None or query_db_again:
+            result_id = self.df.resultid[0]
+            annotation = self.series_service.get_annotations_by_result(resultid=result_id)
+            self.results_annotations = annotation
+
     def getDataValues(self):
         # TODO: fix me! this commit location is only temoporarily. should be flushing so that we can restore
         self.mem_service._session.commit()
@@ -93,6 +97,27 @@ class MemoryDatabase(object):
         columns.extend(tmp_columns)
         return [(x, i) for (i, x) in enumerate(columns)]
         # return [(x, i) for (i, x) in enumerate(self.df.columns)]
+
+    def get_columns_with_annotations(self):
+        """
+        If results_annotations has not been set then
+        :return:
+        """
+
+        if self.results_annotations is None or self.df is None:
+            print "self.df and self.results_annotations must be a pandas dataframe. Currently they are None"
+            return []
+
+        columns = []
+        columns.extend(self.df.columns.tolist())
+
+        annotation_columns = self.results_annotations.columns.tolist()
+        index = annotation_columns.index("annotationcode")
+        annotation_code_column = annotation_columns[index]
+
+        columns.append(annotation_code_column)
+
+        return [(x, i) for (i, x) in enumerate(columns)]
 
     def getDataValuesforGraph(self, seriesID, noDataValue, startDate=None, endDate=None):
         return self.series_service.get_plot_values(seriesID, noDataValue, startDate, endDate)
@@ -165,11 +190,11 @@ class MemoryDatabase(object):
     def updateFlag(self, ids, value):
 
 
-        flags = pd.DataFrame(columns = ['AnnotationID', 'DateTime', 'ResultID', 'ValueID'])
-        flags["DateTime"] = ids
-        flags["AnnotationID"] = value
-        flags["ResultID"] = self.series.ResultID
-        flags["ValueID"] = None
+        flags = pd.DataFrame(columns = ['annotationid', 'valuedatetime', 'resultid', 'valueid'])
+        flags["valuedatetime"] = ids
+        flags["annotationid"] = value
+        flags["resultid"] = self.series.ResultID
+        flags["valueid"] = None
 
 
         #what if the column already exists
@@ -250,7 +275,7 @@ class MemoryDatabase(object):
             logger.debug("Load series from db")
 
             self.series = self.series_service.get_series(seriesID)
-            self.df = self.series_service.get_values(series_id= seriesID)
+            self.df = self.series_service.get_values(series_id=seriesID)
 
             self.editLoaded = True
 

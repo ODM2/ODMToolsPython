@@ -189,18 +189,19 @@ class wizSave(wx.wizard.Wizard):
         site, variable, method, action, proc_level = self.get_metadata()
         #if qcl exits use its its
         closeSuccessful = False
+        saveSuccessful=False
 
-        rbSave = self.pgIntro.pnlIntroduction.rbSave.GetValue()
-        rbSaveAsNew = self.pgIntro.pnlIntroduction.rbSaveAs.GetValue()
-        rbSaveAsExisting = self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue()
-        if rbSaveAsExisting:
-            append = self.pgExisting.pnlExisting.rbAppend.GetValue()
-            overwrite = self.pgExisting.pnlExisting.rbOverwrite.GetValue()
-            if append:
-                original = self.pgExisting.pnlExisting.rbOriginal.GetValue()
-                new = self.pgExisting.pnlExisting.rbNew.GetValue()
+        self.rbSave = self.pgIntro.pnlIntroduction.rbSave.GetValue()
+        self.rbSaveAsNew = self.pgIntro.pnlIntroduction.rbSaveAs.GetValue()
+        self.rbSaveAsExisting = self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue()
+        if self.rbSaveAsExisting:
+            self.append = self.pgExisting.pnlExisting.rbAppend.GetValue()
+            self.overwrite = self.pgExisting.pnlExisting.rbOverwrite.GetValue()
+            if self.append:
+                self.original = self.pgExisting.pnlExisting.rbOriginal.GetValue()
+                self.new = self.pgExisting.pnlExisting.rbNew.GetValue()
 
-        if proc_level.ProcessingLevelID == 0 and not rbSaveAsNew:
+        if proc_level.ProcessingLevelID == 0 and not self.rbSaveAsNew:
             """
             If we're looking at a QCL with Control level 0 and the following cases:
                 Save
@@ -212,19 +213,19 @@ class wizSave(wx.wizard.Wizard):
                                 wx.YES_NO | wx.ICON_QUESTION)
             if val == 2:
                 logger.info("User selected yes to save a level 0 dataset")
-                val_2 = wx.MessageBox("This interactive_item cannot be undone.\nAre you sure you are sure?\n",
+                val_2 = wx.MessageBox("This  cannot be undone.\nAre you sure you are sure?\n",
                                       'Are you REALLY sure?',
                                       wx.YES_NO | wx.ICON_QUESTION)
                 if val_2 == 2:
                     closeSuccessful = True
 
-        elif rbSaveAsExisting:
+        elif self.rbSaveAsExisting:
             keyword = "overwrite"
 
             if self.pgExisting.pnlExisting.rbAppend.GetValue():
                 keyword = "append to"
 
-            message = "You are about to " + keyword + " an existing series_service,\nthis interactive_item cannot be undone.\nWould you like to continue?\n"
+            message = "You are about to " + keyword + " an existing series_service,\nthis cannot be undone.\nWould you like to continue?\n"
             cont = wx.MessageBox(message, 'Are you sure?', wx.YES_NO | wx.ICON_QUESTION)
             if cont == 2:
                 closeSuccessful = True
@@ -234,95 +235,80 @@ class wizSave(wx.wizard.Wizard):
             closeSuccessful = True
 
         if closeSuccessful:
-            #if qcl exists use its id
-            # if self.series_service.qcl_exists(QCL):
-            #     if QCL == self.currSeries.quality_control_level:
-            #         QCL = None
-            #     else:
-            #         QCL = self.record_service.get_qcl(QCL)
-            # else:
-            #     QCL = self.record_service.create_processing_level(QCL.code, QCL.definition, QCL.explanation)
-            if self.series_service.get_processing_level_by_code(proc_level.ProcessingLevelCode) is None:
-                proc_level = self.series_service.create_processing_level(proc_level.ProcessingLevelCode, proc_level.Definition, proc_level.Explanation)
-            elif proc_level.ProcessingLevelCode == self.__processing_level_from_series.ProcessingLevelCode:
-                proc_level = None
-            else:
-                proc_level = self.series_service.get_processing_level_by_code(proc_level.ProcessingLevelCode)
-
-
-            #if variable exists use its id
-            # if self.series_service.variable_exists(Variable):
-            #     Variable = self.record_service.get_variable(Variable)
-            # else:
-            #     Variable = self.record_service.create_variable(Variable)
-            if self.series_service.get_variable_by_code(variable.VariableCode) is None:
-                variable = self.series_service.create_variable_by_var(variable)
-            else:
-                variable = self.series_service.get_variable_by_code(variable.VariableCode)
-
-
-            #if method exists use its id
-            # if self.series_service.method_exists(Method):
-            #     if Method == self.currSeries.method:
-            #         Method = None
-            #     else:
-            #         Method = self.record_service.get_method(Method)
-            # else:
-            #     Method = self.record_service.create_method(Method)
-            if self.series_service.get_method_by_code(method.MethodCode) is None:
-                method = self.series_service.create_method(method.MethodDescription, method.MethodLink)
-            elif method == self.__method_from_series:
-                method = None
-            else:
-                method = self.series_service.get_method_by_code(method.MethodCode)
-
-            # initiate either "Save as" or "Save"
-            '''
-            if self.page1.pnlIntroduction.rbSave.GetValue():
-                result = self.record_service.save(Variable, Method, QCL, False)
-            else:
-                result = self.record_service.saveAs(Variable, Method, QCL, True)
-            '''
-            affiliation = self.action_page.get_affiliation()
-
-            action_by = ActionBy()
-            #action_by.ActionID = action.ActionID
-            action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
-            action_by.AffiliationID = affiliation.AffiliationID
-            action_by.AffiliationObj = affiliation
-
-            # result = self.series_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
-            result = self.pgExisting.pnlExisting.olvSeriesList.GetSelectedObject().ResultObj
-
-            #result = self.record_service._edit_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
-
             try:
-                if rbSave:
-                    result = self.record_service.save()
-                elif rbSaveAsNew:
-                    result = self.record_service.save_as(variable=variable, method=method, proc_level=proc_level,
-                                                        action=action, action_by=action_by)
-                elif rbSaveAsExisting:
-                    if overwrite:
-                        result = self.record_service.save_existing(result=result)
-                    elif append:
-                        #TODO send in just the result
-                        #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
-                        #TODO if i require that original or new is selected I can call once with overwrite = original
-                        if original:
-                            result = self.record_service.save_appending(result=result, overwrite=False)
-                        elif new:
-                            result = self.record_service.save_appending(result=result, overwrite=True)
-
-                Publisher.sendMessage("refreshSeries")
-
-                    #self.page1.pnlIntroduction.rb
+                saveSuccessful = self.try_to_save(variable, method, proc_level, action)
             except Exception as e:
                 message = "Save was unsuccessful %s" % e.message
                 logger.error(message)
                 wx.MessageBox(message, "Error!", wx.ICON_ERROR | wx.ICON_EXCLAMATION)
+                saveSuccessful=False
+
+        if saveSuccessful:
             event.Skip()
             self.Close()
+            self.Destroy()
+
+    def create_needed_meta(self, proc_level,variable, method):
+        if self.series_service.get_processing_level_by_code(proc_level.ProcessingLevelCode) is None:
+            proc_level = self.series_service.create_processing_level(proc_level.ProcessingLevelCode, proc_level.Definition, proc_level.Explanation)
+        elif proc_level.ProcessingLevelCode == self.__processing_level_from_series.ProcessingLevelCode:
+            proc_level = None
+        else:
+            proc_level = self.series_service.get_processing_level_by_code(proc_level.ProcessingLevelCode)
+
+
+
+        if self.series_service.get_variable_by_code(variable.VariableCode) is None:
+            variable = self.series_service.create_variable_by_var(variable)
+        else:
+            variable = self.series_service.get_variable_by_code(variable.VariableCode)
+
+
+
+        if self.series_service.get_method_by_code(method.MethodCode) is None:
+            method = self.series_service.create_method(method.MethodDescription, method.MethodLink)
+        elif method == self.__method_from_series:
+            method = None
+        else:
+            method = self.series_service.get_method_by_code(method.MethodCode)
+
+
+    def try_to_save(self, variable, method, proc_level, action):
+        self.create_needed_meta(proc_level, variable, method)
+        affiliation = self.action_page.get_affiliation()
+
+        action_by = ActionBy()
+        # action_by.ActionID = action.ActionID
+        action_by.RoleDescription = self.action_page.action_view.role_description_text_box.GetValue()
+        action_by.AffiliationID = affiliation.AffiliationID
+        action_by.AffiliationObj = affiliation
+
+        # result = self.series_service.getResult(var=variable, meth=method, proc=proc_level, action=action, actionby=action_by)
+        result = self.pgExisting.pnlExisting.olvSeriesList.GetSelectedObject().ResultObj
+
+        if self.rbSave:
+            result = self.record_service.save()
+        elif self.rbSaveAsNew:
+            result = self.record_service.save_as(variable=variable, method=method, proc_level=proc_level,
+                                                action=action, action_by=action_by)
+        elif self.rbSaveAsExisting:
+            if self.overwrite:
+                result = self.record_service.save_existing(result=result)
+            elif self.append:
+                #TODO send in just the result
+                #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
+                #TODO if i require that original or new is selected I can call once with overwrite = original
+                if self.original:
+                    result = self.record_service.save_appending(result=result, overwrite=False)
+                elif self.new:
+                    result = self.record_service.save_appending(result=result, overwrite=True)
+
+        Publisher.sendMessage("refreshSeries")
+        return True
+
+
+
+
 
 
 

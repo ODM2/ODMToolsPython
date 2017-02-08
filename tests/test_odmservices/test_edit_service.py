@@ -72,7 +72,7 @@ class TestSeriesService:
     def test_save_series(self):
         stlen = len(self.series.data_values)
         assert self.edit_service.save()
-        val = self.series_service.get_series_by_id(self.series.id)
+        val = self.series_service.get_series(self.series.id)
         assert len(val.data_values)==stlen
 
     def test_save_as_series(self):
@@ -96,7 +96,7 @@ class TestSeriesService:
         svalue = self.series.data_values[0]
 
         self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5 )
-        news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
+        news= self.edit_service.memDB.series_service.get_series(self.series.id)
         result = self.edit_service.save_appending(overwrite = False)
         len2= len(self.series.data_values)
         assert len1 == len2
@@ -108,7 +108,7 @@ class TestSeriesService:
         svalue = self.series.data_values[0]
 
         self.edit_service.memDB.updateValue([svalue.local_date_time],'+', 5)
-        news= self.edit_service.memDB.series_service.get_series_by_id(self.series.id)
+        news= self.edit_service.memDB.series_service.get_series(self.series.id)
         result = self.edit_service.save_appending(overwrite = True)
         len2= len(self.series.data_values)
         assert len1 == len2

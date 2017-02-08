@@ -29,6 +29,7 @@ class ServiceManager():
         self.debug = debug
         f = self._get_file('r')
         self._conn_dicts = []
+
         #self.version = 0
         self._connection_format = "%s+%s://%s:%s@%s/%s"
 
@@ -129,6 +130,14 @@ class ServiceManager():
         self._conn_dicts[:] = [x for x in self._conn_dicts if x != conn_dict]
 
     def get_series_service(self, conn_dict=None, conn_string=""):
+        #TODO check connection what if they are changing
+
+        if 'series_service' in locals():# or self.series_service is None):
+            return self.series_service
+        else:
+            return self._create_series_service( conn_dict, conn_string)
+
+    def _create_series_service(self, conn_dict=None, conn_string=""):
         if not conn_dict:
             conn_dict = self.get_current_conn_dict()
 
