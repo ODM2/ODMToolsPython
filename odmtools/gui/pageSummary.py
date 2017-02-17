@@ -52,6 +52,7 @@ class MyTree(wx.TreeCtrl):
          self.m = self.AppendItem(self.root, 'Method')
          self.so= self.AppendItem(self.root, 'Source')
          self.q = self.AppendItem(self.root, 'Quality Control Level')
+         self.src = self.AppendItem(self.root, 'Source')
 
          self.sc=self.AppendItem(self.s, 'Code: ')
          self.sn=self.AppendItem(self.s, 'Name: ')
@@ -75,4 +76,12 @@ class MyTree(wx.TreeCtrl):
          self.qc=self.AppendItem(self.q, 'Code: ')
          self.qd=self.AppendItem(self.q, 'Definition: ')
          self.qe=self.AppendItem(self.q, 'Explanation: ')
+
+         self.org = self.AppendItem(self.src, 'Organization: ')
+         self.dscrp= self.AppendItem(self.src, 'Description: ')
+         self.ct= self.AppendItem(self.src, 'Contact Name: ')
+         self.eml= self.AppendItem(self.src, 'Email: ')
+         self.phn= self.AppendItem(self.src, 'Phone: ')
+
+
 
