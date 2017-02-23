@@ -9,10 +9,11 @@ import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
+import odmtools.controller.pageSource as pageSource
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
- wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING,
-] = [wx.NewId() for _init_ctrls in range(7)]
+ wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING, wxID_PNLSOURCE,
+] = [wx.NewId() for _init_ctrls in range(8)]
 
 from wx.lib.pubsub import pub as Publisher
 from odmtools.common.logger import LoggerTool
@@ -146,6 +147,52 @@ class MethodPage(wiz.WizardPageSimple):
         self.panel.lstMethods.Focus(index)
         self.panel.lstMethods.Select(index)
 
+########################################################################
+class SourcePage(wiz.WizardPageSimple):
+
+    def __init__(self, parent, title, service_manager, src):
+        """Constructor"""
+        wiz.WizardPageSimple.__init__(self, parent)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = sizer
+        self.SetSizer(sizer)
+        self.source = src
+
+        title = wx.StaticText(self, -1, title)
+        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
+        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
+        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
+        self.panel = pageSource.pnlSource(self, id=wxID_PNLSOURCE, name=u'pnlSource',
+                                              pos=wx.Point(536, 285), size=wx.Size(439, 357),
+                                              style=wx.TAB_TRAVERSAL, sm=service_manager, src=src)
+        self.sizer.Add(self.panel, 85, wx.ALL, 5)
+
+        self._init_data(self.panel.series_service)
+
+    def _init_data(self, series_service):
+        srcs = series_service.get_all_variables()
+        index = 0
+        for s, i in zip(vars, range(len(srcs))):
+            num_items = self.panel.lstVariable.GetItemCount()
+            self.panel.lstSource.InsertStringItem(num_items, str(s.organization))
+            self.panel.lstSource.SetStringItem(num_items, 1, str(s.description))
+            self.panel.lstSource.SetStringItem(num_items, 2, str(s.speciation))
+            self.panel.lstSource.SetStringItem(num_items, 3, str(s.contact_name))
+            self.panel.lstSource.SetStringItem(num_items, 4, str(s.phone))
+            self.panel.lstSource.SetStringItem(num_items, 5, str(s.email))
+            self.panel.lstSource.SetStringItem(num_items, 6, str(s.address))
+            self.panel.lstSource.SetStringItem(num_items, 7, str(s.city))
+            self.panel.lstSource.SetStringItem(num_items, 8, str(s.state))
+            self.panel.lstSource.SetStringItem(num_items, 9, str(s.zip_code))
+            self.panel.lstSource.SetStringItem(num_items, 10, str(s.citation))
+            self.panel.lstSource.SetStringItem(num_items, 11, str(s.metadata_id))
+
+            if s.code == self.source.code:
+                index = i
+        self.panel.lstSource.Focus(index)
+        self.panel.lstSource.Select(index)
+
 
 ########################################################################
 class SummaryPage(wiz.WizardPageSimple):
@@ -251,6 +298,7 @@ class wizSave(wx.wizard.Wizard):
         self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
         self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
         self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
+        self.pgSource=SourcePage(self, "Source", service_manager, self.currSeries.source)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
@@ -269,7 +317,12 @@ class wizSave(wx.wizard.Wizard):
         self.pgQCL.SetNext(self.pgVariable)
 
         self.pgVariable.SetPrev(self.pgQCL)
-        self.pgVariable.SetNext(self.pgSummary)
+        self.pgVariable.SetNext(self.pgSource)
+
+        self.pgSource.SetPrev(self.pgSource)
+        self.pgSource.SetNext(self.pgSummary)
+
+
 
         #Save existing  page
         self.pgExisting.SetPrev(self.pgIntro)
@@ -292,7 +345,7 @@ class wizSave(wx.wizard.Wizard):
 
         elif self.pgIntro.pnlIntroduction.rbSaveAs.GetValue():
             self.pgIntro.SetNext(self.pgMethod)
-            self.pgSummary.SetPrev(self.pgVariable)
+            self.pgSummary.SetPrev(self.pgSource)
 
         else:
             self.pgIntro.SetNext(self.pgExisting)
