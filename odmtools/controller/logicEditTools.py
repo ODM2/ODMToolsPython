@@ -234,7 +234,7 @@ class EditTools():
             self._script("edit_service.restore()\n", 'black')
             Publisher.sendMessage("scroll")
 
-    def saveFactory(self, var=None, method=None, qcl=None):
+    def saveFactory(self, var=None, method=None, qcl=None, source = None):
         """
 
         :param var:
@@ -247,17 +247,15 @@ class EditTools():
         values['var'] = ("new_variable" if var else None)
         values['method'] = ("new_method" if method else None)
         values['qcl'] = ("new_qcl" if qcl else None)
+        values['source'] = ("new_source" if source else None)
         #values['override'] = override
-        return values['var'], values['method'], values['qcl']#, values['isSave']
+        return values['var'], values['method'], values['qcl'], values['source']#, values['isSave']
 
 
-    def save(self, var=None, method=None, qcl=None):
+    def save(self ):
         """
 
-        :param var:
-        :param method:
-        :param qcl:
-        :param override:
+
         :return:
         """
         result = self._edit_service.save()
@@ -269,25 +267,26 @@ class EditTools():
             Publisher.sendMessage("scroll")
         return result
 
-    def save_as(self, var=None, method=None, qcl=None):
+    def save_as(self, var=None, method=None, qcl=None, source = None):
         """
 
         :param var:
         :param method:
         :param qcl:
+        :param source:
         :param override:
         :return:
         """
-        result = self._edit_service.save_as(var=var, method=method, qcl=qcl)
+        result = self._edit_service.save_as(var=var, method=method, qcl=qcl, source = source)
         if self._record:
             self._script(
-                "edit_service.save_as(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
+                "edit_service.save_as(%s, %s, %s, %s)\n" % (self.saveFactory(var, method, qcl, source)),
                 'black')
             #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
             Publisher.sendMessage("scroll")
         return result
 
-    def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
+    def save_appending(self, var = None, method =None, qcl = None, source = None,  overwrite = False):
         """
 
         :param var:
@@ -296,14 +295,14 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save_appending(var=var, method=method, qcl=qcl, overwrite= overwrite)
+        result = self._edit_service.save_appending(var=var, method=method, qcl=qcl, source = source, overwrite= overwrite)
         if result:
             print "Save worked!"
 
             if self._record:
 
                 self._script(
-                    "edit_service.save_appending(%s, %s, %s, " % self.saveFactory(var, method, qcl)+str(overwrite )+")\n",
+                    "edit_service.save_appending(%s, %s, %s, %s " % self.saveFactory(var, method, qcl, source)+str(overwrite )+")\n",
                     'black')
                 #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
                 Publisher.sendMessage("scroll")
@@ -314,7 +313,7 @@ class EditTools():
         return result
 
 
-    def save_existing(self, var=None, method=None, qcl=None):
+    def save_existing(self, var=None, method=None, qcl=None, source =None):
         """
 
         :param var:
@@ -323,14 +322,14 @@ class EditTools():
         :param override:
         :return:
         """
-        result = self._edit_service.save_existing(var=var, method=method, qcl=qcl)
+        result = self._edit_service.save_existing(var=var, method=method, qcl=qcl, source = source)
         if result:
             print "Save worked!"
 
             if self._record:
 
                 self._script(
-                    "edit_service.save_existing(%s, %s, %s)\n" % (self.saveFactory(var, method, qcl)),
+                    "edit_service.save_existing(%s, %s, %s, %s)\n" % (self.saveFactory(var, method, qcl, source)),
                     'black')
                 #self._script("edit_service.save(%s, %s, %s, saveAs=%s)\n" % (var, method, qcl, isSave), 'black')
                 Publisher.sendMessage("scroll")
@@ -369,6 +368,13 @@ class EditTools():
             Publisher.sendMessage("scroll")
 
         return qcl
+    def get_src(self, s):
+        src = self._edit_service.get_source(s.id)
+        if self._record:
+            self._script('new_src = series_service.get_src_by_id(%s)\n' % (src.id))
+            Publisher.sendMessage("scroll")
+
+        return src
 
     def get_method(self, m):
         method = self._edit_service.get_method(m.id)

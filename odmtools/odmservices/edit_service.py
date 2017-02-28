@@ -340,6 +340,9 @@ class EditService():
         # true or false list the length of the entire series. true indicate the point is selected
         return self._filter_list
 
+    def get_src(self, src_id):
+        return self.memDB.series_service.get_src_by_ic(src_id)
+
     def get_qcl(self, qcl_id):
         return self.memDB.series_service.get_qcl_by_id(qcl_id)
 
@@ -493,7 +496,7 @@ class EditService():
         self._populate_series()
         self.reset_filter()
 
-    def updateSeries(self, var=None, method=None, qcl=None, is_new_series=False, overwrite = True, append = False):
+    def updateSeries(self, var=None, method=None, qcl=None, source =None, is_new_series=False, overwrite = True, append = False):
         """
 
         :param var:
@@ -506,6 +509,8 @@ class EditService():
         var_id = var.id if var is not None else None
         method_id = method.id if method is not None else None
         qcl_id = qcl.id if qcl is not None else None
+        src_id = source.id if source is not None else None
+
         #self.memDB.changeSeriesIDs(var_id, method_id, qcl_id)
         dvs = self.memDB.getDataValuesDF()
         if var_id is not None:
@@ -514,6 +519,8 @@ class EditService():
             dvs["MethodID"] = method_id
         if qcl_id is not None:
             dvs["QualityControlLevelID"] = qcl_id
+        if src_id is not None:
+            dvs["SourceID"] = src_id
 
 
 
@@ -533,7 +540,8 @@ class EditService():
                                                                   var_id=var_id if var else int(series.variable_id),
                                                                   method_id=method_id if method else int(
                                                                       series.method_id),
-                                                                  source_id=series.source_id,
+                                                                  source_id= src_id if source else int(
+                                                                      series.source_id),
                                                                   qcl_id=qcl_id if qcl else int(
                                                                       series.quality_control_level_id))
             if tseries:
@@ -566,6 +574,13 @@ class EditService():
             if qcl:
                 series.quality_control_level_id = qcl_id
                 series.quality_control_level_code = qcl.code
+            if source:
+                series.source_id = src_id
+                series.organization = source.organization
+                series.source_description = source.description
+                series.citation = source.citation
+
+
         '''
         dvs["LocalDateTime"] = pd.to_datetime(dvs["LocalDateTime"])
         dvs["DateTimeUTC"] = pd.to_datetime(dvs["DateTimeUTC"])
@@ -627,14 +642,14 @@ class EditService():
             logger.debug("The Save was unsuccessful")
             return False
 
-    def save_as(self, var=None, method=None, qcl=None):
+    def save_as(self, var=None, method=None, qcl=None, source =None):
         """
         :param var:
         :param method:
         :param qcl:
         :return:
         """
-        series, dvs = self.updateSeries(var, method, qcl, is_new_series=True)
+        series, dvs = self.updateSeries(var, method, qcl, source, is_new_series=True)
 
         if self.memDB.series_service.save_new_series(series, dvs):
             logger.debug("series saved!")
@@ -643,8 +658,8 @@ class EditService():
             logger.debug("The Save As Function was Unsuccessful")
             return False
 
-    def save_appending(self, var= None, method = None, qcl=None, overwrite=False):
-        series, dvs = self.updateSeries(var, method, qcl, is_new_series=False, append= True, overwrite=overwrite)
+    def save_appending(self, var= None, method = None, qcl=None, source=None, overwrite=False):
+        series, dvs = self.updateSeries(var, method, qcl, source, is_new_series=False, append= True, overwrite=overwrite)
 
         if self.memDB.series_service.save_series(series, dvs):
             logger.debug("series saved!")
@@ -653,14 +668,14 @@ class EditService():
             logger.debug("The Append Existing Function was Unsuccessful")
             return False
 
-    def save_existing(self, var=None, method=None, qcl=None):
+    def save_existing(self, var=None, method=None, qcl=None, source=None):
         """
         :param var:
         :param method:
         :param qcl:
         :return:
         """
-        series, dvs = self.updateSeries(var, method, qcl, is_new_series=False)
+        series, dvs = self.updateSeries(var, method, qcl, source, is_new_series=False)
         if self.memDB.series_service.save_series(series, dvs):
             logger.debug("series saved!")
             return True

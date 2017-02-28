@@ -1,6 +1,6 @@
 import wx
 import wx.wizard as wiz
-from odmtools.view.clsSource import pnlSource
+from odmtools.view.clsSource import clsSource
 from wx.lib.pubsub import pub as Publisher
 
 
@@ -11,28 +11,63 @@ import logging
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 logger =logging.getLogger('main')
 
-class pageSource:
-    def __init__(self, parent, id, pos, size, style, name, sm, src):
-        pnlSource.__init__(self,parent,id,pos,sixe,style,name)
-        self.prev_src = src
-        self.service_man = sm
-        self.series_service = sm.get_series_service()
+class pageSource(wiz.WizardPageSimple):
+    def __init__(self, parent, title, service_manager, src):
+        """Constructor"""
+        wiz.WizardPageSimple.__init__(self, parent)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer = sizer
+        self.SetSizer(sizer)
+        series_service = service_manager.get_series_service()
+
+        title = wx.StaticText(self, -1, title)
+        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
+        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
+        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
+        self.panel = pnlSource(self, id=wx.ID_ANY, title=u'pnlSource', service_manager=service_manager, src=src)
+        self.sizer.Add(self.panel, 85, wx.ALL, 5)
+
+        srcs = series_service.get_all_sources()
+        index = 0
+        for s, i in zip(srcs, range(len(srcs))):
+            num_items = self.panel.lstSource.GetItemCount()
+            self.panel.lstSource.InsertStringItem(num_items, str(s.organization))
+            self.panel.lstSource.SetStringItem(num_items, 1, str(s.description))
+            self.panel.lstSource.SetStringItem(num_items, 2, str(s.link))
+            self.panel.lstSource.SetStringItem(num_items, 3, str(s.contact_name))
+            self.panel.lstSource.SetStringItem(num_items, 4, str(s.phone))
+            self.panel.lstSource.SetStringItem(num_items, 5, str(s.email))
+            self.panel.lstSource.SetStringItem(num_items, 6, str(s.address))
+            self.panel.lstSource.SetStringItem(num_items, 7, str(s.city))
+            self.panel.lstSource.SetStringItem(num_items, 8, str(s.state))
+            self.panel.lstSource.SetStringItem(num_items, 9, str(s.zip_code))
+            self.panel.lstSource.SetStringItem(num_items, 10, str(s.citation))
+
+            if s.organization == src.organization:
+                index = i
+        self.panel.lstSource.Focus(index)
+        self.panel.lstSource.Select(index)
 
 
-        self.SetClientSize(wx.Size(423, 319))
 
+class pnlSource(clsSource):
+
+    def __init__(self, parent, id, title, service_manager, src):
+
+        clsSource.__init__(self, parent, id=id, name=title,
+                           pos=wx.Point(536, 285), size=wx.Size(439, 357),
+                           style=wx.TAB_TRAVERSAL)
+        self.prev_val = src
+        self.series_service = service_manager.get_series_service()
 
     def OnRbCurrentRadiobutton(self, event):
         self.lstSource.Enable(False)
-        self.txtNewVar.Enable(False)
-
         event.Skip()
 
 
     def OnRbSelectRadiobutton(self, event):
         self.lstSource.Enable(True)
-        self.txtNewVar.Enable(False)
-
         event.Skip()
 
 
@@ -59,17 +94,17 @@ class pageSource:
 
 
     def getSource(self):
-        s = Source()
+        # s = Source()
         if self.rbCurrent.Value:
-            v = self.prev_src
+            s = self.prev_val
         elif self.rbSelect.Value:
             index = self.lstSource.GetFirstSelected()
             code = self.lstSource.GetItem(index, 0).GetText()
             logger.debug(code)
-            v = self.series_service.get_variable_by_code(code)
+            s = self.series_service.get_source_by_org(code)
         elif self.rbCreate.Value:
-            v = self.createdSrc
-        return v
+            s = self.createdSrc
+        return s
 
 
     def show_new_src(self, src):

@@ -16,6 +16,7 @@ from odmtools.odmdata import Sample
 from odmtools.odmdata import Method
 from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
+from odmtools.odmdata import Source
 from odmtools.common.logger import LoggerTool
 import pandas as pd
 
@@ -41,6 +42,18 @@ class SeriesService():
 # Get functions
 #
 #####################
+
+    def get_all_sources(self):
+        return self._edit_session.query(Source).order_by(Source.id).all()
+
+    def get_source_by_org(self, org):
+        return self._edit_session.query(Source).filter(Source.organization == org).first()
+
+    def get_src_by_id(self, src_id):
+        try:
+            return self._edit_session.query(Source).filter_by(id=src_id).first()
+        except:
+            return None
 
     # Site methods
     def get_all_sites(self):

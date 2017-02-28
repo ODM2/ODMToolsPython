@@ -4,12 +4,12 @@ import wx
 import wx.wizard as wiz
 
 # import * from WizardPanels
-from odmtools.controller import pageIntro, pageExisting
+from odmtools.controller import pageIntro, pageExisting, pageSource
 import pageMethod
 import pageQCL
 import pageVariable
 import pageSummary
-import odmtools.controller.pageSource as pageSource
+
 
 [wxID_PNLINTRO, wxID_PNLVARIABLE, wxID_PNLMETHOD, wxID_PNLQCL,
  wxID_PNLSUMMARY, wxID_WIZSAVE, wxID_PNLEXISTING, wxID_PNLSOURCE,
@@ -148,50 +148,7 @@ class MethodPage(wiz.WizardPageSimple):
         self.panel.lstMethods.Select(index)
 
 ########################################################################
-class SourcePage(wiz.WizardPageSimple):
 
-    def __init__(self, parent, title, service_manager, src):
-        """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer = sizer
-        self.SetSizer(sizer)
-        self.source = src
-
-        title = wx.StaticText(self, -1, title)
-        title.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD))
-        sizer.Add(title, 10, wx.ALIGN_CENTRE | wx.ALL, 5)
-        sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
-        self.panel = pageSource.pnlSource(self, id=wxID_PNLSOURCE, name=u'pnlSource',
-                                              pos=wx.Point(536, 285), size=wx.Size(439, 357),
-                                              style=wx.TAB_TRAVERSAL, sm=service_manager, src=src)
-        self.sizer.Add(self.panel, 85, wx.ALL, 5)
-
-        self._init_data(self.panel.series_service)
-
-    def _init_data(self, series_service):
-        srcs = series_service.get_all_variables()
-        index = 0
-        for s, i in zip(vars, range(len(srcs))):
-            num_items = self.panel.lstVariable.GetItemCount()
-            self.panel.lstSource.InsertStringItem(num_items, str(s.organization))
-            self.panel.lstSource.SetStringItem(num_items, 1, str(s.description))
-            self.panel.lstSource.SetStringItem(num_items, 2, str(s.speciation))
-            self.panel.lstSource.SetStringItem(num_items, 3, str(s.contact_name))
-            self.panel.lstSource.SetStringItem(num_items, 4, str(s.phone))
-            self.panel.lstSource.SetStringItem(num_items, 5, str(s.email))
-            self.panel.lstSource.SetStringItem(num_items, 6, str(s.address))
-            self.panel.lstSource.SetStringItem(num_items, 7, str(s.city))
-            self.panel.lstSource.SetStringItem(num_items, 8, str(s.state))
-            self.panel.lstSource.SetStringItem(num_items, 9, str(s.zip_code))
-            self.panel.lstSource.SetStringItem(num_items, 10, str(s.citation))
-            self.panel.lstSource.SetStringItem(num_items, 11, str(s.metadata_id))
-
-            if s.code == self.source.code:
-                index = i
-        self.panel.lstSource.Focus(index)
-        self.panel.lstSource.Select(index)
 
 
 ########################################################################
@@ -239,6 +196,10 @@ class SummaryPage(wiz.WizardPageSimple):
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(Source.organization))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(Source.description))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.soc, 'Citation: ' + str(Source.citation))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.ct, 'Contact: ' + str(Source.contact_name))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.eml, 'Email: ' + str(Source.email))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.phn, 'Phone: ' + str(Source.phone))
+
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qc, 'Code: ' + str(QCL.code))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.qd, 'Definition: ' + str(QCL.definition))
@@ -269,16 +230,19 @@ class wizSave(wx.wizard.Wizard):
             method = self.pgMethod.panel.getMethod()
             qcl = self.pgQCL.panel.getQCL()
             variable = self.pgVariable.panel.getVariable()
+            source = self.pgSource.panel.getSource()
         elif self.pgIntro.pnlIntroduction.rbSave.GetValue():
             logger.debug("Save")
             method = self.currSeries.method
             qcl = self.currSeries.quality_control_level
             variable = self.currSeries.variable
+            source = self.currSeries.source
         elif self.pgIntro.pnlIntroduction.rbSaveExisting.GetValue():
             logger.debug("Existing")
-            method, qcl, variable = self.pgExisting.getSeries()
+            method, qcl, variable, source = self.pgExisting.getSeries()
+
         site = self.currSeries.site
-        source = self.currSeries.source
+        # source = self.currSeries.source
         logger.debug("site: %s, variable: %s, method: %s, source: %s, qcl: %s" % (
         str(site), str(variable), str(method), str(source), str(qcl)))
         return site, variable, method, source, qcl
@@ -298,7 +262,7 @@ class wizSave(wx.wizard.Wizard):
         self.pgMethod = MethodPage(self, "Method", self.series_service, self.currSeries.method)
         self.pgQCL = QCLPage(self, "Quality Control Level", self.series_service, self.currSeries.quality_control_level)
         self.pgVariable = VariablePage(self, "Variable", service_manager, self.currSeries.variable)
-        self.pgSource=SourcePage(self, "Source", service_manager, self.currSeries.source)
+        self.pgSource=pageSource.pageSource(self, title="Source", service_manager=service_manager, src=self.currSeries.source)
         self.pgExisting = pageExisting.pageExisting(self, "Existing Series", self.series_service, self.currSeries.site)
         self.pgSummary = SummaryPage(self, "Summary", self.series_service)
 
@@ -319,7 +283,7 @@ class wizSave(wx.wizard.Wizard):
         self.pgVariable.SetPrev(self.pgQCL)
         self.pgVariable.SetNext(self.pgSource)
 
-        self.pgSource.SetPrev(self.pgSource)
+        self.pgSource.SetPrev(self.pgVariable)
         self.pgSource.SetNext(self.pgSummary)
 
 
@@ -440,17 +404,17 @@ class wizSave(wx.wizard.Wizard):
                 if rbSave:
                     result = self.record_service.save()
                 elif rbSaveAsNew:
-                    result = self.record_service.save_as(Variable, Method, QCL)
+                    result = self.record_service.save_as(Variable, Method, QCL, Source)
                 elif rbSaveAsExisting:
                     if overwrite:
-                        result = self.record_service.save_existing(Variable, Method, QCL)
+                        result = self.record_service.save_existing(Variable, Method, QCL, Source)
                     elif append:
                         #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
                         #TODO if i require that original or new is selected I can call once with overwrite = original
                         if original:
-                            result = self.record_service.save_appending(Variable, Method, QCL, overwrite = False)
+                            result = self.record_service.save_appending(Variable, Method, QCL, Source, overwrite = False)
                         elif new:
-                            result = self.record_service.save_appending(Variable, Method, QCL, overwrite = True)
+                            result = self.record_service.save_appending(Variable, Method, QCL, Source, overwrite = True)
 
                 Publisher.sendMessage("refreshSeries")
 
