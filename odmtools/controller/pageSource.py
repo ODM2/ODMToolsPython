@@ -1,7 +1,8 @@
 import wx
 import wx.wizard as wiz
-from odmtools.view.clsSource import clsSource
+from odmtools.view.clsWizSource import clsSource
 from wx.lib.pubsub import pub as Publisher
+from odmtools.controller.frmSource import frmCreateSource
 
 
 
