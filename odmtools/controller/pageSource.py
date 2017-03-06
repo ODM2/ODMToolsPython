@@ -60,6 +60,7 @@ class pnlSource(clsSource):
                            pos=wx.Point(536, 285), size=wx.Size(439, 357),
                            style=wx.TAB_TRAVERSAL)
         self.prev_val = src
+        self.service_man= service_manager
         self.series_service = service_manager.get_series_service()
 
     def OnRbCurrentRadiobutton(self, event):
@@ -75,9 +76,9 @@ class pnlSource(clsSource):
     def OnRbCreateRadiobutton(self, event):
         self.lstSource.Enable(False)
 
-        create_src = frmCreateSource(self, self.service_man, self.prev_src)
+        create_src = frmCreateSource(self, self.service_man, self.prev_val)
         returnVal = create_src.ShowModal()
-        self.createdSrc = create_Src.getSource()
+        self.createdSrc = create_src.getSource()
         create_src.Destroy()
 
         # TODO if cancelled return to previous radio button

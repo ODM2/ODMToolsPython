@@ -51,6 +51,23 @@ class clsSource(wx.Panel):
 
         self.lstSource.Enable(False)
 
+        self.txtNewSrc = wx.ListCtrl(id=wx.ID_ANY,
+                                     name=u'txtNewSrc', parent=self, pos=wx.Point(16, 276),
+                                     size=wx.Size(392, 70), style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
+        self.txtNewSrc.InsertColumn(0, 'Organization')
+        self.txtNewSrc.InsertColumn(1, 'Description')
+        self.txtNewSrc.InsertColumn(2, 'Link')
+        self.txtNewSrc.InsertColumn(3, 'Contact Name')
+        self.txtNewSrc.InsertColumn(4, 'Phone')
+        self.txtNewSrc.InsertColumn(5, 'Email')
+        self.txtNewSrc.InsertColumn(6, 'Address')
+        self.txtNewSrc.InsertColumn(7, 'City')
+        self.txtNewSrc.InsertColumn(8, 'State')
+        self.txtNewSrc.InsertColumn(9, 'ZipCode')
+        self.txtNewSrc.InsertColumn(10, 'Citation')
+        self.txtNewSrc.SetColumnWidth(0, 100)
+        self.txtNewSrc.SetColumnWidth(1, 100)
+
     def OnRbCurrentRadiobutton(self):
         pass
 

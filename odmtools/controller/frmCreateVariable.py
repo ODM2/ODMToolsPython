@@ -90,7 +90,7 @@ class frmCreateVariable(clsCreateVariable):
         v = Variable()
 
         v.code = self.txtVarCode.GetValue() if self.txtVarCode.GetValue() <> u'' else None
-        v.name = self.cbVarName.GetValue() if self.cbVarName.GetValue() <> u'' else None
+        v.contact_name = self.cbVarName.GetValue() if self.cbVarName.GetValue() <> u'' else None
         v.speciation = self.cbSpeciation.GetValue() if self.cbSpeciation.GetValue() <> u'' else None
 
         v.variable_unit = self.series_service.get_unit_by_name( self.cbVarUnits.GetValue())
