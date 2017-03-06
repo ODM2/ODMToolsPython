@@ -392,6 +392,16 @@ class wizSave(wx.wizard.Wizard):
             else:
                 Method = self.record_service.create_method(Method)
 
+            s= self.series_service.source_exists(Source)
+            if s:
+                if Source == self.currSeries.source:
+                    Source = None
+                else:
+                    # Source = self.record_service.get_source(Source)
+                    Source = source
+            else:
+                Source = self.record_service.create_source(Source)
+
             # initiate either "Save as" or "Save"
             '''
             if self.page1.pnlIntroduction.rbSave.GetValue():

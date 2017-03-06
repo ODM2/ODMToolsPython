@@ -120,7 +120,7 @@ class pnlSource(clsSource):
         self.txtNewSrc.SetStringItem(0, 7, str(src.state))
         self.txtNewSrc.SetStringItem(0, 8, str(src.zip_code))
         self.txtNewSrc.SetStringItem(0, 9, str(src.citation))
-        self.txtNewSrc.SetStringItem(0, 10, str(src.metadata_id))
+        self.txtNewSrc.SetStringItem(0, 10, str(src.iso_metadata_id))
 
         self.txtNewSrc.Focus(0)
         self.txtNewSrc.Select(0)

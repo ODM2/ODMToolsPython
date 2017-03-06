@@ -671,6 +671,11 @@ class SeriesService():
 
         return self.create_qualifier_by_qual(qual)
 
+    def create_source(self, source):
+        self._edit_session.add(source)
+        self._edit_session.commit()
+        return source
+
 #####################
 #
 # Delete functions
@@ -802,6 +807,18 @@ class SeriesService():
             return True
         except:
             return False
+
+    def source_exists(self, s):
+        try:
+            result = self._edit_session.query(Source).filter_by(organization=s.organization,
+                                                                  contact_name=s.contact_name,
+                                                                  phone = s.phone,
+                                                                  description=s.description
+                                                                ).one()
+            return result
+        except:
+            return None
+
 
     def variable_exists(self, v):
         """

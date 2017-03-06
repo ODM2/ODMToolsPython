@@ -68,7 +68,6 @@ class pnlDBConfig(clsDBConfig.clsDBConfiguration):
 
 
     def OnBtnSave(self, event):
-
         self.parent.EndModal(wx.ID_OK)
 
 

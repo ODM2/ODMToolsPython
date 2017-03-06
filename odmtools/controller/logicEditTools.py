@@ -440,6 +440,14 @@ class EditTools():
 
         return var
 
+    def create_source(self, src):
+        src = self._edit_service.create_source(src)
+        if self._record:
+            self._script('new_variable = series_service.get_soource(%s)\n' % (src))
+            Publisher.sendMessage("scroll")
+
+        return src
+
     def write_header(self):
         self._script("#Uncomment the following commands when running outside ODMTools\n", 'black')
         self._script("#from odmtools.odmservices import EditService, SeriesService\n", 'black')

@@ -39,6 +39,7 @@ class frmCreateSource(clsSource):
 			   (self.txtState.GetValue() <> '') and \
 			   (self.txtZip.GetValue() is not None) and \
 			   (self.txtCitation.GetValue() <> '')
+
 	def createSource(self):
 		s = Source()
 
@@ -46,7 +47,7 @@ class frmCreateSource(clsSource):
 		s.description = self.txtDescrip.GetValue() if self.txtDescrip.GetValue() <> u'' else None
 		s.link = self.txtLink.GetValue() if self.txtLink.GetValue() <> u'' else None
 
-		s.name = self.txtName.GetValue() if self.txtName.GetValue() <> u'' else None
+		s.contact_name = self.txtName.GetValue() if self.txtName.GetValue() <> u'' else None
 		s.phone = self.txtPhone.GetValue() if self.txtPhone.GetValue() <> u'' else None
 		s.email = self.txtEmail.GetValue() if self.txtEmail.GetValue() <> u'' else None
 
@@ -56,7 +57,8 @@ class frmCreateSource(clsSource):
 		s.zip_code = self.txtZip.GetValue() if self.txtZip.GetValue() <> u'' else None
 
 		s.citation = self.txtCitation.GetValue() if self.txtCitation.GetValue() <> u'' else None
-		# s.metadata_id = self.chMeta.GetValue() if self.chMeta.GetValue() <> u'' else None
+		# s.metadata_id = self.chMeta.GetValue() if self.chMeta.GetValue() <> u'' else 0
+		s.iso_metadata_id = 0
 		return s
 
 
