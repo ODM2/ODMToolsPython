@@ -43,8 +43,10 @@ class clsSource(wx.Panel):
         self.lstSource.InsertColumn(8, 'State')
         self.lstSource.InsertColumn(9, 'ZipCode')
         self.lstSource.InsertColumn(10, 'Citation')
+        self.lstSource.InsertColumn(11, 'ID')
         self.lstSource.SetColumnWidth(0, 100)
         self.lstSource.SetColumnWidth(1, 100)
+        self.lstSource.SetColumnWidth(11, 0)
 
         self.lstSource.Bind(wx.EVT_LIST_ITEM_SELECTED,
                             self.OnListCtrl1ListItemSelected)

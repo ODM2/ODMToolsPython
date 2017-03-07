@@ -392,13 +392,13 @@ class wizSave(wx.wizard.Wizard):
             else:
                 Method = self.record_service.create_method(Method)
 
-            s= self.series_service.source_exists(Source)
+            s= self.record_service.get_src(Source)
             if s:
                 if Source == self.currSeries.source:
                     Source = None
                 else:
                     # Source = self.record_service.get_source(Source)
-                    Source = source
+                    Source = s
             else:
                 Source = self.record_service.create_source(Source)
 

@@ -44,6 +44,8 @@ class pageSource(wiz.WizardPageSimple):
             self.panel.lstSource.SetStringItem(num_items, 8, str(s.state))
             self.panel.lstSource.SetStringItem(num_items, 9, str(s.zip_code))
             self.panel.lstSource.SetStringItem(num_items, 10, str(s.citation))
+            self.panel.lstSource.SetStringItem(num_items, 11, str(s.id))
+
 
             if s.organization == src.organization:
                 index = i
@@ -101,9 +103,9 @@ class pnlSource(clsSource):
             s = self.prev_val
         elif self.rbSelect.Value:
             index = self.lstSource.GetFirstSelected()
-            code = self.lstSource.GetItem(index, 0).GetText()
+            code = self.lstSource.GetItem(index, 11).GetText()
             logger.debug(code)
-            s = self.series_service.get_source_by_org(code)
+            s = self.series_service.get_src_by_id(code)
         elif self.rbCreate.Value:
             s = self.createdSrc
         return s
@@ -121,6 +123,8 @@ class pnlSource(clsSource):
         self.txtNewSrc.SetStringItem(0, 8, str(src.zip_code))
         self.txtNewSrc.SetStringItem(0, 9, str(src.citation))
         self.txtNewSrc.SetStringItem(0, 10, str(src.iso_metadata_id))
+
+
 
         self.txtNewSrc.Focus(0)
         self.txtNewSrc.Select(0)

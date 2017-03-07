@@ -46,8 +46,6 @@ class SeriesService():
     def get_all_sources(self):
         return self._edit_session.query(Source).order_by(Source.id).all()
 
-    def get_source_by_org(self, org):
-        return self._edit_session.query(Source).filter(Source.organization == org).first()
 
     def get_src_by_id(self, src_id):
         try:
