@@ -483,7 +483,7 @@ class BoxWhisker(object):
             data_median = np.median(datavalue)
             data_std = math.sqrt(np.var(datavalue))
             data_sqrt = math.sqrt(len(interval))
-            if data_sqrt <> 0:
+            if data_sqrt != 0:
                 data_deviation = data_std / data_sqrt
             else: data_deviation = 1
 
