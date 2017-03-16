@@ -30,7 +30,7 @@ class clsSource(wx.Dialog):
         sizerOrganization.SetFlexibleDirection(wx.BOTH)
         sizerOrganization.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.lblOrg = wx.StaticText(self, wx.ID_ANY, u"Organization", wx.DefaultPosition, wx.DefaultSize,
+        self.lblOrg = wx.StaticText(self, wx.ID_ANY, u"Organization*", wx.DefaultPosition, wx.DefaultSize,
                                     wx.ALIGN_RIGHT)
         self.lblOrg.Wrap(-1)
         sizerOrganization.Add(self.lblOrg, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
@@ -38,7 +38,7 @@ class clsSource(wx.Dialog):
         self.txtOrg = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         sizerOrganization.Add(self.txtOrg, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.lblDescrip = wx.StaticText(self, wx.ID_ANY, u"Description", wx.DefaultPosition, wx.DefaultSize,
+        self.lblDescrip = wx.StaticText(self, wx.ID_ANY, u"Description*", wx.DefaultPosition, wx.DefaultSize,
                                         wx.ALIGN_RIGHT)
         self.lblDescrip.Wrap(-1)
         sizerOrganization.Add(self.lblDescrip, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
@@ -61,14 +61,14 @@ class clsSource(wx.Dialog):
         sizerContact.SetFlexibleDirection(wx.BOTH)
         sizerContact.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.lblName = wx.StaticText(self, wx.ID_ANY, u" Name", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT)
+        self.lblName = wx.StaticText(self, wx.ID_ANY, u" Name*", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_RIGHT)
         self.lblName.Wrap(-1)
         sizerContact.Add(self.lblName, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         self.txtName = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         sizerContact.Add(self.txtName, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.lblPhone = wx.StaticText(self, wx.ID_ANY, u"Phone", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblPhone = wx.StaticText(self, wx.ID_ANY, u"Phone*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblPhone.Wrap(-1)
         sizerContact.Add(self.lblPhone, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
@@ -82,14 +82,14 @@ class clsSource(wx.Dialog):
         sizerAddress.SetFlexibleDirection(wx.BOTH)
         sizerAddress.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.lblEmail = wx.StaticText(self, wx.ID_ANY, u"            Email", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblEmail = wx.StaticText(self, wx.ID_ANY, u"            Email*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblEmail.Wrap(-1)
         sizerAddress.Add(self.lblEmail, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_RIGHT | wx.ALL, 5)
 
         self.txtEmail = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         sizerAddress.Add(self.txtEmail, 0, wx.ALL | wx.EXPAND, 5)
 
-        self.lblAddress = wx.StaticText(self, wx.ID_ANY, u"Address", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblAddress = wx.StaticText(self, wx.ID_ANY, u"Address*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblAddress.Wrap(-1)
         sizerAddress.Add(self.lblAddress, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
@@ -103,14 +103,14 @@ class clsSource(wx.Dialog):
         sizerDetails.SetFlexibleDirection(wx.BOTH)
         sizerDetails.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.lblCity = wx.StaticText(self, wx.ID_ANY, u"City", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblCity = wx.StaticText(self, wx.ID_ANY, u"City*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblCity.Wrap(-1)
         sizerDetails.Add(self.lblCity, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         self.txtCity = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         sizerDetails.Add(self.txtCity, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.lblState = wx.StaticText(self, wx.ID_ANY, u"State", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblState = wx.StaticText(self, wx.ID_ANY, u"State*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblState.Wrap(-1)
         sizerDetails.Add(self.lblState, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
@@ -119,7 +119,7 @@ class clsSource(wx.Dialog):
                                    )
         sizerDetails.Add(self.txtState, 0, wx.ALL, 5)
 
-        self.lblZip = wx.StaticText(self, wx.ID_ANY, u"ZipCode", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblZip = wx.StaticText(self, wx.ID_ANY, u"ZipCode*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblZip.Wrap(-1)
         sizerDetails.Add(self.lblZip, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
@@ -134,14 +134,14 @@ class clsSource(wx.Dialog):
         sizerCitation.SetFlexibleDirection(wx.BOTH)
         sizerCitation.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.lblCitation = wx.StaticText(self, wx.ID_ANY, u"          Citation", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblCitation = wx.StaticText(self, wx.ID_ANY, u"          Citation*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblCitation.Wrap(-1)
         sizerCitation.Add(self.lblCitation, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         self.txtCitation = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0)
         sizerCitation.Add(self.txtCitation, 0, wx.ALL | wx.EXPAND, 5)
 
-        self.lblMetadata = wx.StaticText(self, wx.ID_ANY, u"Metadata", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.lblMetadata = wx.StaticText(self, wx.ID_ANY, u"Metadata*", wx.DefaultPosition, wx.DefaultSize, 0)
         self.lblMetadata.Wrap(-1)
         sizerCitation.Add(self.lblMetadata, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 

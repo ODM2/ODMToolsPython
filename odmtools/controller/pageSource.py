@@ -2,7 +2,7 @@ import wx
 import wx.wizard as wiz
 from odmtools.view.clsWizSource import clsSource
 from wx.lib.pubsub import pub as Publisher
-from odmtools.controller.frmSource import frmCreateSource
+from odmtools.controller.frmCreateSource import frmCreateSource
 
 
 
@@ -28,6 +28,9 @@ class pageSource(wiz.WizardPageSimple):
         sizer.Add(wx.StaticLine(self, -1), 5, wx.EXPAND | wx.ALL, 5)
         self.panel = pnlSource(self, id=wx.ID_ANY, title=u'pnlSource', service_manager=service_manager, src=src)
         self.sizer.Add(self.panel, 85, wx.ALL, 5)
+
+
+
 
         srcs = series_service.get_all_sources()
         index = 0

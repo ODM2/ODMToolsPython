@@ -340,8 +340,8 @@ class EditService():
         # true or false list the length of the entire series. true indicate the point is selected
         return self._filter_list
 
-    def get_src(self, src_id):
-        return self.memDB.series_service.get_src_by_ic(src_id)
+    def get_source(self, src_id):
+        return self.memDB.series_service.get_src_by_id(src_id)
 
     def get_qcl(self, qcl_id):
         return self.memDB.series_service.get_qcl_by_id(qcl_id)

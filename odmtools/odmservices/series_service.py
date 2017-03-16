@@ -17,6 +17,7 @@ from odmtools.odmdata import Method
 from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
 from odmtools.odmdata import Source
+from odmtools.odmdata import ISOMetadata
 from odmtools.common.logger import LoggerTool
 import pandas as pd
 
@@ -451,6 +452,12 @@ class SeriesService():
         """
         try:
             return self._edit_session.query(DataValue).filter_by(id=id).first()
+        except:
+            return None
+
+    def get_iso_metadata(self):
+        try:
+            return self._edit_session.query(ISOMetadata).filter_by(id=id).first()
         except:
             return None
 

@@ -368,7 +368,7 @@ class EditTools():
             Publisher.sendMessage("scroll")
 
         return qcl
-    def get_src(self, s):
+    def get_source(self, s):
         src = self._edit_service.get_source(s.id)
         if self._record:
             self._script('new_src = series_service.get_src_by_id(%s)\n' % (src.id))
