@@ -9,4 +9,4 @@ class Method(Base):
 	link		= Column('MethodLink', String)
 
 	def __repr__(self):
-		return "<Method('%s', '%s', '%s')>" % (self.id, self.description, self.link)
+		return "<Method('%s', '%s', '%s')>" % (self.id, self.description.encode("utf-8", 'ignore'), self.link.encode("utf-8", 'ignore'))

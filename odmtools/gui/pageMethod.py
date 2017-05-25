@@ -67,9 +67,6 @@ class pnlMethod(wx.Panel):
         self.lstMethods.SetColumnWidth(2,0)
         # self.lstMethods.Enable(False)
 
-
-
-
     def __init__(self, parent, id, pos, size, style, name, ss, method):
         self.series_service = ss
         self.prev_val = method
@@ -108,26 +105,24 @@ class pnlMethod(wx.Panel):
 
         event.Skip()
 
-
     def getMethod(self):
 
         m =  Method()
         if self.rbGenerate.Value:
             genmethod = "Values derived from ODM Tools Python"
-            m= self.series_service.get_method_by_description(genmethod)
+            m = self.series_service.get_method_by_description(genmethod)
             if m is None:
                 logger.debug("assigning new method description")
-                m =  Method()
+                m = Method()
                 m.description = genmethod
 
         elif self.rbSelect.Value:
             index = self.lstMethods.GetFirstSelected()
-            desc= self.lstMethods.GetItem(index, 0).GetText()
+            # desc = self.lstMethods.GetItem(index, 0).GetText()
+            id = self.lstMethods.GetItem(index, 2).GetText()
 
-            logger.debug(desc)
-            m= self.series_service.get_method_by_description(desc)
-
-
+            logger.debug(id)
+            m = self.series_service.get_method_by_id(int(id))
 
         elif self.rbCreateNew.Value:
             logger.debug("assigning new method description")
