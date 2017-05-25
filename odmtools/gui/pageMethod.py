@@ -65,7 +65,7 @@ class pnlMethod(wx.Panel):
         self.lstMethods.SetColumnWidth(0, 200)
         self.lstMethods.SetColumnWidth(1, 153)
         self.lstMethods.SetColumnWidth(2,0)
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
 
 
 
@@ -79,7 +79,7 @@ class pnlMethod(wx.Panel):
         self.rbSelect.SetValue(True)
 
     def OnRbGenerateRadiobutton(self, event):
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
         self.txtMethodDescrip.Enable(False)
 
         event.Skip()
@@ -91,7 +91,7 @@ class pnlMethod(wx.Panel):
         event.Skip()
 
     def OnRbCreateNewRadiobutton(self, event):
-        self.lstMethods.Enable(False)
+        # self.lstMethods.Enable(False)
         self.txtMethodDescrip.Enable(True)
 
         event.Skip()
@@ -103,7 +103,7 @@ class pnlMethod(wx.Panel):
         event.Skip()
 
     def OnTxtMethodDescripKillFocus(self, event):
-        if self.txtMethodDescrip.GetValue() == "":
+        if self.txtMethodDescrip.GetValue() =="":
             self.txtMethodDescrip.SetValue("Method Description")
 
         event.Skip()
@@ -117,15 +117,17 @@ class pnlMethod(wx.Panel):
             m= self.series_service.get_method_by_description(genmethod)
             if m is None:
                 logger.debug("assigning new method description")
-                m = Method()
+                m =  Method()
                 m.description = genmethod
 
         elif self.rbSelect.Value:
             index = self.lstMethods.GetFirstSelected()
-            desc = self.lstMethods.GetItem(index, 0).GetText()
+            desc= self.lstMethods.GetItem(index, 0).GetText()
 
             logger.debug(desc)
-            m = self.series_service.get_method_by_description(desc)
+            m= self.series_service.get_method_by_description(desc)
+
+
 
         elif self.rbCreateNew.Value:
             logger.debug("assigning new method description")
