@@ -785,7 +785,8 @@ class SeriesService():
         :return:
         """
         try:
-            result = self._edit_session.query(Method).filter_by(description=m.description).one()
+            # result = self._edit_session.query(Method).filter_by(description=m.description).one()
+            result = self._edit_session.query(Method).filter(Method.description.like(m.description.encode("latin-1"))).first()
             return True
         except:
             return False
