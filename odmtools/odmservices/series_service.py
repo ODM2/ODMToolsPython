@@ -787,8 +787,11 @@ class SeriesService():
         try:
             # result = self._edit_session.query(Method).filter_by(description=m.description).one()
             result = self._edit_session.query(Method).filter(Method.description.like(m.description.encode("latin-1"))).first()
+            print "successful method retrieval!"
+            print Method
             return True
-        except:
+        except Exception as ex:
+            print ex
             return False
 
     def variable_exists(self, v):
