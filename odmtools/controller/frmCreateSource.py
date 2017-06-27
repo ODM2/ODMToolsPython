@@ -13,9 +13,17 @@ class frmCreateSource(clsSource):
         self.prev = prev_src
         self.source = None
         self.series_service = self.service_man.get_series_service()
+        self.populate_meta()
 
-        # name_list = [x.title for x in self.series_service.get_iso_metadata()]
-        # self.chMeta.AppendItems(name_list)
+    def populate_meta(self):
+        self.meta_list = {}
+        metas = self.series_service.get_iso_metadata()
+        if metas is not None:
+            self.meta_list = {(x.title, x.id) for x in metas}
+            # {(key, value) for (key, value) in zip(key_list, value_list)}
+        self.meta_list["None"] = 0
+        self.chMeta.AppendItems(self.meta_list.keys())
+        self.chMeta.SetSelection(0)
 
     def getSource(self):
         return self.source
@@ -58,8 +66,8 @@ class frmCreateSource(clsSource):
         s.zip_code = self.txtZip.GetValue() if self.txtZip.GetValue() != u'' else None
 
         s.citation = self.txtCitation.GetValue() if self.txtCitation.GetValue() != u'' else None
-        # s.metadata_id = self.chMeta.GetValue() if self.chMeta.GetValue() != u'' else 0
-        s.iso_metadata_id = 0
+        s.metadata_id = self.meta_list[self.chMeta.GetItems()[self.chMeta.GetSelection()]]
+        # s.iso_metadata_id = 0
         return s
 
     def onCancelClick(self, event):
