@@ -66,7 +66,7 @@ class frmCreateSource(clsSource):
         s.zip_code = self.txtZip.GetValue() if self.txtZip.GetValue() != u'' else None
 
         s.citation = self.txtCitation.GetValue() if self.txtCitation.GetValue() != u'' else None
-        s.metadata_id = self.meta_list[self.chMeta.GetItems()[self.chMeta.GetSelection()]]
+        s.iso_metadata_id = self.meta_list[self.chMeta.GetItems()[self.chMeta.GetSelection()]]
         # s.iso_metadata_id = 0
         return s
 

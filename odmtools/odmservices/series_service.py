@@ -677,6 +677,9 @@ class SeriesService():
         return self.create_qualifier_by_qual(qual)
 
     def create_source(self, source):
+
+        # if source.iso_metadata_id is None:
+        #     source.iso_metadata_id = 0
         self._edit_session.add(source)
         self._edit_session.commit()
         return source

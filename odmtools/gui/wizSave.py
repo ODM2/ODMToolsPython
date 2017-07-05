@@ -422,9 +422,9 @@ class wizSave(wx.wizard.Wizard):
                         #def save_appending(self, var = None, method =None, qcl = None, overwrite = False):
                         #TODO if i require that original or new is selected I can call once with overwrite = original
                         if original:
-                            result = self.record_service.save_appending(Variable, Method, QCL, Source, overwrite = False)
+                            result = self.record_service.save_appending(Variable, Method, QCL, Source, overwrite=False)
                         elif new:
-                            result = self.record_service.save_appending(Variable, Method, QCL, Source, overwrite = True)
+                            result = self.record_service.save_appending(Variable, Method, QCL, Source, overwrite=True)
 
                 Publisher.sendMessage("refreshSeries")
 
