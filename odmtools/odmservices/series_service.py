@@ -16,6 +16,8 @@ from odmtools.odmdata import Sample
 from odmtools.odmdata import Method
 from odmtools.odmdata import QualityControlLevel
 from odmtools.odmdata import ODMVersion
+from odmtools.odmdata import Source
+from odmtools.odmdata import ISOMetadata
 from odmtools.common.logger import LoggerTool
 import pandas as pd
 
@@ -41,6 +43,16 @@ class SeriesService():
 # Get functions
 #
 #####################
+
+    def get_all_sources(self):
+        return self._edit_session.query(Source).order_by(Source.id).all()
+
+
+    def get_src_by_id(self, src_id):
+        try:
+            return self._edit_session.query(Source).filter_by(id=src_id).first()
+        except:
+            return None
 
     # Site methods
     def get_all_sites(self):
@@ -443,6 +455,12 @@ class SeriesService():
         except:
             return None
 
+    def get_iso_metadata(self):
+        try:
+            return self._edit_session.query(ISOMetadata).filter_by(id=id).first()
+        except:
+            return None
+
 
 
 
@@ -658,6 +676,14 @@ class SeriesService():
 
         return self.create_qualifier_by_qual(qual)
 
+    def create_source(self, source):
+
+        # if source.iso_metadata_id is None:
+        #     source.iso_metadata_id = 0
+        self._edit_session.add(source)
+        self._edit_session.commit()
+        return source
+
 #####################
 #
 # Delete functions
@@ -793,6 +819,18 @@ class SeriesService():
         except Exception as ex:
             print ex
             return False
+
+    def source_exists(self, s):
+        try:
+            result = self._edit_session.query(Source).filter_by(organization=s.organization,
+                                                                  contact_name=s.contact_name,
+                                                                  phone = s.phone,
+                                                                  description=s.description
+                                                                ).one()
+            return result
+        except:
+            return None
+
 
     def variable_exists(self, v):
         """

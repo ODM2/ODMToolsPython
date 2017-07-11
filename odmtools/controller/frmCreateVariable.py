@@ -65,16 +65,16 @@ class frmCreateVariable(clsCreateVariable):
 
     def all_fields_full(self):
         return (self.cbVarName.GetValue() is not None) and \
-            (self.txtVarCode.GetValue() <> '') and \
+            (self.txtVarCode.GetValue() != '') and \
             (self.cbVarUnits.GetValue() is not None)and \
             (self.cbTSUnits.GetValue() is not None) and \
             (self.cbSampleMedium.GetValue() is not None) and \
             (self.cbSpeciation.GetValue() is not None) and \
             (self.cbValueType.GetValue() is not None) and \
             (self.cbDataType.GetValue() is not None) and \
-            (self.txtNoDV.GetValue() <> '') and \
+            (self.txtNoDV.GetValue() != '') and \
             (self.cbGenCat.GetValue() is not None) and \
-            (self.txtTSValue.GetValue() <> '')
+            (self.txtTSValue.GetValue() != '')
 
 
     def OnBtnCreateButton(self, event):
@@ -89,24 +89,24 @@ class frmCreateVariable(clsCreateVariable):
     def createVariable(self):
         v = Variable()
 
-        v.code = self.txtVarCode.GetValue() if self.txtVarCode.GetValue() <> u'' else None
-        v.name = self.cbVarName.GetValue() if self.cbVarName.GetValue() <> u'' else None
-        v.speciation = self.cbSpeciation.GetValue() if self.cbSpeciation.GetValue() <> u'' else None
+        v.code = self.txtVarCode.GetValue() if self.txtVarCode.GetValue() != u'' else None
+        v.name = self.cbVarName.GetValue() if self.cbVarName.GetValue() != u'' else None
+        v.speciation = self.cbSpeciation.GetValue() if self.cbSpeciation.GetValue() != u'' else None
 
         v.variable_unit = self.series_service.get_unit_by_name( self.cbVarUnits.GetValue())
         v.variable_unit_id = v.variable_unit.id
 
-        v.sample_medium = self.cbSampleMedium.GetValue() if self.cbSampleMedium.GetValue() <> u'' else None
-        v.value_type = self.cbValueType.GetValue() if self.cbValueType.GetValue() <> u'' else None
-        v.is_regular = self.cbIsRegular.GetValue() if self.cbIsRegular.GetValue() <> u'' else None
-        v.time_support = self.txtTSValue.GetValue() if self.txtTSValue.GetValue() <> u'' else None
+        v.sample_medium = self.cbSampleMedium.GetValue() if self.cbSampleMedium.GetValue() != u'' else None
+        v.value_type = self.cbValueType.GetValue() if self.cbValueType.GetValue() != u'' else None
+        v.is_regular = self.cbIsRegular.GetValue() if self.cbIsRegular.GetValue() != u'' else None
+        v.time_support = self.txtTSValue.GetValue() if self.txtTSValue.GetValue() != u'' else None
 
         v.time_unit = self.series_service.get_unit_by_name(self.cbTSUnits.GetValue())
         v.time_unit_id = v.time_unit.id
 
-        v.data_type = self.cbDataType.GetValue() if self.cbDataType.GetValue() <> u'' else None
-        v.general_category = self.cbGenCat.GetValue() if self.cbGenCat.GetValue() <> u'' else None
-        v.no_data_value = self.txtNoDV.GetValue() if self.txtNoDV.GetValue() <> u'' else None
+        v.data_type = self.cbDataType.GetValue() if self.cbDataType.GetValue() != u'' else None
+        v.general_category = self.cbGenCat.GetValue() if self.cbGenCat.GetValue() != u'' else None
+        v.no_data_value = self.txtNoDV.GetValue() if self.txtNoDV.GetValue() != u'' else None
         return v
 
     def OnBtnCancelButton(self, event):

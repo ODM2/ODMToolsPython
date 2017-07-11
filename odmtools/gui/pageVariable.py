@@ -102,6 +102,7 @@ class pnlVariable(wx.Panel):
         self.series_service = sm.get_series_service()
         self._init_ctrls(parent)
 
+
     def OnRbCurrentRadiobutton(self, event):
         self.lstVariable.Enable(False)
         self.txtNewVar.Enable(False)
