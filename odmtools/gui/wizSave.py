@@ -187,7 +187,7 @@ class SummaryPage(wiz.WizardPageSimple):
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.vgc,
                                            'General Category: ' + str(Variable.general_category))
 
-        self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + str(Method.description))
+        self.panel.treeSummary.SetItemText(self.panel.treeSummary.md, 'Description: ' + Method.description.encode('utf-8', 'ignore'))
 
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.soo, 'Organization: ' + str(Source.organization))
         self.panel.treeSummary.SetItemText(self.panel.treeSummary.sod, 'Description: ' + str(Source.description))
