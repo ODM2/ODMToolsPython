@@ -483,7 +483,9 @@ class BoxWhisker(object):
             data_median = np.median(datavalue)
             data_std = math.sqrt(np.var(datavalue))
             data_sqrt = math.sqrt(len(interval))
-            data_deviation = data_std / data_sqrt
+            if data_sqrt != 0:
+                data_deviation = data_std / data_sqrt
+            else: data_deviation = 1
 
             ci = stats.norm.interval(.95, data_mean, scale=10*data_deviation)
             cl = stats.norm.interval(.95, data_median, scale=data_deviation)
