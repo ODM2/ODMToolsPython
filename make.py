@@ -149,36 +149,22 @@ def run_pyinstaller(console=False):
     try:
         if console:
             ## Console Version
-            os.system('pyinstaller '
-                '--clean '
-                '--distpath=%s ' % WIN_DIR +
-                '--workpath=%s ' % WORK_DIR +
-                '--specpath=%s ' % WIN_DIR +
-                #'--upx-dir=%s ' % BASE_DIR +
-                '--noupx '
-                '--icon=%s ' % WIN_ICON_FILE +
-                '--version-file=%s ' % VERSION_FILE +
-                '--onedir '
-                # '--onefile ' +
-                '--exclude=
-                '--noconfirm ' + APP_FILE)
+            command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconfirm  %s""" % (WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
+            os.system(command)
         else:
             ## Non Console Version
-            val = os.system('pyinstaller '
-                '--clean '
-                '--distpath=%s ' % WIN_DIR +
-                '--workpath=%s ' % WORK_DIR +
-                '--specpath=%s ' % WIN_DIR +
-                #'--upx-dir=%s ' % BASE_DIR +
-                '--noupx '
-                '--icon=%s ' % WIN_ICON_FILE +
-                '--onedir '
-                # '--onefile ' +
-                '--version-file=%s ' % VERSION_FILE +
-                '--noconsole '
-                '--noconfirm ' + APP_FILE)
-
-        return True
+            command = """pyinstaller
+                        --clean
+                        --distpath=%s
+                        --workpath=%s
+                        --specpath=%s
+                        --noupx
+                        --icon=%s
+                        --version-file=%s
+                        --onefile
+                        --noconsole
+                        --noconfirm  %s""" % (WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
+            os.system(command)
     except Exception as e:
         print (e)
         return False
