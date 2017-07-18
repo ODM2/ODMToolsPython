@@ -153,7 +153,14 @@ def run_pyinstaller(console=False):
             os.system(command)
         else:
             ## Non Console Version
+<<<<<<< Updated upstream
             command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconsole --noconfirm  %s""" % (WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
+=======
+            command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconsole --noconfirm  %s""" % (
+            WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
+
+
+>>>>>>> Stashed changes
             os.system(command)
     except Exception as e:
         print (e)
@@ -161,9 +168,31 @@ def run_pyinstaller(console=False):
 
 def mac_pyinstaller():
     try:
-        os.system("""pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --upx-dir=%s --icon=%s --version-file=%s --windowed --onefile --noconfirm """ % (MAC_DIST_DIR, MAC_WORK_DIR, MAC_DIR,BASE_DIR,  MAC_ICON_FILE, VERSION_FILE, APP_FILE)
+
+
+        #
+        # os.system('pyinstaller '
+        #     '--clean '
+        #     '--distpath=%s ' % MAC_DIST_DIR +
+        #     '--workpath=%s ' % MAC_WORK_DIR +
+        #     '--specpath=%s ' % MAC_DIR +
+        #     '--upx-dir=%s ' % BASE_DIR +
+        #     '--icon=%s ' % MAC_ICON_FILE +
+        #     '--version-file=%s ' % VERSION_FILE +
+        #     '--windowed '#'--onefile '
+        #     '--noconfirm ' + APP_FILE)
+
+        command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconsole --noconfirm  %s""" % (
+            MAC_DIST_DIR, MAC_WORK_DIR, MAC_DIR, MAC_ICON_FILE, VERSION_FILE, APP_FILE)
+
+        os.system(command)
+
         #copy "libwx_osx_cocoau-3.0.0.0.0.dylib"
-        os.system("cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/"))
+        copycommand = "cp /anaconda/envs/odmtools/lib/libwx_osx_cocoau-3.0.0.0.0.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/")
+        os.system(copycommand)
+        copycommand = "cp /anaconda/envs/odmtools/lib/libmkl_avx2.dylib %s" % os.path.join(APP_DIR, "Contents/MacOS/")
+        os.system(copycommand)
+
 
         return True
     except Exception as e:
