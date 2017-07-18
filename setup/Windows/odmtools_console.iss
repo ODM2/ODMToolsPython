@@ -4,7 +4,7 @@
 #define MyAppName "ODMTools"
 
 #define MyAppVersion "1.2.9_Beta"
-#define MyAppExeLongName "ODMTools_1.2._Beta_win32_x86_64_console.exe"
+#define MyAppExeLongName "ODMTools_1.2.9_Beta_win32_x86_64_console.exe"
 #define MyAppPublisher "ODM2"
 #define MyAppURL "https://github.com/ODM2/ODMToolsPython"
 #define MyAppExeName "ODMTools.exe"
