@@ -153,14 +153,9 @@ def run_pyinstaller(console=False):
             os.system(command)
         else:
             ## Non Console Version
-<<<<<<< Updated upstream
-            command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconsole --noconfirm  %s""" % (WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
-=======
             command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconsole --noconfirm  %s""" % (
             WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
 
-
->>>>>>> Stashed changes
             os.system(command)
     except Exception as e:
         print (e)
