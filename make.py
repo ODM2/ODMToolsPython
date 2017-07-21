@@ -149,11 +149,11 @@ def run_pyinstaller(console=False):
     try:
         if console:
             ## Console Version
-            command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconfirm  %s""" % (WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
+            command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --icon=%s --version-file=%s --onefile --noconfirm  %s""" % (WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
             os.system(command)
         else:
             ## Non Console Version
-            command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --noupx --icon=%s --version-file=%s --onefile --noconsole --noconfirm  %s""" % (
+            command = """pyinstaller --clean --distpath=%s --workpath=%s --specpath=%s --icon=%s --version-file=%s --onefile --noconsole --noconfirm  %s""" % (
             WIN_DIR, WORK_DIR, WIN_DIR, WIN_ICON_FILE, VERSION_FILE, APP_FILE)
 
             os.system(command)
