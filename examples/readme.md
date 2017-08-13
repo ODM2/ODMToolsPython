@@ -10,7 +10,7 @@ This zip file contains a Microsoft SQL Server database. It was created in Micros
 2. Attach the database to your SQL Server instance (the Express version will work)
 3. Create an appropriate SQL server user that has access to the database so you can connect using ODM Tools 
 
-### LittleBear_ODM_1.1.1_MySQL.sql.gz ###
+### LittleBear_ODM_1.1.1_MySQL.sql ###
 
 This zipped file contains a MySQL dump file to create the testing database in MySQL. To use it, do the following:
 
