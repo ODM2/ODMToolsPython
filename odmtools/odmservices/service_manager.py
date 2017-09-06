@@ -6,7 +6,6 @@ import urllib
 
 from sqlalchemy.exc import SQLAlchemyError#OperationalError, DBAPIError
 
-from odmtools.common.logger import LoggerTool
 from series_service import SeriesService
 from cv_service import CVService
 from edit_service import EditService
@@ -14,7 +13,6 @@ from odmtools.controller import EditTools
 from export_service import ExportService
 from odmtools.lib.Appdirs.appdirs import user_config_dir
 from odmtools.odmdata.session_factory import SessionFactory
-
 
 # tool = LoggerTool()
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)

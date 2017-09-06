@@ -70,8 +70,6 @@ class EditService():
         return self.memDB.series_service
 
     def _populate_series(self):
-        # [(ID, value, datetime), ...]
-        #self._cursor.execute("SELECT ValueID, DataValue, LocalDateTime FROM DataValues ORDER BY LocalDateTime")
 
         self._series_points_df = self.memDB.getDataValuesDF()
 
@@ -201,8 +199,6 @@ class EditService():
 
     def find_gaps(self, df, value, time_period):
 
-
-
         # make a copy of the dataframe in order to modify it to be in the form we need to determine data gaps
         copy_df = df
         copy_df['datetime'] = df.index
@@ -217,7 +213,6 @@ class EditService():
 
         # filter on rows that passed previous condition
         return copy_df[filtered_results]
-
 
 
 

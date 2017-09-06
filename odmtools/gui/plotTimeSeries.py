@@ -15,8 +15,6 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
 from mpl_toolkits.axes_grid1 import host_subplot
 
 
-
-
 from matplotlib.font_manager import FontProperties
 from wx.lib.pubsub import pub as Publisher
 from mnuPlotToolbar import MyCustomToolbar as NavigationToolbar
