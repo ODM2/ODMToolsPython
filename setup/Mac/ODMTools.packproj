@@ -566,11 +566,9 @@
 						<key>IFPkgDescriptionDescription</key>
 						<string></string>
 						<key>IFPkgDescriptionTitle</key>
-
-						<string>ODMTools_v1.2.8</string>
+						<string>ODMTools_v2.0.1</string>
 						<key>IFPkgDescriptionVersion</key>
-						<string>1.2.8 Beta</string>
-
+						<string>2.0.1 Beta</string>
 					</dict>
 				</dict>
 				<key>Display Information</key>
@@ -586,7 +584,7 @@
 					<key>CFBundleName</key>
 					<string>ODMTools</string>
 					<key>CFBundleShortVersionString</key>
-					<string>1.2.8</string>
+					<string>2.0.1</string>
 				</dict>
 				<key>Options</key>
 				<dict>
@@ -612,16 +610,16 @@
 				<key>Version</key>
 				<dict>
 					<key>IFMajorVersion</key>
-					<integer>1</integer>
-					<key>IFMinorVersion</key>
 					<integer>2</integer>
+					<key>IFMinorVersion</key>
+					<integer>0</integer>
 				</dict>
 			</dict>
 		</dict>
 		<key>IFPkgFlagPackageSelection</key>
 		<integer>0</integer>
 		<key>Name</key>
-		<string>ODMTools_v1.2.8-beta_Mac_installer</string>
+		<string>ODMTools_v2.0.1-beta_Mac_installer</string>
 		<key>Status</key>
 		<integer>1</integer>
 		<key>Type</key>
