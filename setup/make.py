@@ -151,6 +151,7 @@ def run_pyinstaller(console=False):
             ## Console Version
             os.system('pyinstaller '
                 '--clean '
+                '--name ODM2Tools '
                 '--distpath=%s ' % WIN_DIR +
                 '--workpath=%s ' % WORK_DIR +
                 '--specpath=%s ' % WIN_DIR +
@@ -167,6 +168,7 @@ def run_pyinstaller(console=False):
 
             val = os.system('pyinstaller '
                 '--clean '
+                '--name ODM2Tools '
                 '--distpath=%s ' % WIN_DIR +
                 '--workpath=%s ' % WORK_DIR +
                 '--specpath=%s ' % WIN_DIR +
@@ -189,6 +191,7 @@ def mac_pyinstaller():
     try:
         os.system('pyinstaller '
             '--clean '
+            '--name ODM2Tools '
             '--distpath=%s ' % MAC_DIST_DIR +
             '--workpath=%s ' % MAC_WORK_DIR +
             '--specpath=%s ' % MAC_DIR +
