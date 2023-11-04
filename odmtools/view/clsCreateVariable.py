@@ -8,7 +8,8 @@
 ###########################################################################
 
 import wx
-import wx.combo
+import wx.adv
+# import wx.combo
 import wx.xrc
 
 
@@ -43,7 +44,7 @@ class clsCreateVariable(wx.Dialog):
         fgSizer1.Add(self.stName, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         cbVarNameChoices = []
-        self.cbVarName = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
+        self.cbVarName = wx.adv.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
                                      cbVarNameChoices, wx.CB_READONLY | wx.CB_SORT)
         fgSizer1.Add(self.cbVarName, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL | wx.EXPAND, 5)
 
@@ -54,7 +55,7 @@ class clsCreateVariable(wx.Dialog):
         bSizer21 = wx.BoxSizer(wx.HORIZONTAL)
 
         cbVarUnitsChoices = []
-        self.cbVarUnits = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
+        self.cbVarUnits = wx.adv.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
                                       cbVarUnitsChoices, wx.CB_READONLY | wx.CB_SORT)
         bSizer21.Add(self.cbVarUnits, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -63,7 +64,7 @@ class clsCreateVariable(wx.Dialog):
         bSizer21.Add(self.stSpeciation, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         cbSpeciationChoices = []
-        self.cbSpeciation = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
+        self.cbSpeciation = wx.adv.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
                                         cbSpeciationChoices, wx.CB_READONLY | wx.CB_SORT)
         bSizer21.Add(self.cbSpeciation, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -89,7 +90,7 @@ class clsCreateVariable(wx.Dialog):
         fgSizer3.Add(self.stTSUnits, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         cbTSUnitsChoices = []
-        self.cbTSUnits = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
+        self.cbTSUnits = wx.adv.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
                                      cbTSUnitsChoices, wx.CB_READONLY | wx.CB_SORT)
         fgSizer3.Add(self.cbTSUnits, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -106,7 +107,7 @@ class clsCreateVariable(wx.Dialog):
         fgSizer6.Add(self.stValType, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         cbValueTypeChoices = []
-        self.cbValueType = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
+        self.cbValueType = wx.adv.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
                                        cbValueTypeChoices, wx.CB_READONLY | wx.CB_SORT)
         fgSizer6.Add(self.cbValueType, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -115,7 +116,7 @@ class clsCreateVariable(wx.Dialog):
         fgSizer6.Add(self.stDataType, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         cbDataTypeChoices = []
-        self.cbDataType = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
+        self.cbDataType = wx.adv.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
                                       cbDataTypeChoices, wx.CB_READONLY | wx.CB_SORT)
         fgSizer6.Add(self.cbDataType, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -142,7 +143,7 @@ class clsCreateVariable(wx.Dialog):
         fgSizer6.Add(self.stSampMed, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
 
         cbSampleMediumChoices = []
-        self.cbSampleMedium = wx.combo.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
+        self.cbSampleMedium = wx.adv.OwnerDrawnComboBox(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize,
                                           cbSampleMediumChoices, wx.CB_READONLY | wx.CB_SORT)
         fgSizer6.Add(self.cbSampleMedium, 0, wx.ALL | wx.EXPAND, 5)
 

@@ -15,16 +15,16 @@ class frmFlagValues(wx.Dialog):
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.splitter, 85, border=0, flag=wx.EXPAND)
-        parent.AddWindow(self.panel1, 15, border=0, flag=wx.EXPAND)
+        parent.Add(self.splitter, 85, border=0, flag=wx.EXPAND)
+        parent.Add(self.panel1, 15, border=0, flag=wx.EXPAND)
 
     def _init_coll_boxSizer2_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.pnlFiller, 60, border=0, flag=0)
-        parent.AddWindow(self.btnOK, 0, border=0, flag=0)
+        parent.Add(self.pnlFiller, 60, border=0, flag=0)
+        parent.Add(self.btnOK, 0, border=0, flag=0)
         parent.AddSpacer(wx.Size(8, 8), border=0, flag=0)
-        parent.AddWindow(self.btnCancel, 0, border=0, flag=0)
+        parent.Add(self.btnCancel, 0, border=0, flag=0)
 
     def _init_sizers(self):
         # generated method, don't edit

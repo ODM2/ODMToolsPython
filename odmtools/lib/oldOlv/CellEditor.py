@@ -50,6 +50,7 @@ __version__ = "1.0"
 
 import datetime
 import wx
+import wx.adv
 
 #======================================================================
 # Editor Registry
@@ -148,7 +149,7 @@ class EditorRegistry:
 
     @staticmethod
     def _MakeDateEditor(olv, rowIndex, subItemIndex):
-        dte =  DateEditor(olv, style=wx.DP_DROPDOWN | wx.DP_SHOWCENTURY | wx.WANTS_CHARS)
+        dte =  DateEditor(olv, style=wx.adv.DP_DROPDOWN | wx.DP_SHOWCENTURY | wx.WANTS_CHARS)
         #dte.SetValidator(MyValidator(olv))
         return dte
 
@@ -403,15 +404,15 @@ class NumericValidator(wx.PyValidator):
 
 #----------------------------------------------------------------------------
 
-class DateEditor(wx.DatePickerCtrl):
+class DateEditor(wx.adv.DatePickerCtrl):
     """
     This control uses standard datetime.
-    wx.DatePickerCtrl works only with wx.DateTime, but they are strange beasts.
+    wx.adv.DatePickerCtrl works only with wx.DateTime, but they are strange beasts.
     wx.DataTime use 0 indexed months, i.e. January==0 and December==11.
     """
 
     def __init__(self, *args, **kwargs):
-        wx.DatePickerCtrl.__init__(self, *args, **kwargs)
+        wx.adv.DatePickerCtrl.__init__(self, *args, **kwargs)
         self.SetValue(None)
 
     def SetValue(self, value):
@@ -420,11 +421,11 @@ class DateEditor(wx.DatePickerCtrl):
             dt.Set(value.day, value.month-1, value.year)
         else:
             dt = wx.DateTime.Today()
-        wx.DatePickerCtrl.SetValue(self, dt)
+        wx.adv.DatePickerCtrl.SetValue(self, dt)
 
     def GetValue(self):
         "Get the value from the editor"
-        dt = wx.DatePickerCtrl.GetValue(self)
+        dt = wx.adv.DatePickerCtrl.GetValue(self)
         if dt.IsOk():
             return datetime.date(dt.Year, dt.Month+1, dt.Day)
         else:

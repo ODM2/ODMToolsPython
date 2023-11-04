@@ -1,6 +1,9 @@
 import logging
 
 import wx
+
+# from matplotlib.backends.backend_gtk3 import (NavigationToolbar2GTK3 as NavigationToolbar)
+
 from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
 from matplotlib.widgets import Lasso
 from matplotlib import path
@@ -73,7 +76,7 @@ class MyCustomToolbar(NavigationToolbar):
                 continue
             self.wx_ids[text] = wx.NewId()
             if text in ['Pan', 'Zoom', 'Select']:
-               self.AddCheckTool(self.wx_ids[text], image_file.GetBitmap(),
+               self.AddCheckTool(self.wx_ids[text], text, image_file.GetBitmap(),
                                  shortHelp=text, longHelp=tooltip_text)
             else:
                self.AddSimpleTool(self.wx_ids[text], image_file.GetBitmap(),

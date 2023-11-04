@@ -5,7 +5,8 @@ from collections import OrderedDict
 import datetime
 
 import wx
-import wx.combo
+import wx.adv
+# import wx.combo
 from wx.lib import masked
 from odmtools.gui.frmFlagValues import frmFlagValues
 from odmtools.lib.ObjectListView import CellEditor
@@ -412,16 +413,16 @@ class CellEdit():
         odcb.Bind(wx.EVT_KEY_DOWN, olv._HandleChar)
         return odcb
 
-class DatePicker(wx.DatePickerCtrl):
+class DatePicker(wx.adv.DatePickerCtrl):
     """
     This control uses standard datetime.
-    wx.DatePickerCtrl works only with wx.DateTime, but they are strange beasts.
+    wx.adv.DatePickerCtrl works only with wx.DateTime, but they are strange beasts.
     wx.DataTime use 0 indexed months, i.e. January==0 and December==11.
     """
 
     def __init__(self, *args, **kwargs):
         kwargs['style'] = kwargs.get('style', 0) | wx.DP_DEFAULT
-        wx.DatePickerCtrl.__init__(self, *args, **kwargs)
+        wx.adv.DatePickerCtrl.__init__(self, *args, **kwargs)
         self.SetValue(None)
 
     def SetValue(self, value):
@@ -434,11 +435,11 @@ class DatePicker(wx.DatePickerCtrl):
             dt.Set(date.day, date.month-1, date.year)
         else:
             dt = wx.DateTime.Today()
-        wx.DatePickerCtrl.SetValue(self, dt)
+        wx.adv.DatePickerCtrl.SetValue(self, dt)
 
     def GetValue(self):
         """Get the value from the editor"""
-        dt = wx.DatePickerCtrl.GetValue(self)
+        dt = wx.adv.DatePickerCtrl.GetValue(self)
         if dt.IsOk():
             return datetime.date(dt.Year, dt.Month+1, dt.Day)
         else:
@@ -474,7 +475,7 @@ class TimePicker(masked.TimeCtrl):
 
 
 
-class CustomComboBox(wx.combo.OwnerDrawnComboBox):
+class CustomComboBox(wx.adv.OwnerDrawnComboBox):
     """
 
     """
@@ -483,13 +484,13 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
         #kwargs['style'] = kwargs.get('style', 0) | wx.CB_READONLY
         self.evenRowBackground = kwargs.pop("evenRowBackground", wx.WHITE)
         self.oddRowBackground = kwargs.pop("oddRowBackground", wx.Colour(191, 239, 255))
-        wx.combo.OwnerDrawnComboBox.__init__(self, *args, **kwargs)
+        wx.adv.OwnerDrawnComboBox.__init__(self, *args, **kwargs)
 
     def OnDrawBackground(self, dc, rect, item, flags):
         # If the item is selected, or we are painting the combo control itself, then use
         # the default rendering.
-        if flags & (wx.combo.ODCB_PAINTING_CONTROL | wx.combo.ODCB_PAINTING_SELECTED):
-            wx.combo.OwnerDrawnComboBox.OnDrawBackground(self, dc, rect, item, flags)
+        if flags & (wx.ODCB_PAINTING_CONTROL | wx.ODCB_PAINTING_SELECTED):
+            wx.adv.OwnerDrawnComboBox.OnDrawBackground(self, dc, rect, item, flags)
             return
 
         # Otherwise, draw every other background with different colour.
@@ -502,11 +503,11 @@ class CustomComboBox(wx.combo.OwnerDrawnComboBox):
         dc.DrawRectangleRect(rect)
 
     def SetValue(self, value):
-        wx.combo.OwnerDrawnComboBox.SetValue(self, value or "")
+        wx.adv.OwnerDrawnComboBox.SetValue(self, value or "")
 
     def OnMeasureItem(self, item):
         return self.popupRowHeight
 
     def GetValue(self):
-        value = wx.combo.OwnerDrawnComboBox.GetValue(self)
+        value = wx.adv.OwnerDrawnComboBox.GetValue(self)
         return value

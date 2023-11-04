@@ -5,7 +5,7 @@ import wx
 import odmtools.view.clsBulkInsert as clsBulkInsert
 import odmtools.controller.olvAddPoint as olv
 import pandas as pd
-from pandas.parser import CParserError
+from pandas.errors import ParserError
 import csv
 import StringIO
 import logging
@@ -63,7 +63,7 @@ class BulkInsert(clsBulkInsert.BulkInsert):
                                 7: str.strip,
                                 8: str.strip,
                                 9: str.strip})
-        except CParserError as e:
+        except ParserError as e:
             message = "There was an issue trying to parse your file. "\
                                          "Please compare your csv with the template version as the file"\
                                          " you provided "\

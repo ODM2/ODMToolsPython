@@ -9,7 +9,7 @@
 
 import wx
 import wx.xrc
-import wx.combo
+# import wx.combo
 import wx.lib.masked
 import wx.lib.agw.buttonpanel as BP
 

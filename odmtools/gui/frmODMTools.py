@@ -117,8 +117,8 @@ class frmODMToolsMain(wx.Frame):
 
     def _init_s_Items(self, parent):
         # generated method, don't edit
-        parent.AddWindow(self._ribbon, 0, wx.EXPAND)
-        parent.AddWindow(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
+        parent.Add(self._ribbon, 0, wx.EXPAND)
+        parent.Add(self.pnlDocking, 85, flag=wx.ALL | wx.EXPAND)
 
     def _init_database(self, quit_if_cancel=True):
         logger.info("Loading Database...")

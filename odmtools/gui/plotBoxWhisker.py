@@ -13,8 +13,8 @@ class PlotBox(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        parent.AddWindow(self.toolbar, 0, wx.EXPAND)
+        parent.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
+        parent.Add(self.toolbar, 0, wx.EXPAND)
 
 
     def _init_sizers(self):

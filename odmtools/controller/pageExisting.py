@@ -3,7 +3,7 @@
 import wx
 from odmtools.view import clsExisting
 from odmtools.odmdata import series
-import wx.wizard as wiz
+from wx.adv import Wizard as wiz
 import datetime
 
 # Implementing pnlExisting
@@ -12,10 +12,10 @@ import datetime
 #        clsExisting.pnlExisting.__init__(self, parent)
 
 ########################################################################
-class pageExisting(wiz.WizardPageSimple):
+class pageExisting(wx.adv.WizardPageSimple):
     def __init__(self, parent, title, series_service , site):
         """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
+        wx.adv.WizardPageSimple.__init__(self, parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer

@@ -24,7 +24,7 @@ class frmDBConfig(wx.Dialog):
                            style=wx.DEFAULT_DIALOG_STYLE, size=wx.Size(500, 315))
         self.panel = pnlDBConfig(self, service_manager, is_main)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.AddWindow(self.panel, 1, border=1, flag=wx.EXPAND | wx.GROW | wx.ALL)
+        self.sizer.Add(self.panel, 1, border=1, flag=wx.EXPAND | wx.GROW | wx.ALL)
         self.SetSizer(self.sizer)
         self.sizer.Fit(self.panel)
 

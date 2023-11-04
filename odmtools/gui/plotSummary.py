@@ -23,7 +23,7 @@ class plotSummary(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
         parent.Add(self.btnExport, 0, border=5)
-        parent.AddWindow(self.grdSummary, 1, border=5, flag=wx.EXPAND | wx.GROW)
+        parent.Add(self.grdSummary, 1, border=5, flag=wx.EXPAND | wx.GROW)
 
 
     def _init_sizers(self):

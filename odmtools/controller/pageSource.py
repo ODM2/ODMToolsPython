@@ -1,5 +1,5 @@
 import wx
-import wx.wizard as wiz
+from wx.adv import Wizard as wiz
 from odmtools.view.clsWizSource import clsSource
 from wx.lib.pubsub import pub as Publisher
 from odmtools.controller.frmCreateSource import frmCreateSource
@@ -12,10 +12,10 @@ import logging
 # logger = tool.setupLogger(__name__, __name__ + '.log', 'w', logging.DEBUG)
 logger =logging.getLogger('main')
 
-class pageSource(wiz.WizardPageSimple):
+class pageSource(wx.adv.WizardPageSimple):
     def __init__(self, parent, title, service_manager, src):
         """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
+        wx.adv.WizardPageSimple.__init__(self, parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer

@@ -10,7 +10,7 @@ class pnlSummary(wx.Panel):
     def _init_coll_boxSizer1_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.treeSummary, 100, border=0, flag=wx.EXPAND)
+        parent.Add(self.treeSummary, 100, border=0, flag=wx.EXPAND)
 
     def _init_sizers(self):
         # generated method, don't edit

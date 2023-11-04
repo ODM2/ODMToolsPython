@@ -10,6 +10,7 @@
 import wx
 import wx.xrc
 import wx.lib.masked as masked
+import wx.adv
 
 
 ###########################################################################
@@ -107,8 +108,8 @@ class clsDataFilters(wx.Dialog):
         self.lblDateAfter.Wrap(-1)
         fgSizer3.Add(self.lblDateAfter, 0, wx.ALL, 5)
 
-        self.dpAfter = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
-                                         wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+        self.dpAfter = wx.adv.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
+                                         wx.adv.DP_DROPDOWN | wx.DP_SHOWCENTURY)
         fgSizer3.Add(self.dpAfter, 0, wx.ALL, 5)
 
         self.sbAfter = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), 0)
@@ -125,8 +126,8 @@ class clsDataFilters(wx.Dialog):
         self.lblDateBefore.Wrap(-1)
         fgSizer3.Add(self.lblDateBefore, 0, wx.ALL, 5)
 
-        self.dpBefore = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
-                                          wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+        self.dpBefore = wx.adv.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
+                                          wx.adv.DP_DROPDOWN | wx.DP_SHOWCENTURY)
         fgSizer3.Add(self.dpBefore, 0, wx.ALL, 5)
         self.sbBefore = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), wx.SP_WRAP)
         self.tpBefore = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(80, -1),
@@ -252,8 +253,8 @@ class clsDataFilters(wx.Dialog):
 
 
 
-    # self.dpAfter = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
-    # wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+    # self.dpAfter = wx.adv.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
+    # wx.adv.DP_DROPDOWN | wx.DP_SHOWCENTURY)
     # fgSizer3.Add(self.dpAfter, 0, wx.ALL, 5)
     #
     # self.sbAfter = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), 0)
@@ -270,8 +271,8 @@ class clsDataFilters(wx.Dialog):
     # self.lblDateBefore.Wrap(-1)
     # fgSizer3.Add(self.lblDateBefore, 0, wx.ALL, 5)
     #
-    # self.dpBefore = wx.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
-    #                                   wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
+    # self.dpBefore = wx.adv.DatePickerCtrl(self, wx.ID_ANY, wx.DefaultDateTime, wx.DefaultPosition, wx.Size(150, -1),
+    #                                   wx.adv.DP_DROPDOWN | wx.DP_SHOWCENTURY)
     # fgSizer3.Add(self.dpBefore, 0, wx.ALL, 5)
     # self.sbBefore = wx.SpinButton(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(15, -1), wx.SP_WRAP)
     # self.tpBefore = masked.TimeCtrl(self, wx.ID_ANY, pos=wx.DefaultPosition, size=wx.Size(80, -1),

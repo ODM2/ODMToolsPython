@@ -15,10 +15,10 @@ class frmChangeValue(wx.Dialog):
     def _init_coll_gridSizer1_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.cbValue, 50, border=5, flag=wx.ALL)
-        parent.AddWindow(self.txtValue, 50, border=5, flag=wx.ALL)
-        parent.AddWindow(self.btnOk, 50, border=5, flag=wx.ALL)
-        parent.AddWindow(self.btnCancel, 50, border=5, flag=wx.ALL)
+        parent.Add(self.cbValue, 50, border=5, flag=wx.ALL)
+        parent.Add(self.txtValue, 50, border=5, flag=wx.ALL)
+        parent.Add(self.btnOk, 50, border=5, flag=wx.ALL)
+        parent.Add(self.btnCancel, 50, border=5, flag=wx.ALL)
 
     def _init_sizers(self):
         # generated method, don't edit

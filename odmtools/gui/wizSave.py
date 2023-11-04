@@ -1,7 +1,7 @@
 # Boa:Wizard:wizSave
 
 import wx
-import wx.wizard as wiz
+from wx.adv import Wizard as wiz
 
 # import * from WizardPanels
 from odmtools.controller import pageIntro, pageExisting, pageSource
@@ -25,10 +25,10 @@ logger =logging.getLogger('main')
 
 
 ########################################################################
-class QCLPage(wiz.WizardPageSimple):
+class QCLPage(wx.adv.WizardPageSimple):
     def __init__(self, parent, title, series_service, qcl):
         """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
+        wx.adv.WizardPageSimple.__init__(self, parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
@@ -62,10 +62,10 @@ class QCLPage(wiz.WizardPageSimple):
 
 
 ########################################################################
-class VariablePage(wiz.WizardPageSimple):
+class VariablePage(wx.adv.WizardPageSimple):
     def __init__(self, parent, title, service_manager, var):
         """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
+        wx.adv.WizardPageSimple.__init__(self, parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
@@ -109,10 +109,10 @@ class VariablePage(wiz.WizardPageSimple):
 
 
 ########################################################################
-class MethodPage(wiz.WizardPageSimple):
+class MethodPage(wx.adv.WizardPageSimple):
     def __init__(self, parent, title, series_service, method):
         """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
+        wx.adv.WizardPageSimple.__init__(self, parent)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
@@ -152,10 +152,10 @@ class MethodPage(wiz.WizardPageSimple):
 
 
 ########################################################################
-class SummaryPage(wiz.WizardPageSimple):
+class SummaryPage(wx.adv.WizardPageSimple):
     def __init__(self, parent, title, series_service):
         """Constructor"""
-        wiz.WizardPageSimple.__init__(self, parent)
+        wx.adv.WizardPageSimple.__init__(self, parent)
         self.parent = parent
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = sizer
@@ -209,7 +209,7 @@ class SummaryPage(wiz.WizardPageSimple):
 
 
 ########################################################################
-class wizSave(wx.wizard.Wizard):
+class wizSave(wiz):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wiz.Wizard.__init__(self, id=wxID_WIZSAVE,

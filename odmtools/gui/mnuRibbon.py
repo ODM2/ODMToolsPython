@@ -3,6 +3,7 @@ from collections import OrderedDict
 import datetime
 
 import wx
+import wx.adv
 import wx.lib.agw.ribbon as RB
 from wx.lib.pubsub import pub as Publisher
 from odmtools.common.exceptions import EmptySelection
@@ -107,13 +108,13 @@ class mnuRibbon(RB.RibbonBar):
         self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTBLANKBTN, "", blank.GetBitmap(), "")
         self.dateTime_buttonbar.EnableButton(wxID_RIBBONPLOTBLANKBTN, False)
 
-        self.dpStartDate = wx.DatePickerCtrl(id=wxID_STARTDPDATE, name=u'dpStartDate', parent=self.dateTime_buttonbar,
-                                             pos=wx.Point(5, 8), size=wx.Size(120, 24), style=wx.DP_DROPDOWN)
+        self.dpStartDate = wx.adv.DatePickerCtrl(id=wxID_STARTDPDATE, name=u'dpStartDate', parent=self.dateTime_buttonbar,
+                                             pos=wx.Point(5, 8), size=wx.Size(120, 24), style=wx.adv.DP_DROPDOWN)
 
         self.dpStartDate.SetToolTipString(u'Start Date')
 
-        self.dpEndDate = wx.DatePickerCtrl(id=wxID_ENDDPDATE, name=u'dpEndDate', parent=self.dateTime_buttonbar,
-                                           pos=wx.Point(5, 40), size=wx.Size(120, 24), style=wx.DP_DROPDOWN)
+        self.dpEndDate = wx.adv.DatePickerCtrl(id=wxID_ENDDPDATE, name=u'dpEndDate', parent=self.dateTime_buttonbar,
+                                           pos=wx.Point(5, 40), size=wx.Size(120, 24), style=wx.adv.DP_DROPDOWN)
         self.dpEndDate.SetToolTipString(u'End Date')
 
         self.dateTime_buttonbar.AddSimpleButton(wxID_RIBBONPLOTDATEAPPLY, "Apply", date_setting.GetBitmap(), "")
